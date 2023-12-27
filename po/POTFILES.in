@@ -1,0 +1,7 @@
+# List of source files which contain translatable strings.
+src/main.c
+src/selfrep.c
+src/utils.c
+src/windows.c
+src/ui.c
+src/ui.glade

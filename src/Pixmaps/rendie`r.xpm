@@ -1,0 +1,133 @@
+/* XPM */
+/* -copyright-
+#-# 
+#-# plasmasnow: Let it snow on your desktop
+#-# Copyright (C) 1984,1988,1990,1993-1995,2000-2001 Rick Jansen
+#-# 	      2019,2020,2021,2022,2023 Willem Vermin
+#-# 
+#-# This program is free software: you can redistribute it and/or modify
+#-# it under the terms of the GNU General Public License as published by
+#-# the Free Software Foundation, either version 3 of the License, or
+#-# (at your option) any later version.
+#-# 
+#-# This program is distributed in the hope that it will be useful,
+#-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+#-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#-# GNU General Public License for more details.
+#-# 
+#-# You should have received a copy of the GNU General Public License
+#-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#-# 
+*/
+XPM_TYPE *reindeer_xpm[] = {
+/* columns rows colors chars-per-pixel */
+"72 57 50 1 ",
+"  c #2C3739",
+". c #363D3D",
+"X c #483E33",
+"o c #4E4539",
+"O c #54493D",
+"+ c #323E42",
+"@ c #39474B",
+"# c #3E4E51",
+"$ c #3F5054",
+"% c #404C4F",
+"& c #564C43",
+"* c #5C5248",
+"= c #414C50",
+"- c #46595D",
+"; c #555857",
+": c #66594A",
+"> c #6D5F51",
+", c #6F604E",
+"< c #70614F",
+"1 c #6E6051",
+"2 c #766553",
+"3 c #4A5D61",
+"4 c #515F62",
+"5 c #4E6165",
+"6 c #55666A",
+"7 c #5D6D71",
+"8 c #5E7174",
+"9 c #61696B",
+"0 c #626E71",
+"q c #65777A",
+"w c #727B7D",
+"e c #6D7E81",
+"r c #737E82",
+"t c #6F8183",
+"y c #778487",
+"u c #7F8E91",
+"i c #80898C",
+"p c #8A9698",
+"a c #92999B",
+"s c #929EA1",
+"d c #9AA6A8",
+"f c #A5ACAD",
+"g c #ACB2B4",
+"h c #B3B8BA",
+"j c #B8BFC1",
+"k c #BCC3C4",
+"l c #C3C9CB",
+"z c #CED4D5",
+"x c #D3D8D9",
+"c c None",
+/* pixels */
+"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+"cccccccccccccccccccccccccccccccccccccccccccccccccccccccc:c::cccccccccccc",
+"ccccccccccccccccccccccccccccccccccccccccccccccccccc:cccc:cc>cccccccccccc",
+"ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc:*Occcccccccc",
+"cccccccccccccccccccccccccccccccccccccccccccccccccccc:c2cc:c2:2>ccccccccc",
+"ccccccccccccccccccccccccccccccccccccccccccccccccccccc1c2:2<>,2Occccccccc",
+"ccccccccccccccccccccccccccccccccccccccccccccccccccccc2,:22<22>cccccccccc",
+"ccccccccccccccccccccccccccccccccccccccccccccccccccccc2222,22<,::cccccccc",
+"cccccccccccccccccccccccccccccccccccccccccccccccccccc12:>2,2,,,2,>ccccccc",
+"ccccccccccccccccccccccccccccccccccccccccccccccccccc:>*>>cccccccccccccccc",
+"cccccccccccccccccccccccccccccccccccccccccccccccccc&2c>1ccccccccccccccccc",
+"cccccccccccccccccccccccccccccccccccccccccccccccccc>c:<cccccccccccccccccc",
+"cccccccccccccccccccccccccccccccccccccccccccccccccc>c:ccccccccccccccccccc",
+"cccccccccccccccccccccccccccccccccccccccccccccccccc1c:ccccccccccccccccccc",
+"cccccccccccccccccccccccccccccccccccccccccccccccccc2c:ccccccccccccccccccc",
+"cccccccccccccccccccccccccccccccccccccccccccccccccc:::ccccccccccccccccXcc",
+"cccccccccccccccccccccccccccccccccccccccccccccccccc&1:>ccccccccccccc&:Occ",
+"ccccccccccccccccccccccccccccccccccccccccccccccccccc::>ccccccccccccc>:Xcc",
+"ccccccccccccccccccccccccccccccccccccccccccccccccccc&:1>ccccccccccc:>>Xcc",
+"cccccccccccccccccccccccccccccccccccccccccccccccccccc*:2cccccccccc*:**ccc",
+"ccccccccccccccccccccccccccccccccccccccccccccccccccccc*:2ccccccc*:*&*cccc",
+"ccccccccccccccccccccccccccccccccccccccccccccccccccccc;*>1ccc&***&&cccccc",
+"cccccccccccccccccccccccccccccccccccccccccccccccccccccr>O:*&&O&&ccccccccc",
+"ccccccccccccccccccccccccccccccccccc#------cccccccccccee9&&&&ccccccccc&Oc",
+"cccccccccccccccc670767cccccccccc533333-3-3sljgfccccccrut**:&OOccccc*&*cc",
+"ccccccccccccc58wqqqqwtettteqq0q863--3--333plkkllllllzhyf5-#.c*&&****:,cc",
+"cccccccccccjw653---5565556665653-3-3-3--3-8kkfhlllllllg6@-63ccc*::122*cc",
+"ccccccccccxh5--34-3-3--3--3-3--3333-3-3--35dkjhllllllllq#;;6-#ccc,22<ccc",
+"ccccccccclxt-----3-3-33-33-3-3-3-3-3-3-3-35gllkkllklllh7336--$-cccc>>ccc",
+"ccccccccczz0---33-3-3--33-3-3-3-3-3-3-3-345dllllllllkkd63-------cccccccc",
+"ccccccccchg6-3-33$$$33-33-3-33-3-3--3-3-3-3tkkkkkkkkkgp43333-33$+ccccccc",
+"cccccccccca5--3-3$#$$-3-33-3--3-33-3-3-3-3-8dkkjkkkjgkd73$$#$--#@=cccccc",
+"ccccccccccd333--33$@$3-3--3-33-3--3-33--3338pzkkjhggklks5@      @pcccccc",
+"ccccccccccd73-3-333$#--333--3-3-33-33--3-35tszkkddkklhaccccccc#0whcccccc",
+"ccccccccccgu---3333$#-$-3-3-33-3--55$33$56ydkgdgjkkhfcccccccccczkccccccc",
+"ccccccccccpp33--$$-$#333-3-3--3---$-3$56ydkkdeahkkkscccccccccccccccccccc",
+"cccccccccc-t533-33$$#--53#$$4346etupsddhkkdt6yhlkkhccccccccccccccccccccc",
+"cccccccccc6q$--33$$$#3dkkkdt6--6eusddddst6556kllzkcccccccccccccccccccccc",
+"ccccccccc3eye3--$$@@@ahkzzxlkgpq--5-333---33-7fllccccccccccccccccccccccc",
+"cccccccc$8ee7-@3-$$$ccpgddghgghhgsuue0-#@@@$---05ccccccccccccccccccccccc",
+"ccccccc5eyt6$@@333$$cccccccccccccccccc+@-@+@@@----#ccccccccccccccccccccc",
+"ccccwq0rq73#cc-3333ccccccccccccccccccc@$#ccccc@@##--cccccccccccccccccccc",
+"ccccye65-cccc$-33-#ccccccccccccccccccc@$$ccccccccc---ccccccccccccccccccc",
+"cccc5-cccccc#-3--ccccccccccccccccccccc@3cccccccccc#@cccccccccccccccccccc",
+"ccc--ccccccc-3@+cccccccccccccccccccccc$3cccccccccc#-cccccccccccccccccccc",
+"ccc--ccccccc#3cccccccccccccccccccccccc#$cccccccccc#-cccccccccccccccccccc",
+"cc%-cccccccc@-cccccccccccccccccccccccc@#cccccccccc-#cccccccccccccccccccc",
+"cc--ccccccccc-#cccccccccccccccccccccccc#cccccccccc-ccccccccccccccccccccc",
+"cc-$ccccccccc--cccccccccccccccccccccccc-cccccccccc-ccccccccccccccccccccc",
+"c--=ccccccccc--cccccccccccccccccccccccc-ccccccccc-3#cccccccccccccccccccc",
+"cy4#cccccccccc-#ccccccccccccccccccccccc-cccccccccaapcccccccccccccccccccc",
+"cchgcccccccccc--cccccccccccccccccccccc46=cccccccccyqcccccccccccccccccccc",
+"cc7y0ccccccccc765cccccccccccccccccccccyswcccccccccqqcccccccccccccccccccc",
+"ccc87ccccccccccfdacccccccccccccccccccccdsccccccccccccccccccccccccccccccc",
+"cccccccccccccccc3qccccccccccccccccccccccq5cccccccccccccccccccccccccccccc"
+};

@@ -1,0 +1,1967 @@
+# # Sometimes the translations contain rubbish, please replace them.
+# # (abc_1000) XsnoW
+# # (abc_1001) Xsnow
+# # (abc_1002) XSNOW
+# # (abc_1003) &#8195;
+# # (abc_1004) \n
+# # (abc_1005) %l#x
+# # (abc_1006) Rick Jansen
+# # (abc_1007) xsnow
+# # (abc_1008) Xscreensaver
+# Language for xsnow
+# Copyright (C) 2023 Willem Vermin
+# This file is distributed under the same license as the xsnow package.
+# Willem Vermin <wvermin@gmail.com>, 2023
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: xsnow 3.6.1.gettext~pre7\n"
+"Report-Msgid-Bugs-To: Willem Vermin wvermin@gmail.com\n"
+"POT-Creation-Date: 2023-02-17 13:40+0100\n"
+"PO-Revision-Date: 2023-02-17 13:40+0100\n"
+"Last-Translator: Willem Vermin wvermin@gmail.com\n"
+"Language-Team: None\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/main.c:375
+#, c-format
+msgid "Available languages are: %s\n"
+msgstr "Los idiomas disponibles son: %s\n"
+
+#: src/main.c:378
+msgid "Warning: don't eat yellow snow!"
+msgstr "Advertencia: ¡No comas nieve amarilla!"
+
+#: src/main.c:399
+#, c-format
+msgid "For optimal resuts, add to your %s:\n"
+msgstr "Para obtener resultados óptimos, añada a su %s:\n"
+
+#: src/main.c:407
+#, c-format
+msgid "unknown\n"
+msgstr "desconocido\n"
+
+#: src/main.c:416
+#, c-format
+msgid "Detected Wayland desktop\n"
+msgstr "Escritorio Wayland detectado\n"
+
+#: src/main.c:431
+#, c-format
+msgid "Xsnow needs gtk version >= %s, found version %s \n"
+msgstr "Xsnow necesita versión gtk >= %s, se encontró la versión %s \n"
+
+#: src/main.c:441
+msgid "Continuing with flag"
+msgstr "Siguiendo con"
+
+#: src/main.c:477
+#, c-format
+msgid "%s: cannot connect to X server %s\n"
+msgstr "%s: no se puede conectar al servidor X %s\n"
+
+#: src/main.c:478
+msgid "(default)"
+msgstr "(por defecto)"
+
+#: src/main.c:596
+msgid "restarting"
+msgstr "reiniciando"
+
+#: src/main.c:643 src/windows.c:567
+#, c-format
+msgid "Click on a window ...\n"
+msgstr "Haga clic en una ventana ...\n"
+
+#: src/main.c:677 src/windows.c:660
+#, c-format
+msgid "Detected desktop session: %s\n"
+msgstr "Sesión de escritorio detectada: %s\n"
+
+#: src/main.c:680 src/windows.c:663
+#, c-format
+msgid "Could not determine desktop session\n"
+msgstr "No se ha podido determinar la sesión de escritorio\n"
+
+#: src/main.c:712
+#, c-format
+msgid "Trying to snow in root window\n"
+msgstr "Tratando de nevar en la ventana raíz\n"
+
+#: src/main.c:756
+#, c-format
+msgid "Using transparent window\n"
+msgstr "Uso de la ventana transparente\n"
+
+#: src/main.c:761
+#, c-format
+msgid "The transparent snow-window is probably not click-through, alas..\n"
+msgstr ""
+"La ventana de nieve transparente no es probablemente clic a través de, por "
+"desgracia..\n"
+
+#: src/main.c:770
+#, c-format
+msgid "Cannot create transparent window\n"
+msgstr "No se puede crear una ventana transparente\n"
+
+#: src/main.c:772 src/windows.c:670
+#, c-format
+msgid "NOTE: xsnow will probably run, but some glitches are to be expected.\n"
+msgstr ""
+"NOTA: xsnow probablemente se ejecutará, pero se esperan algunos problemas "
+"técnicos.\n"
+
+#: src/main.c:779
+#, c-format
+msgid "LXDE session found, using window 'pcmanfm'.\n"
+msgstr "Sesión LXDE encontrada, usando la ventana 'pcmanfm'.\n"
+
+#: src/main.c:784
+#, c-format
+msgid "Using window 'Desktop'.\n"
+msgstr "Usando la ventana 'Escritorio'.\n"
+
+#: src/main.c:788
+#, c-format
+msgid "Using root window\n"
+msgstr "Uso de la ventana raíz\n"
+
+#: src/main.c:832
+#, c-format
+msgid "Snowing in %#lx: %s %d+%d %dx%d\n"
+msgstr "Nevando en %#lx: %s %d+%d %dx%d\n"
+
+#: src/main.c:877
+#, c-format
+msgid "Using double buffer: %#lx. %dx%d\n"
+msgstr "Usando doble búfer: %#lx. %dx%d\n"
+
+#: src/main.c:884
+#, c-format
+msgid "NOT using double buffering:"
+msgstr "NO usar doble buffering:"
+
+#: src/main.c:886
+#, c-format
+msgid " because double buffering is not available on this system\n"
+msgstr " porque el búfer doble no está disponible en este sistema\n"
+
+#: src/main.c:888
+#, c-format
+msgid " on your request.\n"
+msgstr " a petición suya.\n"
+
+#: src/main.c:889
+#, c-format
+msgid "NOTE: expect some flicker.\n"
+msgstr "NOTA: espere un poco de parpadeo.\n"
+
+#: src/main.c:1027
+msgid "Restart due to change of screen or language settings ...\n"
+msgstr ""
+"Reiniciar debido al cambio de la configuración de la pantalla o del "
+"idioma...\n"
+
+#: src/main.c:1041
+msgid "Restart due to change of display settings...\n"
+msgstr "Reiniciar debido al cambio de la configuración de la pantalla...\n"
+
+#: src/main.c:1132
+msgid "Wayland (Expect some slugginess)"
+msgstr "Wayland (Espere algo de lentitud)"
+
+#: src/main.c:1136
+msgid "Probably X11"
+msgstr "Probablemente X11"
+
+#: src/main.c:1138
+#, c-format
+msgid "%s. Snow window: %#lx"
+msgstr "%s. Ventana de nieve: %#lx"
+
+#: src/main.c:1190
+#, c-format
+msgid "More than %d errors, I quit!"
+msgstr "¡Más de %d errores, renuncio!"
+
+#: src/main.c:1340
+#, c-format
+msgid "Window size changed, now snowing in in %#lx: %s %d+%d %dx%d\n"
+msgstr ""
+"El tamaño de la ventana ha cambiado, ahora está nevando en %#lx: %s %d+%d %dx"
+"%d\n"
+
+#: src/main.c:1409
+#, c-format
+msgid "Halting because of flag %s\n"
+msgstr "Detenerse debido a la bandera %s\n"
+
+#: src/selfrep.c:34
+#, c-format
+msgid "Not sending tar file to terminal.\n"
+msgstr "No se está enviando el archivo tar a la terminal.\n"
+
+#: src/selfrep.c:35
+#, c-format
+msgid "Try redirecting to a file (e.g: %s,\n"
+msgstr "Intente redirigir a un archivo (por ejemplo: %s,\n"
+
+#: src/selfrep.c:36
+#, c-format
+msgid "or use a %s"
+msgstr "o usa un %s"
+
+#: src/selfrep.c:42
+msgid "Problems encountered during production of the tar ball.\n"
+msgstr "Problemas encontrados durante la producción de la bola de alquitrán.\n"
+
+#: src/selfrep.c:47
+#, c-format
+msgid "Self replication is not compiled in.\n"
+msgstr "La autorreplicación no se compila en.\n"
+
+#: src/utils.c:244
+#, c-format
+msgid ""
+"\n"
+"Xsnow: Caught signal %d\n"
+msgstr ""
+"\n"
+"Xsnow: Señal captada %d\n"
+
+#: src/utils.c:247
+#, c-format
+msgid ""
+"\n"
+"Thanks for using xsnow\n"
+msgstr ""
+"\n"
+"Gracias por usar xsnow\n"
+
+#: src/windows.c:571
+#, c-format
+msgid "XWinInfo failed\n"
+msgstr "Error en XWinInfo\n"
+
+#: src/windows.c:596
+#, c-format
+msgid "Force snow on root: window: %#lx, depth: %d\n"
+msgstr "Forzar nieve en la raíz: ventana: %#lx, profundidad: %d\n"
+
+#: src/windows.c:672
+#, c-format
+msgid ""
+"NOTE: you probably need to tweak 'Lift snow on windows' in the 'settings' "
+"panel.\n"
+msgstr ""
+"NOTA: es probable que tengas que modificar \"Levantar nieve en las ventanas"
+"\" en el panel \"Ajustes\".\n"
+
+#: src/windows.c:864
+#, c-format
+msgid "Setting background from %s\n"
+msgstr "Configuración de fondo desde %s\n"
+
+#: src/ui.c:1006
+#, c-format
+msgid "Range: %d\n"
+msgstr "Rango: %d\n"
+
+#: src/ui.c:1008
+#, c-format
+msgid "Mean distance: %3d\n"
+msgstr "Distancia media: %3d\n"
+
+#: src/ui.c:1016
+#, c-format
+msgid "Desktop type: %s"
+msgstr "Tipo de escritorio: %s"
+
+#: src/ui.c:1124 src/ui.glade:5874
+msgid "all monitors"
+msgstr "Todos los monitores"
+
+#: src/ui.c:1131
+#, c-format
+msgid "monitor %d"
+msgstr "monitor %d"
+
+#: src/ui.c:1149
+msgid "Available languages are: "
+msgstr "Idiomas disponibles: "
+
+#: src/ui.c:1152
+msgid "Use \"sys\" for your default language.\n"
+msgstr "Utilice \"sys\" para el idioma predeterminado.\n"
+
+#: src/ui.c:1153
+msgid "See also the man page."
+msgstr "Véase también la página de manual."
+
+#: src/ui.glade:144
+msgid ""
+"\n"
+"Alas! This not an X11 session, xsnow will probably not run.\n"
+"\n"
+"If you want to try it anyway, set the environment variable XSNOW_FORCE_RUN, "
+"eg:\n"
+"\n"
+"    XSNOW_FORCE_RUN=1 xsnow\n"
+"\n"
+"Or, you could force an X11 session, for example by tweaking /etc/gdm3/daemon."
+"conf.\n"
+"\n"
+msgstr ""
+"\n"
+"¡Ay! Esta no es una sesión X11, xsnow probablemente no se ejecutará.\n"
+"\n"
+"Si desea intentarlo de todos modos, establezca la variable de entorno "
+"XSNOW_FORCE_RUN, por ejemplo:\n"
+"\n"
+"    XSNOW_FORCE_RUN=1 xsnow\n"
+"\n"
+"O bien, podría forzar una sesión X11, por ejemplo, modificando /etc/gdm3/"
+"daemon.conf.\n"
+"\n"
+
+#: src/ui.glade:162
+msgid "Ok, things are as they are. "
+msgstr "Ok, las cosas son como son. "
+
+#: src/ui.glade:475
+msgid ""
+"If everything is ok, it is now snowing on your desktop, and birds are "
+"flying. You are encouraged to define your own preferences using the tabs "
+"above."
+msgstr ""
+"Si todo está bien, ahora está nevando en su escritorio, y los aves están "
+"volando. Se le anima a definir sus propias preferencias utilizando las "
+"pestañas anteriores."
+
+#: src/ui.glade:490
+msgid ""
+"Use the <b>settings</b> tab if xsnow is misbehaving.\n"
+"Use the <b>birds</b> tab if birds are misbehaving."
+msgstr ""
+"Utilice la pestaña de <b>ajustes</b> si xsnow se comporta mal.\n"
+"Use la pestaña <b>aves</b> si las aves se portan mal."
+
+#: src/ui.glade:507
+msgid "In every tab you find the following rescue buttons:"
+msgstr "En cada pestaña encontrará los siguientes botones de rescate:"
+
+#: src/ui.glade:527
+msgid "<b>Defaults </b>"
+msgstr "<b>Predeterminados </b>"
+
+#: src/ui.glade:542
+msgid "Set default preferences for this tab."
+msgstr "Establezca las preferencias predeterminadas para esta pestaña."
+
+#: src/ui.glade:569
+msgid "<b>Vintage </b>"
+msgstr "<b>Antiguo </b>"
+
+#: src/ui.glade:584
+msgid "Set vintage preferences for this tab."
+msgstr "Establecer preferencias antiguas para esta pestaña."
+
+#: src/ui.glade:611
+msgid "<b>All defaults </b>"
+msgstr "<b>Todos predeterminados </b>"
+
+#: src/ui.glade:626
+msgid "Set default preferences for all (except settings) tabs."
+msgstr ""
+"Establezca las preferencias predeterminadas para todas las pestañas (excepto "
+"la configuración)."
+
+#: src/ui.glade:653
+msgid "<b>All vintage </b>"
+msgstr "<b>Todo lo antiguo </b>"
+
+#: src/ui.glade:668
+msgid "Set vintage preferences for all (except settings) tabs."
+msgstr ""
+"Establezca preferencias antiguas para todas las pestañas (excepto la "
+"configuración)."
+
+#: src/ui.glade:688 src/ui.glade:699 src/ui.glade:838 src/ui.glade:1043
+#: src/ui.glade:2833 src/ui.glade:2882 src/ui.glade:4651
+msgid "  "
+msgstr "  "
+
+#: src/ui.glade:710
+msgid "   "
+msgstr "   "
+
+#: src/ui.glade:744
+msgid "Welcome at xsnow!"
+msgstr "¡Bienvenido a xsnow!"
+
+#: src/ui.glade:802
+msgid ""
+"Vintage preferences: the look and feel of the original xsnow, created in "
+"1993 by Rick Jansen."
+msgstr ""
+"Preferencias antiguas: el aspecto y la sensación del original xsnow, creado "
+"en 1993 por Rick Jansen."
+
+#: src/ui.glade:893 src/ui.glade:1556 src/ui.glade:2432 src/ui.glade:2996
+#: src/ui.glade:3467 src/ui.glade:4433 src/ui.glade:5700
+msgid "All defaults"
+msgstr "Todos predeterminados"
+
+#: src/ui.glade:898 src/ui.glade:2436 src/ui.glade:3000 src/ui.glade:5704
+msgid ""
+"Apply defaults for all preferences (except settings).\n"
+"Flag: -defaults"
+msgstr ""
+"Aplicar valores predeterminados para todas las preferencias (excepto la "
+"configuración).\n"
+"Flag: -defaults"
+
+#: src/ui.glade:912
+msgid "Donate"
+msgstr "Donar"
+
+#: src/ui.glade:918
+msgid ""
+"Donate one euro or so to inspire the maintainer of xsnow, here is a paypal "
+"link. "
+msgstr ""
+"Done un euro más o menos para inspirar al mantenedor de xsnow, aquí hay un "
+"enlace de paypal. "
+
+#: src/ui.glade:928 src/ui.glade:1575 src/ui.glade:2451 src/ui.glade:3015
+#: src/ui.glade:3485 src/ui.glade:4452 src/ui.glade:5718
+msgid "All vintage"
+msgstr "Todo lo antiguo"
+
+#: src/ui.glade:933 src/ui.glade:1579 src/ui.glade:2455 src/ui.glade:3019
+#: src/ui.glade:4456 src/ui.glade:5722
+msgid ""
+"Use vintage values for all preferences (except settings).\n"
+"Flag: -vintage"
+msgstr ""
+"Utilice valores antigos para todas las preferencias (excepto la "
+"configuración).\n"
+"Flag: -vintage"
+
+#: src/ui.glade:947 src/ui.glade:1527 src/ui.glade:2403 src/ui.glade:2967
+#: src/ui.glade:3515 src/ui.glade:4509 src/ui.glade:5597
+msgid "Hide menu"
+msgstr "Ocultar menú"
+
+#: src/ui.glade:952 src/ui.glade:1531 src/ui.glade:2407 src/ui.glade:2971
+#: src/ui.glade:3519 src/ui.glade:4513 src/ui.glade:5601
+msgid ""
+"Leave menu.\n"
+"Flag: -nomenu"
+msgstr ""
+"Salir del menú.\n"
+"Flag: -nomenu"
+
+#: src/ui.glade:966
+msgid "Contact"
+msgstr "Contacto"
+
+#: src/ui.glade:971
+msgid "Please report any comments to the maintainer of xsnow."
+msgstr ""
+"Por favor, informe cualquier comentario al encargado del mantenimiento de "
+"xsnow."
+
+#: src/ui.glade:981 src/ui.glade:1606 src/ui.glade:2482 src/ui.glade:3046
+#: src/ui.glade:3543 src/ui.glade:4482 src/ui.glade:5625
+msgid "Quit xsnow"
+msgstr "Salir xsnow"
+
+#: src/ui.glade:986 src/ui.glade:1610 src/ui.glade:2486 src/ui.glade:3050
+#: src/ui.glade:3547 src/ui.glade:4486 src/ui.glade:5629
+msgid "Quit xsnow."
+msgstr "Salir xsnow."
+
+#: src/ui.glade:1026
+msgid ""
+"If the system is too busy, all panels get this color, in which case you "
+"could  adapt some settings in \"snow\", \"birds\", \"settings\", or "
+"\"celestials\"."
+msgstr ""
+"Si el sistema está demasiado ocupado, todos los paneles obtienen este color, "
+"en cuyo caso podría  adaptar algunas configuraciones en \"nieve\", \"aves\", "
+"\"ajustes\" o \"celestiales\"."
+
+#: src/ui.glade:1220
+msgid "Welcome"
+msgstr "Bienvenido"
+
+#: src/ui.glade:1237
+msgid "Blow off:"
+msgstr "Quitar:"
+
+#: src/ui.glade:1250
+msgid "On windows:"
+msgstr "En Windows:"
+
+#: src/ui.glade:1263
+msgid "On bottom:"
+msgstr "En el fondo:"
+
+#: src/ui.glade:1276
+msgid "On scenery:"
+msgstr "Sobre el paisaje:"
+
+#: src/ui.glade:1286
+msgid "Show snow"
+msgstr "Mostrar nieve"
+
+#: src/ui.glade:1290
+msgid ""
+"If set, show snowflakes.\n"
+"Flags: -snow, -nosnow"
+msgstr ""
+"Si está configurado, muestre los copos de nieve.\n"
+"Flags: -snow, -nosnow"
+
+#: src/ui.glade:1302 src/ui.glade:1318 src/ui.glade:1334 src/ui.glade:1350
+#: src/ui.glade:3708 src/ui.glade:3801 src/ui.glade:3904 src/ui.glade:3974
+#: src/ui.glade:4010 src/ui.glade:5965
+msgid "Show"
+msgstr "Mostrar"
+
+#: src/ui.glade:1306
+msgid ""
+"If set, show snow blowing away.\n"
+"Flags: -blowsnow, -noblowsnow"
+msgstr ""
+"Si está configurado, muestre que la nieve sopla.\n"
+"Flags: -blowsnow, -noblowsnow"
+
+#: src/ui.glade:1322
+msgid ""
+"If set, show fallen snow on windows.\n"
+"Flags: -keepsnowonwindows, -nokeepsnowonwindows"
+msgstr ""
+"Si está configurado, muestre la nieve caída en las ventanas.\n"
+"Flags: -keepsnowonwindows, -nokeepsnowonwindows"
+
+#: src/ui.glade:1338
+msgid ""
+"If set, show fallen snow on bottom of the desktop.\n"
+"Flags: -keepsnowonscreen, -nokeepsnowonscreen"
+msgstr ""
+"Si está configurado, muestre la nieve caída en la parte inferior del "
+"escritorio.\n"
+"Flags: -keepsnowonscreen, -nokeepsnowonscreen"
+
+#: src/ui.glade:1354
+msgid ""
+"If set, snow will collect on the trees.\n"
+"Flags: -keepsnowontrees, -nokeepsnowontrees"
+msgstr ""
+"Si se establece, la nieve se acumulará en los árboles.\n"
+"Flags: -keepsnowontrees, -nokeepsnowontrees"
+
+#: src/ui.glade:1368
+msgid ""
+"The higher this setting, the more snow will be generated  because of Santa "
+"ploughing, wind or disappearing windows. \n"
+"Flag: -blowofffactor"
+msgstr ""
+"Cuanto más alto sea este ajuste, más nieve se generará  debido a la arada de "
+"Papá Noel, el viento o la desaparición de las ventanas. \n"
+"Flag: -blowofffactor"
+
+#: src/ui.glade:1387
+msgid ""
+"The higher this setting, the more snow will collect on the windows. \n"
+"Note: in Wayland, there is no snow on the windows. \n"
+"Flag: -wsnowdepth"
+msgstr ""
+"Cuanto más alto sea este ajuste, más nieve se acumulará en las ventanas. \n"
+"Nota: en Wayland, no hay nieve en las ventanas. \n"
+"Flag: -wsnowdepth"
+
+#: src/ui.glade:1407
+msgid ""
+"The higher this setting, the more snow will collect on the  bottom of the "
+"desktop.\n"
+"Flag: -ssnowdepth"
+msgstr ""
+"Cuanto más alto sea este ajuste, más nieve se acumulará en la  parte "
+"inferior del escritorio.\n"
+"Flag: -ssnowdepth"
+
+#: src/ui.glade:1426
+msgid ""
+"The higher this setting, the more snow will collect on the trees.\n"
+"Flag: -maxontrees"
+msgstr ""
+"Cuanto más alto sea este ajuste, más nieve se acumulará en los árboles.\n"
+"Flag: -maxontrees"
+
+#: src/ui.glade:1447
+msgid "Choose your favorite snow"
+msgstr "Elige tu favorito"
+
+#: src/ui.glade:1464 src/ui.glade:1632 src/ui.glade:2526 src/ui.glade:2822
+#: src/ui.glade:4851 src/ui.glade:5928 src/ui.glade:5939 src/ui.glade:6003
+#: src/ui.glade:6029
+msgid " "
+msgstr " "
+
+#: src/ui.glade:1478 src/ui.glade:2355 src/ui.glade:2919 src/ui.glade:3421
+#: src/ui.glade:4537 src/ui.glade:5654
+msgid "Defaults"
+msgstr "Predeterminados"
+
+#: src/ui.glade:1482
+msgid "Apply default values for the preferences in this tab.\n"
+msgstr ""
+"Aplique valores predeterminados para las preferencias de esta pestaña.\n"
+
+#: src/ui.glade:1497 src/ui.glade:2373 src/ui.glade:2937 src/ui.glade:3438
+#: src/ui.glade:4555 src/ui.glade:5671
+msgid "Vintage"
+msgstr "Antiguo"
+
+#: src/ui.glade:1501 src/ui.glade:2377 src/ui.glade:2941 src/ui.glade:3442
+#: src/ui.glade:4559 src/ui.glade:5675
+msgid "Apply vintage values for the preferences in this tab."
+msgstr "Aplique valores antiguos para las preferencias de esta pestaña."
+
+#: src/ui.glade:1560 src/ui.glade:4437
+msgid ""
+"Apply defaults for all preferences (except settings).\n"
+"Flags: -defaults"
+msgstr ""
+"Aplicar valores predeterminados para todas las preferencias (excepto la "
+"configuración).\n"
+"Flags: -defaults"
+
+#: src/ui.glade:1646 src/ui.glade:3858
+msgid "Size:"
+msgstr "Tamaño:"
+
+#: src/ui.glade:1658
+msgid ""
+"Size of snowflakes, works only for non-vintage snow flakes.\n"
+"Flag: -snowsize"
+msgstr ""
+"Tamaño de los copos de nieve, funciona solo para copos de nieve no vintage.\n"
+"Flag: -snowsize"
+
+#: src/ui.glade:1678 src/ui.glade:2319 src/ui.glade:3824 src/ui.glade:4108
+#: src/ui.glade:4966
+msgid "Speed:"
+msgstr "Velocidad:"
+
+#: src/ui.glade:1692
+msgid "Max # snowflakes:"
+msgstr "Máximo # copos de nieve:"
+
+#: src/ui.glade:1705
+msgid ""
+"Maximum amount of snowflakes.\n"
+"Flag: -flakecountmax"
+msgstr ""
+"Cantidad máxima de copos de nieve.\n"
+"Flag: -flakecountmax"
+
+#: src/ui.glade:1730
+msgid "# Snowflakes:"
+msgstr "Copos de nieve"
+
+#: src/ui.glade:1746 src/ui.glade:5137 src/ui.glade:5153
+msgid "label"
+msgstr "mecanizados-etiqueta"
+
+#: src/ui.glade:1755
+msgid "Show fluff"
+msgstr "Mostrar pelusa"
+
+#: src/ui.glade:1759
+msgid ""
+"If set, try to show fluff on fallen snow and trees if possible.\n"
+"Flags: -fluffy, -nofluffy"
+msgstr ""
+"Si está configurado, trate de mostrar pelusa en la nieve y los árboles "
+"caídos si es posible.\n"
+"Flags: -fluffy, -nofluffy"
+
+#: src/ui.glade:1773 src/ui.glade:1785 src/ui.glade:2537 src/ui.glade:3761
+#: src/ui.glade:3773 src/ui.glade:5103 src/ui.glade:5115
+msgid "&#8195; &#8195; &#8195; &#8195; &#8195; &#8195; &#8195;"
+msgstr "&#8195; &#8195; &#8195; &#8195; &#8195; &#8195; &#8195;"
+
+#: src/ui.glade:1797
+msgid ""
+"Speed of the snowflakes.\n"
+"Flag: -snowspeedfactor"
+msgstr ""
+"Velocidad de los copos de nieve.\n"
+"Flag: -snowspeedfactor"
+
+#: src/ui.glade:1818
+msgid "Intensity:"
+msgstr "Intensidad:"
+
+#: src/ui.glade:1830
+msgid ""
+"The higher, the more snowflakes.\n"
+"Flag: -snowflakes"
+msgstr ""
+"Cuanto más alto, más copos de nieve.\n"
+"Flag: -snowflakes"
+
+#: src/ui.glade:1854
+msgid "Color:"
+msgstr "Color:"
+
+#: src/ui.glade:1867
+msgid ""
+"The color of the snow.\n"
+"Flag: -sc"
+msgstr ""
+"El color de la nieve.\n"
+"Flag: -sc"
+
+#: src/ui.glade:1936
+msgid "Snow"
+msgstr "Nieve"
+
+#: src/ui.glade:1954
+msgid ""
+"Tiny Santa with three reindeers.\n"
+"Flags: -santa 0 -norudolph"
+msgstr ""
+"Pequeño Papá Noel con tres renos.\n"
+"Flags: -santa 0 -norudolph"
+
+#: src/ui.glade:1983
+msgid ""
+"Small Santa with three reindeers.\n"
+"Flags: -santa 1 -norudolph"
+msgstr ""
+"Pequeño Papá Noel con tres renos.\n"
+"Flags: -santa 1 -norudolph"
+
+#: src/ui.glade:2012
+msgid ""
+"Santa with three reindeers.\n"
+"Flags: -santa 2 -norudolph"
+msgstr ""
+"Papá Noel con tres renos.\n"
+"Flags: -santa 2 -norudolph"
+
+#: src/ui.glade:2041
+msgid ""
+"Santa with Dasher, Dancer, Prancer, Vixen, Comet, Cupid, Dunder and Blixem.\n"
+"Flags: -santa 3 -norudolph"
+msgstr ""
+"Papá Noel con Dasher, Dancer, Prancer, Vixen, Comet, Cupid, Dunder y "
+"Blixem.\n"
+"Flags: -santa 3 -norudolph"
+
+#: src/ui.glade:2070
+msgid ""
+"Santa using the train with two reindeers.\n"
+"Flags: -santa 4 -norudolph"
+msgstr ""
+"Papá Noel usando el tren con dos renos.\n"
+"Flags: -santa 4 -norudolph"
+
+#: src/ui.glade:2099
+msgid ""
+"Santa using the train with one reindeer and Rudolph.\n"
+"Flags: -santa 4 -showrudolph"
+msgstr ""
+"Papá Noel usando el tren con un reno y Rudolph.\n"
+"Flags: -santa 4 -showrudolph"
+
+#: src/ui.glade:2127
+msgid ""
+"Tiny Santa with two reindeers and Rudolph.\n"
+"Flags: -santa 0 -showrudolph"
+msgstr ""
+"Pequeño Papá Noel con dos renos y Rudolph.\n"
+"Flags: -santa 0 -showrudolph"
+
+#: src/ui.glade:2157
+msgid ""
+"Small Santa with two reindeers and Rudolph.\n"
+"Flags: -santa 1 -showrudolph"
+msgstr ""
+"Pequeño Papá Noel con dos renos y Rudolph.\n"
+"Flags: -santa 1 -showrudolph"
+
+#: src/ui.glade:2185
+msgid ""
+"Santa with two reindeers and Rudolph.\n"
+"Flags: -santa 2 -showrudolph"
+msgstr ""
+"Papá Noel con dos renos y Rudolph.\n"
+"Flags: -santa 2 -showrudolph"
+
+#: src/ui.glade:2213
+msgid ""
+"Santa with Dasher, Dancer, Prancer, Vixen, Comet, Cupid,  Dunder,  Blixem "
+"and  Rudolph.\n"
+"Flags: -santa 3 -showrudolph"
+msgstr ""
+"Papá Noel con Dasher, Dancer, Prancer, Vixen, Comet, Cupid,  Dunder,  Blixem "
+"y  Rudolph.\n"
+"Flags: -santa 3 -showrudolph"
+
+#: src/ui.glade:2244
+msgid "Without Rudolph"
+msgstr "Sin Rudolph"
+
+#: src/ui.glade:2259
+msgid "With Rudolph"
+msgstr "Con Rudolph"
+
+#: src/ui.glade:2270
+msgid "Choose your Santa"
+msgstr "Elige tu Papá Noel"
+
+#: src/ui.glade:2288
+msgid "Choose your favorite Santa"
+msgstr "Elige tu Papá Noel favorito"
+
+#: src/ui.glade:2304 src/ui.glade:3407
+msgid "    "
+msgstr "    "
+
+#: src/ui.glade:2331
+msgid ""
+"Santa's speed.\n"
+"Flag: -santaspeedfactor"
+msgstr ""
+"La velocidad de Papá Noel.\n"
+"Flag: -santaspeedfactor"
+
+#: src/ui.glade:2359 src/ui.glade:2923 src/ui.glade:3425 src/ui.glade:4541
+#: src/ui.glade:5658
+msgid "Apply default values for the preferences in this tab."
+msgstr "Aplique valores predeterminados para las preferencias de esta pestaña."
+
+#: src/ui.glade:2505
+msgid "Show Santa"
+msgstr "Mostrar Papá Noel"
+
+#: src/ui.glade:2509
+msgid ""
+"To show or not to show Santa.\n"
+"Flags: -showsanta, -nosanta"
+msgstr ""
+"Para mostrar o no mostrar a Papá Noel.\n"
+"Flags: -showsanta, -nosanta"
+
+#: src/ui.glade:2552 src/ui.glade:3192
+msgid "Scale:"
+msgstr "Escala:"
+
+#: src/ui.glade:2564
+msgid ""
+"Scale of Santa.\n"
+"Flags: -santascale <n>"
+msgstr "Escala de Papá Noel.\n"
+"Flags: -santascale <n>"
+
+#: src/ui.glade:2609
+msgid "Santa"
+msgstr "Papá Noel"
+
+#: src/ui.glade:2624
+msgid "Show  scenery"
+msgstr "Paisaje"
+
+#: src/ui.glade:2628
+msgid ""
+"To show or not to show scenery.\n"
+"Flags: -showtrees, -notrees"
+msgstr ""
+"Para mostrar o no mostrar paisajes.\n"
+"Flags: -showtrees, -notrees"
+
+#: src/ui.glade:2645
+msgid ""
+"Vintage tree, you can set the color.\n"
+"Flag: -treetype 0"
+msgstr ""
+"Árbol antiguo, se puede establecer el color.\n"
+"Flag: -treetype 0"
+
+#: src/ui.glade:2668
+msgid ""
+"Woody tree.\n"
+"Flags: -treetype 1 or: -treetype all"
+msgstr ""
+"Leñosas arboreas.\n"
+"Flags: -treetype 1 or: -treetype all"
+
+#: src/ui.glade:2691
+msgid ""
+"Leavy tree.\n"
+"Flags: -treetype 2 or: -treetype all"
+msgstr ""
+"Árbol frondoso.\n"
+"Flags: -treetype 2 or: -treetype all"
+
+#: src/ui.glade:2714
+msgid ""
+"Small house.\n"
+"Flags: -treetype 3 or: -treetype all"
+msgstr ""
+"Casa y vivienda\n"
+"Flags: -treetype 3 or: -treetype all"
+
+#: src/ui.glade:2737
+msgid ""
+"Reindeer.\n"
+"Flags: -treetype 4 or: -treetype all"
+msgstr ""
+"Reno\n"
+"Flags: -treetype 4 or: -treetype all"
+
+#: src/ui.glade:2760
+msgid ""
+"Moose.\n"
+"Flags: -treetype 5 or: -treetype all"
+msgstr ""
+"Alce\n"
+"Flags: -treetype 5 or: -treetype all"
+
+#: src/ui.glade:2783
+msgid ""
+"Snowy tree.\n"
+"Flags: -treetype 6 or: -treetype all"
+msgstr ""
+"Árbol nevado.\n"
+"Flags: -treetype 6 or: -treetype all"
+
+#: src/ui.glade:2806
+msgid ""
+"Set color of vintage tree.\n"
+"Flag: -tc"
+msgstr ""
+"Establecer el color del árbol antiguo.\n"
+"Flag: -tc"
+
+#: src/ui.glade:2847
+msgid "Compose your favorite scenery"
+msgstr "Redacta tus paisajes favoritos"
+
+#: src/ui.glade:2863
+msgid "Try and click any image!"
+msgstr "¡Intenta hacer clic en cualquier imagen!"
+
+#: src/ui.glade:2894
+msgid ""
+"Polar bear.\n"
+"Flags: -treetype 7 or: -treetype all"
+msgstr ""
+"Oso polar\n"
+"Flags: -treetype 7 or: -treetype all"
+
+#: src/ui.glade:3104
+msgid "# Items:"
+msgstr "ArtÍculos"
+
+#: src/ui.glade:3119
+msgid ""
+"Desired number of scenery items.\n"
+"Flag: -trees"
+msgstr ""
+"Número deseado de elementos de paisaje.\n"
+"Flag: -trees"
+
+#: src/ui.glade:3142
+msgid "% Window fill:"
+msgstr "% Relleno de ventana:"
+
+#: src/ui.glade:3153
+msgid ""
+"Bottom percentage of screen available for scenery.\n"
+"Flag: -treefill"
+msgstr ""
+"Porcentaje inferior de la pantalla disponible para escenografía.\n"
+"Flag: -treefill"
+
+#: src/ui.glade:3172
+msgid "Allow overlap"
+msgstr "Permitir solapamientos"
+
+#: src/ui.glade:3176
+msgid ""
+"To allow overlap or not when placing scenery.\n"
+"Flags: -treeoverlap, -notreeoverlap"
+msgstr ""
+"Para permitir la superposición o no al colocar el paisaje.\n"
+"Flags: -treeoverlap, -notreeoverlap"
+
+#: src/ui.glade:3203
+msgid ""
+"Scale of scenery.\n"
+"Flag: sceneryscale <n>"
+msgstr "Escala del paisaje.\n"
+"Flag: sceneryscale <n>"
+
+#: src/ui.glade:3372
+msgid "Scenery"
+msgstr "Escenario"
+
+#: src/ui.glade:3391
+msgid "Compose here your favorite celestial conditions"
+msgstr "Compone aquí tus condiciones celestiales favoritas"
+
+#: src/ui.glade:3471
+msgid ""
+"Apply default values for all preferences (except settings).\n"
+"Flag: -defaults"
+msgstr ""
+"Aplicar valores predeterminados para todas las preferencias (excepto la "
+"configuración).\n"
+"Flag: -defaults"
+
+#: src/ui.glade:3489
+msgid ""
+"Apply vintage values for all preferences (except settings).\n"
+"Flag: -vintage"
+msgstr ""
+"Aplique valores antiguos para todas las preferencias (excepto la "
+"configuración).\n"
+"Flag: -vintage"
+
+#: src/ui.glade:3575
+msgid "Wind"
+msgstr "Eólica"
+
+#: src/ui.glade:3589
+msgid "Windy"
+msgstr "Ventoso"
+
+#: src/ui.glade:3594
+msgid ""
+"If set, there will be wind.\n"
+"Flags: -wind, -nowind"
+msgstr ""
+"Si se establece, habrá viento.\n"
+"Flags: -wind, -nowind"
+
+#: src/ui.glade:3611
+msgid "Whirl:"
+msgstr "Remolino"
+
+#: src/ui.glade:3623
+msgid ""
+"The higher this setting, the more the wind will whirl.\n"
+"Flag: -whirlfactor"
+msgstr ""
+"Cuanto más alto sea este ajuste, más girará el viento.\n"
+"Flag: -whirlfactor"
+
+#: src/ui.glade:3645
+msgid "Timer:"
+msgstr "Temporizador:"
+
+#: src/ui.glade:3658
+msgid ""
+"This setting determines how many seconds pass between  two  gusts of wind.\n"
+"Flag: -windtimer"
+msgstr ""
+"Este ajuste determina cuántos segundos pasan entre  dos  ráfagas de viento.\n"
+"Flag: -windtimer"
+
+#: src/ui.glade:3674
+msgid "Now!"
+msgstr "¡Ya!"
+
+#: src/ui.glade:3678
+msgid "Force a gust of wind immediately."
+msgstr "Forzar una ráfaga de viento inmediatamente."
+
+#: src/ui.glade:3695
+msgid "Stars"
+msgstr "Estrellas"
+
+#: src/ui.glade:3713
+msgid ""
+"To show or not show stars.\n"
+"Flag: -stars  (0 means: no stars)"
+msgstr ""
+"Para mostrar o no mostrar estrellas.\n"
+"Flag: -stars  (0 means: no stars)"
+
+#: src/ui.glade:3730
+msgid "Number:"
+msgstr "Número:"
+
+#: src/ui.glade:3742
+msgid ""
+"Number of twinkling stars.\n"
+"Flag: -stars"
+msgstr ""
+"Número de estrellas parpadeantes.\n"
+"Flag: -stars"
+
+#
+#: src/ui.glade:3788
+msgid "Moon"
+msgstr "Luna"
+
+#
+#: src/ui.glade:3806
+msgid ""
+"To show or not show moon.\n"
+"Flags: -moon 1, -moon 0"
+msgstr ""
+"Para mostrar o no mostrar la luna.\n"
+"Flags: -moon 1, -moon 0"
+
+#
+#: src/ui.glade:3836
+msgid ""
+"Speed of moon in pixels/minute.\n"
+"Flag: -moonspeed"
+msgstr ""
+"Velocidad de la luna en píxeles/minuto.\n"
+"Flag: -moonspeed"
+
+#
+#: src/ui.glade:3870
+msgid ""
+"Relative size of the moon.\n"
+"Flag: -moonsize"
+msgstr ""
+"Tamaño relativo de la luna.\n"
+"Flag: -moonsize"
+
+#
+#: src/ui.glade:3891
+msgid "Halo"
+msgstr "Halo"
+
+#
+#: src/ui.glade:3909
+msgid ""
+"To show or not to show halo around moon.\n"
+"Flags: -halo 1, -halo 0"
+msgstr ""
+"Para mostrar o no mostrar halo alrededor de la luna.\n"
+"Flags: -halo 1, -halo 0"
+
+#
+#: src/ui.glade:3927 src/ui.glade:4142
+msgid "Bright:"
+msgstr "Brillo:"
+
+#
+#: src/ui.glade:3939
+msgid ""
+"Brightness of moon's halo.\n"
+"Flag: -halobrightness"
+msgstr ""
+"Brillo del halo lunar.\n"
+"Flag: -halobrightness"
+
+#
+#: src/ui.glade:3961
+msgid "Meteors"
+msgstr "Meteoritos"
+
+#
+#: src/ui.glade:3979
+msgid ""
+"To show or not to show meteors.\n"
+"Flags: -meteors, -nometeors"
+msgstr ""
+"Para mostrar o no mostrar meteoros.\n"
+"Flags: -meteors, -nometeors"
+
+#
+#: src/ui.glade:3997
+msgid "Aurora"
+msgstr "Aurora"
+
+#
+#: src/ui.glade:4015
+msgid ""
+"To show or not show aurora.\n"
+"Note: the aurora is best viewed using a dark background.\n"
+"Flags: -aurora 1, -aurora 0"
+msgstr ""
+"Para mostrar o no mostrar la aurora.\n"
+"Nota: la aurora se ve mejor usando un fondo oscuro.\n"
+"Flags: -aurora 1, -aurora 0"
+
+#
+#: src/ui.glade:4034
+msgid "Width:"
+msgstr "Anchura:"
+
+#
+#: src/ui.glade:4046
+msgid ""
+"Width of aurora in percentage of screen width.\n"
+"Flag: -aurorawidth"
+msgstr ""
+"Ancho de la aurora en porcentaje del ancho de la pantalla.\n"
+"Flag: -aurorawidth"
+
+#
+#: src/ui.glade:4071
+msgid "Height:"
+msgstr "Alto:"
+
+#
+#: src/ui.glade:4083
+msgid ""
+"Vertical size of aurora.\n"
+"Flag: -auroraheight"
+msgstr ""
+"Tamaño vertical de la aurora.\n"
+"Flag: -auroraheight"
+
+#
+#: src/ui.glade:4120
+msgid ""
+"Animation speed of aurora: real: 10, for a more dramatic effect choose: 100\n"
+"Flag: -auroraspeed"
+msgstr ""
+"Velocidad de animación de la aurora: real: 10, para un efecto más dramático "
+"elegir: 100\n"
+"Flag: -auroraspeed"
+
+#
+#: src/ui.glade:4154
+msgid ""
+"Brightness of aurora.\n"
+"Flags: -aurorabrightness"
+msgstr ""
+"Brillo de la aurora.\n"
+"Flags: -aurorabrightness"
+
+#
+#: src/ui.glade:4171
+msgid "Left"
+msgstr "Izquierda"
+
+#
+#: src/ui.glade:4175
+msgid ""
+"Place aurora left on the screen.\n"
+"Flag: -auroraleft"
+msgstr ""
+"Coloque la aurora izquierda en la pantalla.\n"
+"Flag: -auroraleft"
+
+#
+#: src/ui.glade:4188
+msgid "Middle"
+msgstr "Medio"
+
+#
+#: src/ui.glade:4192
+msgid ""
+"Place aurora in the middle of the screen.\n"
+"Flag: -auroramiddle"
+msgstr ""
+"Coloque la aurora en el centro de la pantalla.\n"
+"Flag: -auroramiddle"
+
+#
+#: src/ui.glade:4206
+msgid "Right"
+msgstr "Derecha"
+
+#
+#: src/ui.glade:4210
+msgid ""
+"Place aurora in the right of the screen.\n"
+"Flag: -auroraright"
+msgstr ""
+"Coloque la aurora en la parte derecha de la pantalla.\n"
+"Flag: -auroraright"
+
+#
+#: src/ui.glade:4229
+msgid "Frequency:"
+msgstr "Frecuencia:"
+
+#
+#: src/ui.glade:4241
+msgid ""
+"Frequency of meteors to appear.\n"
+"Flags: -meteorfrequency"
+msgstr ""
+"Frecuencia de aparición de meteoros.\n"
+"Flags: -meteorfrequency"
+
+#
+#: src/ui.glade:4263
+msgid "Base:"
+msgstr "Base:"
+
+#
+#: src/ui.glade:4275
+msgid ""
+"Baseline height of aurora, in percentage of screen height.\n"
+"Flag: -aurorabase"
+msgstr ""
+"Altura basal de la aurora, en porcentaje de la altura de la pantalla.\n"
+"Flag: -aurorabase"
+
+#: src/ui.glade:4292
+msgid "Color"
+msgstr "Color"
+
+#: src/ui.glade:4296
+msgid ""
+"Choose between yellow-ish and white-ish moon.\n"
+"Flag: -mooncolor [0,1]"
+msgstr ""
+"Elige entre luna amarilla o blanca.\n"
+"Flag: -mooncolor [0,1]"
+
+#
+#: src/ui.glade:4396
+msgid "Celestials"
+msgstr "Celestiales"
+
+#
+#: src/ui.glade:4416
+msgid "Birds settings"
+msgstr "Ajustes de aves"
+
+#
+#: src/ui.glade:4580
+msgid "Show birds"
+msgstr "Mostrar aves"
+
+#
+#: src/ui.glade:4584
+msgid ""
+"If set: show birds.\n"
+"Flags: -showbirds 1, -showbirds 0"
+msgstr ""
+"Si está configurado: mostrar aves.\n"
+"Flags: -showbirds 1, -showbirds 0"
+
+#
+#: src/ui.glade:4597
+msgid "Birds only"
+msgstr "Solo aves"
+
+#
+#: src/ui.glade:4601
+msgid ""
+"If set: show no Santa, snow or scenery.\n"
+"Flags: -birdsonly 0, -birdsony 1"
+msgstr ""
+"Si está configurado: no mostrar Papá Noel, nieve o paisaje.\n"
+"Flags: -birdsonly 0, -birdsony 1"
+
+#
+#: src/ui.glade:4618
+msgid "Preferred distance:"
+msgstr "Distancia preferida:"
+
+#
+#: src/ui.glade:4632
+msgid ""
+"Preferred distance from other birds.\n"
+"Flag: -prefdistance"
+msgstr ""
+"Distancia preferida de otras aves.\n"
+"Flag: -prefdistance"
+
+#
+#: src/ui.glade:4660
+msgid "Restart"
+msgstr "Reiniciar"
+
+#
+#: src/ui.glade:4664
+msgid "Restart birds."
+msgstr "Reinicie los aves."
+
+#
+#: src/ui.glade:4681
+msgid "Viewing distance:"
+msgstr "Distancia de visualización:"
+
+#
+#: src/ui.glade:4694
+msgid ""
+"Viewing distance.\n"
+"NOTE: Santa has no knowledge of viewing distance, so when birds are "
+"following Santa, the relative positions of Santa and birds will be "
+"temporarely out of sync when you change the viewing distance. This is only "
+"noticeable when the birds are following Santa.\n"
+"Flag: -viewingdistance"
+msgstr ""
+"Distancia de visión.\n"
+"NOTA: Papá Noel no tiene conocimiento de la distancia de visión, por lo que "
+"cuando las aves están siguiendo a Papá Noel, las posiciones relativas de "
+"Papá Noel y las aves estarán temporalmente fuera de sincronía cuando cambie "
+"la distancia de visión. Esto sólo se nota cuando los aves están siguiendo a "
+"Papá Noel.\n"
+"Flag: -viewingdistance"
+
+#
+#: src/ui.glade:4715
+msgid "Focus to attraction point:"
+msgstr "Enfoque al punto de atracción:"
+
+#
+#: src/ui.glade:4729
+msgid ""
+"Tendency to concentrate on the attraction point.\n"
+"Flag: -focuscentre"
+msgstr ""
+"Tendencia a concentrarse en el punto de atracción.\n"
+"Flag: -focuscentre"
+
+#
+#: src/ui.glade:4747
+msgid ""
+"Desired number of birds. If zero, no birds are shown.\n"
+"Flag: -nbirds"
+msgstr ""
+"Número deseado de aves. Si es cero, no se muestran aves.\n"
+"Flag: -nbirds"
+
+#: src/ui.glade:4770
+msgid "# Birds:"
+msgstr "# Aves:"
+
+#
+#: src/ui.glade:4784
+msgid ""
+"Number of nearest neighbours the birds should look at.\n"
+"Flag: -neighbours"
+msgstr ""
+"Número de vecinos más cercanos a los que deberían mirar las aves.\n"
+"Flag: -neighbours"
+
+#
+#: src/ui.glade:4804
+msgid "Neighbours:"
+msgstr "Vecinos:"
+
+#
+#: src/ui.glade:4819
+msgid ""
+"Give the birds a fancy color.\n"
+"Flag: -birdscolor"
+msgstr ""
+"Dale a los aves un color elegante.\n"
+"Flag: -birdscolor"
+
+#
+#: src/ui.glade:4838
+msgid "Bird color"
+msgstr "Color de ave"
+
+#
+#: src/ui.glade:4864
+msgid "Anarchy:"
+msgstr "Anarquía:"
+
+#
+#: src/ui.glade:4878
+msgid ""
+"Anarchy level: the higher, the more anarchy.\n"
+"Flag: -anarchy"
+msgstr ""
+"Nivel de anarquía: cuanto más alto, más anarquía.\n"
+"Flag: -anarchy"
+
+#
+#: src/ui.glade:4898
+msgid "Distance weight:"
+msgstr "Peso de la distancia:"
+
+#
+#: src/ui.glade:4912
+msgid ""
+"Tendency to keep desired distance to neighbours.\n"
+"Flag: -disweight"
+msgstr ""
+"Tendencia a mantener la distancia deseada con los vecinos.\n"
+"Flag: -disweight"
+
+#
+#: src/ui.glade:4932
+msgid "Adjust speed to neighbours:"
+msgstr "Ajusta la velocidad a los vecinos:"
+
+#
+#: src/ui.glade:4946
+msgid ""
+"Tendency to adjust speed to neighbours.\n"
+"Flag: -followneighbours"
+msgstr ""
+"Tendencia a ajustar la velocidad a los vecinos.\n"
+"Flag: -followneighbours"
+
+#
+#: src/ui.glade:4980
+msgid ""
+"Speed of birds in arbitrary units.\n"
+"Flag: -birdsspeed"
+msgstr ""
+"Velocidad de las aves en unidades arbitrarias.\n"
+"Flag: -birdsspeed"
+
+#
+#: src/ui.glade:5000
+msgid "Drawing scale:"
+msgstr "Escala de dibujo:"
+
+#
+#: src/ui.glade:5014
+msgid ""
+"Influence the size of the birds.\n"
+"Flag: -birdsscale\n"
+msgstr ""
+"Influye en el tamaño de las aves.\n"
+"Flag: -birdsscale\n"
+
+#
+#: src/ui.glade:5031
+msgid ""
+"Show \n"
+"attr point"
+msgstr ""
+"Mostrar \n"
+"punto de atributos"
+
+#
+#: src/ui.glade:5037
+msgid ""
+"Show the point where the birds want to go.\n"
+"Flags: -showattr 0, -showattr 1"
+msgstr ""
+"Muestra el punto donde los aves quieren ir.\n"
+"Flags: -showattr 0, -showattr 1"
+
+#
+#: src/ui.glade:5048
+msgid ""
+"Follow \n"
+"Santa"
+msgstr ""
+"Sigue a \n"
+"Papá Noel"
+
+#
+#: src/ui.glade:5054
+msgid ""
+"Birds are attracted by an attraction point. Here you can choose to follow "
+"Santa.\n"
+"Flags: -followsanta 0, -followsanta 1"
+msgstr ""
+"Las aves son atraídas por un punto de atracción. Aquí usted puede elegir "
+"seguir a Papá Noel.\n"
+"Flags: -followsanta 0, -followsanta 1"
+
+#
+#: src/ui.glade:5067
+msgid ""
+"Percentage of screen to be used for the attraction point.\n"
+"Flag: -attrspace"
+msgstr ""
+"Porcentaje de pantalla a utilizar para el punto de atracción.\n"
+"Flag: -attrspace"
+
+#
+#: src/ui.glade:5089
+msgid "Attraction point range"
+msgstr "Rango de puntos de atracción"
+
+#
+#: src/ui.glade:5132
+msgid "Actual mean distance from neighbours."
+msgstr "Distancia media real de los vecinos."
+
+#
+#: src/ui.glade:5149
+msgid "Distance used to get the desired number of neighbours."
+msgstr "Distancia utilizada para obtener el número deseado de vecinos."
+
+#
+#: src/ui.glade:5232
+msgid "Birds"
+msgstr "Aves"
+
+#
+#: src/ui.glade:5250
+msgid "version"
+msgstr "transparente"
+
+#
+#: src/ui.glade:5265 src/ui.glade:6479
+msgid "Settings"
+msgstr "Ajustes"
+
+#
+#: src/ui.glade:5287
+msgid "Transparency "
+msgstr "Transparencia "
+
+#
+#: src/ui.glade:5304
+msgid ""
+"Transparency of painted items:\n"
+"0: no transparency.\n"
+"100: fully transparent, you will see nothing!\n"
+"Flag: -transparency"
+msgstr ""
+"Transparencia de los elementos pintados:\n"
+"0: no hay transparencia.\n"
+"100: totalmente transparente, ¡no verás nada!\n"
+"Flag: -transparency"
+
+#
+#: src/ui.glade:5331
+msgid "Lift snow on bottom"
+msgstr "Levante la nieve en el fondo"
+
+#
+#: src/ui.glade:5347
+msgid ""
+"Use this if snow falls below the bottom of your screen, or  fallen snow "
+"hides something that should not be hidden.\n"
+"Flag: -offsets"
+msgstr ""
+"Use esto si la nieve cae debajo de la parte inferior de la pantalla, o si la "
+"nieve caída esconde algo que no debe ocultarse.\n"
+"Flag: -offsets"
+
+#
+#: src/ui.glade:5372
+msgid "Lift snow on windows"
+msgstr "Levante la nieve en las ventanas"
+
+#
+#: src/ui.glade:5388
+msgid ""
+"Use this if no snow collects on your windows, or if snow  collects separated "
+"from your windows. \n"
+"Some basic window managers need this setting (e.g. TWM  needs in general a "
+"value of 25 .. 28).\n"
+"Flag: -offsety"
+msgstr ""
+"Use esto si no hay nieve acumulada en sus ventanas, o si la nieve se acumula "
+"separada de sus ventanas. \n"
+"Algunos gestores de ventanas básicos necesitan este ajuste (por ejemplo, "
+"TWM  necesita en general un valor de 25 .. 28).\n"
+"Flag: -offsety"
+
+#
+#: src/ui.glade:5413
+msgid "Cpu factor"
+msgstr "Factor Cpu"
+
+#
+#: src/ui.glade:5431
+msgid ""
+"The higher, the smoother xsnow will run, but will also use  more cpu power.\n"
+"Flag: -cpuload"
+msgstr ""
+"Cuanto más alto, más suave xsnow se ejecutará, pero también usará  más "
+"potencia de CPU.\n"
+"Flag: -cpuload"
+
+#
+#: src/ui.glade:5457
+msgid "Scale"
+msgstr "Escala"
+
+#
+#: src/ui.glade:5474
+msgid ""
+"Overall drawing scale.\n"
+"Flag: -scale"
+msgstr ""
+"Escala de dibujo general.\n"
+"Flag: -scale"
+
+#
+#: src/ui.glade:5507
+msgid "Ignore large top windows"
+msgstr "Ignorar grandes ventanas superiores"
+
+#: src/ui.glade:5523
+msgid ""
+"Windows wider than 80 percent of the screen and closer to the top  than the "
+"number in this widget will not collect snow.\n"
+"In some cases, there are invisible windows near the top of the screen, which "
+"are handled by xsnow as normal windows: snow is collected upon them. By "
+"entering a suitable number here, this undesired behaviour can be avoided.\n"
+"Flag: -ignoretop\n"
+"\n"
+msgstr ""
+"Las ventanas más anchas que el 80% de la pantalla y más cerca de la parte "
+"superior  que el número de este widget no acumularán nieve.\n"
+"En algunos casos, hay ventanas invisibles cerca de la parte superior de la "
+"pantalla, que xsnow maneja como ventanas normales: se acumula nieve sobre "
+"ellas. Introduciendo un número adecuado aquí, se puede evitar este "
+"comportamiento no deseado.\n"
+"Flag: -ignoretop\n"
+"\n"
+
+#
+#: src/ui.glade:5547
+msgid "Ignore large bottom windows"
+msgstr "Ignorar grandes ventanas inferiores"
+
+#: src/ui.glade:5563
+msgid ""
+"Windows wider than 80 percent of the screen and closer to the  bottom than "
+"the number in this widget will not collect snow.\n"
+"\n"
+"In some cases, there are invisible windows near the bottom  of  the screen, "
+"which are handled by xsnow as normal windows: snow is collected upon them. "
+"By entering a suitable  number here, this undesired behaviour can be "
+"avoided.\n"
+"Flag: -ignorebottom"
+msgstr ""
+"Las ventanas más anchas que el 80% de la pantalla y más cerca de la parte "
+"inferior que el número de este widget no acumularán nieve.\n"
+"\n"
+"En algunos casos, hay ventanas invisibles cerca de  la parte inferior  de  "
+"la pantalla, que xsnow maneja como ventanas normales: se acumula nieve sobre "
+"ellas. Introduciendo un número adecuado aquí, se puede evitar este "
+"comportamiento no deseado.\n"
+"Flag: -ignorebottom"
+
+#: src/ui.glade:5755
+msgid "window type etc."
+msgstr "tipo de ventana, etc."
+
+#: src/ui.glade:5778
+msgid ""
+"Menu\n"
+"colors"
+msgstr "Colores del menú"
+
+#: src/ui.glade:5783
+msgid ""
+"Toggle between xsnow's own menu colors and standard menu colors.\n"
+"Activated: use xsnow colors.\n"
+"Deactivated: use default colors.\n"
+"Flags: -theme 1, -theme 0"
+msgstr ""
+"Alternar entre los colores de menú propios de xsnow y los colores de menú "
+"estándar.\n"
+"Activado: use xsnow colores.\n"
+"Desactivado: utilizar colores predeterminados.\n"
+"Flags: -theme 1, -theme 0"
+
+#: src/ui.glade:5797
+msgid ""
+"On all\n"
+"workspaces"
+msgstr ""
+"En todos los\n"
+"espacios de trabajo"
+
+#: src/ui.glade:5802
+msgid ""
+"Use all workspaces to snow in.\n"
+"NOTE: this doesn't work properly in enlightenment.\n"
+"Flags: -allworkspaces 1, -allworkspaces 0"
+msgstr ""
+"Utilice todos los espacios de trabajo para nevar.\n"
+"NOTA: esto no funciona correctamente en la iluminación.\n"
+"Flags: -allworkspaces 1, -allworkspaces 0"
+
+#: src/ui.glade:5820
+msgid ""
+"Below\n"
+"windows"
+msgstr ""
+"Debajo \n"
+"de las ventanas"
+
+#: src/ui.glade:5825
+msgid ""
+"When activated, it will be snowing below your windows, else  it will be "
+"snowing upon you windows too.\n"
+"On some desktop environments, when snowing above your  windows you will not "
+"be able to click on any window.\n"
+"Therefore, you will be asked to click a button, to be sure that  things are "
+"OK.\n"
+"Flag: -above"
+msgstr ""
+"Cuando se activa, estará nevando debajo de sus ventanas, de lo contrario "
+"también estará nevando sobre sus ventanas.\n"
+"En algunos entornos de escritorio, cuando nieve por encima de las ventanas, "
+"no podrá hacer clic en ninguna ventana.\n"
+"Por lo tanto, se le pedirá que haga clic en un botón, para asegurarse de "
+"que  las cosas están bien.\n"
+"Flag: -above"
+
+#: src/ui.glade:5844
+msgid ""
+"Click to\n"
+"confirm"
+msgstr "Haga clic para confirmar"
+
+#: src/ui.glade:5849
+msgid "To make sure you can click."
+msgstr "Para asegurarte de que puedes hacer clic."
+
+#: src/ui.glade:5868
+msgid ""
+"If you have more than one monitor, choose where you want snow falling. "
+"Choose 'all monitors' if you want snow in all monitors.\n"
+"NOTE: when changing monitor, xsnow will restart.\n"
+"Flag: -screen"
+msgstr ""
+"Si tiene más de un monitor, elija dónde desea que caiga la nieve. Elija "
+"'todos los monitores' si desea nieve en todos los monitores.\n"
+"NOTA: al cambiar el monitor, xsnow se reiniciará.\n"
+"Flag: -screen"
+
+#: src/ui.glade:5875
+msgid "monitor 1"
+msgstr "MONITOR 1"
+
+#: src/ui.glade:5886
+msgid ""
+"Create\n"
+"outline"
+msgstr ""
+"Crear\n"
+"esquema"
+
+#: src/ui.glade:5891
+msgid ""
+"To draw an outline around the snow window.\n"
+"Flag: -outline 1/0"
+msgstr ""
+"Para dibujar un contorno alrededor de la ventana de nieve.\n"
+"Flag: -outline 1/0"
+
+#: src/ui.glade:5915
+msgid ""
+"  \n"
+"  "
+msgstr ""
+"  \n"
+"    \n"
+"  "
+
+#: src/ui.glade:5950
+msgid ""
+"Choose here the picture you want as background when  xscreensaver is "
+"active.\n"
+"Flag: -bg"
+msgstr ""
+"Elija aquí la imagen que desea como fondo cuando  xscreensaver está activo.\n"
+"Flag: -bg"
+
+#: src/ui.glade:5954
+msgid "Choose background"
+msgstr "Elija el fondo"
+
+#: src/ui.glade:5969
+msgid ""
+"Activate xscreensaver.\n"
+"Click and don't touch mouse and keyboard for a few seconds..."
+msgstr ""
+"Activar xscreensaver.\n"
+"Haga clic y no toque el ratón y el teclado durante unos segundos..."
+
+#: src/ui.glade:5983
+msgid ""
+"Settings for Xscreensaver. You can choose a background, and choose to use it "
+"or not.\n"
+"Make sure you add a line like\n"
+"xsnow -root\n"
+"after the line 'programs:' in the file ~/.xscreensaver and you run "
+"xscreensaver-demo to choose for xsnow.\n"
+"To activate xscreensaver on the command line:\n"
+"xscreensaver-command  -activate\n"
+"See also the man page:\n"
+"man xsnow"
+msgstr ""
+"Configuración para Xscreensaver. Puede elegir un fondo y elegir usarlo o "
+"no.\n"
+"Asegúrate de añadir una línea como\n"
+"xsnow -root\n"
+"después de la línea 'programas:' en el archivo ~/.xscreensaver y ejecuta "
+"xscreensaver-demo para elegir xsnow.\n"
+"Para activar xscreensaver en la línea de comandos:\n"
+"xscreensaver-command -activate\n"
+"Ver también la página de manual:\n"
+"man xsnow"
+
+#: src/ui.glade:5992
+msgid "Xscreensaver: "
+msgstr "Xscreensaver: "
+
+#: src/ui.glade:6012
+msgid "Black"
+msgstr "Negro"
+
+#: src/ui.glade:6016
+msgid ""
+"When activated, the background will be black.\n"
+"Flag: -bg  (this button will be automatically desactivated when -bg is given)"
+msgstr ""
+"Cuando se activa, el fondo será negro.\n"
+"Flag: -bg  (this button will be automatically desactivated when -bg is given)"
+
+#: src/ui.glade:6040
+msgid ""
+" \n"
+" \n"
+" \n"
+" \n"
+" \n"
+" \n"
+" \n"
+" \n"
+" \n"
+msgstr ""
+" \n"
+" \n"
+" \n"
+" \n"
+" \n"
+" \n"
+" \n"
+" \n"
+" \n"
+" \n"
+" \n"
+" \n"
+" \n"
+" \n"
+" \n"
+" \n"
+" \n"
+" \n"
+
+#: src/ui.glade:6515
+msgid "en"
+msgstr "es"
+
+#: src/ui.glade:6518
+msgid "it"
+msgstr "."
+
+#~ msgid "Force a gust of wind immediately.\n"
+#~ msgstr "Forzar una ráfaga de viento inmediatamente.\n"

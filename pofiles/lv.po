@@ -1,0 +1,1863 @@
+# # Sometimes the translations contain rubbish, please replace them.
+# # (abc_1000) \n
+# # (abc_1001) Xscreensaver
+# # (abc_1002) Xsnow
+# # (abc_1003) &#8195;
+# # (abc_1004) XsnoW
+# # (abc_1005) Rick Jansen
+# # (abc_1006) %l#x
+# # (abc_1007) xsnow
+# # (abc_1008) XSNOW
+# Language for xsnow
+# Copyright (C) 2023 Willem Vermin
+# Willem Vermin <wvermin@gmail.com>, 2023
+# This file is distributed under the same license as the xsnow package.
+#
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: xsnow 3.7.0~pre04\n"
+"Report-Msgid-Bugs-To: Willem Vermin wvermin@gmail.com\n"
+"POT-Creation-Date: 2023-02-17 13:40+0100\n"
+"PO-Revision-Date: 2023-02-17 13:40+0100\n"
+"Last-Translator: Willem Vermin wvermin@gmail.com\n"
+"Language-Team: None\n"
+"Language: lv\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/main.c:375
+#, c-format
+msgid "Available languages are: %s\n"
+msgstr "Pieejamās valodas ir: %s\n"
+
+#: src/main.c:378
+msgid "Warning: don't eat yellow snow!"
+msgstr "Brīdinājums: neēdiet dzelteno sniegu!"
+
+#: src/main.c:399
+#, c-format
+msgid "For optimal resuts, add to your %s:\n"
+msgstr "Lai iegūtu optimālus rezultātus, pievienojiet savam %s:\n"
+
+#: src/main.c:407
+#, c-format
+msgid "unknown\n"
+msgstr "nezināms \n"
+
+#: src/main.c:416
+#, c-format
+msgid "Detected Wayland desktop\n"
+msgstr "Atklāta Wayland darbvirsma \n"
+
+#: src/main.c:431
+#, c-format
+msgid "Xsnow needs gtk version >= %s, found version %s \n"
+msgstr "Xsnow nepieciešama gtk versija >= %s, atrasta versija %s \n"
+
+#: src/main.c:441
+msgid "Continuing with flag"
+msgstr "Turpinām ar karogu"
+
+#: src/main.c:477
+#, c-format
+msgid "%s: cannot connect to X server %s\n"
+msgstr "%s: nevar izveidot savienojumu ar X serveri %s\n"
+
+#: src/main.c:478
+msgid "(default)"
+msgstr "(noklusējums)"
+
+#: src/main.c:596
+msgid "restarting"
+msgstr "restartēšana"
+
+#: src/main.c:643 src/windows.c:567
+#, c-format
+msgid "Click on a window ...\n"
+msgstr "Noklikšķiniet uz loga...\n"
+
+#: src/main.c:677 src/windows.c:660
+#, c-format
+msgid "Detected desktop session: %s\n"
+msgstr "Konstatētā darbvirsmas sesija: %s\n"
+
+#: src/main.c:680 src/windows.c:663
+#, c-format
+msgid "Could not determine desktop session\n"
+msgstr "Nevarēja noteikt darbvirsmas sesiju \n"
+
+#: src/main.c:712
+#, c-format
+msgid "Trying to snow in root window\n"
+msgstr "Mēģina snigt saknes logā \n"
+
+#: src/main.c:756
+#, c-format
+msgid "Using transparent window\n"
+msgstr "Izmantojot caurspīdīgu logu \n"
+
+#: src/main.c:761
+#, c-format
+msgid "The transparent snow-window is probably not click-through, alas..\n"
+msgstr "Diemžēl caurspīdīgais sniega logs, visticamāk, nav caurstrāvots..\n"
+
+#: src/main.c:770
+#, c-format
+msgid "Cannot create transparent window\n"
+msgstr "Nevar izveidot caurspīdīgu logu \n"
+
+#: src/main.c:772 src/windows.c:670
+#, c-format
+msgid "NOTE: xsnow will probably run, but some glitches are to be expected.\n"
+msgstr ""
+"PIEZĪME. xsnow, iespējams, darbosies, taču ir sagaidāmi daži traucējumi. \n"
+
+#: src/main.c:779
+#, c-format
+msgid "LXDE session found, using window 'pcmanfm'.\n"
+msgstr "LXDE sesija atrasta, izmantojot logu 'pcmanfm'. \n"
+
+#: src/main.c:784
+#, c-format
+msgid "Using window 'Desktop'.\n"
+msgstr "Izmantojot logu 'Darbvirsma'. \n"
+
+#: src/main.c:788
+#, c-format
+msgid "Using root window\n"
+msgstr "Izmantojot saknes logu \n"
+
+#: src/main.c:832
+#, c-format
+msgid "Snowing in %#lx: %s %d+%d %dx%d\n"
+msgstr "Sniegs %#lx: %s %d+%d %dx%d\n"
+
+#: src/main.c:877
+#, c-format
+msgid "Using double buffer: %#lx. %dx%d\n"
+msgstr "Izmantojot dubulto buferi: %#lx. %dx%d\n"
+
+#: src/main.c:884
+#, c-format
+msgid "NOT using double buffering:"
+msgstr "NEIZMANTOJOT dubulto buferizāciju:"
+
+#: src/main.c:886
+#, c-format
+msgid " because double buffering is not available on this system\n"
+msgstr " jo šajā sistēmā nav pieejama dubultā buferizācija \n"
+
+#: src/main.c:888
+#, c-format
+msgid " on your request.\n"
+msgstr " pēc jūsu pieprasījuma. \n"
+
+#: src/main.c:889
+#, c-format
+msgid "NOTE: expect some flicker.\n"
+msgstr "PIEZĪME: sagaidiet nelielu mirgošanu. \n"
+
+#: src/main.c:1027
+msgid "Restart due to change of screen or language settings ...\n"
+msgstr "Restartējiet ekrāna vai valodas iestatījumu maiņas dēļ...\n"
+
+#: src/main.c:1041
+msgid "Restart due to change of display settings...\n"
+msgstr "Restartēt displeja iestatījumu maiņas dēļ...\n"
+
+#: src/main.c:1132
+msgid "Wayland (Expect some slugginess)"
+msgstr "Veilends (sagaidiet kādu gausumu)"
+
+#: src/main.c:1136
+msgid "Probably X11"
+msgstr "Droši vien X11"
+
+#: src/main.c:1138
+#, c-format
+msgid "%s. Snow window: %#lx"
+msgstr "%s. Sniega logs: %#lx"
+
+#: src/main.c:1190
+#, c-format
+msgid "More than %d errors, I quit!"
+msgstr "Vairāk nekā %d kļūdas, es pārtraucu!"
+
+#: src/main.c:1340
+#, c-format
+msgid "Window size changed, now snowing in in %#lx: %s %d+%d %dx%d\n"
+msgstr "Mainīts loga izmērs, tagad %#lx snieg: %s %d+%d %dx%d\n"
+
+#: src/main.c:1409
+#, c-format
+msgid "Halting because of flag %s\n"
+msgstr "Apturēšana karoga %s dēļ\n"
+
+#: src/selfrep.c:34
+#, c-format
+msgid "Not sending tar file to terminal.\n"
+msgstr "Tar fails netiek nosūtīts uz termināli. \n"
+
+#: src/selfrep.c:35
+#, c-format
+msgid "Try redirecting to a file (e.g: %s,\n"
+msgstr "Mēģiniet novirzīt uz failu (piemēram, %s,\n"
+
+#: src/selfrep.c:36
+#, c-format
+msgid "or use a %s"
+msgstr "vai izmantojiet %s"
+
+#: src/selfrep.c:42
+msgid "Problems encountered during production of the tar ball.\n"
+msgstr "Problēmas, kas radušās darvas lodes ražošanas laikā. \n"
+
+#: src/selfrep.c:47
+#, c-format
+msgid "Self replication is not compiled in.\n"
+msgstr "Pašreplicēšana nav kompilēta. \n"
+
+#: src/utils.c:244
+#, c-format
+msgid ""
+"\n"
+"Xsnow: Caught signal %d\n"
+msgstr ""
+"\n"
+"Xsnow: noķerts signāls %d\n"
+
+#: src/utils.c:247
+#, c-format
+msgid ""
+"\n"
+"Thanks for using xsnow\n"
+msgstr ""
+"\n"
+"Paldies, ka izmantojāt xsnow\n"
+
+#: src/windows.c:571
+#, c-format
+msgid "XWinInfo failed\n"
+msgstr "XWinInfo neizdevās \n"
+
+#: src/windows.c:596
+#, c-format
+msgid "Force snow on root: window: %#lx, depth: %d\n"
+msgstr "Piespiest sniegu saknei: logs: %#lx, dziļums: %d\n"
+
+#: src/windows.c:672
+#, c-format
+msgid ""
+"NOTE: you probably need to tweak 'Lift snow on windows' in the 'settings' "
+"panel.\n"
+msgstr ""
+"PIEZĪME: iespējams, iestatījumu panelī ir jāpielāgo opcija 'Pacelt sniegu uz "
+"logiem'.\n"
+
+#: src/windows.c:864
+#, c-format
+msgid "Setting background from %s\n"
+msgstr "Fona iestatīšana no %s\n"
+
+#: src/ui.c:1006
+#, c-format
+msgid "Range: %d\n"
+msgstr "Diapazons: %d\n"
+
+#: src/ui.c:1008
+#, c-format
+msgid "Mean distance: %3d\n"
+msgstr "Vidējais attālums: %3d\n"
+
+#: src/ui.c:1016
+#, c-format
+msgid "Desktop type: %s"
+msgstr "Darbvirsmas veids: %s"
+
+#: src/ui.c:1124 src/ui.glade:5874
+msgid "all monitors"
+msgstr "visi monitori"
+
+#: src/ui.c:1131
+#, c-format
+msgid "monitor %d"
+msgstr "uzraudzīt %d"
+
+#: src/ui.c:1149
+msgid "Available languages are: "
+msgstr "Pieejamās valodas ir: "
+
+#: src/ui.c:1152
+msgid "Use \"sys\" for your default language.\n"
+msgstr "Izmantojiet \"sys\" kā noklusējuma valodu. \n"
+
+#: src/ui.c:1153
+msgid "See also the man page."
+msgstr "Skatiet arī mana lapu."
+
+#: src/ui.glade:144
+msgid ""
+"\n"
+"Alas! This not an X11 session, xsnow will probably not run.\n"
+"\n"
+"If you want to try it anyway, set the environment variable XSNOW_FORCE_RUN, "
+"eg:\n"
+"\n"
+"    XSNOW_FORCE_RUN=1 xsnow\n"
+"\n"
+"Or, you could force an X11 session, for example by tweaking /etc/gdm3/daemon."
+"conf.\n"
+"\n"
+msgstr ""
+"\n"
+" Diemžēl! Šī nav X11 sesija, xsnow, visticamāk, nedarbosies.\n"
+"\n"
+"Ja tomēr vēlaties to izmēģināt, iestatiet vides mainīgo XSNOW_FORCE_RUN, "
+"piemēram:\n"
+"\n"
+" \n"
+"    XSNOW_FORCE_RUN=1 xsnow\n"
+"\n"
+" Vai arī varat piespiest X11 sesiju, piemēram, pielāgojot /etc/gdm3/daemon."
+"conf.\n"
+"\n"
+
+#: src/ui.glade:162
+msgid "Ok, things are as they are. "
+msgstr "Labi, lietas ir kā ir. "
+
+#: src/ui.glade:475
+msgid ""
+"If everything is ok, it is now snowing on your desktop, and birds are "
+"flying. You are encouraged to define your own preferences using the tabs "
+"above."
+msgstr ""
+"Ja viss ir kārtībā, tagad uz jūsu darbvirsmas snieg, un putni lido. "
+"Ieteicams definēt savas preferences, izmantojot iepriekš minētās cilnes."
+
+#: src/ui.glade:490
+msgid ""
+"Use the <b>settings</b> tab if xsnow is misbehaving.\n"
+"Use the <b>birds</b> tab if birds are misbehaving."
+msgstr ""
+"Izmantojiet cilni <b>Iestatījumi</b>, ja xsnow darbojas nepareizi. \n"
+" Ja putni nepareizi uzvedas, izmantojiet cilni <b>putni</b>."
+
+#: src/ui.glade:507
+msgid "In every tab you find the following rescue buttons:"
+msgstr "Katrā cilnē ir šādas glābšanas pogas:"
+
+#: src/ui.glade:527
+msgid "<b>Defaults </b>"
+msgstr "<b>Noklusējumi </b>"
+
+#: src/ui.glade:542
+msgid "Set default preferences for this tab."
+msgstr "Iestatiet šīs cilnes noklusējuma preferences."
+
+#: src/ui.glade:569
+msgid "<b>Vintage </b>"
+msgstr "<b>Vintage </b>"
+
+#: src/ui.glade:584
+msgid "Set vintage preferences for this tab."
+msgstr "Iestatiet šai cilnei antīkās preferences."
+
+#: src/ui.glade:611
+msgid "<b>All defaults </b>"
+msgstr "<b>Visi noklusējuma iestatījumi </b>"
+
+#: src/ui.glade:626
+msgid "Set default preferences for all (except settings) tabs."
+msgstr "Iestatiet noklusējuma preferences visām (izņemot iestatījumus) cilnēm."
+
+#: src/ui.glade:653
+msgid "<b>All vintage </b>"
+msgstr "<b>Viss vintage </b>"
+
+#: src/ui.glade:668
+msgid "Set vintage preferences for all (except settings) tabs."
+msgstr "Iestatiet vintage preferences visām (izņemot iestatījumus) cilnēm."
+
+#: src/ui.glade:688 src/ui.glade:699 src/ui.glade:838 src/ui.glade:1043
+#: src/ui.glade:2833 src/ui.glade:2882 src/ui.glade:4651
+msgid "  "
+msgstr "  "
+
+#: src/ui.glade:710
+msgid "   "
+msgstr "   "
+
+#: src/ui.glade:744
+msgid "Welcome at xsnow!"
+msgstr "Laipni lūdzam vietnē xsnow!"
+
+#: src/ui.glade:802
+msgid ""
+"Vintage preferences: the look and feel of the original xsnow, created in "
+"1993 by Rick Jansen."
+msgstr ""
+"Vintage preferences: oriģināla xsnow izskats un darbība, ko 1993. gadā "
+"izveidoja Rick Jansen."
+
+#: src/ui.glade:893 src/ui.glade:1556 src/ui.glade:2432 src/ui.glade:2996
+#: src/ui.glade:3467 src/ui.glade:4433 src/ui.glade:5700
+msgid "All defaults"
+msgstr "Visi noklusējuma iestatījumi"
+
+#: src/ui.glade:898 src/ui.glade:2436 src/ui.glade:3000 src/ui.glade:5704
+msgid ""
+"Apply defaults for all preferences (except settings).\n"
+"Flag: -defaults"
+msgstr ""
+"Lietojiet noklusējuma iestatījumus visām preferencēm (izņemot "
+"iestatījumus).\n"
+"Flag: -defaults"
+
+#: src/ui.glade:912
+msgid "Donate"
+msgstr "Ziedot"
+
+#: src/ui.glade:918
+msgid ""
+"Donate one euro or so to inspire the maintainer of xsnow, here is a paypal "
+"link. "
+msgstr ""
+"Ziedojiet apmēram vienu eiro, lai iedvesmotu xsnow uzturētāju, šeit ir "
+"paypal saite. "
+
+#: src/ui.glade:928 src/ui.glade:1575 src/ui.glade:2451 src/ui.glade:3015
+#: src/ui.glade:3485 src/ui.glade:4452 src/ui.glade:5718
+msgid "All vintage"
+msgstr "Viss vintage"
+
+#: src/ui.glade:933 src/ui.glade:1579 src/ui.glade:2455 src/ui.glade:3019
+#: src/ui.glade:4456 src/ui.glade:5722
+msgid ""
+"Use vintage values for all preferences (except settings).\n"
+"Flag: -vintage"
+msgstr ""
+"Izmantojiet vintage vērtības visām preferencēm (izņemot iestatījumus).\n"
+"Flag: -vintage"
+
+#: src/ui.glade:947 src/ui.glade:1527 src/ui.glade:2403 src/ui.glade:2967
+#: src/ui.glade:3515 src/ui.glade:4509 src/ui.glade:5597
+msgid "Hide menu"
+msgstr "Slēpt izvēlni"
+
+#: src/ui.glade:952 src/ui.glade:1531 src/ui.glade:2407 src/ui.glade:2971
+#: src/ui.glade:3519 src/ui.glade:4513 src/ui.glade:5601
+msgid ""
+"Leave menu.\n"
+"Flag: -nomenu"
+msgstr ""
+"Iziet no izvēlnes. \n"
+"Flag: -nomenu"
+
+#: src/ui.glade:966
+msgid "Contact"
+msgstr "Sazināties"
+
+#: src/ui.glade:971
+msgid "Please report any comments to the maintainer of xsnow."
+msgstr "Lūdzu, ziņojiet par komentāriem xsnow uzturētājam."
+
+#: src/ui.glade:981 src/ui.glade:1606 src/ui.glade:2482 src/ui.glade:3046
+#: src/ui.glade:3543 src/ui.glade:4482 src/ui.glade:5625
+msgid "Quit xsnow"
+msgstr "Iziet xsnow"
+
+#: src/ui.glade:986 src/ui.glade:1610 src/ui.glade:2486 src/ui.glade:3050
+#: src/ui.glade:3547 src/ui.glade:4486 src/ui.glade:5629
+msgid "Quit xsnow."
+msgstr "Iziet xsnow."
+
+#: src/ui.glade:1026
+msgid ""
+"If the system is too busy, all panels get this color, in which case you "
+"could  adapt some settings in \"snow\", \"birds\", \"settings\", or "
+"\"celestials\"."
+msgstr ""
+"Ja sistēma ir pārāk noslogota, visi paneļi iegūst šo krāsu, un tādā gadījumā "
+"varat pielāgot dažus iestatījumus sadaļās \"sniegs\", \"putni\", "
+"\"iestatījumi\" vai \"debesis\"."
+
+#: src/ui.glade:1220
+msgid "Welcome"
+msgstr "Laipni lūdzam"
+
+#: src/ui.glade:1237
+msgid "Blow off:"
+msgstr "Nopūst:"
+
+#: src/ui.glade:1250
+msgid "On windows:"
+msgstr "Uz logiem:"
+
+#: src/ui.glade:1263
+msgid "On bottom:"
+msgstr "Apakšā:"
+
+#: src/ui.glade:1276
+msgid "On scenery:"
+msgstr "Par ainavām:"
+
+#: src/ui.glade:1286
+msgid "Show snow"
+msgstr "Rādīt sniegu"
+
+#: src/ui.glade:1290
+msgid ""
+"If set, show snowflakes.\n"
+"Flags: -snow, -nosnow"
+msgstr ""
+"Ja iestatīts, rādīt sniegpārslas. \n"
+"Flags: -snow, -nosnow"
+
+#: src/ui.glade:1302 src/ui.glade:1318 src/ui.glade:1334 src/ui.glade:1350
+#: src/ui.glade:3708 src/ui.glade:3801 src/ui.glade:3904 src/ui.glade:3974
+#: src/ui.glade:4010 src/ui.glade:5965
+msgid "Show"
+msgstr "Rādīt"
+
+#: src/ui.glade:1306
+msgid ""
+"If set, show snow blowing away.\n"
+"Flags: -blowsnow, -noblowsnow"
+msgstr ""
+"Ja iestatīts, rādiet, kā pūš sniegs. \n"
+"Flags: -blowsnow, -noblowsnow"
+
+#: src/ui.glade:1322
+msgid ""
+"If set, show fallen snow on windows.\n"
+"Flags: -keepsnowonwindows, -nokeepsnowonwindows"
+msgstr ""
+"Ja iestatīts, uz logiem rādīt uzkritušu sniegu.\n"
+"Flags: -keepsnowonwindows, -nokeepsnowonwindows"
+
+#: src/ui.glade:1338
+msgid ""
+"If set, show fallen snow on bottom of the desktop.\n"
+"Flags: -keepsnowonscreen, -nokeepsnowonscreen"
+msgstr ""
+"Ja tas ir iestatīts, darbvirsmas apakšdaļā rādiet nokritušu sniegu. \n"
+"Flags: -keepsnowonscreen, -nokeepsnowonscreen"
+
+#: src/ui.glade:1354
+msgid ""
+"If set, snow will collect on the trees.\n"
+"Flags: -keepsnowontrees, -nokeepsnowontrees"
+msgstr ""
+"Ja iestatīts, uz kokiem sakrāsies sniegs. \n"
+"Flags: -keepsnowontrees, -nokeepsnowontrees"
+
+#: src/ui.glade:1368
+msgid ""
+"The higher this setting, the more snow will be generated  because of Santa "
+"ploughing, wind or disappearing windows. \n"
+"Flag: -blowofffactor"
+msgstr ""
+"Jo augstāks šis iestatījums, jo vairāk sniega radīsies Ziemassvētku vecīša "
+"aršanas, vēja vai pazūdošu logu dēļ. \n"
+"Flag: -blowofffactor"
+
+#: src/ui.glade:1387
+msgid ""
+"The higher this setting, the more snow will collect on the windows. \n"
+"Note: in Wayland, there is no snow on the windows. \n"
+"Flag: -wsnowdepth"
+msgstr ""
+"Jo augstāks šis iestatījums, jo vairāk sniega sakrāsies uz logiem. \n"
+"Piezīme: Veilendā uz logiem nav sniega. \n"
+"Flag: -wsnowdepth"
+
+#: src/ui.glade:1407
+msgid ""
+"The higher this setting, the more snow will collect on the  bottom of the "
+"desktop.\n"
+"Flag: -ssnowdepth"
+msgstr ""
+"Jo augstāks šis iestatījums, jo vairāk sniega sakrāsies darbvirsmas "
+"apakšdaļā.\n"
+"Flag: -ssnowdepth"
+
+#: src/ui.glade:1426
+msgid ""
+"The higher this setting, the more snow will collect on the trees.\n"
+"Flag: -maxontrees"
+msgstr ""
+"Jo augstāks šis iestatījums, jo vairāk sniega sakrāsies uz kokiem.\n"
+"Flag: -maxontrees"
+
+#: src/ui.glade:1447
+msgid "Choose your favorite snow"
+msgstr "Izvēlieties savu iecienītāko sniegu"
+
+#: src/ui.glade:1464 src/ui.glade:1632 src/ui.glade:2526 src/ui.glade:2822
+#: src/ui.glade:4851 src/ui.glade:5928 src/ui.glade:5939 src/ui.glade:6003
+#: src/ui.glade:6029
+msgid " "
+msgstr " "
+
+#: src/ui.glade:1478 src/ui.glade:2355 src/ui.glade:2919 src/ui.glade:3421
+#: src/ui.glade:4537 src/ui.glade:5654
+msgid "Defaults"
+msgstr "Noklusējumi"
+
+#: src/ui.glade:1482
+msgid "Apply default values for the preferences in this tab.\n"
+msgstr "Lietojiet šīs cilnes preferencēm noklusējuma vērtības. \n"
+
+#: src/ui.glade:1497 src/ui.glade:2373 src/ui.glade:2937 src/ui.glade:3438
+#: src/ui.glade:4555 src/ui.glade:5671
+msgid "Vintage"
+msgstr "Vintage"
+
+#: src/ui.glade:1501 src/ui.glade:2377 src/ui.glade:2941 src/ui.glade:3442
+#: src/ui.glade:4559 src/ui.glade:5675
+msgid "Apply vintage values for the preferences in this tab."
+msgstr "Lietojiet vintage vērtības šīs cilnes preferencēm."
+
+#: src/ui.glade:1560 src/ui.glade:4437
+msgid ""
+"Apply defaults for all preferences (except settings).\n"
+"Flags: -defaults"
+msgstr ""
+"Lietojiet noklusējuma iestatījumus visām preferencēm (izņemot "
+"iestatījumus).\n"
+"Flags: -defaults"
+
+#: src/ui.glade:1646 src/ui.glade:3858
+msgid "Size:"
+msgstr "Izmērs:"
+
+#: src/ui.glade:1658
+msgid ""
+"Size of snowflakes, works only for non-vintage snow flakes.\n"
+"Flag: -snowsize"
+msgstr ""
+"Sniegpārslu izmērs, darbojas tikai ne-vintage sniega pārslām. \n"
+"Flag: -snowsize"
+
+#: src/ui.glade:1678 src/ui.glade:2319 src/ui.glade:3824 src/ui.glade:4108
+#: src/ui.glade:4966
+msgid "Speed:"
+msgstr "Ātrums:"
+
+#: src/ui.glade:1692
+msgid "Max # snowflakes:"
+msgstr "Maksimālais sniegpārslu skaits:"
+
+#: src/ui.glade:1705
+msgid ""
+"Maximum amount of snowflakes.\n"
+"Flag: -flakecountmax"
+msgstr ""
+"Maksimālais sniegpārslu skaits. \n"
+"Flag: -flakecountmax"
+
+#: src/ui.glade:1730
+msgid "# Snowflakes:"
+msgstr "# Sniegpārslas:"
+
+#: src/ui.glade:1746 src/ui.glade:5137 src/ui.glade:5153
+msgid "label"
+msgstr "etiķete"
+
+#: src/ui.glade:1755
+msgid "Show fluff"
+msgstr "Parādiet pūkas"
+
+#: src/ui.glade:1759
+msgid ""
+"If set, try to show fluff on fallen snow and trees if possible.\n"
+"Flags: -fluffy, -nofluffy"
+msgstr ""
+"Ja tas ir iestatīts, mēģiniet parādīt pūkas uz krituša sniega un kokiem, ja "
+"iespējams.\n"
+"Flags: -fluffy, -nofluffy"
+
+#: src/ui.glade:1773 src/ui.glade:1785 src/ui.glade:2537 src/ui.glade:3761
+#: src/ui.glade:3773 src/ui.glade:5103 src/ui.glade:5115
+msgid "&#8195; &#8195; &#8195; &#8195; &#8195; &#8195; &#8195;"
+msgstr "&#8195; &#8195; &#8195; &#8195; &#8195; &#8195; &#8195;"
+
+#: src/ui.glade:1797
+msgid ""
+"Speed of the snowflakes.\n"
+"Flag: -snowspeedfactor"
+msgstr ""
+"Sniegpārslu ātrums. \n"
+"Flag: -snowspeedfactor"
+
+#: src/ui.glade:1818
+msgid "Intensity:"
+msgstr "Intensitāte:"
+
+#: src/ui.glade:1830
+msgid ""
+"The higher, the more snowflakes.\n"
+"Flag: -snowflakes"
+msgstr ""
+"Jo augstāk, jo vairāk sniegpārslu.\n"
+"Flag: -snowflakes"
+
+#: src/ui.glade:1854
+msgid "Color:"
+msgstr "Krāsa:"
+
+#: src/ui.glade:1867
+msgid ""
+"The color of the snow.\n"
+"Flag: -sc"
+msgstr ""
+"Sniega krāsa. \n"
+"Flag: -sc"
+
+#: src/ui.glade:1936
+msgid "Snow"
+msgstr "Sniegs"
+
+#: src/ui.glade:1954
+msgid ""
+"Tiny Santa with three reindeers.\n"
+"Flags: -santa 0 -norudolph"
+msgstr ""
+"Mazais Ziemassvētku vecītis ar trim ziemeļbriežiem. \n"
+"Flags: -santa 0 -norudolph"
+
+#: src/ui.glade:1983
+msgid ""
+"Small Santa with three reindeers.\n"
+"Flags: -santa 1 -norudolph"
+msgstr ""
+"Mazs Ziemassvētku vecītis ar trim ziemeļbriežiem. \n"
+"Flags: -santa 1 -norudolph"
+
+#: src/ui.glade:2012
+msgid ""
+"Santa with three reindeers.\n"
+"Flags: -santa 2 -norudolph"
+msgstr ""
+"Ziemassvētku vecītis ar trim ziemeļbriežiem. \n"
+"Flags: -santa 2 -norudolph"
+
+#: src/ui.glade:2041
+msgid ""
+"Santa with Dasher, Dancer, Prancer, Vixen, Comet, Cupid, Dunder and Blixem.\n"
+"Flags: -santa 3 -norudolph"
+msgstr ""
+"Ziemassvētku vecītis ar Dašeru, dejotāju, dēli, viksnu, komētu, Cupid, "
+"Dunder un Bliksemu. \n"
+"Flags: -santa 3 -norudolph"
+
+#: src/ui.glade:2070
+msgid ""
+"Santa using the train with two reindeers.\n"
+"Flags: -santa 4 -norudolph"
+msgstr ""
+"Ziemassvētku vecītis izmanto vilcienu ar diviem ziemeļbriežiem. \n"
+"Flags: -santa 4 -norudolph"
+
+#: src/ui.glade:2099
+msgid ""
+"Santa using the train with one reindeer and Rudolph.\n"
+"Flags: -santa 4 -showrudolph"
+msgstr ""
+"Ziemassvētku vecītis izmanto vilcienu ar vienu ziemeļbriežu un Rūdolfu.\n"
+"Flags: -santa 4 -showrudolph"
+
+#: src/ui.glade:2127
+msgid ""
+"Tiny Santa with two reindeers and Rudolph.\n"
+"Flags: -santa 0 -showrudolph"
+msgstr ""
+"Mazais Ziemassvētku vecītis ar diviem ziemeļbriežiem un Rūdolfu. \n"
+"Flags: -santa 0 -showrudolph"
+
+#: src/ui.glade:2157
+msgid ""
+"Small Santa with two reindeers and Rudolph.\n"
+"Flags: -santa 1 -showrudolph"
+msgstr ""
+"Mazais Ziemassvētku vecītis ar diviem ziemeļbriežiem un Rūdolfu.\n"
+"Flags: -santa 1 -showrudolph"
+
+#: src/ui.glade:2185
+msgid ""
+"Santa with two reindeers and Rudolph.\n"
+"Flags: -santa 2 -showrudolph"
+msgstr ""
+"Ziemassvētku vecītis ar diviem ziemeļbriežiem un Rūdolfu. \n"
+"Flags: -santa 2 -showrudolph"
+
+#: src/ui.glade:2213
+msgid ""
+"Santa with Dasher, Dancer, Prancer, Vixen, Comet, Cupid,  Dunder,  Blixem "
+"and  Rudolph.\n"
+"Flags: -santa 3 -showrudolph"
+msgstr ""
+"Ziemassvētku vecītis ar Dašeru, dejotāju, dēli, viksnu, komētu, Kupidonu, "
+"Danderu, Bliksemu un Rūdolfu. \n"
+"Flags: -santa 3 -showrudolph"
+
+#: src/ui.glade:2244
+msgid "Without Rudolph"
+msgstr "Bez Rūdolfa"
+
+#: src/ui.glade:2259
+msgid "With Rudolph"
+msgstr "Ar Rūdolfu"
+
+#: src/ui.glade:2270
+msgid "Choose your Santa"
+msgstr "Izvēlieties savu Ziemassvētku vecīti"
+
+#: src/ui.glade:2288
+msgid "Choose your favorite Santa"
+msgstr "Izvēlieties savu iecienītāko Ziemassvētku vecīti"
+
+#: src/ui.glade:2304 src/ui.glade:3407
+msgid "    "
+msgstr "    "
+
+#: src/ui.glade:2331
+msgid ""
+"Santa's speed.\n"
+"Flag: -santaspeedfactor"
+msgstr ""
+"Ziemassvētku vecīša ātrums. \n"
+"Flag: -santaspeedfactor"
+
+#: src/ui.glade:2359 src/ui.glade:2923 src/ui.glade:3425 src/ui.glade:4541
+#: src/ui.glade:5658
+msgid "Apply default values for the preferences in this tab."
+msgstr "Lietojiet šīs cilnes preferencēm noklusējuma vērtības."
+
+#: src/ui.glade:2505
+msgid "Show Santa"
+msgstr "Parādiet Ziemassvētku vecīti"
+
+#: src/ui.glade:2509
+msgid ""
+"To show or not to show Santa.\n"
+"Flags: -showsanta, -nosanta"
+msgstr ""
+"Rādīt vai nerādīt Ziemassvētku vecīti. \n"
+"Flags: -showsanta, -nosanta"
+
+#: src/ui.glade:2552 src/ui.glade:3192
+msgid "Scale:"
+msgstr "Mērogs:"
+
+#: src/ui.glade:2564
+msgid ""
+"Scale of Santa.\n"
+"Flags: -santascale <n>"
+msgstr "Ziemassvētku vecīša mērogs. \n"
+"Flags: -santascale <n>"
+
+#: src/ui.glade:2609
+msgid "Santa"
+msgstr "Ziemassvētku vecītis"
+
+#: src/ui.glade:2624
+msgid "Show  scenery"
+msgstr "Parādīt ainavu"
+
+#: src/ui.glade:2628
+msgid ""
+"To show or not to show scenery.\n"
+"Flags: -showtrees, -notrees"
+msgstr ""
+"Rādīt vai nerādīt ainavu. \n"
+"Flags: -showtrees, -notrees"
+
+#: src/ui.glade:2645
+msgid ""
+"Vintage tree, you can set the color.\n"
+"Flag: -treetype 0"
+msgstr ""
+"Vintage koks, varat iestatīt krāsu. \n"
+"Flag: -treetype 0"
+
+#: src/ui.glade:2668
+msgid ""
+"Woody tree.\n"
+"Flags: -treetype 1 or: -treetype all"
+msgstr ""
+"Kokains koks. \n"
+"Flags: -treetype 1 or: -treetype all"
+
+#: src/ui.glade:2691
+msgid ""
+"Leavy tree.\n"
+"Flags: -treetype 2 or: -treetype all"
+msgstr ""
+"Lapu koks. \n"
+"Flags: -treetype 2 or: -treetype all"
+
+#: src/ui.glade:2714
+msgid ""
+"Small house.\n"
+"Flags: -treetype 3 or: -treetype all"
+msgstr ""
+"Maza māja. \n"
+"Flags: -treetype 3 or: -treetype all"
+
+#: src/ui.glade:2737
+msgid ""
+"Reindeer.\n"
+"Flags: -treetype 4 or: -treetype all"
+msgstr ""
+"Ziemeļbrieži. \n"
+"Flags: -treetype 4 or: -treetype all"
+
+#: src/ui.glade:2760
+msgid ""
+"Moose.\n"
+"Flags: -treetype 5 or: -treetype all"
+msgstr ""
+"Alnis. \n"
+"Flags: -treetype 5 or: -treetype all"
+
+#: src/ui.glade:2783
+msgid ""
+"Snowy tree.\n"
+"Flags: -treetype 6 or: -treetype all"
+msgstr ""
+"Sniegots koks. \n"
+"Flags: -treetype 6 or: -treetype all"
+
+#: src/ui.glade:2806
+msgid ""
+"Set color of vintage tree.\n"
+"Flag: -tc"
+msgstr ""
+"Iestatiet vintage koka krāsu. \n"
+"Flag: -tc"
+
+#: src/ui.glade:2847
+msgid "Compose your favorite scenery"
+msgstr "Izveidojiet savu iecienītāko ainavu"
+
+#: src/ui.glade:2863
+msgid "Try and click any image!"
+msgstr "Izmēģiniet un noklikšķiniet uz jebkura attēla!"
+
+#: src/ui.glade:2894
+msgid ""
+"Polar bear.\n"
+"Flags: -treetype 7 or: -treetype all"
+msgstr ""
+"Polārlācis. \n"
+"Flags: -treetype 7 or: -treetype all"
+
+#: src/ui.glade:3104
+msgid "# Items:"
+msgstr "# preces:"
+
+#: src/ui.glade:3119
+msgid ""
+"Desired number of scenery items.\n"
+"Flag: -trees"
+msgstr ""
+"Vēlamais dekorācijas vienumu skaits. \n"
+"Flag: -trees"
+
+#: src/ui.glade:3142
+msgid "% Window fill:"
+msgstr "Logu aizpildījuma %:"
+
+#: src/ui.glade:3153
+msgid ""
+"Bottom percentage of screen available for scenery.\n"
+"Flag: -treefill"
+msgstr ""
+"Ekrāna apakšējā procentuālā daļa ir pieejama ainavām. \n"
+"Flag: -treefill"
+
+#: src/ui.glade:3172
+msgid "Allow overlap"
+msgstr "Atļaut pārklāšanos"
+
+#: src/ui.glade:3176
+msgid ""
+"To allow overlap or not when placing scenery.\n"
+"Flags: -treeoverlap, -notreeoverlap"
+msgstr ""
+"Lai atļautu pārklāšanos, izvietojot dekorācijas.\n"
+"Flags: -treeoverlap, -notreeoverlap"
+
+#: src/ui.glade:3203
+msgid ""
+"Scale of scenery.\n"
+"Flag: sceneryscale <n>"
+msgstr "Ainavu mērogs. \n"
+"Flag: sceneryscale <n>"
+
+#: src/ui.glade:3372
+msgid "Scenery"
+msgstr "Dekorācijas"
+
+#: src/ui.glade:3391
+msgid "Compose here your favorite celestial conditions"
+msgstr "Izveidojiet šeit savus iecienītākos debess apstākļus"
+
+#: src/ui.glade:3471
+msgid ""
+"Apply default values for all preferences (except settings).\n"
+"Flag: -defaults"
+msgstr ""
+"Lietojiet noklusējuma vērtības visām preferencēm (izņemot iestatījumus).\n"
+"Flag: -defaults"
+
+#: src/ui.glade:3489
+msgid ""
+"Apply vintage values for all preferences (except settings).\n"
+"Flag: -vintage"
+msgstr ""
+"Lietojiet vintage vērtības visām preferencēm (izņemot iestatījumus).\n"
+"Flag: -vintage"
+
+#: src/ui.glade:3575
+msgid "Wind"
+msgstr "Vējš"
+
+#: src/ui.glade:3589
+msgid "Windy"
+msgstr "Vējains"
+
+#: src/ui.glade:3594
+msgid ""
+"If set, there will be wind.\n"
+"Flags: -wind, -nowind"
+msgstr ""
+"Ja iestatīts, būs vējš. \n"
+"Flags: -wind, -nowind"
+
+#: src/ui.glade:3611
+msgid "Whirl:"
+msgstr "Virpulis:"
+
+#: src/ui.glade:3623
+msgid ""
+"The higher this setting, the more the wind will whirl.\n"
+"Flag: -whirlfactor"
+msgstr ""
+"Jo augstāks šis iestatījums, jo vairāk vējš griezīsies.\n"
+"Flag: -whirlfactor"
+
+#: src/ui.glade:3645
+msgid "Timer:"
+msgstr "Taimeris:"
+
+#: src/ui.glade:3658
+msgid ""
+"This setting determines how many seconds pass between  two  gusts of wind.\n"
+"Flag: -windtimer"
+msgstr ""
+"Šis iestatījums nosaka, cik sekundes paiet starp divām vēja brāzmām.\n"
+"Flag: -windtimer"
+
+#: src/ui.glade:3674
+msgid "Now!"
+msgstr "Tagad!"
+
+#: src/ui.glade:3678
+msgid "Force a gust of wind immediately."
+msgstr "Nekavējoties piespiediet vēja brāzmu."
+
+#: src/ui.glade:3695
+msgid "Stars"
+msgstr "Zvaigznes"
+
+#: src/ui.glade:3713
+msgid ""
+"To show or not show stars.\n"
+"Flag: -stars  (0 means: no stars)"
+msgstr ""
+"Rādīt vai nerādīt zvaigznes. \n"
+"Flag: -stars  (0 means: no stars)"
+
+#: src/ui.glade:3730
+msgid "Number:"
+msgstr "Numurs:"
+
+#: src/ui.glade:3742
+msgid ""
+"Number of twinkling stars.\n"
+"Flag: -stars"
+msgstr ""
+"Mirgojošo zvaigžņu skaits. \n"
+"Flag: -stars"
+
+#: src/ui.glade:3788
+msgid "Moon"
+msgstr "Mēness"
+
+#: src/ui.glade:3806
+msgid ""
+"To show or not show moon.\n"
+"Flags: -moon 1, -moon 0"
+msgstr ""
+"Rādīt vai nerādīt mēnesi. \n"
+"Flags: -moon 1, -moon 0"
+
+#: src/ui.glade:3836
+msgid ""
+"Speed of moon in pixels/minute.\n"
+"Flag: -moonspeed"
+msgstr ""
+"Mēness ātrums pikseļos minūtē. \n"
+"Flag: -moonspeed"
+
+#: src/ui.glade:3870
+msgid ""
+"Relative size of the moon.\n"
+"Flag: -moonsize"
+msgstr ""
+"Mēness relatīvais izmērs. \n"
+"Flag: -moonsize"
+
+#: src/ui.glade:3891
+msgid "Halo"
+msgstr "Halo"
+
+#: src/ui.glade:3909
+msgid ""
+"To show or not to show halo around moon.\n"
+"Flags: -halo 1, -halo 0"
+msgstr ""
+"Rādīt vai nerādīt oreolu ap Mēnesi. \n"
+"Flags: -halo 1, -halo 0"
+
+#: src/ui.glade:3927 src/ui.glade:4142
+msgid "Bright:"
+msgstr "Spilgts:"
+
+#: src/ui.glade:3939
+msgid ""
+"Brightness of moon's halo.\n"
+"Flag: -halobrightness"
+msgstr ""
+"Mēness oreola spilgtums. \n"
+"Flag: -halobrightness"
+
+#: src/ui.glade:3961
+msgid "Meteors"
+msgstr "Meteori"
+
+#: src/ui.glade:3979
+msgid ""
+"To show or not to show meteors.\n"
+"Flags: -meteors, -nometeors"
+msgstr ""
+"Rādīt vai nerādīt meteorus.\n"
+"Flags: -meteors, -nometeors"
+
+#: src/ui.glade:3997
+msgid "Aurora"
+msgstr "Aurora"
+
+#: src/ui.glade:4015
+msgid ""
+"To show or not show aurora.\n"
+"Note: the aurora is best viewed using a dark background.\n"
+"Flags: -aurora 1, -aurora 0"
+msgstr ""
+"Rādīt vai nerādīt polārblāzmu.\n"
+"Piezīme: polārblāzmu vislabāk var apskatīt, izmantojot tumšu fonu.\n"
+"Flags: -aurora 1, -aurora 0"
+
+#: src/ui.glade:4034
+msgid "Width:"
+msgstr "Platums:"
+
+#: src/ui.glade:4046
+msgid ""
+"Width of aurora in percentage of screen width.\n"
+"Flag: -aurorawidth"
+msgstr ""
+"Polārblāzmas platums procentos no ekrāna platuma. \n"
+"Flag: -aurorawidth"
+
+#: src/ui.glade:4071
+msgid "Height:"
+msgstr "Augstums:"
+
+#: src/ui.glade:4083
+msgid ""
+"Vertical size of aurora.\n"
+"Flag: -auroraheight"
+msgstr ""
+"Polārblāzmas vertikālais izmērs. \n"
+"Flag: -auroraheight"
+
+#: src/ui.glade:4120
+msgid ""
+"Animation speed of aurora: real: 10, for a more dramatic effect choose: 100\n"
+"Flag: -auroraspeed"
+msgstr ""
+"Auroras animācijas ātrums: reāls: 10, dramatiskākam efektam izvēlieties: "
+"100 \n"
+"Flag: -auroraspeed"
+
+#: src/ui.glade:4154
+msgid ""
+"Brightness of aurora.\n"
+"Flags: -aurorabrightness"
+msgstr ""
+"Polārblāzmas spilgtums. \n"
+"Flags: -aurorabrightness"
+
+#: src/ui.glade:4171
+msgid "Left"
+msgstr "Pa kreisi"
+
+#: src/ui.glade:4175
+msgid ""
+"Place aurora left on the screen.\n"
+"Flag: -auroraleft"
+msgstr ""
+"Novietojiet auroru pa kreisi uz ekrāna. \n"
+"Flag: -auroraleft"
+
+#: src/ui.glade:4188
+msgid "Middle"
+msgstr "Vidus"
+
+#: src/ui.glade:4192
+msgid ""
+"Place aurora in the middle of the screen.\n"
+"Flag: -auroramiddle"
+msgstr ""
+"Novietojiet polārblāzmu ekrāna vidū. \n"
+"Flag: -auroramiddle"
+
+#: src/ui.glade:4206
+msgid "Right"
+msgstr "Taisnība"
+
+#: src/ui.glade:4210
+msgid ""
+"Place aurora in the right of the screen.\n"
+"Flag: -auroraright"
+msgstr ""
+"Novietojiet polārblāzmu ekrāna labajā pusē. \n"
+"Flag: -auroraright"
+
+#: src/ui.glade:4229
+msgid "Frequency:"
+msgstr "Biežums:"
+
+#: src/ui.glade:4241
+msgid ""
+"Frequency of meteors to appear.\n"
+"Flags: -meteorfrequency"
+msgstr ""
+"Meteoru parādīšanās biežums. \n"
+"Flags: -meteorfrequency"
+
+#: src/ui.glade:4263
+msgid "Base:"
+msgstr "Bāze:"
+
+#: src/ui.glade:4275
+msgid ""
+"Baseline height of aurora, in percentage of screen height.\n"
+"Flag: -aurorabase"
+msgstr ""
+"Polārblāzmas bāzes augstums, procentos no ekrāna augstuma. \n"
+"Flag: -aurorabase"
+
+#: src/ui.glade:4292
+msgid "Color"
+msgstr "Krāsa"
+
+#: src/ui.glade:4296
+msgid ""
+"Choose between yellow-ish and white-ish moon.\n"
+"Flag: -mooncolor [0,1]"
+msgstr ""
+"Izvēlieties dzeltenīgu vai baltu mēness. \n"
+"Flag: -mooncolor [0,1]"
+
+#: src/ui.glade:4396
+msgid "Celestials"
+msgstr "Debesu dzīvnieki"
+
+#: src/ui.glade:4416
+msgid "Birds settings"
+msgstr "Putnu iestatījumi"
+
+#: src/ui.glade:4580
+msgid "Show birds"
+msgstr "Parādiet putnus"
+
+#: src/ui.glade:4584
+msgid ""
+"If set: show birds.\n"
+"Flags: -showbirds 1, -showbirds 0"
+msgstr ""
+"Ja iestatīts: rādīt putnus. \n"
+"Flags: -showbirds 1, -showbirds 0"
+
+#: src/ui.glade:4597
+msgid "Birds only"
+msgstr "Tikai putni"
+
+#: src/ui.glade:4601
+msgid ""
+"If set: show no Santa, snow or scenery.\n"
+"Flags: -birdsonly 0, -birdsony 1"
+msgstr ""
+"Ja iestatīts: nerādiet Ziemassvētku vecīti, sniegu vai ainavu. \n"
+"Flags: -birdsonly 0, -birdsony 1"
+
+#: src/ui.glade:4618
+msgid "Preferred distance:"
+msgstr "Vēlamais attālums:"
+
+#: src/ui.glade:4632
+msgid ""
+"Preferred distance from other birds.\n"
+"Flag: -prefdistance"
+msgstr ""
+"Vēlamais attālums no citiem putniem. \n"
+"Flag: -prefdistance"
+
+#: src/ui.glade:4660
+msgid "Restart"
+msgstr "Restartēt"
+
+#: src/ui.glade:4664
+msgid "Restart birds."
+msgstr "Restartējiet putnus."
+
+#: src/ui.glade:4681
+msgid "Viewing distance:"
+msgstr "Skatīšanās attālums:"
+
+#: src/ui.glade:4694
+msgid ""
+"Viewing distance.\n"
+"NOTE: Santa has no knowledge of viewing distance, so when birds are "
+"following Santa, the relative positions of Santa and birds will be "
+"temporarely out of sync when you change the viewing distance. This is only "
+"noticeable when the birds are following Santa.\n"
+"Flag: -viewingdistance"
+msgstr ""
+"Skatīšanās attālums.\n"
+"PIEZĪME. Ziemassvētku vecītis nezina par skatīšanās attālumu, tāpēc, kad "
+"putni seko Ziemassvētku vecītim, Ziemassvētku vecīša un putnu relatīvās "
+"pozīcijas īslaicīgi nebūs sinhronizētas, mainot skatīšanās attālumu. Tas ir "
+"pamanāms tikai tad, kad putni seko Ziemassvētku vecītim.\n"
+"Flag: -viewingdistance"
+
+#: src/ui.glade:4715
+msgid "Focus to attraction point:"
+msgstr "Koncentrējieties uz pievilcības punktu:"
+
+#: src/ui.glade:4729
+msgid ""
+"Tendency to concentrate on the attraction point.\n"
+"Flag: -focuscentre"
+msgstr ""
+"Tieksme koncentrēties uz piesaistes punktu. \n"
+"Flag: -focuscentre"
+
+#: src/ui.glade:4747
+msgid ""
+"Desired number of birds. If zero, no birds are shown.\n"
+"Flag: -nbirds"
+msgstr ""
+"Vēlamais putnu skaits. Ja ir nulle, netiek rādīts neviens putns. \n"
+"Flag: -nbirds"
+
+#: src/ui.glade:4770
+msgid "# Birds:"
+msgstr "# Putni:"
+
+#: src/ui.glade:4784
+msgid ""
+"Number of nearest neighbours the birds should look at.\n"
+"Flag: -neighbours"
+msgstr ""
+"Tuvāko kaimiņu skaits, uz kuriem putniem jāskatās. \n"
+"Flag: -neighbours"
+
+#: src/ui.glade:4804
+msgid "Neighbours:"
+msgstr "Kaimiņi:"
+
+#: src/ui.glade:4819
+msgid ""
+"Give the birds a fancy color.\n"
+"Flag: -birdscolor"
+msgstr ""
+"Piešķiriet putniem greznu krāsu. \n"
+"Flag: -birdscolor"
+
+#: src/ui.glade:4838
+msgid "Bird color"
+msgstr "Putnu krāsa"
+
+#: src/ui.glade:4864
+msgid "Anarchy:"
+msgstr "Anarhija:"
+
+#: src/ui.glade:4878
+msgid ""
+"Anarchy level: the higher, the more anarchy.\n"
+"Flag: -anarchy"
+msgstr ""
+"Anarhijas līmenis: jo augstāks, jo vairāk anarhijas. \n"
+"Flag: -anarchy"
+
+#: src/ui.glade:4898
+msgid "Distance weight:"
+msgstr "Attāluma svars:"
+
+#: src/ui.glade:4912
+msgid ""
+"Tendency to keep desired distance to neighbours.\n"
+"Flag: -disweight"
+msgstr ""
+"Tieksme saglabāt vēlamo attālumu līdz kaimiņiem. \n"
+"Flag: -disweight"
+
+#: src/ui.glade:4932
+msgid "Adjust speed to neighbours:"
+msgstr "Pielāgojiet ātrumu kaimiņiem:"
+
+#: src/ui.glade:4946
+msgid ""
+"Tendency to adjust speed to neighbours.\n"
+"Flag: -followneighbours"
+msgstr ""
+"Tieksme pielāgot ātrumu kaimiņiem. \n"
+"Flag: -followneighbours"
+
+#: src/ui.glade:4980
+msgid ""
+"Speed of birds in arbitrary units.\n"
+"Flag: -birdsspeed"
+msgstr ""
+"Putnu ātrums patvaļīgās vienībās. \n"
+"Flag: -birdsspeed"
+
+#: src/ui.glade:5000
+msgid "Drawing scale:"
+msgstr "Zīmēšanas mērogs:"
+
+#: src/ui.glade:5014
+msgid ""
+"Influence the size of the birds.\n"
+"Flag: -birdsscale\n"
+msgstr ""
+"Ietekmē putnu izmēru. \n"
+"Flag: -birdsscale\n"
+
+#: src/ui.glade:5031
+msgid ""
+"Show \n"
+"attr point"
+msgstr ""
+"Rādīt \n"
+" atribūta punktu"
+
+#: src/ui.glade:5037
+msgid ""
+"Show the point where the birds want to go.\n"
+"Flags: -showattr 0, -showattr 1"
+msgstr ""
+"Parādiet vietu, kur putni vēlas doties. \n"
+"Flags: -showattr 0, -showattr 1"
+
+#: src/ui.glade:5048
+msgid ""
+"Follow \n"
+"Santa"
+msgstr ""
+"Sekojiet \n"
+" Ziemassvētku vecītim"
+
+#: src/ui.glade:5054
+msgid ""
+"Birds are attracted by an attraction point. Here you can choose to follow "
+"Santa.\n"
+"Flags: -followsanta 0, -followsanta 1"
+msgstr ""
+"Putnus piesaista atrakcijas punkts. Šeit varat izvēlēties sekot Ziemassvētku "
+"vecītim.\n"
+"Flags: -followsanta 0, -followsanta 1"
+
+#: src/ui.glade:5067
+msgid ""
+"Percentage of screen to be used for the attraction point.\n"
+"Flag: -attrspace"
+msgstr ""
+"Ekrāna procentuālā daļa, kas tiks izmantota piesaistes punktam. \n"
+"Flag: -attrspace"
+
+#: src/ui.glade:5089
+msgid "Attraction point range"
+msgstr "Pievilcības punktu diapazons"
+
+#: src/ui.glade:5132
+msgid "Actual mean distance from neighbours."
+msgstr "Faktiskais vidējais attālums no kaimiņiem."
+
+#: src/ui.glade:5149
+msgid "Distance used to get the desired number of neighbours."
+msgstr "Attālums tiek izmantots, lai iegūtu vēlamo kaimiņu skaitu."
+
+#: src/ui.glade:5232
+msgid "Birds"
+msgstr "Putni"
+
+#: src/ui.glade:5250
+msgid "version"
+msgstr "versija"
+
+#: src/ui.glade:5265 src/ui.glade:6479
+msgid "Settings"
+msgstr "Iestatījumi"
+
+#: src/ui.glade:5287
+msgid "Transparency "
+msgstr "Caurspīdīgums "
+
+#: src/ui.glade:5304
+msgid ""
+"Transparency of painted items:\n"
+"0: no transparency.\n"
+"100: fully transparent, you will see nothing!\n"
+"Flag: -transparency"
+msgstr ""
+"Krāsotu priekšmetu caurspīdīgums:\n"
+"0: nav caurspīdīguma.\n"
+"100: pilnībā caurspīdīgs, jūs neko neredzēsit!\n"
+"Flag: -transparency"
+
+#: src/ui.glade:5331
+msgid "Lift snow on bottom"
+msgstr "Paceliet sniegu apakšā"
+
+#: src/ui.glade:5347
+msgid ""
+"Use this if snow falls below the bottom of your screen, or  fallen snow "
+"hides something that should not be hidden.\n"
+"Flag: -offsets"
+msgstr ""
+"Izmantojiet to, ja sniegs nokrīt zem ekrāna apakšdaļas vai nokritis sniegs "
+"slēpj kaut ko tādu, ko nevajadzētu slēpt.\n"
+"Flag: -offsets"
+
+#: src/ui.glade:5372
+msgid "Lift snow on windows"
+msgstr "Paceliet sniegu uz logiem"
+
+#: src/ui.glade:5388
+msgid ""
+"Use this if no snow collects on your windows, or if snow  collects separated "
+"from your windows. \n"
+"Some basic window managers need this setting (e.g. TWM  needs in general a "
+"value of 25 .. 28).\n"
+"Flag: -offsety"
+msgstr ""
+"Izmantojiet to, ja uz jūsu logiem neuzkrājas sniegs vai ja sniegs sakrājas "
+"atsevišķi no jūsu logiem. \n"
+" Dažiem pamata logu pārvaldniekiem ir nepieciešams šis iestatījums "
+"(piemēram, TWM parasti ir nepieciešama vērtība 25 .. 28).\n"
+"Flag: -offsety"
+
+#: src/ui.glade:5413
+msgid "Cpu factor"
+msgstr "CPU faktors"
+
+#: src/ui.glade:5431
+msgid ""
+"The higher, the smoother xsnow will run, but will also use  more cpu power.\n"
+"Flag: -cpuload"
+msgstr ""
+"Jo augstāks, jo vienmērīgāk xsnow darbosies, taču tas arī izmantos vairāk "
+"procesora jaudas. \n"
+"Flag: -cpuload"
+
+#: src/ui.glade:5457
+msgid "Scale"
+msgstr "Mērogs"
+
+#: src/ui.glade:5474
+msgid ""
+"Overall drawing scale.\n"
+"Flag: -scale"
+msgstr ""
+"Kopējais rasējuma mērogs. \n"
+"Flag: -scale"
+
+#: src/ui.glade:5507
+msgid "Ignore large top windows"
+msgstr "Ignorējiet lielos augšējos logus"
+
+#: src/ui.glade:5523
+msgid ""
+"Windows wider than 80 percent of the screen and closer to the top  than the "
+"number in this widget will not collect snow.\n"
+"In some cases, there are invisible windows near the top of the screen, which "
+"are handled by xsnow as normal windows: snow is collected upon them. By "
+"entering a suitable number here, this undesired behaviour can be avoided.\n"
+"Flag: -ignoretop\n"
+"\n"
+msgstr ""
+"Logi, kas platāki par 80 procentiem no ekrāna un tuvāk augšai nekā šajā "
+"logrīkā norādītais skaitlis, nesavāc sniegu.\n"
+"Dažos gadījumos ekrāna augšdaļā ir neredzami logi, kurus apstrādā xsnow kā "
+"normāli logi: uz tiem tiek savākts sniegs. Ievadot šeit piemērotu numuru, no "
+"šīs nevēlamās darbības var izvairīties.\n"
+"Flag: -ignoretop\n"
+"\n"
+
+#: src/ui.glade:5547
+msgid "Ignore large bottom windows"
+msgstr "Ignorējiet lielos apakšējos logus"
+
+#: src/ui.glade:5563
+msgid ""
+"Windows wider than 80 percent of the screen and closer to the  bottom than "
+"the number in this widget will not collect snow.\n"
+"\n"
+"In some cases, there are invisible windows near the bottom  of  the screen, "
+"which are handled by xsnow as normal windows: snow is collected upon them. "
+"By entering a suitable  number here, this undesired behaviour can be "
+"avoided.\n"
+"Flag: -ignorebottom"
+msgstr ""
+"Logi, kas platāki par 80 procentiem no ekrāna un tuvāk apakšai nekā šajā "
+"logrīkā norādītais skaitlis, nesavāc sniegu.\n"
+"\n"
+"Dažos gadījumos ekrāna apakšdaļā ir neredzami logi, kurus apstrādā xsnow kā "
+"parasti logi: uz tiem tiek savākts sniegs. Ievadot šeit piemērotu numuru, no "
+"šīs nevēlamās darbības var izvairīties.\n"
+"Flag: -ignorebottom"
+
+#: src/ui.glade:5755
+msgid "window type etc."
+msgstr "loga tips utt."
+
+#: src/ui.glade:5778
+msgid ""
+"Menu\n"
+"colors"
+msgstr ""
+"Izvēlnes\n"
+" krāsas"
+
+#: src/ui.glade:5783
+msgid ""
+"Toggle between xsnow's own menu colors and standard menu colors.\n"
+"Activated: use xsnow colors.\n"
+"Deactivated: use default colors.\n"
+"Flags: -theme 1, -theme 0"
+msgstr ""
+"Pārslēgties starp xsnow pašas izvēlnes krāsām un standarta izvēlnes krāsām.\n"
+"Aktivizēts: izmantojiet xsnow krāsas.\n"
+"Deaktivizēts: izmantojiet noklusējuma krāsas.\n"
+"Flags: -theme 1, -theme 0"
+
+#: src/ui.glade:5797
+msgid ""
+"On all\n"
+"workspaces"
+msgstr ""
+"Visās \n"
+" darbvietās"
+
+#: src/ui.glade:5802
+msgid ""
+"Use all workspaces to snow in.\n"
+"NOTE: this doesn't work properly in enlightenment.\n"
+"Flags: -allworkspaces 1, -allworkspaces 0"
+msgstr ""
+"Izmantojiet visas darbvietas, lai snigtu iekšā.\n"
+"PIEZĪME: tas nedarbojas pareizi apgaismojumā.\n"
+"Flags: -allworkspaces 1, -allworkspaces 0"
+
+#: src/ui.glade:5820
+msgid ""
+"Below\n"
+"windows"
+msgstr ""
+"Zem \n"
+" logiem"
+
+#: src/ui.glade:5825
+msgid ""
+"When activated, it will be snowing below your windows, else  it will be "
+"snowing upon you windows too.\n"
+"On some desktop environments, when snowing above your  windows you will not "
+"be able to click on any window.\n"
+"Therefore, you will be asked to click a button, to be sure that  things are "
+"OK.\n"
+"Flag: -above"
+msgstr ""
+"Kad tas būs aktivizēts, zem jūsu logiem snigs, pretējā gadījumā sniegs arī "
+"uz jūsu logiem.\n"
+"Dažās darbvirsmas vidēs, kad snieg virs logiem, jūs nevarēsit noklikšķināt "
+"uz neviena loga.\n"
+"Tādēļ, jums tiks lūgts noklikšķināt uz pogas, lai pārliecinātos, ka viss ir "
+"kārtībā. \n"
+"Flag: -above"
+
+#: src/ui.glade:5844
+msgid ""
+"Click to\n"
+"confirm"
+msgstr ""
+"Noklikšķiniet, lai \n"
+" apstiprinātu"
+
+#: src/ui.glade:5849
+msgid "To make sure you can click."
+msgstr "Lai pārliecinātos, ka varat noklikšķināt."
+
+#: src/ui.glade:5868
+msgid ""
+"If you have more than one monitor, choose where you want snow falling. "
+"Choose 'all monitors' if you want snow in all monitors.\n"
+"NOTE: when changing monitor, xsnow will restart.\n"
+"Flag: -screen"
+msgstr ""
+"Ja jums ir vairāk nekā viens monitors, izvēlieties vietu, kur vēlaties "
+"snigt. Izvēlieties 'visi monitori', ja vēlaties, lai visos monitoros būtu "
+"sniegs.\n"
+"PIEZĪME: mainot monitoru, xsnow tiks restartēts.\n"
+"Flag: -screen"
+
+#: src/ui.glade:5875
+msgid "monitor 1"
+msgstr "monitors 1"
+
+#: src/ui.glade:5886
+msgid ""
+"Create\n"
+"outline"
+msgstr ""
+"Izveidojiet \n"
+" kontūru"
+
+#: src/ui.glade:5891
+msgid ""
+"To draw an outline around the snow window.\n"
+"Flag: -outline 1/0"
+msgstr ""
+"Lai uzzīmētu kontūru ap sniega logu. \n"
+"Flag: -outline 1/0"
+
+#: src/ui.glade:5915
+msgid ""
+"  \n"
+"  "
+msgstr ""
+"  \n"
+"  "
+
+#: src/ui.glade:5950
+msgid ""
+"Choose here the picture you want as background when  xscreensaver is "
+"active.\n"
+"Flag: -bg"
+msgstr ""
+"Izvēlieties šeit attēlu, kuru vēlaties izmantot kā fonu, kad xscreensaver ir "
+"aktīvs. \n"
+"Flag: -bg"
+
+#: src/ui.glade:5954
+msgid "Choose background"
+msgstr "Izvēlieties fonu"
+
+#: src/ui.glade:5969
+msgid ""
+"Activate xscreensaver.\n"
+"Click and don't touch mouse and keyboard for a few seconds..."
+msgstr ""
+"Aktivizējiet xscreensaver.\n"
+" Noklikšķiniet un nepieskarieties pelei un tastatūrai dažas sekundes..."
+
+#: src/ui.glade:5983
+msgid ""
+"Settings for Xscreensaver. You can choose a background, and choose to use it "
+"or not.\n"
+"Make sure you add a line like\n"
+"xsnow -root\n"
+"after the line 'programs:' in the file ~/.xscreensaver and you run "
+"xscreensaver-demo to choose for xsnow.\n"
+"To activate xscreensaver on the command line:\n"
+"xscreensaver-command  -activate\n"
+"See also the man page:\n"
+"man xsnow"
+msgstr ""
+"Iestatījumi Xscreensaver. Varat izvēlēties fonu un izvēlēties to izmantot "
+"vai nē.\n"
+"Pārliecinieties, ka failā ~/.xscreensaver pēc rindas 'programs:' ir "
+"pievienota tāda rindiņa kā\n"
+"xsnow -root\n"
+" palaižat xscreensaver-demo, lai izvēlētos xsnow.\n"
+"Lai komandrindā aktivizētu xscreensaver:\n"
+"xscreensaver-command -activate\n"
+"Skatiet arī rokasgrāmatu:\n"
+"man xsnow"
+
+#: src/ui.glade:5992
+msgid "Xscreensaver: "
+msgstr "Xscreensaver: "
+
+#: src/ui.glade:6012
+msgid "Black"
+msgstr "Melns"
+
+#: src/ui.glade:6016
+msgid ""
+"When activated, the background will be black.\n"
+"Flag: -bg  (this button will be automatically desactivated when -bg is given)"
+msgstr ""
+"Kad tas ir aktivizēts, fons būs melns.\n"
+"Flag: -bg  (this button will be automatically desactivated when -bg is given)"
+
+#: src/ui.glade:6040
+msgid ""
+" \n"
+" \n"
+" \n"
+" \n"
+" \n"
+" \n"
+" \n"
+" \n"
+" \n"
+msgstr ""
+" \n"
+" \n"
+" \n"
+" \n"
+" \n"
+" \n"
+" \n"
+" \n"
+" \n"
+
+#: src/ui.glade:6515
+msgid "en"
+msgstr "lv"
+
+#: src/ui.glade:6518
+msgid "it"
+msgstr "to"
+
+#~ msgid "Force a gust of wind immediately.\n"
+#~ msgstr "Nekavējoties piespiediet vēja brāzmu. \n"

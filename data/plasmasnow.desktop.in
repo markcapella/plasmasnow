@@ -1,0 +1,23 @@
+[Desktop Entry]
+Name=plasmaSnow
+Comment=Winter fun for Modern Desktops
+Version=4.2
+Type=Application
+Terminal=false
+
+Exec=plasmasnow
+Icon=plasmasnow.svg
+
+StartupNotify=true
+Categories=Game;Simulation
+Keywords=christmas;santa;snow;xmas
+
+Actions=start;nomenu;
+
+[Desktop Action start]
+Name=Start plasmasnow
+Exec=plasmasnow
+
+[Desktop Action nomenu]
+Name=Start without menu
+Exec=plasmasnow -hidemenu

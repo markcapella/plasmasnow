@@ -1,0 +1,64 @@
+#!/bin/bash
+# -copyright-
+#-# 
+#-# plasmasnow: Let it snow on your desktop
+#-# Copyright (C) 1984,1988,1990,1993-1995,2000-2001 Rick Jansen
+#-# 	      2019,2020,2021,2022,2023 Willem Vermin
+#-# 
+#-# This program is free software: you can redistribute it and/or modify
+#-# it under the terms of the GNU General Public License as published by
+#-# the Free Software Foundation, either version 3 of the License, or
+#-# (at your option) any later version.
+#-# 
+#-# This program is distributed in the hope that it will be useful,
+#-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+#-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#-# GNU General Public License for more details.
+#-# 
+#-# You should have received a copy of the GNU General Public License
+#-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#-# 
+
+
+curdir=`pwd`
+if [ -f Makefile ] ; then
+   make distclean
+fi
+rm -f configure
+# Create make.inc for the Pixmaps folder
+(
+cd src/Pixmaps
+echo -n "# -copyright" > make.inc
+echo "-" >> make.inc
+echo "EXTRA_DIST = \\" >> make.inc
+echo "make.inc \\" >> make.inc
+ls *.xpm *.xbm *.svg | sed 's/$/ \\/' | sed '$s/\\//' >> make.inc
+)
+
+./addcopyright.sh Makefile.am afterburner/Makefile.am addcopyright.sh bootstrap \
+   configure.ac simplemake.sh
+find src \( -name '*.c' -o -name '*.h' -o -name '*.am' -o -name '*.xpm' -o -name '*.xbm' \
+   -o -name '*.xml' -o -name '*.sh' -o -name '*.cpp' -o -name '*.inc' \) -print0 | xargs -0 ./addcopyright.sh
+
+cd $curdir
+
+date +%s > bootdate
+
+autoreconf -fvi || exit 1
+(
+echo removing po/*.gmo end po/*.po
+rm -f po/*.gmo po/*.po
+echo "Copying pofiles/*.po to po/"
+cp pofiles/*.po po
+cd po
+
+pofiles=`echo *.po`
+languages=`echo $pofiles | sed 's/\.po//g'`
+echo '# Set of available languages.' > LINGUAS
+echo "$languages" >> LINGUAS
+echo "Created po/LINGUAS:"
+cat LINGUAS
+echo 
+)
+
+echo "$0 done"

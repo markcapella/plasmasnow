@@ -1,0 +1,2060 @@
+# # Sometimes the translations contain rubbish, please replace them.
+# # (abc_1000) XsnoW
+# # (abc_1001) \n
+# # (abc_1002) Rick Jansen
+# # (abc_1003) XSNOW
+# # (abc_1004) Xsnow
+# # (abc_1005) &#8195;
+# # (abc_1006) %l#x
+# # (abc_1007) xsnow
+# # (abc_1008) Xscreensaver
+# Language for xsnow
+# Copyright (C) 2023 Willem Vermin
+# Willem Vermin <wvermin@gmail.com>, 2023
+# This file is distributed under the same license as the xsnow package.
+#
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: xsnow 3.6.1.gettext~pre7\n"
+"Report-Msgid-Bugs-To: markcapella@twcny.rr.com\n"
+"POT-Creation-Date: 2023-10-29 14:49-0400\n"
+"PO-Revision-Date: 2023-02-17 13:40+0100\n"
+"Last-Translator: Willem Vermin wvermin@gmail.com\n"
+"Language-Team: None\n"
+"Language: fi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/main.c:304
+#, c-format
+msgid "Available languages are: %s\n"
+msgstr "Saatavilla olevat kielet ovat: %s\n"
+
+#: src/main.c:323
+#, c-format
+msgid "For optimal resuts, add to your %s:\n"
+msgstr "Optimaalista palautusta varten lisää %s:\n"
+
+#: src/main.c:332
+#, c-format
+msgid "unknown\n"
+msgstr "tuntematon\n"
+
+#: src/main.c:340
+#, c-format
+msgid "Detected Wayland desktop\n"
+msgstr "Havaittu Wayland-työpöytä\n"
+
+#: src/main.c:356
+#, c-format
+msgid "Xsnow needs gtk version >= %s, found version %s \n"
+msgstr "Xsnow tarvitsee gtk-version >= %s, löytyi versio %s \n"
+
+#: src/main.c:367
+msgid "Continuing with flag"
+msgstr "Jatketaan liputuksella"
+
+#: src/main.c:407
+#, c-format
+msgid "%s: cannot connect to X server %s\n"
+msgstr "%s: ei voida yhdistää X-palvelimeen %s\n"
+
+#: src/main.c:408
+msgid "(default)"
+msgstr "(oletuksena)"
+
+#: src/main.c:496
+msgid "restarting"
+msgstr "uudelleenkäynnistys"
+
+#: src/main.c:557
+#, c-format
+msgid "Click on a window ...\n"
+msgstr "Napauta ikkunaa ...\n"
+
+#: src/main.c:583
+#, c-format
+msgid "Detected desktop session: %s\n"
+msgstr "Havaittu työpöytäistunto: %s\n"
+
+#: src/main.c:585
+#, c-format
+msgid "Could not determine desktop session\n"
+msgstr "Työpöytäistuntoa ei voitu määrittää\n"
+
+#: src/main.c:613
+#, c-format
+msgid "Trying to snow in root window\n"
+msgstr "Yritetään lunta juuri-ikkunassa\n"
+
+#: src/main.c:654
+#, c-format
+msgid "Using transparent window\n"
+msgstr "Käyttämällä läpinäkyvää ikkunaa\n"
+
+#: src/main.c:658
+#, c-format
+msgid "The transparent snow-window is probably not click-through, alas..\n"
+msgstr ""
+"Läpinäkyvä lumiikkuna ei todennäköisesti ole napsautettava, "
+"valitettavasti..\n"
+
+#: src/main.c:666
+#, c-format
+msgid "Cannot create transparent window\n"
+msgstr "Läpinäkyvää ikkunaa ei voi luoda\n"
+
+#: src/main.c:668
+#, c-format
+msgid "NOTE: xsnow will probably run, but some glitches are to be expected.\n"
+msgstr ""
+"HUOMAUTUS: xsnow todennäköisesti toimii, mutta joitakin virheitä on "
+"odotettavissa.\n"
+
+#: src/main.c:681
+#, c-format
+msgid "LXDE session found, using window 'pcmanfm'.\n"
+msgstr "LXDE-istunto löytyi, käyttäen ikkunaa 'pcmanfm'.\n"
+
+#: src/main.c:685
+#, c-format
+msgid "Using window 'Desktop'.\n"
+msgstr "Käytä ikkunaa 'Työpöytä'.\n"
+
+#: src/main.c:687
+#, c-format
+msgid "Using root window\n"
+msgstr "Käytetään pääikkunaa\n"
+
+#: src/main.c:731
+#, c-format
+msgid "Snowing in %#lx: %s %d+%d %dx%d\n"
+msgstr "Lunta %#lx: %s %d+%d %dx%d\n"
+
+#: src/main.c:781
+#, c-format
+msgid "Using double buffer: %#lx. %dx%d\n"
+msgstr "Käytetään kaksinkertaista puskuria: %#lx. %dx%d\n"
+
+#: src/main.c:788
+#, c-format
+msgid "NOT using double buffering:"
+msgstr "EI kaksoispuskurointia:"
+
+#: src/main.c:791
+#, c-format
+msgid " because double buffering is not available on this system\n"
+msgstr ""
+" koska kaksinkertainen puskurointi ei ole käytettävissä tässä "
+"järjestelmässä\n"
+
+#: src/main.c:793
+#, c-format
+msgid " on your request.\n"
+msgstr " pyynnöstäsi.\n"
+
+#: src/main.c:795
+#, c-format
+msgid "NOTE: expect some flicker.\n"
+msgstr "HUOMAA: odota välähdystä.\n"
+
+#: src/main.c:934
+msgid "Refresh due to change of screen or language settings ...\n"
+msgstr ""
+
+#: src/main.c:945
+msgid "Refresh due to change of display settings...\n"
+msgstr ""
+
+#: src/main.c:1066
+#, c-format
+msgid "More than %d errors, I quit!"
+msgstr "Yli %d virhettä, lopetan!"
+
+#: src/main.c:1211
+#, c-format
+msgid "Window size changed, now snowing in in %#lx: %s %d+%d %dx%d\n"
+msgstr "Ikkunan koko muutettu, nyt lunta %#lx: %s %d+%d %dx%d\n"
+
+#: src/main.c:1283
+#, c-format
+msgid "Halting because of flag %s\n"
+msgstr "Keskeytetään lipun %s takia\n"
+
+#: src/selfrep.c:35
+#, c-format
+msgid "Not sending tar file to terminal.\n"
+msgstr "Tar-tiedostoa ei lähetetä päätteeseen.\n"
+
+#: src/selfrep.c:36
+#, c-format
+msgid "Try redirecting to a file (e.g: %s,\n"
+msgstr "Yritä ohjata tiedostoon (esim. %s,\n"
+
+#: src/selfrep.c:38
+#, c-format
+msgid "or use a %s"
+msgstr "tai käytä %s"
+
+#: src/selfrep.c:43
+msgid "Problems encountered during production of the tar ball.\n"
+msgstr "Ongelmia tervapallon valmistuksen aikana.\n"
+
+#: src/selfrep.c:50
+#, c-format
+msgid "Self replication is not compiled in.\n"
+msgstr "Itsekopiointia ei ole käännetty.\n"
+
+#: src/utils.c:239
+#, c-format
+msgid ""
+"\n"
+"Xsnow: Caught signal %d\n"
+msgstr ""
+"\n"
+"Xsnow: Saimme signaalin %d\n"
+
+#: src/utils.c:244
+#, c-format
+msgid ""
+"\n"
+"Thanks for using xsnow\n"
+msgstr ""
+"\n"
+"Kiitos, että käytät xsnow\n"
+
+#: src/windows.c:585
+#, c-format
+msgid "Setting background from %s\n"
+msgstr "Asetetaan taustaa kohteesta %s\n"
+
+#: src/ui.c:1263 src/ui.glade:4664
+msgid "all monitors"
+msgstr "kaikki näytöt"
+
+#: src/ui.c:1269
+#, c-format
+msgid "monitor %d"
+msgstr "näyttö %d"
+
+#: src/ui.c:1287
+msgid "Available languages are: "
+msgstr "Tämä lehdistötiedote on saatavissa seuraavilla kielillä: "
+
+#: src/ui.c:1290
+msgid "Use \"sys\" for your default language.\n"
+msgstr "Käytä \"sys\" oletuskielelläsi.\n"
+
+#: src/ui.c:1291
+msgid "See also the man page."
+msgstr "Katso myös Man Page."
+
+#: src/ui.glade:389
+msgid "All Defaults"
+msgstr ""
+
+#: src/ui.glade:393 src/ui.glade:1880 src/ui.glade:2237 src/ui.glade:3060
+#: src/ui.glade:3770 src/ui.glade:4618
+msgid "Apply default values for the preferences in this tab."
+msgstr "Käytä oletusarvoja tämän välilehden asetuksille."
+
+#: src/ui.glade:410
+msgid "plasmasnow"
+msgstr ""
+
+#: src/ui.glade:444
+msgid "by Mark James Capella"
+msgstr ""
+
+#: src/ui.glade:458
+msgid "&VERSION-LABEL"
+msgstr ""
+
+#: src/ui.glade:473
+msgid "https://github.com/markcapella/plasmasnow"
+msgstr ""
+
+#: src/ui.glade:486
+msgid "    markcapella@twcny.rr.com"
+msgstr ""
+
+#: src/ui.glade:532
+msgid "plasmasnow is derived from Willem Vermin's xSnow 3.7.5."
+msgstr ""
+
+#: src/ui.glade:545
+msgid "xsnow 3.7.5 is derived from Rick Jansen's xsnow-1.42."
+msgstr ""
+
+#: src/ui.glade:695
+msgid "About"
+msgstr ""
+
+#: src/ui.glade:710
+msgid "Show snow"
+msgstr "Näytä lumi"
+
+#: src/ui.glade:714
+msgid ""
+"If set, show snowflakes.\n"
+"Flags: -snow, -nosnow"
+msgstr ""
+"Jos asetettu, näytä lumihiutaleet.\n"
+"Flags: -snow, -nosnow"
+
+#: src/ui.glade:730
+msgid ""
+"The color of the snow.\n"
+"                        Flag: -sc"
+msgstr ""
+
+#: src/ui.glade:746
+msgid ""
+"2nd color of the snow.\n"
+"                      Flag: -sc2"
+msgstr ""
+
+#: src/ui.glade:761
+msgid ""
+"The higher this setting, the more snow will collect on the trees.\n"
+"Flag: -maxontrees"
+msgstr ""
+"Mitä korkeampi tämä asetus on, sitä enemmän lunta kerääntyy puihin.\n"
+"Flag: -maxontrees"
+
+#: src/ui.glade:780
+msgid ""
+"The higher this setting, the more snow will collect on the  bottom of the "
+"desktop.\n"
+"Flag: -ssnowdepth"
+msgstr ""
+"Mitä korkeampi tämä asetus on, sitä enemmän lunta kerääntyy työpöydän "
+"pohjaan.\n"
+"Flag: -ssnowdepth"
+
+#: src/ui.glade:799
+msgid ""
+"The higher this setting, the more snow will collect on the windows. \n"
+"Note: in Wayland, there is no snow on the windows. \n"
+"Flag: -wsnowdepth"
+msgstr ""
+"Mitä korkeampi tämä asetus on, sitä enemmän lunta kerääntyy ikkunoihin. \n"
+"Huomaa: Waylandissa ei ole lunta ikkunoissa. \n"
+"Flag: -wsnowdepth"
+
+#: src/ui.glade:819
+msgid ""
+"The higher this setting, the more snow will be generated  because of Santa "
+"ploughing, wind or disappearing windows. \n"
+"Flag: -blowofffactor"
+msgstr ""
+"Mitä korkeampi tämä asetus on, sitä enemmän lunta syntyy joulupukin "
+"kyntöjen, tuulen tai ikkunoiden katoamisen vuoksi. \n"
+"Flag: -blowofffactor"
+
+#: src/ui.glade:841
+msgid "On scenery:"
+msgstr "Maisemissa:"
+
+#: src/ui.glade:855
+msgid "On bottom:"
+msgstr "Pohjassa:"
+
+#: src/ui.glade:869
+msgid "On windows:"
+msgstr "Ikkunoissa:"
+
+#: src/ui.glade:883
+msgid "Blow off:"
+msgstr "Puhaltaa pois:"
+
+#: src/ui.glade:892 src/ui.glade:908 src/ui.glade:925 src/ui.glade:942
+msgid "Show"
+msgstr "Näytä"
+
+#: src/ui.glade:896
+msgid ""
+"If set, snow will collect on the trees.\n"
+"Flags: -keepsnowontrees, -nokeepsnowontrees"
+msgstr ""
+"Jos asetettu, lumi kerääntyy puihin.\n"
+"Flags: -keepsnowontrees, -nokeepsnowontrees"
+
+#: src/ui.glade:912
+msgid ""
+"If set, show fallen snow on bottom of the desktop.\n"
+"Flags: -keepsnowonscreen, -nokeepsnowonscreen"
+msgstr ""
+"Jos asetettu, näytä lumisade työpöydän pohjassa.\n"
+"Flags: -keepsnowonscreen, -nokeepsnowonscreen"
+
+#: src/ui.glade:929
+msgid ""
+"If set, show fallen snow on windows.\n"
+"Flags: -keepsnowonwindows, -nokeepsnowonwindows"
+msgstr ""
+"Jos asetettu, näytä ikkunoissa kaatunutta lunta.\n"
+"Flags: -keepsnowonwindows, -nokeepsnowonwindows"
+
+#: src/ui.glade:946
+msgid ""
+"If set, show snow blowing away.\n"
+"Flags: -blowsnow, -noblowsnow"
+msgstr ""
+"Jos asetettu, näytä, että lumi puhaltaa pois.\n"
+"Flags: -blowsnow, -noblowsnow"
+
+#: src/ui.glade:984
+msgid "Snow Settings"
+msgstr ""
+
+#: src/ui.glade:998 src/ui.glade:1876 src/ui.glade:2233 src/ui.glade:3056
+#: src/ui.glade:3766 src/ui.glade:4614
+msgid "Defaults"
+msgstr "Oletusarvot"
+
+#: src/ui.glade:1002
+msgid "Apply default values for the preferences in this tab.\n"
+msgstr "Käytä oletusarvoja tämän välilehden asetuksille.\n"
+
+#: src/ui.glade:1034
+msgid "Enable Wind"
+msgstr ""
+
+#: src/ui.glade:1039
+msgid ""
+"If set, there will be wind.\n"
+"Flags: -wind, -nowind"
+msgstr ""
+"Jos asetettu, tuulee.\n"
+"Flags: -wind, -nowind"
+
+#: src/ui.glade:1057
+msgid "Wind Whirl:"
+msgstr ""
+
+#: src/ui.glade:1068
+msgid ""
+"The higher this setting, the more the wind will whirl.\n"
+"Flag: -whirlfactor"
+msgstr ""
+"Mitä korkeampi tämä asetus on, sitä enemmän tuuli pyörii.\n"
+"Flag: -whirlfactor"
+
+#: src/ui.glade:1084
+msgid "Test Whirl"
+msgstr ""
+
+#: src/ui.glade:1088
+msgid "Force a gust of wind immediately."
+msgstr "Pakota tuulenpuuska välittömästi."
+
+#: src/ui.glade:1107
+msgid ""
+"This setting determines how many seconds pass between  two  gusts of wind.\n"
+"Flag: -whirltimer"
+msgstr ""
+
+#: src/ui.glade:1129
+msgid "Whirl Timer:"
+msgstr ""
+
+#: src/ui.glade:1166
+msgid "Saturation:"
+msgstr ""
+
+#: src/ui.glade:1177
+msgid ""
+"The higher, the more snowflakes.\n"
+"Flag: -snowflakes"
+msgstr ""
+"Mitä korkeampi, sitä enemmän lumihiutaleita.\n"
+"Flag: -snowflakes"
+
+#: src/ui.glade:1203
+msgid "Max # Flakes:"
+msgstr ""
+
+#: src/ui.glade:1215
+msgid ""
+"Maximum amount of snowflakes.\n"
+"Flag: -flakecountmax"
+msgstr ""
+"Lumihiutaleiden enimmäismäärä.\n"
+"Flag: -flakecountmax"
+
+#: src/ui.glade:1262 src/ui.glade:1958 src/ui.glade:2523 src/ui.glade:3418
+#: src/ui.glade:4256
+msgid "Size:"
+msgstr "Koko:"
+
+#: src/ui.glade:1277 src/ui.glade:1974 src/ui.glade:3433 src/ui.glade:3846
+#: src/ui.glade:4271
+msgid "Speed:"
+msgstr "Nopeus:"
+
+#: src/ui.glade:1289
+msgid ""
+"Size of snowflakes, works only for non-vintage snow flakes.\n"
+"Flag: -snowsize"
+msgstr ""
+"Lumihiutaleiden koko, toimii vain muille kuin vintage-lumihiutaleille.\n"
+"Flag: -snowsize"
+
+#: src/ui.glade:1308
+msgid ""
+"Speed of the snowflakes.\n"
+"Flag: -snowspeedfactor"
+msgstr ""
+"Lumihiutaleiden nopeus.\n"
+"Flag: -snowspeedfactor"
+
+#: src/ui.glade:1487
+msgid "Snow"
+msgstr "Lumi"
+
+#: src/ui.glade:1506
+msgid ""
+"Tiny Santa with three reindeers.\n"
+"Flags: -santa 0 -norudolph"
+msgstr ""
+"Pieni Joulupukki kolmen poron kanssa.\n"
+"Flags: -santa 0 -norudolph"
+
+#: src/ui.glade:1537
+msgid ""
+"Small Santa with three reindeers.\n"
+"Flags: -santa 1 -norudolph"
+msgstr ""
+"Pieni Joulupukki kolmen poron kanssa.\n"
+"Flags: -santa 1 -norudolph"
+
+#: src/ui.glade:1568
+msgid ""
+"Santa with three reindeers.\n"
+"Flags: -santa 2 -norudolph"
+msgstr ""
+"Joulupukki kolmen poron kanssa.\n"
+"Flags: -santa 2 -norudolph"
+
+#: src/ui.glade:1599
+msgid ""
+"Santa with Dasher, Dancer, Prancer, Vixen, Comet, Cupid, Dunder and Blixem.\n"
+"Flags: -santa 3 -norudolph"
+msgstr ""
+"Joulupukki Dasherin, Tanssijan, Prancerin, Äkäpussin, Komeetan, Amorin, "
+"Dunderin ja Blixemin kanssa.\n"
+"Flags: -santa 3 -norudolph"
+
+#: src/ui.glade:1630
+msgid ""
+"Santa using the train with two reindeers.\n"
+"Flags: -santa 4 -norudolph"
+msgstr ""
+"Joulupukki käyttää junaa kahden poron kanssa.\n"
+"Flags: -santa 4 -norudolph"
+
+#: src/ui.glade:1661
+msgid ""
+"Santa using the train with one reindeer and Rudolph.\n"
+"Flags: -santa 4 -showrudolph"
+msgstr ""
+"Joulupukki käyttää junaa yhden poron ja Rudolphin kanssa.\n"
+"Flags: -santa 4 -showrudolph"
+
+#: src/ui.glade:1691
+msgid ""
+"Tiny Santa with two reindeers and Rudolph.\n"
+"Flags: -santa 0 -showrudolph"
+msgstr ""
+"Pieni Joulupukki, jossa on kaksi poroa ja Rudolph.\n"
+"Flags: -santa 0 -showrudolph"
+
+#: src/ui.glade:1723
+msgid ""
+"Small Santa with two reindeers and Rudolph.\n"
+"Flags: -santa 1 -showrudolph"
+msgstr ""
+"Pieni Joulupukki kahden poron ja Rudolphin kanssa.\n"
+"Flags: -santa 1 -showrudolph"
+
+#: src/ui.glade:1753
+msgid ""
+"Santa with two reindeers and Rudolph.\n"
+"Flags: -santa 2 -showrudolph"
+msgstr ""
+"Joulupukki kahden poron ja Rudolphin kanssa.\n"
+"Flags: -santa 2 -showrudolph"
+
+#: src/ui.glade:1783
+msgid ""
+"Santa with Dasher, Dancer, Prancer, Vixen, Comet, Cupid,  Dunder,  Blixem "
+"and  Rudolph.\n"
+"Flags: -santa 3 -showrudolph"
+msgstr ""
+"Santa kanssa Dasher, Tanssija, Prancer, Äkäpussi, Comet, Cupido,  Dunder,  "
+"Blixem ja  Rudolph.\n"
+"Flags: -santa 3 -showrudolph"
+
+#: src/ui.glade:1810
+msgid "Show Santa"
+msgstr "Näytä Joulupukki"
+
+#: src/ui.glade:1814
+msgid ""
+"To show or not to show Santa.\n"
+"Flags: -showsanta, -nosanta"
+msgstr ""
+"Näytetäänkö vai eikö näytetä Joulupukkia.\n"
+"Flags: -showsanta, -nosanta"
+
+#: src/ui.glade:1831 src/ui.glade:3011 src/ui.glade:3100 src/ui.glade:3129
+#: src/ui.glade:3140 src/ui.glade:3151 src/ui.glade:3179 src/ui.glade:3190
+msgid " "
+msgstr " "
+
+#: src/ui.glade:1862
+msgid "Santa Settings"
+msgstr ""
+
+#: src/ui.glade:1904
+msgid "Without Rudolph"
+msgstr "Ilman Rudolfia"
+
+#: src/ui.glade:1919
+msgid "With Rudolph"
+msgstr "Pääosat Rudolph"
+
+#: src/ui.glade:1932 src/ui.glade:1944 src/ui.glade:2030 src/ui.glade:2042
+#: src/ui.glade:2054 src/ui.glade:2066 src/ui.glade:2260 src/ui.glade:2417
+#: src/ui.glade:2429 src/ui.glade:2441 src/ui.glade:2453 src/ui.glade:2811
+#: src/ui.glade:3793 src/ui.glade:3805 src/ui.glade:3817 src/ui.glade:4125
+#: src/ui.glade:4137 src/ui.glade:4355 src/ui.glade:4367 src/ui.glade:4801
+#: src/ui.glade:4813 src/ui.glade:4825 src/ui.glade:4837 src/ui.glade:4849
+#: src/ui.glade:4861 src/ui.glade:5157 src/ui.glade:5169 src/ui.glade:5181
+#: src/ui.glade:5193
+msgid "    "
+msgstr "    "
+
+#: src/ui.glade:1986
+msgid ""
+"Scale of Santa.\n"
+"Flags: -santascale <n>"
+msgstr ""
+"Joulupukin mittakaava. \n"
+"Flags: -santascale <n>"
+
+#: src/ui.glade:2007
+msgid ""
+"Santa's speed.\n"
+"Flag: -santaspeedfactor"
+msgstr ""
+"Joulupukin nopeus.\n"
+"Flag: -santaspeedfactor"
+
+#: src/ui.glade:2181
+msgid "Santa"
+msgstr "Joulupukki"
+
+#: src/ui.glade:2219
+msgid "Scenery Settings"
+msgstr ""
+
+#: src/ui.glade:2269
+msgid "Allow Overlap"
+msgstr ""
+
+#: src/ui.glade:2273
+msgid ""
+"To allow overlap or not when placing scenery.\n"
+"Flags: -treeoverlap, -notreeoverlap"
+msgstr ""
+"Päällekkäisyyksien salliminen tai kieltäminen maisemia sijoitettaessa.\n"
+"Flags: -treeoverlap, -notreeoverlap"
+
+#: src/ui.glade:2286
+msgid "Show Fluff"
+msgstr ""
+
+#: src/ui.glade:2290
+msgid ""
+"If set, try to show fluff on fallen snow and trees if possible.\n"
+"Flags: -fluffy, -nofluffy"
+msgstr ""
+"Jos asetettu, yritä näyttää pölyä kaatuneella lumella ja puilla, jos "
+"mahdollista.\n"
+"Flags: -fluffy, -nofluffy"
+
+#: src/ui.glade:2302
+msgid "Show  scenery"
+msgstr "Näytä  maisema"
+
+#: src/ui.glade:2306
+msgid ""
+"To show or not to show scenery.\n"
+"Flags: -showtrees, -notrees"
+msgstr ""
+"Näytetäänkö maisema vai ei.\n"
+"Flags: -showtrees, -notrees"
+
+#: src/ui.glade:2330
+msgid ""
+"Woody tree.\n"
+"Flags: -treetype 1 or: -treetype all"
+msgstr ""
+"Puinen puu.\n"
+"Flags: -treetype 1 or: -treetype all"
+
+#: src/ui.glade:2356
+msgid ""
+"Snowy tree.\n"
+"Flags: -treetype 6 or: -treetype all"
+msgstr ""
+"Luminen puu.\n"
+"Flags: -treetype 6 or: -treetype all"
+
+#: src/ui.glade:2382
+msgid ""
+"Leavy tree.\n"
+"Flags: -treetype 2 or: -treetype all"
+msgstr ""
+"Lehtipuu.\n"
+"Flags: -treetype 2 or: -treetype all"
+
+#: src/ui.glade:2464
+msgid "Number of scenery items."
+msgstr ""
+
+#: src/ui.glade:2483
+msgid "Size of Scenery Items."
+msgstr ""
+
+#: src/ui.glade:2501
+msgid "Height of "
+msgstr ""
+
+#: src/ui.glade:2537
+msgid "Max # Items:"
+msgstr ""
+
+#: src/ui.glade:2551
+msgid "Scene Height:"
+msgstr ""
+
+#: src/ui.glade:2569
+msgid ""
+"Vintage tree, you can set the color.\n"
+"Flag: -treetype 0"
+msgstr ""
+"Vintage-puu, voit asettaa värin.\n"
+"Flag: -treetype 0"
+
+#: src/ui.glade:2600
+msgid ""
+"Set color of vintage tree.\n"
+"                        Flag: -tc"
+msgstr ""
+
+#: src/ui.glade:2635
+msgid ""
+"Reindeer.\n"
+"Flags: -treetype 4 or: -treetype all"
+msgstr ""
+"Poro.\n"
+"Flags: -treetype 4 or: -treetype all"
+
+#: src/ui.glade:2661
+msgid ""
+"Moose.\n"
+"Flags: -treetype 5 or: -treetype all"
+msgstr ""
+"Hirvi.\n"
+"Flags: -treetype 5 or: -treetype all"
+
+#: src/ui.glade:2687
+msgid ""
+"Polar bear.\n"
+"Flags: -treetype 7 or: -treetype all"
+msgstr ""
+"Jääkarhu.\n"
+"Flags: -treetype 7 or: -treetype all"
+
+#: src/ui.glade:2727 src/ui.glade:2753 src/ui.glade:2779
+msgid ""
+"Small house.\n"
+"Flags: -treetype 3 or: -treetype all"
+msgstr ""
+"Pieni talo.\n"
+"Flags: -treetype 3 or: -treetype all"
+
+#: src/ui.glade:2974
+msgid "Scenery"
+msgstr "Maisemat"
+
+#: src/ui.glade:2991
+msgid "Show birds"
+msgstr "Näytä linnut"
+
+#: src/ui.glade:2995
+msgid ""
+"If set: show birds.\n"
+"Flags: -showbirds 1, -showbirds 0"
+msgstr ""
+"Jos asetettu: näytä linnut.\n"
+"Flags: -showbirds 1, -showbirds 0"
+
+#: src/ui.glade:3042
+msgid "Bird Settings"
+msgstr ""
+
+#: src/ui.glade:3083
+msgid ""
+"Give the birds a fancy color.\n"
+"                        Flag: -birdscolor"
+msgstr ""
+
+#: src/ui.glade:3109
+msgid "Show Attraction Point"
+msgstr ""
+
+#: src/ui.glade:3114
+msgid ""
+"Show the point where the birds want to go.\n"
+"Flags: -showattr 0, -showattr 1"
+msgstr ""
+"Näytä kohta, johon linnut haluavat mennä.\n"
+"Flags: -showattr 0, -showattr 1"
+
+#: src/ui.glade:3160
+msgid "Follow Santa"
+msgstr ""
+
+#: src/ui.glade:3164
+msgid ""
+"Birds are attracted by an attraction point. Here you can choose to follow "
+"Santa.\n"
+"Flags: -followsanta 0, -followsanta 1"
+msgstr ""
+"Lintuja houkuttelee vetovoimapiste. Täällä voit seurata Joulupukkia.\n"
+"Flags: -followsanta 0, -followsanta 1"
+
+#: src/ui.glade:3201
+msgid ""
+"Influence the size of the birds.\n"
+"Flag: -birdsscale\n"
+msgstr ""
+"Vaikuta lintujen kokoon.\n"
+"Flag: -birdsscale\n"
+
+#: src/ui.glade:3221
+msgid ""
+"Speed of birds in arbitrary units.\n"
+"Flag: -birdsspeed"
+msgstr ""
+"Lintujen nopeus mielivaltaisissa yksiköissä.\n"
+"Flag: -birdsspeed"
+
+#: src/ui.glade:3240
+msgid ""
+"Desired number of birds. If zero, no birds are shown.\n"
+"Flag: -nbirds"
+msgstr ""
+"Toivottu määrä lintuja. Jos nolla, lintuja ei näytetä.\n"
+"Flag: -nbirds"
+
+#: src/ui.glade:3262
+msgid ""
+"Number of nearest neighbours the birds should look at.\n"
+"Flag: -neighbours"
+msgstr ""
+"Niiden lähimpien naapureiden lukumäärä, joita lintujen tulisi katsoa.\n"
+"Flag: -neighbours"
+
+#: src/ui.glade:3281
+msgid ""
+"Anarchy level: the higher, the more anarchy.\n"
+"Flag: -anarchy"
+msgstr ""
+"Anarkiataso: mitä korkeampi, sitä enemmän anarkiaa.\n"
+"Flag: -anarchy"
+
+#: src/ui.glade:3301
+msgid ""
+"Tendency to adjust speed to neighbours.\n"
+"Flag: -followneighbours"
+msgstr ""
+"Taipumus säätää nopeutta naapureille.\n"
+"Flag: -followneighbours"
+
+#: src/ui.glade:3320
+msgid ""
+"Preferred distance from other birds.\n"
+"Flag: -prefdistance"
+msgstr ""
+"Suositeltava etäisyys muihin lintuihin.\n"
+"Flag: -prefdistance"
+
+#: src/ui.glade:3339
+msgid ""
+"Tendency to keep desired distance to neighbours.\n"
+"Flag: -disweight"
+msgstr ""
+"Taipumus pitää haluttu etäisyys naapureihin.\n"
+"Flag: -disweight"
+
+#: src/ui.glade:3358
+msgid ""
+"Viewing distance.\n"
+"NOTE: Santa has no knowledge of viewing distance, so when birds are "
+"following Santa, the relative positions of Santa and birds will be "
+"temporarely out of sync when you change the viewing distance. This is only "
+"noticeable when the birds are following Santa.\n"
+"Flag: -viewingdistance"
+msgstr ""
+"Katseluetäisyys.\n"
+"Huomio: Joulupukilla ei ole tietoa katseluetäisyydestä, joten kun linnut "
+"seuraavat Joulupukkia, Joulupukin ja lintujen suhteelliset sijainnit ovat "
+"väliaikaisesti epätahdissa, kun muutat katseluetäisyyttä. Tämä on "
+"havaittavissa vain silloin, kun linnut seuraavat joulupukkia.Flag: -"
+"viewingdistance"
+
+#: src/ui.glade:3378
+msgid ""
+"Percentage of screen to be used for the attraction point.\n"
+"Flag: -attrspace"
+msgstr ""
+"Vetovoimapisteessä käytettävän näytön prosenttiosuus.\n"
+"Flag: -attrspace"
+
+#: src/ui.glade:3397
+msgid ""
+"Tendency to concentrate on the attraction point.\n"
+"Flag: -focuscentre"
+msgstr ""
+"Taipumus keskittyä vetovoimapisteeseen.\n"
+"Flag: -focuscentre"
+
+#: src/ui.glade:3448
+msgid "Max # Birds:"
+msgstr ""
+
+#: src/ui.glade:3464
+msgid "Group Size:"
+msgstr ""
+
+#: src/ui.glade:3478
+msgid "Speed Volatility:"
+msgstr ""
+
+#: src/ui.glade:3494
+msgid "Speed Match:"
+msgstr ""
+
+#: src/ui.glade:3508
+msgid "Neighbor Distance:"
+msgstr ""
+
+#: src/ui.glade:3522
+msgid "Distance Strength:"
+msgstr ""
+
+#: src/ui.glade:3536
+msgid "Viewing distance:"
+msgstr "Katseluetäisyys:"
+
+#: src/ui.glade:3552
+msgid "Attraction Range:"
+msgstr ""
+
+#: src/ui.glade:3568
+msgid "Attraction Strength:"
+msgstr ""
+
+#: src/ui.glade:3581
+msgid "Flock:"
+msgstr ""
+
+#: src/ui.glade:3593
+msgid "Birds:"
+msgstr ""
+
+#: src/ui.glade:3605
+msgid "Neighbors:"
+msgstr ""
+
+#: src/ui.glade:3714
+msgid "Birds"
+msgstr "Linnut"
+
+#: src/ui.glade:3752
+msgid "Sky Settings"
+msgstr ""
+
+#: src/ui.glade:3831 src/ui.glade:4151
+msgid "Brightness:"
+msgstr ""
+
+#: src/ui.glade:3861
+msgid "Number:"
+msgstr "Lukumäärä:"
+
+#: src/ui.glade:3871
+msgid "Stars"
+msgstr "Tähdet"
+
+#: src/ui.glade:3876
+msgid ""
+"To show or not show stars.\n"
+"Flag: -stars  (0 means: no stars)"
+msgstr ""
+"Tähtien näyttäminen tai näyttämättä jättäminen.\n"
+"Flag: -stars  (0 means: no stars)"
+
+#: src/ui.glade:3889
+msgid "Moon"
+msgstr "Kuu"
+
+#: src/ui.glade:3894
+msgid ""
+"To show or not show moon.\n"
+"Flags: -moon 1, -moon 0"
+msgstr ""
+"Näytetäänkö kuu vai ei.\n"
+"Flags: -moon 1, -moon 0"
+
+#: src/ui.glade:3907
+msgid "Aurora"
+msgstr "Aurora"
+
+#: src/ui.glade:3912
+msgid ""
+"To show or not show aurora.\n"
+"Note: the aurora is best viewed using a dark background.\n"
+"Flags: -aurora 1, -aurora 0"
+msgstr ""
+"Näytetäänkö revontulia vai ei.\n"
+"Huomaa: revontulia voi parhaiten katsella tummalla taustalla.\n"
+"Flags: -aurora 1, -aurora 0"
+
+#: src/ui.glade:3927
+msgid ""
+"Number of twinkling stars.\n"
+"Flag: -stars"
+msgstr ""
+"Tuikkivien tähtien määrä.\n"
+"Flag: -stars"
+
+#: src/ui.glade:3946
+msgid "Animation speed of aurora."
+msgstr ""
+
+#: src/ui.glade:3964
+msgid "Brightness of aurora."
+msgstr ""
+
+#: src/ui.glade:3982
+msgid "Width of aurora.\n"
+msgstr ""
+
+#: src/ui.glade:4004
+msgid "Height of aurora."
+msgstr ""
+
+#: src/ui.glade:4028
+msgid "Width:"
+msgstr "Leveys:"
+
+#: src/ui.glade:4043
+msgid "Height:"
+msgstr "Korkeus:"
+
+#: src/ui.glade:4060
+msgid "Left"
+msgstr "Vasen"
+
+#: src/ui.glade:4064
+msgid ""
+"Place aurora left on the screen.\n"
+"Flag: -auroraleft"
+msgstr ""
+"Aseta aurora vasemmalle näytölle.\n"
+"Flag: -auroraleft"
+
+#: src/ui.glade:4078
+msgid "Middle"
+msgstr "Keski"
+
+#: src/ui.glade:4082
+msgid ""
+"Place aurora in the middle of the screen.\n"
+"Flag: -auroramiddle"
+msgstr ""
+"Aseta aurora näytön keskelle.\n"
+"Flag: -auroramiddle"
+
+#: src/ui.glade:4097
+msgid "Right"
+msgstr "Oikea"
+
+#: src/ui.glade:4101
+msgid ""
+"Place aurora in the right of the screen.\n"
+"Flag: -auroraright"
+msgstr ""
+"Aseta aurora näytön oikealle puolelle.\n"
+"Flag: -auroraright"
+
+#: src/ui.glade:4163
+msgid ""
+"Brightness of moon's halo.\n"
+"Flag: -halobrightness"
+msgstr ""
+"Kuun sädekehän kirkkaus.\n"
+"Flag: -halobrightness"
+
+#: src/ui.glade:4180
+msgid "Meteors"
+msgstr "Meteorit"
+
+#: src/ui.glade:4185
+msgid ""
+"To show or not to show meteors.\n"
+"Flags: -meteors, -nometeors"
+msgstr ""
+"Näytetäänkö vai eikö näytetä meteoreja.\n"
+"Flags: -meteors, -nometeors"
+
+#: src/ui.glade:4202
+msgid "Frequency:"
+msgstr "Toistuvuus:"
+
+#: src/ui.glade:4214
+msgid ""
+"Frequency of meteors to appear.\n"
+"Flags: -meteorfrequency"
+msgstr ""
+"Meteorien esiintymistiheys.\n"
+"Flags: -meteorfrequency"
+
+#: src/ui.glade:4232
+msgid "Yellow"
+msgstr ""
+
+#: src/ui.glade:4236
+msgid ""
+"Choose between yellow-ish and white-ish moon.\n"
+"                            Flag: -mooncolor [0,1]"
+msgstr ""
+
+#: src/ui.glade:4283
+msgid ""
+"Relative size of the moon.\n"
+"Flag: -moonsize"
+msgstr ""
+"Kuun suhteellinen koko.\n"
+"Flag: -moonsize"
+
+#: src/ui.glade:4302
+msgid ""
+"Speed of moon in pixels/minute.\n"
+"Flag: -moonspeed"
+msgstr ""
+"Kuun nopeus pikseleinä minuutissa.\n"
+"Flag: -moonspeed"
+
+#: src/ui.glade:4324
+msgid "Lift:"
+msgstr ""
+
+#: src/ui.glade:4336
+msgid "Lift Aurora above ground."
+msgstr ""
+
+#: src/ui.glade:4376
+msgid "Halo"
+msgstr "Halo"
+
+#: src/ui.glade:4380
+msgid ""
+"To show or not to show halo around moon.\n"
+"Flags: -halo 1, -halo 0"
+msgstr ""
+"Halon näyttäminen tai näyttämättä jättäminen kuun ympärillä.\n"
+"Flags: -halo 1, -halo 0"
+
+#: src/ui.glade:4561
+msgid "Sky"
+msgstr ""
+
+#: src/ui.glade:4601
+msgid "Advanced Settings"
+msgstr ""
+
+#: src/ui.glade:4638
+msgid "Black"
+msgstr "Musta"
+
+#: src/ui.glade:4642
+msgid ""
+"When activated, the background will be black.\n"
+"Flag: -bg  (this button will be automatically deactivated when -bg is given)"
+msgstr ""
+
+#: src/ui.glade:4656
+msgid ""
+"If you have more than one monitor, choose where \n"
+"you want snow falling. Choose 'all monitors' if you want snow in all "
+"monitors.\n"
+"NOTE: when changing monitor, the app will refresh. Flag: -screen"
+msgstr ""
+
+#: src/ui.glade:4665
+msgid "Monitor 1"
+msgstr ""
+
+#: src/ui.glade:4675
+msgid "On all Work Spaces"
+msgstr ""
+
+#: src/ui.glade:4679
+msgid ""
+"Use all workspaces to snow in.\n"
+"NOTE: this doesn't work properly in enlightenment.\n"
+"Flags: -allworkspaces 1, -allworkspaces 0"
+msgstr ""
+"Käytä kaikkia työtiloja lumisateeseen.\n"
+"Huomio: tämä ei toimi oikein valaistumisessa.\n"
+"Flags: -allworkspaces 1, -allworkspaces 0"
+
+#: src/ui.glade:4693
+msgid "Menu Colors"
+msgstr ""
+
+#: src/ui.glade:4697
+msgid ""
+"Toggle between xsnow's own menu colors and standard menu colors.\n"
+"Activated: use xsnow colors.\n"
+"Deactivated: use default colors.\n"
+"Flags: -theme 1, -theme 0"
+msgstr ""
+"Vaihda xsnow omien valikkovärien ja tavallisten valikkovärien välillä.\n"
+"Aktivoitu: käytä xsnow värejä.\n"
+"Poista käytöstä: käytä oletusvärejä.\n"
+"Flags: -theme 1, -theme 0"
+
+#: src/ui.glade:4711
+msgid "Create Outline"
+msgstr ""
+
+#: src/ui.glade:4715
+msgid ""
+"To draw an outline around the snow window.\n"
+"Flag: -outline 1/0"
+msgstr ""
+"Piirrä ääriviivat lumiikkunan ympärille.\n"
+"Flag: -outline 1/0"
+
+#: src/ui.glade:4727
+msgid "Below Windows"
+msgstr ""
+
+#: src/ui.glade:4731
+msgid ""
+"When activated, it will be snowing below your windows, else  it will be "
+"snowing upon you windows too.\n"
+"On some desktop environments, when snowing above your  windows you will not "
+"be able to click on any window.\n"
+"Therefore, you will be asked to click a button, to be sure that  things are "
+"OK.\n"
+"Flag: -above"
+msgstr ""
+"Kun se on aktivoitu, ikkunoiden alla sataa lunta, muuten myös ikkunoiden "
+"päällä sataa lunta.\n"
+"Joissakin työpöytäympäristöissä, kun ikkunoiden yläpuolella sataa lunta, et "
+"voi napsauttaa mitään ikkunaa.\n"
+"Siksi sinua pyydetään napsauttamaan painiketta varmistaaksesi, että  asiat "
+"ovat kunnossa.\n"
+"Flag: -above"
+
+#: src/ui.glade:4746
+msgid "Click to Confirm"
+msgstr ""
+
+#: src/ui.glade:4750
+msgid "To make sure you can click."
+msgstr "Varmista, että voit napsauttaa."
+
+#: src/ui.glade:4766
+msgid "Show Screensaver"
+msgstr ""
+
+#: src/ui.glade:4770
+msgid ""
+"Activate xscreensaver.\n"
+"Click and don't touch mouse and keyboard for a few seconds..."
+msgstr ""
+"Aktivoi xscreensaver.\n"
+"Napsauta äläkä koske hiireen tai näppäimistöön muutamaan sekuntiin..."
+
+#: src/ui.glade:4785
+msgid ""
+"Choose here the picture you want as background when  xscreensaver is "
+"active.\n"
+"Flag: -bg"
+msgstr ""
+"Valitse tässä taustakuvaksi haluamasi kuva, kun xscreensaver on aktiivinen.\n"
+"Flag: -bg"
+
+#: src/ui.glade:4789
+msgid "Choose background"
+msgstr "Valitse tausta"
+
+#: src/ui.glade:4872
+msgid ""
+"Transparency of painted items:\n"
+"0: no transparency.\n"
+"100: fully transparent, you will see nothing!\n"
+"Flag: -transparency"
+msgstr ""
+"Maalattujen kohteiden läpinäkyvyys:\n"
+"0: ei läpinäkyvyyttä.\n"
+"100: täysin läpinäkyvä, et näe mitään!\n"
+"Flag: -transparency"
+
+#: src/ui.glade:4896
+msgid ""
+"Overall drawing scale.\n"
+"Flag: -scale"
+msgstr ""
+"Kokonaispiirustusasteikko.\n"
+"Flag: -scale"
+
+#: src/ui.glade:4916
+msgid ""
+"Use this if snow falls below the bottom of your screen, or  fallen snow "
+"hides something that should not be hidden.\n"
+"Flag: -offsets"
+msgstr ""
+"Käytä tätä, jos lumi putoaa näytön alareunan alle tai jos lumi putoaa "
+"piilottaa jotain, jota ei pitäisi piilottaa.\n"
+"Flag: -offsets"
+
+#: src/ui.glade:4935
+msgid ""
+"Use this if no snow collects on your windows, or if snow  collects separated "
+"from your windows. \n"
+"Some basic window managers need this setting (e.g. TWM  needs in general a "
+"value of 25 .. 28).\n"
+"Flag: -offsety"
+msgstr ""
+"Käytä tätä, jos ikkunoihin ei kerry lunta tai jos lumi  kerääntyy ikkunoista "
+"erillään. \n"
+"Jotkut perusikkunoiden hallitsijat tarvitsevat tätä asetusta (esim. TWM  "
+"tarvitsee yleensä arvon 25 .. 28).\n"
+"Flag: -offsety"
+
+#: src/ui.glade:4955
+msgid ""
+"Windows wider than 80 percent of the screen and closer to the top  than the "
+"number in this widget will not collect snow.\n"
+"In some cases, there are invisible windows near the top of the screen, which "
+"are handled by xsnow as normal windows: snow is collected upon them. By "
+"entering a suitable number here, this undesired behaviour can be avoided.\n"
+"Flag: -ignoretop\n"
+"\n"
+msgstr ""
+"Ikkunat, jotka ovat leveämpiä kuin 80 prosenttia näytöstä ja lähempänä "
+"yläreunaa  kuin tämän widgetin numero, eivät kerää lunta.\n"
+"Joissakin tapauksissa näytön yläreunassa on näkymättömiä ikkunoita, joita "
+"xsnow käsittelee tavallisina ikkunoina: niihin kerätään lunta. Antamalla "
+"tähän sopivan numeron, tämä ei-toivottu käyttäytyminen voidaan välttää.\n"
+"Flag: -ignoretop\n"
+"\n"
+
+#: src/ui.glade:4977
+msgid ""
+"Windows wider than 80 percent of the screen and closer to the  bottom than "
+"the number in this widget will not collect snow.\n"
+"\n"
+"In some cases, there are invisible windows near the bottom  of  the screen, "
+"which are handled by xsnow as normal windows: snow is collected upon them. "
+"By entering a suitable  number here, this undesired behaviour can be "
+"avoided.\n"
+"Flag: -ignorebottom"
+msgstr ""
+"Ikkunat, jotka ovat leveämpiä kuin 80 prosenttia näytöstä ja lähempänä "
+"pohjaa kuin tämän widgetin numero, eivät kerää lunta.\n"
+"\n"
+"Joissakin tapauksissa näytön alareunassa  on näkymättömiä ikkunoita, joita "
+"xsnow käsittelee tavallisina ikkunoina: niihin kerätään lunta. Antamalla "
+"tähän sopivan  numeron, tämä ei-toivottu käyttäytyminen voidaan välttää.\n"
+"Flag: -ignorebottom"
+
+#: src/ui.glade:4999
+msgid "Ignore on Bottoms:"
+msgstr ""
+
+#: src/ui.glade:5014
+msgid "Ignore on Tops:"
+msgstr ""
+
+#: src/ui.glade:5030
+msgid "Window Tops:"
+msgstr ""
+
+#: src/ui.glade:5046
+msgid "Window Bottoms:"
+msgstr ""
+
+#: src/ui.glade:5063
+msgid "Scale:"
+msgstr "Mittakaava:"
+
+#: src/ui.glade:5079
+msgid "Transparency:"
+msgstr ""
+
+#: src/ui.glade:5092
+msgid "Lift Snow:"
+msgstr ""
+
+#: src/ui.glade:5104
+msgid "Large Windows:"
+msgstr ""
+
+#: src/ui.glade:5118
+msgid "Cpu factor:"
+msgstr ""
+
+#: src/ui.glade:5132
+msgid ""
+"The higher, the smoother xsnow will run, but will also use  more cpu power.\n"
+"Flag: -cpuload"
+msgstr ""
+"Mitä korkeampi, sitä tasaisempi xsnow toimii, mutta käyttää myös enemmän CPU-"
+"tehoa.\n"
+"Flag: -cpuload"
+
+#: src/ui.glade:5383
+msgid "Advanced"
+msgstr ""
+
+#: src/ui.glade:5406
+msgid "en"
+msgstr "fi"
+
+#: src/ui.glade:5409
+msgid "it"
+msgstr "it"
+
+#~ msgid "Warning: don't eat yellow snow!"
+#~ msgstr "Varoitus: älä syö keltaista lunta!"
+
+#~ msgid "Color"
+#~ msgstr "Väri"
+
+#~ msgid "Anarchy:"
+#~ msgstr "Anarkia:"
+
+#~ msgid "# Birds:"
+#~ msgstr "# Linnut:"
+
+#~ msgid "Drawing scale:"
+#~ msgstr "Piirustusmittakaava:"
+
+#~ msgid "Neighbours:"
+#~ msgstr "Naapurit:"
+
+#~ msgid "Preferred distance:"
+#~ msgstr "Suositeltu etäisyys:"
+
+#~ msgid "Distance weight:"
+#~ msgstr "Etäisyyspaino:"
+
+#~ msgid "Restart due to change of screen or language settings ...\n"
+#~ msgstr ""
+#~ "Käynnistä uudelleen näytön tai kielen asetusten muutoksen vuoksi...\n"
+
+#~ msgid "Restart due to change of display settings...\n"
+#~ msgstr "Käynnistä uudelleen näyttöasetusten muutoksen vuoksi...\n"
+
+#~ msgid "Restart"
+#~ msgstr "Käynnistä uudelleen"
+
+#~ msgid "Restart birds."
+#~ msgstr "Käynnistä linnut uudelleen."
+
+#~ msgid ""
+#~ "If you have more than one monitor, choose where you want snow falling. "
+#~ "Choose 'all monitors' if you want snow in all monitors.\n"
+#~ "NOTE: when changing monitor, xsnow will restart.\n"
+#~ "Flag: -screen"
+#~ msgstr ""
+#~ "Jos sinulla on useampi kuin yksi näyttö, valitse, mihin haluat lumen "
+#~ "putoavan. Valitse 'kaikki näytöt', jos haluat lunta kaikissa näytöissä.\n"
+#~ "Huomio: kun vaihdat näyttöä, xsnow käynnistyy uudelleen.\n"
+#~ "Flag: -screen"
+
+#~ msgid "Birds only"
+#~ msgstr "Vain linnut"
+
+#~ msgid ""
+#~ "If set: show no Santa, snow or scenery.\n"
+#~ "Flags: -birdsonly 0, -birdsony 1"
+#~ msgstr ""
+#~ "Jos asetettu: älä näytä joulupukkia, lunta tai maisemia.\n"
+#~ "Flags: -birdsonly 0, -birdsony 1"
+
+#~ msgid "Show fluff"
+#~ msgstr "Näytä fluffi"
+
+#~ msgid ""
+#~ "Scale of scenery.\n"
+#~ "Flag: sceneryscale <n>"
+#~ msgstr ""
+#~ "Maiseman mittakaava. \n"
+#~ "Flag: sceneryscale <n>"
+
+#~ msgid ""
+#~ "Desired number of scenery items.\n"
+#~ "Flag: -trees"
+#~ msgstr ""
+#~ "Maiseman kohteiden haluttu määrä.\n"
+#~ "Flag: -trees"
+
+#~ msgid ""
+#~ "Bottom percentage of screen available for scenery.\n"
+#~ "Flag: -treefill"
+#~ msgstr ""
+#~ "Näyttöruudun alin prosenttiosuus on käytettävissä maisemia varten.\n"
+#~ "Flag: -treefill"
+
+#~ msgid "# Items:"
+#~ msgstr "# Tuotteet:"
+
+#~ msgid "% Window fill:"
+#~ msgstr "Ikkunan täyttö %:"
+
+#~ msgid "Bright:"
+#~ msgstr "Kirkaus:"
+
+#~ msgid ""
+#~ "Animation speed of aurora: real: 10, for a more dramatic effect choose: "
+#~ "100\n"
+#~ "Flag: -auroraspeed"
+#~ msgstr ""
+#~ "Auroran animaationopeus: todellinen: 10, dramaattisempi vaikutus valitse: "
+#~ "100\n"
+#~ "Flag: -auroraspeed"
+
+#~ msgid ""
+#~ "Brightness of aurora.\n"
+#~ "Flags: -aurorabrightness"
+#~ msgstr ""
+#~ "Auroran kirkkaus.\n"
+#~ "Flags: -aurorabrightness"
+
+#~ msgid ""
+#~ "Width of aurora in percentage of screen width.\n"
+#~ "Flag: -aurorawidth"
+#~ msgstr ""
+#~ "Auroran leveys prosentteina näytön leveydestä.\n"
+#~ "Flag: -aurorawidth"
+
+#~ msgid ""
+#~ "Vertical size of aurora.\n"
+#~ "Flag: -auroraheight"
+#~ msgstr ""
+#~ "Auroran pystysuuntainen koko.\n"
+#~ "Flag: -auroraheight"
+
+#~ msgid "Base:"
+#~ msgstr "Perusarvo:"
+
+#~ msgid ""
+#~ "Baseline height of aurora, in percentage of screen height.\n"
+#~ "Flag: -aurorabase"
+#~ msgstr ""
+#~ "Auroran lähtötason korkeus prosentteina näytön korkeudesta.\n"
+#~ "Flag: -aurorabase"
+
+#~ msgid "Focus to attraction point:"
+#~ msgstr "Keskity vetovoimapisteeseen:"
+
+#~ msgid "Adjust speed to neighbours:"
+#~ msgstr "Säädä nopeutta naapureille:"
+
+#~ msgid ""
+#~ "Follow \n"
+#~ "Santa"
+#~ msgstr ""
+#~ "Seuraa \n"
+#~ "Joulupukkia"
+
+#~ msgid "Attraction point range"
+#~ msgstr "Nähtävyyskohdan vaihteluväli"
+
+#~ msgid ""
+#~ "Show \n"
+#~ "attr point"
+#~ msgstr ""
+#~ "Näytä \n"
+#~ "nattr-piste"
+
+#~ msgid "Xscreensaver: "
+#~ msgstr "Xscreensaver: "
+
+#~ msgid ""
+#~ "When activated, the background will be black.\n"
+#~ "Flag: -bg  (this button will be automatically desactivated when -bg is "
+#~ "given)"
+#~ msgstr ""
+#~ "Kun se on aktivoitu, tausta on musta.\n"
+#~ "Flag: -bg  (this button will be automatically desactivated when -bg is "
+#~ "given)"
+
+#~ msgid "window type etc."
+#~ msgstr "ikkunatyyppi jne."
+
+#~ msgid "Scale"
+#~ msgstr "Asteikko"
+
+#~ msgid "Cpu factor"
+#~ msgstr "Cpu-kerroin"
+
+#~ msgid "Lift snow on windows"
+#~ msgstr "Nosta lunta ikkunoihin"
+
+#~ msgid "Lift snow on bottom"
+#~ msgstr "Nosta lumi pohjaan"
+
+#~ msgid "Ignore large bottom windows"
+#~ msgstr "Ohita suuret alaikkunat"
+
+#~ msgid "Ignore large top windows"
+#~ msgstr "Ohita suuret yläikkunat"
+
+#~ msgid ""
+#~ "This setting determines how many seconds pass between  two  gusts of "
+#~ "wind.\n"
+#~ "Flag: -windtimer"
+#~ msgstr ""
+#~ "Tämä asetus määrittää, kuinka monta sekuntia kuluu kahden tuulenpuuskan "
+#~ "välillä.\n"
+#~ "Flag: -windtimer"
+
+#~ msgid "Intensity:"
+#~ msgstr "Intensiteetti:"
+
+#~ msgid "Wind"
+#~ msgstr "Tuulivoima"
+
+#~ msgid "Whirl:"
+#~ msgstr "Sekoitus:"
+
+#~ msgid "Timer:"
+#~ msgstr "Ajastin:"
+
+#~ msgid "Now!"
+#~ msgstr "Nyt!"
+
+#~ msgid "Celestials"
+#~ msgstr "Taivaalliset"
+
+#~ msgid "  "
+#~ msgstr "  "
+
+#~ msgid "Bird color"
+#~ msgstr "Lintujen väri"
+
+#~ msgid "Actual mean distance from neighbours."
+#~ msgstr "Todellinen keskimääräinen etäisyys naapureista."
+
+#~ msgid "label"
+#~ msgstr "tunniste"
+
+#~ msgid "Distance used to get the desired number of neighbours."
+#~ msgstr "Etäisyydellä saatiin haluttu määrä naapureita."
+
+#~ msgid "version"
+#~ msgstr "versio"
+
+#, c-format
+#~ msgid "Range: %d\n"
+#~ msgstr "Alue: %d\n"
+
+#, c-format
+#~ msgid "Mean distance: %3d\n"
+#~ msgstr "Keskimääräinen etäisyys: %3d\n"
+
+#~ msgid "All defaults"
+#~ msgstr "Kaikki oletusarvot"
+
+#~ msgid ""
+#~ "Apply defaults for all preferences (except settings).\n"
+#~ "Flag: -defaults"
+#~ msgstr ""
+#~ "Käytä oletusasetuksia kaikkiin asetuksiin (paitsi asetuksiin).\n"
+#~ "Flag: -defaults"
+
+#~ msgid "&#8195; &#8195; &#8195; &#8195; &#8195; &#8195; &#8195;"
+#~ msgstr "&#8195; &#8195; &#8195; &#8195; &#8195; &#8195; &#8195;"
+
+#~ msgid "Allow overlap"
+#~ msgstr "Salli päällekkäisyys"
+
+#~ msgid "Windy"
+#~ msgstr "Tuulinen"
+
+#~ msgid "Max # snowflakes:"
+#~ msgstr "Enintään # lumihiutaletta"
+
+#~ msgid "# Snowflakes:"
+#~ msgstr "# Lumihiutaleet:"
+
+#~ msgid "In every tab you find the following rescue buttons:"
+#~ msgstr "Jokaisessa välilehdessä on seuraavat pelastuspainikkeet:"
+
+#~ msgid "Choose your Santa"
+#~ msgstr "Valitse Joulupukki"
+
+#~ msgid ""
+#~ "Menu\n"
+#~ "colors"
+#~ msgstr ""
+#~ "Valikko\n"
+#~ "värit"
+
+#~ msgid ""
+#~ "On all\n"
+#~ "workspaces"
+#~ msgstr ""
+#~ "Kaikissa\n"
+#~ "työtiloissa"
+
+#~ msgid ""
+#~ "Below\n"
+#~ "windows"
+#~ msgstr ""
+#~ "Alla\n"
+#~ "ikkunat"
+
+#~ msgid ""
+#~ "Click to\n"
+#~ "confirm"
+#~ msgstr ""
+#~ "Napsauta\n"
+#~ "vahvistaaksesi"
+
+#~ msgid "monitor 1"
+#~ msgstr "näyttö 1"
+
+#~ msgid ""
+#~ "Create\n"
+#~ "outline"
+#~ msgstr ""
+#~ "Luo\n"
+#~ "ulkoviiva"
+
+#, c-format
+#~ msgid "%s. Snow window: %#lx"
+#~ msgstr "%s. Lumiikkuna: %#lx"
+
+#, c-format
+#~ msgid "Desktop type: %s"
+#~ msgstr "Työpöydän tyyppi: %s"
+
+#~ msgid "Try and click any image!"
+#~ msgstr "Kokeile ja klikkaa mitä tahansa kuvaa!"
+
+#~ msgid "<b>Defaults </b>"
+#~ msgstr "<b>Oletusarvot </b>"
+
+#~ msgid "Set default preferences for this tab."
+#~ msgstr "Aseta oletusasetukset tälle välilehdelle."
+
+#~ msgid "   "
+#~ msgstr "   "
+
+#~ msgid ""
+#~ "  \n"
+#~ "  "
+#~ msgstr ""
+#~ "  \n"
+#~ "  "
+
+#~ msgid ""
+#~ " \n"
+#~ " \n"
+#~ " \n"
+#~ " \n"
+#~ " \n"
+#~ " \n"
+#~ " \n"
+#~ " \n"
+#~ " \n"
+#~ msgstr ""
+#~ " \n"
+#~ " \n"
+#~ " \n"
+#~ " \n"
+#~ " \n"
+#~ " \n"
+#~ " \n"
+#~ " \n"
+#~ " \n"
+
+#~ msgid ""
+#~ "If everything is ok, it is now snowing on your desktop, and birds are "
+#~ "flying. You are encouraged to define your own preferences using the tabs "
+#~ "above."
+#~ msgstr ""
+#~ "Jos kaikki on hyvin, työpöydälläsi sataa nyt lunta ja linnut lentävät. "
+#~ "Sinua kannustetaan määrittelemään omat mieltymyksesi käyttämällä yllä "
+#~ "olevia välilehtiä."
+
+#~ msgid ""
+#~ "Use the <b>settings</b> tab if xsnow is misbehaving.\n"
+#~ "Use the <b>birds</b> tab if birds are misbehaving."
+#~ msgstr ""
+#~ "Käytä <b>asetukset</b>, jos xsnow käyttäytyy huonosti.\n"
+#~ "Käytä <b>linnut</b>, jos lintu käyttäytyy huonosti."
+
+#~ msgid "<b>Vintage </b>"
+#~ msgstr "<b>Vintage </b>"
+
+#~ msgid "Set vintage preferences for this tab."
+#~ msgstr "Aseta vintage-asetukset tälle välilehdelle."
+
+#~ msgid "Welcome at xsnow!"
+#~ msgstr "Tervetuloa xsnow!"
+
+#~ msgid ""
+#~ "Vintage preferences: the look and feel of the original xsnow, created in "
+#~ "1993 by Rick Jansen."
+#~ msgstr ""
+#~ "Vintage-asetukset: Rick Jansenin vuonna 1993 luoman alkuperäisen xsnow'n "
+#~ "ulkoasu ja tuntuma."
+
+#~ msgid ""
+#~ "If the system is too busy, all panels get this color, in which case you "
+#~ "could  adapt some settings in \"snow\", \"birds\", \"settings\", or "
+#~ "\"celestials\"."
+#~ msgstr ""
+#~ "Jos järjestelmä on liian varattu, kaikki paneelit saavat tämän värin, "
+#~ "jolloin voit  säätää joitain asetuksia \"lumi\", \"linnut\", "
+#~ "\"asetukset\" tai \"taivaalliset\"."
+
+#~ msgid "Welcome"
+#~ msgstr "Tervetuloa"
+
+#~ msgid "Choose your favorite snow"
+#~ msgstr "Valitse suosikkilumi"
+
+#~ msgid "Choose your favorite Santa"
+#~ msgstr "Valitse suosikkijoulupukki"
+
+#~ msgid "Compose your favorite scenery"
+#~ msgstr "Luo suosikkimaisemaasi"
+
+#~ msgid "Compose here your favorite celestial conditions"
+#~ msgstr "Kirjoita tähän suosikkisi taivaallisista olosuhteista"
+
+#~ msgid "Birds settings"
+#~ msgstr "Lintujen asetukset"
+
+#~ msgid "Donate"
+#~ msgstr "Lahjoita"
+
+#~ msgid ""
+#~ "Donate one euro or so to inspire the maintainer of xsnow, here is a "
+#~ "paypal link. "
+#~ msgstr ""
+#~ "Lahjoita yksi euro tai niin innostaa ylläpitäjä xsnow, tässä on paypal-"
+#~ "linkki. "
+
+#~ msgid "Contact"
+#~ msgstr "Yhteys"
+
+#~ msgid "Please report any comments to the maintainer of xsnow."
+#~ msgstr "Ilmoita mahdollisista kommenteista ylläpitäjälle xsnow."
+
+#~ msgid "Settings"
+#~ msgstr "Asetukset"
+
+#~ msgid "<b>All defaults </b>"
+#~ msgstr "<b>Kaikki oletusarvot </b>"
+
+#~ msgid "Set default preferences for all (except settings) tabs."
+#~ msgstr "Aseta oletusasetukset kaikille (paitsi asetuksille) välilehdille."
+
+#~ msgid "Set vintage preferences for all (except settings) tabs."
+#~ msgstr "Aseta vintage-asetukset kaikille (paitsi asetuksille) välilehdille."
+
+#~ msgid ""
+#~ "Apply defaults for all preferences (except settings).\n"
+#~ "Flags: -defaults"
+#~ msgstr ""
+#~ "Käytä oletusasetuksia kaikkiin asetuksiin (paitsi asetuksiin).\n"
+#~ "Flags: -defaults"
+
+#~ msgid ""
+#~ "Apply default values for all preferences (except settings).\n"
+#~ "Flag: -defaults"
+#~ msgstr ""
+#~ "Käytä oletusarvoja kaikkiin asetuksiin (paitsi asetuksiin).\n"
+#~ "Flag: -defaults"
+
+#~ msgid "<b>All vintage </b>"
+#~ msgstr "<b>Kaikki vintage </b>"
+
+#~ msgid "All vintage"
+#~ msgstr "Kaikki vintage"
+
+#~ msgid ""
+#~ "Use vintage values for all preferences (except settings).\n"
+#~ "Flag: -vintage"
+#~ msgstr ""
+#~ "Käytä vintage-arvoja kaikille asetuksille (paitsi asetuksille).\n"
+#~ "Flag: -vintage"
+
+#~ msgid "Hide menu"
+#~ msgstr "Piilota valikko"
+
+#~ msgid ""
+#~ "Leave menu.\n"
+#~ "Flag: -nomenu"
+#~ msgstr ""
+#~ "Poistu ruokalistalta.\n"
+#~ "Flag: -nomenu"
+
+#~ msgid "Vintage"
+#~ msgstr "Vintage"
+
+#~ msgid "Apply vintage values for the preferences in this tab."
+#~ msgstr "Käytä vintage-arvoja tämän välilehden asetuksiin."
+
+#~ msgid ""
+#~ "Apply vintage values for all preferences (except settings).\n"
+#~ "Flag: -vintage"
+#~ msgstr ""
+#~ "Käytä vintage-arvoja kaikkiin asetuksiin (paitsi asetuksiin).\n"
+#~ "Flag: -vintage"
+
+#~ msgid "Quit xsnow"
+#~ msgstr "Lopeta xsnow"
+
+#~ msgid "Quit xsnow."
+#~ msgstr "Lopeta xsnow."
+
+#~ msgid ""
+#~ "\n"
+#~ "Alas! This not an X11 session, xsnow will probably not run.\n"
+#~ "\n"
+#~ "If you want to try it anyway, set the environment variable "
+#~ "XSNOW_FORCE_RUN, eg:\n"
+#~ "\n"
+#~ "    XSNOW_FORCE_RUN=1 xsnow\n"
+#~ "\n"
+#~ "Or, you could force an X11 session, for example by tweaking /etc/gdm3/"
+#~ "daemon.conf.\n"
+#~ "\n"
+#~ msgstr ""
+#~ "\n"
+#~ "Alas! Tämä ei ole X11-istunto, xsnow ei todennäköisesti suoriteta.\n"
+#~ "\n"
+#~ "Jos haluat kuitenkin kokeilla sitä, aseta ympäristömuuttuja "
+#~ "XSNOW_FORCE_RUN, esim.\n"
+#~ "\n"
+#~ "    XSNOW_FORCE_RUN=1 xsnow\n"
+#~ "\n"
+#~ "Voit myös pakottaa X11-istunnon esimerkiksi säätämällä /etc/gdm3/daemon."
+#~ "conf.\n"
+#~ "\n"
+
+#~ msgid "Ok, things are as they are. "
+#~ msgstr "Asiat ovat niin kuin ovat. "
+
+#~ msgid "Transparency "
+#~ msgstr "Avoimuus "
+
+#~ msgid ""
+#~ "Settings for Xscreensaver. You can choose a background, and choose to use "
+#~ "it or not.\n"
+#~ "Make sure you add a line like\n"
+#~ "xsnow -root\n"
+#~ "after the line 'programs:' in the file ~/.xscreensaver and you run "
+#~ "xscreensaver-demo to choose for xsnow.\n"
+#~ "To activate xscreensaver on the command line:\n"
+#~ "xscreensaver-command  -activate\n"
+#~ "See also the man page:\n"
+#~ "man xsnow"
+#~ msgstr ""
+#~ "Asetukset kohteelle Xscreensaver. Voit valita taustan ja käyttää sitä tai "
+#~ "ei.\n"
+#~ "Varmista, että lisäät rivin, kuten\n"
+#~ "xsnow -root\n"
+#~ "a rivin 'programs:' jälkeen tiedostossa ~/.xscreensaver ja suoritat "
+#~ "xscreensaver-demon, jolle valitset xsnow.\n"
+#~ "Voit aktivoida xscreensaver komentorivillä:\n"
+#~ "xscreensaver-command  -activate\n"
+#~ "Katso myös man-sivu:\n"
+#~ "man xsnow"
+
+#~ msgid "Wayland (Expect some slugginess)"
+#~ msgstr "Wayland (Odottaa jonkin verran slugginess)"
+
+#~ msgid "Probably X11"
+#~ msgstr "Todennäköisesti X11"
+
+#~ msgid "Color:"
+#~ msgstr "Väri:"
+
+#~ msgid ""
+#~ "Set color of vintage tree.\n"
+#~ "Flag: -tc"
+#~ msgstr ""
+#~ "Aseta vintage-puun väri.\n"
+#~ "Flag: -tc"
+
+#~ msgid ""
+#~ "Choose between yellow-ish and white-ish moon.\n"
+#~ "Flag: -mooncolor [0,1]"
+#~ msgstr ""
+#~ "Valitse keltaisen ja valkoisen kuun välillä. \n"
+#~ "Flag: -mooncolor [0,1]"
+
+#~ msgid ""
+#~ "Give the birds a fancy color.\n"
+#~ "Flag: -birdscolor"
+#~ msgstr ""
+#~ "Anna linnuille hieno väri.\n"
+#~ "Flag: -birdscolor"
+
+#~ msgid ""
+#~ "The color of the snow.\n"
+#~ "Flag: -sc"
+#~ msgstr ""
+#~ "Lumen väri.\n"
+#~ "Flag: -sc"
+
+#, c-format
+#~ msgid "XWinInfo failed\n"
+#~ msgstr "XWinInfo epäonnistui\n"
+
+#, c-format
+#~ msgid "Force snow on root: window: %#lx, depth: %d\n"
+#~ msgstr "Pakota lumi juurille: ikkuna: %#lx, syvyys: %d\n"
+
+#, c-format
+#~ msgid ""
+#~ "NOTE: you probably need to tweak 'Lift snow on windows' in the 'settings' "
+#~ "panel.\n"
+#~ msgstr ""
+#~ "HUOMAA: sinun on todennäköisesti säädettävä 'Nosta lunta ikkunoista' "
+#~ "'asetukset' -paneelissa.\n"
+
+#~ msgid "Force a gust of wind immediately.\n"
+#~ msgstr "Pakota tuulenpuuska välittömästi.\n"

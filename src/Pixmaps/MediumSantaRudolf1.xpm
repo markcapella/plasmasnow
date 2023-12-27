@@ -1,0 +1,63 @@
+/* XPM */
+/* -copyright-
+#-# 
+#-# plasmasnow: Let it snow on your desktop
+#-# Copyright (C) 1984,1988,1990,1993-1995,2000-2001 Rick Jansen
+#-# 	      2019,2020,2021,2022,2023 Willem Vermin
+#-# 
+#-# This program is free software: you can redistribute it and/or modify
+#-# it under the terms of the GNU General Public License as published by
+#-# the Free Software Foundation, either version 3 of the License, or
+#-# (at your option) any later version.
+#-# 
+#-# This program is distributed in the hope that it will be useful,
+#-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+#-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#-# GNU General Public License for more details.
+#-# 
+#-# You should have received a copy of the GNU General Public License
+#-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#-# 
+*/
+XPM_TYPE *MediumSantaRudolf1[] = {
+/* width height num_colors chars_per_pixel */
+"    88    17       19            1",
+/* colors */
+". c #ffffff",
+"# c #ff9933",
+"a c #ff0000",
+"b c #f1f1f1",
+"c c #cccccc",
+"d c #cc9999",
+"e c #cc9933",
+"f c #cc6633",
+"g c #cc0000",
+"h c None",
+"i c #c0c0c0",
+"j c #993333",
+"k c #990000",
+"l c #663300",
+"m c #111111",
+"n c #009900",
+"o c #0066cc",
+"p c #003399",
+"q c #000000",
+/* pixels */
+"hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhjhhjhhhhhhhhhhhhhhhhhjjhhhhhhhhhhhhhhhhjjhhhhhhh",
+"hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhjjhjhhhhhhhhhhhhhhhhhhjhjjhhhhhhhhhhhhhhjhjjhhhh",
+"hhhhhhhhhhhgghhhhhhhhhhhhhhhhhhhhhhhhhhhhhjhhhjhhhhhhhhhhhhhhhhjjhhhhhhhhhhhhhhhhjjhhhhh",
+"hhhhhhhhhggggghhhhhhhhhhhhhhhhhhhhhhhhhhhhhjjhjjhhhhhhhhhhhhhhhhjhhhjhhhhhhhhhhhhhjhhhjh",
+"hhhhhhhhgkgkkgihhhhhhhhhhhhhhhhhhhhhhhhhhhhhjjhhhhhhhhhhhhhhhhhhhjhjhhhhhhhhhhhhhhhjhjhh",
+"hhhhhhhh.hhkgqdhhhhhhhhhhhhhhhhhhhhhhhhhhhhhfffhhhhhhhhhhhhhhhhhhfffhhhhhhhhhhhhhhhjffhh",
+"hhhhhhhhhhhccccdhhhhhhhhhhhhhhhhhhffffhhffmflfmfhhhhhhffffhhhfmfllffhhhhhhfffhhhfmmflffh",
+"hhhhhhhhghhhbcbbhhhhhhhhhhhhhhhhhffffffffffmfjjfhhhhhffffffffffmfjfffmhmffffffffffmffjaa",
+"hhhhhhhcgjhgkbbhhhhhhhhhhhhhhhhhfffffffffffjmhhjhmhmfffffffffffjmjhffhhhffffffffffffjhaa",
+"hcooohg##hjggggkg.mmmmmmmmmhhhhhffffjfffffffhmhhhhhhffffjfffffffhmmmmmmmfffjjfffffjhhhhh",
+"n#nnopopoojkgkkgggmmhhhhhhmmmmmmjffffjjjfffjhhmmmmmmjffffjjjfffjhhhhhhhhjfffjjjjfffhhhhh",
+"jnneggoooojkkggg.hhjhhhhhhhhhhhhhhfffhhhhfjhhhhhhhhhhhfffhhhhfjhhhhhhhhhhhfffhhhffhhhhhh",
+"#nnnggoopojhkkkgghhjhhhhhhhhhhhhhhhffhhhhfhhhhhhhhhhhhhffhhhhfhhhhhhhhhhhhhfjhhhfjhhhhhh",
+"llllllllllllllllllljhhhhhhhhhhhhhhhhffhhfjhhhhhhhhhhhhhhffhhfjhhhhhhhhhhhhhfffhffjhhhhhh",
+"hhhlhhhhhhhhhlhh..hjhhhhhhhhhhhhhhhhjqhhfjhhhhhhhhhhhhhhjqhhfjhhhhhhhhhhhhhhjmhfjhhhhhhh",
+"hhhjhhhhhhhhhjhhhqjhhhhhhhhhhhhhhhhhhhhhmhhhhhhhhhhhhhhhhhhhmhhhhhhhhhhhhhhhhhhmhhhhhhhh",
+"jjjjjjjjjjjjjjjjjjhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+};

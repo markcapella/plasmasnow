@@ -1,0 +1,80 @@
+/* XPM */
+/* -copyright-
+#-# 
+#-# plasmasnow: Let it snow on your desktop
+#-# Copyright (C) 1984,1988,1990,1993-1995,2000-2001 Rick Jansen
+#-# 	      2019,2020,2021,2022,2023 Willem Vermin
+#-# 
+#-# This program is free software: you can redistribute it and/or modify
+#-# it under the terms of the GNU General Public License as published by
+#-# the Free Software Foundation, either version 3 of the License, or
+#-# (at your option) any later version.
+#-# 
+#-# This program is distributed in the hope that it will be useful,
+#-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+#-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#-# GNU General Public License for more details.
+#-# 
+#-# You should have received a copy of the GNU General Public License
+#-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#-# 
+*/
+XPM_TYPE *BigSantaRudolf81[] = {
+/* width height num_colors chars_per_pixel */
+"   256    33       20            1",
+/* colors */
+". c #ffffff",
+"# c #ff9933",
+"a c #ff0000",
+"b c #f1f1f1",
+"c c #cccccc",
+"d c #cc9999",
+"e c #cc9933",
+"f c #cc6633",
+"g c #cc0000",
+"  c None",
+"i c #993333",
+"j c #990000",
+"k c #663300",
+"l c #33cc00",
+"m c #111111",
+"n c #009900",
+"o c #0066cc",
+"p c #003399",
+"A c #444444",
+"B c #555555",
+/* pixels */
+"                                                                                                                                                                                                                                                                ",
+"                                                                                      i                                   A i   i                               A  i   i                               A  i   i                               i   i             ",
+"                                                                            A    iA   i iii                               A ii  ii                              AA ii  ii                             AA  ii  ii     A                        ii  ii iii        ",
+"                                                                            AA   ii   iii                                 AA ii  iiii                           AA  ii  iiii                          AA   ii  iiii AA                         ii  iii          ",
+"                                                                             AAA  iii ii                                AAAAA iiii                               AA  iiii    AA                        A AA iiii    A                           iiii            ",
+"                       gggg                                                    AAAA iiiA     i                            AA   ii     A                           AAA ii    AA                         AA A  ii   AAA                             ii      i     ",
+"                     ggjgggg                                                      A   iAAAA  iiii                          AA   i    AA i                           AA i   AAA i                        AAA   i   AA  i                            ii     i ii  ",
+"                    jgjgggggg                                                     AA  iiAA   iii                            AA  ii   A iiii                        AAA ii  AA iiii                       AAA  ii  AAAiiii                          ii     iii   ",
+"                   ggjggjgggggb                                                    AA  ii    i                               AA  ii AAiiii                           AA ii A iiii                          AA  ii A iiii                            ii    ii    ",
+"                  gjjgjjgjgggc                                                     AAAAAiiiii                                 AA  iiB i                               AA ii Ai                              AA  iiA i                                ii ii      ",
+"                 gj   ggjggdbd                                                       AA   ii                                   AA  iiii                                AAAiiii                               AA  iiii                                 iii       ",
+"                .j     jggdbmdd                                                    BBBB ifffff                                BBBBffffff                            BBBBBffffff                             BBBBffffff                               iffff      ",
+"               ...     gcbcddddd                                                BBBBBmmfiikkiff                         BBBBBBBffkiififf                          BBBBffkiififf                       BBBBBBBffkiififf                             ffkiififf    ",
+"                .      cccbcdccdd                                BBBBffffffBBBBBBffffmmfkkkffmff        BBB ffffffffBBBBBBffmmfffkikffmff       BBBffffffffBBBBBBffmmfffkikffmff       BBBffffffffBBBBBBffmmfffkikffmff           ffffff      fffmmmffkkffmff   ",
+"                        cccbbcbbd                             BBBBffffffffffffffffffffmmfffffffff       BBfffffffffffffffffffmmffffffffff      BBfffffffffffffffffffmmffffffffff       Bfffffffffffffffffffmmffffffffff        fffffffffffffffffffmmffffffffaaa ",
+"                jgg     cbcccbcb                              BBBBfffffffffffffffffffffmmffiiiffk       BBffffffffffffffffffffmmfffiifffffm m  BBffffffffffffffffffffmmfffiifffffm m  BBffffffffffffffffffffmmfffiifffffm m    ffffffffffffffffffffmmfffiiffaaa ",
+"                gggii  jjbjcbccb                              BBBfffffffffffffffffffffffmmiiiiifkm     BBfffffffffffffffffffffffmiiiiffffk    BBfffffffffffffffffffffffmiiiiffffk    BBfffffffffffffffffffffffmiiiiffffk   m mfffffffffffffffffffffffmiiififaaa ",
+"               cjgjii jgjjjbjb                                mBmffffffffffffffffffffffifmm   ii  m m m mffffffffffffffffffffffifmii   ffk   m mffffffffffffffffffffffifmii   ffk   m mffffffffffffffffffffffifmii   ffk      ffffffffffffffffffffffifmi   if   ",
+"       b b  lgnccccii jggggjggg   m                    m m m  BBBffffffifffffffffffffiifiim            BBffffffifffffffffffffiifimm           BBffffffifffffffffffffiifimm           BBffffffifffffffffffffiifimm             ffffffifffffffffffffiifim         ",
+"   c ocobog lg##g#g iijgggggggjj ggmmm m m m m m m m m        BBBfffffffiiifffffffffffif  mmm          BBfffffffiiifffffffffffif mmmmmmmmmmmm BBfffffffiiifffffffffffif mmmmmmmmmmmm BBfffffffiiifffffffffffif mmmmmmmmmmmmmmmfffffffiiifffffffffffif           ",
+"   cccoobpo lgl##gg iijjgjgjggggbggg                        mmmmmifffffffiiiiiiiifffffff  mmmmmmmmmmmmmmmifffffffiiiiiiiifffffff mmmmmmmmmmmmmmmifffffffiiiiiiiifffffff mmmmmmmmmmmmmmmifffffffiiiiiiiifffffff mmmmmmmmmmmmmmmifffffffiiiiiiiifffffff           ",
+" nn#cnnnbopppoop#opoiijjggjjjjggbgggmmmmmmmmmmmmmmmmmmmmmmmmmmmBBiifffffffiiiiiiiffffff      mmmmmmmmmmmmiifffffffiiiiiiiffffffi             mmmiifffffffiiiiiiiffffffi             mmmiifffffffiiiiiiiffffffi                iifffffffiiiiiiiffffffi           ",
+"  encennggpgbooo#oooiijjjgggggjjgg   mmmmmmmmmmmmmmmmmmmmmmm    BBfffffffffiiiiiifffffii               BBBfffffffffiiiiiifffffii               BBfffffffffiiiiiifffffii               BBfffffffffiiiiiifffffii                 fffffffffiiiiiifffffii           ",
+" inncnneggpggooo#opoiiijjjgggggggb    ii                      BBB iiiffffff    BB fff ii               BB iiiffffff    BB fff ii              BBBiiiffffff     BBfff ii              BB iiiffffff   BBB fff ii                 iiiffffff       fff ii           ",
+"inencenngbpggoop#ooo iijjjjjggggggb   ii                     BBB iiii  ffff    BB fff iii             BB iiii  ffff   BBB fff iii           BBB iiii Bffff    BB fffBiii           BBB iiii  ffff   BB  fffBiii               iiii  ffff       fff iii          ",
+"i#nncn#nggpgbooo#poo ii jjjjjjggggb   ii                     BB iiiiBB  ffi    B  ff B ii            BB iiii    ffi   BB  ff B ii           BB iiii BB ffi    BB ff B ii           BB iiii    ffi  BB   ff BBii              iiii    ffi       ff   ii          ",
+" iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii                    BB iii   BB fff   BB fff BB ii          BB iii      fff  BB  fff BB ii         BB iii   BB fff   BB fff BB ii          B iii      fff BB   fff BB ii            iii      fff      fff    ii         ",
+" kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkii                    BB ii    BB ffff  BB ff  BB  ii         BB ii       ffff BB  ff   BB ii        BB ii    BB ffff  BB ff  BB  ii        BB ii       ffffB    ff   BB ii           ii       ffff     ff      ii        ",
+"     kk                   kkjjjjjjb   ii                   BB iii     BB  ff BB  ff   BB ii         B iii         ff BB  ff    BBii       BB iii     BB  ff BBB ff   BB ii        B iii         ff     ff   BB ii          iii         ff     ff      ii        ",
+"     kk                   kkbbbbbbmm  ii                   BB ii       BB  fmBB ff     BB ii       BB ii           fmB  ff     BB ii      BB ii      BB   fmBB ff   BB   ii      BB ii           fm   ff     BB ii         ii           fm   ff        ii       ",
+"  i  kk                   kk  mmmmmm iii                   BB mm        B  fmBB ff     BB mm       BB mm           fmB  ff     BB mm      BB mm      BB   fmB  ff    BB  mm      BB mm           fm   ff      B mm         mm           fm   ff        mm       ",
+" i   kk                   kk   mmm  iii                                      BB mm                                      mm                                  B  mm                                     mm                                     mm                 ",
+"  iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii                                                                                                                                                                                                                          ",
+};

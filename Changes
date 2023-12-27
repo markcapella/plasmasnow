@@ -1,0 +1,58 @@
+
+      Modification history
+      --------------------
+      1984/1985 Macintosh animated Christmas card
+      1988/1990 Macintosh undying desk accessory, and MultiFinder version
+      03DEC93 version 0 for X-windows
+      04DEC93 background setting
+      06DEC93 delay in main loop using select
+   10DEC93 keep snow on top of windows and at bottom of display
+11DEC93 snow kept sticking to the right of display (1.11)
+   11DEC93 updated calcwindowtops
+   12DEC93 call calcwindowtops after last exposure event only
+   13DEC93 vroot added for virtual window managers
+   14DEC93 separate options for snowdepth on windows and on screen
+15DEC93 patch for fvwm from Mike Hollick (hollick@graphics.cis.upenn.edu)
+   16DEC93 Really building up snow at bottom of screen
+   16DEC93 A choice of Santa's. Thanks to Holger Veit (Holger.Veit@gmd.de)
+   for Santa no. 2. Santa 1 was derived from 2 by scaling down.
+   20DEC93 Aaaargh! gnu C doesn't like the initialization of the new
+   Santa pixmaps. Extra braces do the trick, which is so often the case
+   20DEC93 Deleted PaintSnowAtBottom. It's more of a surprise this way.
+21DEC93 In case of negative x coordinates adapt width (CalcWindowTops)
+   22DEC93 Rudolf's red nose. Silly. Grmbll.
+   22DEC93 Bug with -nokeepsnowonwindows removed
+   10JAN94 Improved handling of erasing snow at screen bottom in case of 
+   window in or under the snow.
+   18FEB94 X-speed really 0 inside snow layers - prevents snowflakes from 
+   erasing already fallen snow a bit better
+   30OCT94 More efficiency due to GC's in server and not drawing where
+   the windows are.
+   30OCT94 1.30 Eiichi TAZOE's code for wind included in general distribution.
+   11NOV94 Bug in XRectInRegion call resolved (santa not appearing gradually
+	 from behind windows)
+   15NOV94 Unsigned longs changed to longs, as strtoul is troublesome on many
+systems (snowDelay)
+   08DEC94 Snow is really building up on windows now
+   10DEC94 1.36 Handle Popups (no snow on them)
+16DEC94 1.37 -offset and (-nokeepsnowonwindows and -nokeepsnowonscreen back)
+   20DEC94 1.38 Let Santa be a real snowplough now
+   21DEC94 1.39 VMS fix for uSsleep, thanks to Ulrich Kabatek 
+   <Kaba@isr.uni-stuttgart.d400.de>
+   19NOV95 1.40 Memory leak fixed in CalcWindowTops, thanks to Satoshi Asami
+   <asami@cs.berkeley.edu> 
+   19NOV95 1.40 Greatly increased performance when using solid backgrounds
+   by using XFillRectangle instead of XClearArea. Thanks to
+   Benedikt Kessler <bjk@benedikt.munich.sgi.com>
+   20NOV95 1.40 Bug fixed with erasing snow at bot of screen
+   1996    New macintosh version, in color http://www.euronet.nl/~rja/MacSnow/
+   1998    Snow for Windows http://www.euronet.nl/~rja/WinSnow/
+   18DEC2000	1.41 Fix for X-servers that do not send expose events after a
+   while, due to backing store.
+   14DEC2001	KDE and other root window obstructors: sub borrowed from
+   xpenguins 2.2 to find the current "root" window for this system.
+   Credit to Robin Hogan <R.J.Hogan@reading.ac.uk>
+   dec2018 Willem: use wmctrl to find Desktop window
+   invert pixmaps and display them inverted to get right
+   colors on gnome desktop
+   */

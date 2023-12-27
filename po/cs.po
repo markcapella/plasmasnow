@@ -1,0 +1,2057 @@
+# # Sometimes the translations contain rubbish, please replace them.
+# # (abc_1000) Xsnow
+# # (abc_1001) &#8195;
+# # (abc_1002) %l#x
+# # (abc_1003) xsnow
+# # (abc_1004) XsnoW
+# # (abc_1005) Xscreensaver
+# # (abc_1006) Rick Jansen
+# # (abc_1007) \n
+# # (abc_1008) XSNOW
+# Language for xsnow
+# Copyright (C) 2023 Willem Vermin
+# Willem Vermin <wvermin@gmail.com>, 2023
+# This file is distributed under the same license as the xsnow package.
+#
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: xsnow 3.7.0~pre04\n"
+"Report-Msgid-Bugs-To: markcapella@twcny.rr.com\n"
+"POT-Creation-Date: 2023-10-29 14:49-0400\n"
+"PO-Revision-Date: 2023-02-17 13:40+0100\n"
+"Last-Translator: Willem Vermin wvermin@gmail.com\n"
+"Language-Team: None\n"
+"Language: cs\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/main.c:304
+#, c-format
+msgid "Available languages are: %s\n"
+msgstr "Dostupné jazyky jsou: %s\n"
+
+#: src/main.c:323
+#, c-format
+msgid "For optimal resuts, add to your %s:\n"
+msgstr "Pro optimální výsledky přidejte do svého %s:\n"
+
+#: src/main.c:332
+#, c-format
+msgid "unknown\n"
+msgstr "neznámý\n"
+
+#: src/main.c:340
+#, c-format
+msgid "Detected Wayland desktop\n"
+msgstr "Detekovaná plocha Wayland\n"
+
+#: src/main.c:356
+#, c-format
+msgid "Xsnow needs gtk version >= %s, found version %s \n"
+msgstr "Xsnow potřebuje verzi gtk >= %s, nalezená verze %s \n"
+
+#: src/main.c:367
+msgid "Continuing with flag"
+msgstr "Pokračujeme vlajkou"
+
+#: src/main.c:407
+#, c-format
+msgid "%s: cannot connect to X server %s\n"
+msgstr "%s: nelze se připojit k X serveru %s\n"
+
+#: src/main.c:408
+msgid "(default)"
+msgstr "(výchozí)"
+
+#: src/main.c:496
+msgid "restarting"
+msgstr "restartování"
+
+#: src/main.c:557
+#, c-format
+msgid "Click on a window ...\n"
+msgstr "Klikněte na okno ...\n"
+
+#: src/main.c:583
+#, c-format
+msgid "Detected desktop session: %s\n"
+msgstr "Zjištěná relace plochy: %s\n"
+
+#: src/main.c:585
+#, c-format
+msgid "Could not determine desktop session\n"
+msgstr "Nelze určit relaci počítače\n"
+
+#: src/main.c:613
+#, c-format
+msgid "Trying to snow in root window\n"
+msgstr "Pokus o sněžení v kořenovém okně\n"
+
+#: src/main.c:654
+#, c-format
+msgid "Using transparent window\n"
+msgstr "Použití průhledného okna\n"
+
+#: src/main.c:658
+#, c-format
+msgid "The transparent snow-window is probably not click-through, alas..\n"
+msgstr "Průhledné sněhové okno pravděpodobně není proklikávací, bohužel..\n"
+
+#: src/main.c:666
+#, c-format
+msgid "Cannot create transparent window\n"
+msgstr "Nelze vytvořit průhledné okno\n"
+
+#: src/main.c:668
+#, c-format
+msgid "NOTE: xsnow will probably run, but some glitches are to be expected.\n"
+msgstr ""
+"POZNÁMKA: xsnow pravděpodobně poběží, ale lze očekávat nějaké závady.\n"
+
+#: src/main.c:681
+#, c-format
+msgid "LXDE session found, using window 'pcmanfm'.\n"
+msgstr "Byla nalezena relace LXDE pomocí okna 'pcmanfm'.\n"
+
+#: src/main.c:685
+#, c-format
+msgid "Using window 'Desktop'.\n"
+msgstr "Pomocí okna 'Desktop'. \n"
+
+#: src/main.c:687
+#, c-format
+msgid "Using root window\n"
+msgstr "Použití kořenového okna \n"
+
+#: src/main.c:731
+#, c-format
+msgid "Snowing in %#lx: %s %d+%d %dx%d\n"
+msgstr "Sněží v %#lx: %s %d+%d %dx%d\n"
+
+#: src/main.c:781
+#, c-format
+msgid "Using double buffer: %#lx. %dx%d\n"
+msgstr "Použití dvojité vyrovnávací paměti: %#lx. %dx%d\n"
+
+#: src/main.c:788
+#, c-format
+msgid "NOT using double buffering:"
+msgstr "NEPOUŽÍVEJTE dvojité ukládání do vyrovnávací paměti:"
+
+#: src/main.c:791
+#, c-format
+msgid " because double buffering is not available on this system\n"
+msgstr ""
+" protože dvojité ukládání do vyrovnávací paměti není v tomto systému k "
+"dispozici\n"
+
+#: src/main.c:793
+#, c-format
+msgid " on your request.\n"
+msgstr " na vaši žádost.\n"
+
+#: src/main.c:795
+#, c-format
+msgid "NOTE: expect some flicker.\n"
+msgstr "POZNÁMKA: očekávejte nějaké blikání.\n"
+
+#: src/main.c:934
+msgid "Refresh due to change of screen or language settings ...\n"
+msgstr ""
+
+#: src/main.c:945
+msgid "Refresh due to change of display settings...\n"
+msgstr ""
+
+#: src/main.c:1066
+#, c-format
+msgid "More than %d errors, I quit!"
+msgstr "Více než %d chyb, končím!"
+
+#: src/main.c:1211
+#, c-format
+msgid "Window size changed, now snowing in in %#lx: %s %d+%d %dx%d\n"
+msgstr "Velikost okna změněna, nyní sněží v %#lx: %s %d+%d %dx%d\n"
+
+#: src/main.c:1283
+#, c-format
+msgid "Halting because of flag %s\n"
+msgstr "Zastavení kvůli příznaku %s\n"
+
+#: src/selfrep.c:35
+#, c-format
+msgid "Not sending tar file to terminal.\n"
+msgstr "Neposílám soubor tar do terminálu.\n"
+
+#: src/selfrep.c:36
+#, c-format
+msgid "Try redirecting to a file (e.g: %s,\n"
+msgstr "Zkuste přesměrovat na soubor (např.: %s,\n"
+
+#: src/selfrep.c:38
+#, c-format
+msgid "or use a %s"
+msgstr "nebo použijte %s"
+
+#: src/selfrep.c:43
+msgid "Problems encountered during production of the tar ball.\n"
+msgstr "Problémy při výrobě dehtové koule.\n"
+
+#: src/selfrep.c:50
+#, c-format
+msgid "Self replication is not compiled in.\n"
+msgstr "Vlastní replikace není zkompilována. \n"
+
+#: src/utils.c:239
+#, c-format
+msgid ""
+"\n"
+"Xsnow: Caught signal %d\n"
+msgstr ""
+"\n"
+"Xsnow: Zachycený signál %d\n"
+
+#: src/utils.c:244
+#, c-format
+msgid ""
+"\n"
+"Thanks for using xsnow\n"
+msgstr ""
+"\n"
+"Děkujeme za použití xsnow\n"
+
+#: src/windows.c:585
+#, c-format
+msgid "Setting background from %s\n"
+msgstr "Nastavení pozadí z %s\n"
+
+#: src/ui.c:1263 src/ui.glade:4664
+msgid "all monitors"
+msgstr "všechny monitory"
+
+#: src/ui.c:1269
+#, c-format
+msgid "monitor %d"
+msgstr "monitor %d"
+
+#: src/ui.c:1287
+msgid "Available languages are: "
+msgstr "Dostupné jazyky jsou: "
+
+#: src/ui.c:1290
+msgid "Use \"sys\" for your default language.\n"
+msgstr "Jako výchozí jazyk použijte \"sys\".\n"
+
+#: src/ui.c:1291
+msgid "See also the man page."
+msgstr "Viz také manuálová stránka."
+
+#: src/ui.glade:389
+msgid "All Defaults"
+msgstr ""
+
+#: src/ui.glade:393 src/ui.glade:1880 src/ui.glade:2237 src/ui.glade:3060
+#: src/ui.glade:3770 src/ui.glade:4618
+msgid "Apply default values for the preferences in this tab."
+msgstr "Použít výchozí hodnoty pro předvolby na této kartě."
+
+#: src/ui.glade:410
+msgid "plasmasnow"
+msgstr ""
+
+#: src/ui.glade:444
+msgid "by Mark James Capella"
+msgstr ""
+
+#: src/ui.glade:458
+msgid "&VERSION-LABEL"
+msgstr ""
+
+#: src/ui.glade:473
+msgid "https://github.com/markcapella/plasmasnow"
+msgstr ""
+
+#: src/ui.glade:486
+msgid "    markcapella@twcny.rr.com"
+msgstr ""
+
+#: src/ui.glade:532
+msgid "plasmasnow is derived from Willem Vermin's xSnow 3.7.5."
+msgstr ""
+
+#: src/ui.glade:545
+msgid "xsnow 3.7.5 is derived from Rick Jansen's xsnow-1.42."
+msgstr ""
+
+#: src/ui.glade:695
+msgid "About"
+msgstr ""
+
+#: src/ui.glade:710
+msgid "Show snow"
+msgstr "Zobrazit sníh"
+
+#: src/ui.glade:714
+msgid ""
+"If set, show snowflakes.\n"
+"Flags: -snow, -nosnow"
+msgstr ""
+"Pokud je nastaveno, zobrazit sněhové vločky.\n"
+"Flags: -snow, -nosnow"
+
+#: src/ui.glade:730
+msgid ""
+"The color of the snow.\n"
+"                        Flag: -sc"
+msgstr ""
+
+#: src/ui.glade:746
+msgid ""
+"2nd color of the snow.\n"
+"                      Flag: -sc2"
+msgstr ""
+
+#: src/ui.glade:761
+msgid ""
+"The higher this setting, the more snow will collect on the trees.\n"
+"Flag: -maxontrees"
+msgstr ""
+"Čím vyšší je toto nastavení, tím více sněhu se na stromech nasbírá.\n"
+"Flag: -maxontrees"
+
+#: src/ui.glade:780
+msgid ""
+"The higher this setting, the more snow will collect on the  bottom of the "
+"desktop.\n"
+"Flag: -ssnowdepth"
+msgstr ""
+"Čím vyšší je toto nastavení, tím více sněhu se nasbírá na spodní části "
+"pracovní plochy.\n"
+"Flag: -ssnowdepth"
+
+#: src/ui.glade:799
+msgid ""
+"The higher this setting, the more snow will collect on the windows. \n"
+"Note: in Wayland, there is no snow on the windows. \n"
+"Flag: -wsnowdepth"
+msgstr ""
+"Čím vyšší je toto nastavení, tím více sněhu se nasbírá na oknech. \n"
+"Poznámka: ve Waylandu není na oknech žádný sníh. \n"
+"Flag: -wsnowdepth"
+
+#: src/ui.glade:819
+msgid ""
+"The higher this setting, the more snow will be generated  because of Santa "
+"ploughing, wind or disappearing windows. \n"
+"Flag: -blowofffactor"
+msgstr ""
+"Čím vyšší je toto nastavení, tím více sněhu se bude generovat kvůli orbě "
+"Santa, větru nebo mizení oken. \n"
+"Flag: -blowofffactor"
+
+#: src/ui.glade:841
+msgid "On scenery:"
+msgstr "Na scenérii:"
+
+#: src/ui.glade:855
+msgid "On bottom:"
+msgstr "Na dně:"
+
+#: src/ui.glade:869
+msgid "On windows:"
+msgstr "Na oknech:"
+
+#: src/ui.glade:883
+msgid "Blow off:"
+msgstr "Odpálit:"
+
+#: src/ui.glade:892 src/ui.glade:908 src/ui.glade:925 src/ui.glade:942
+msgid "Show"
+msgstr "Ukázat"
+
+#: src/ui.glade:896
+msgid ""
+"If set, snow will collect on the trees.\n"
+"Flags: -keepsnowontrees, -nokeepsnowontrees"
+msgstr ""
+"Pokud je nastaveno, bude se na stromech sbírat sníh.\n"
+"Flags: -keepsnowontrees, -nokeepsnowontrees"
+
+#: src/ui.glade:912
+msgid ""
+"If set, show fallen snow on bottom of the desktop.\n"
+"Flags: -keepsnowonscreen, -nokeepsnowonscreen"
+msgstr ""
+"Pokud je nastaveno, zobrazit padlý sníh na spodní části plochy. \n"
+"Flags: -keepsnowonscreen, -nokeepsnowonscreen"
+
+#: src/ui.glade:929
+msgid ""
+"If set, show fallen snow on windows.\n"
+"Flags: -keepsnowonwindows, -nokeepsnowonwindows"
+msgstr ""
+"Pokud je nastaveno, zobrazit na oknech padlý sníh. \n"
+"Flags: -keepsnowonwindows, -nokeepsnowonwindows"
+
+#: src/ui.glade:946
+msgid ""
+"If set, show snow blowing away.\n"
+"Flags: -blowsnow, -noblowsnow"
+msgstr ""
+"Je-li nastaveno, zobrazit odfouknutý sníh.\n"
+"Flags: -blowsnow, -noblowsnow"
+
+#: src/ui.glade:984
+msgid "Snow Settings"
+msgstr ""
+
+#: src/ui.glade:998 src/ui.glade:1876 src/ui.glade:2233 src/ui.glade:3056
+#: src/ui.glade:3766 src/ui.glade:4614
+msgid "Defaults"
+msgstr "Výchozí"
+
+#: src/ui.glade:1002
+msgid "Apply default values for the preferences in this tab.\n"
+msgstr "Použít výchozí hodnoty pro předvolby na této kartě. \n"
+
+#: src/ui.glade:1034
+msgid "Enable Wind"
+msgstr ""
+
+#: src/ui.glade:1039
+msgid ""
+"If set, there will be wind.\n"
+"Flags: -wind, -nowind"
+msgstr ""
+"Pokud je nastaveno, bude vítr. \n"
+"Flags: -wind, -nowind"
+
+#: src/ui.glade:1057
+msgid "Wind Whirl:"
+msgstr ""
+
+#: src/ui.glade:1068
+msgid ""
+"The higher this setting, the more the wind will whirl.\n"
+"Flag: -whirlfactor"
+msgstr ""
+"Čím vyšší je toto nastavení, tím více se bude vířit vítr.\n"
+"Flag: -whirlfactor"
+
+#: src/ui.glade:1084
+msgid "Test Whirl"
+msgstr ""
+
+#: src/ui.glade:1088
+msgid "Force a gust of wind immediately."
+msgstr "Okamžitě vynuťte poryv větru."
+
+#: src/ui.glade:1107
+msgid ""
+"This setting determines how many seconds pass between  two  gusts of wind.\n"
+"Flag: -whirltimer"
+msgstr ""
+
+#: src/ui.glade:1129
+msgid "Whirl Timer:"
+msgstr ""
+
+#: src/ui.glade:1166
+msgid "Saturation:"
+msgstr ""
+
+#: src/ui.glade:1177
+msgid ""
+"The higher, the more snowflakes.\n"
+"Flag: -snowflakes"
+msgstr ""
+"Čím výše, tím více sněhových vloček.\n"
+"Flag: -snowflakes"
+
+#: src/ui.glade:1203
+msgid "Max # Flakes:"
+msgstr ""
+
+#: src/ui.glade:1215
+msgid ""
+"Maximum amount of snowflakes.\n"
+"Flag: -flakecountmax"
+msgstr ""
+"Maximální množství sněhových vloček. \n"
+"Flag: -flakecountmax"
+
+#: src/ui.glade:1262 src/ui.glade:1958 src/ui.glade:2523 src/ui.glade:3418
+#: src/ui.glade:4256
+msgid "Size:"
+msgstr "Velikost:"
+
+#: src/ui.glade:1277 src/ui.glade:1974 src/ui.glade:3433 src/ui.glade:3846
+#: src/ui.glade:4271
+msgid "Speed:"
+msgstr "Rychlost:"
+
+#: src/ui.glade:1289
+msgid ""
+"Size of snowflakes, works only for non-vintage snow flakes.\n"
+"Flag: -snowsize"
+msgstr ""
+"Velikost sněhových vloček, funguje pouze pro neročníkové sněhové vločky.\n"
+"Flag: -snowsize"
+
+#: src/ui.glade:1308
+msgid ""
+"Speed of the snowflakes.\n"
+"Flag: -snowspeedfactor"
+msgstr ""
+"Rychlost sněhových vloček. \n"
+"Flag: -snowspeedfactor"
+
+#: src/ui.glade:1487
+msgid "Snow"
+msgstr "Sníh"
+
+#: src/ui.glade:1506
+msgid ""
+"Tiny Santa with three reindeers.\n"
+"Flags: -santa 0 -norudolph"
+msgstr ""
+"Malý Santa se třemi soby. \n"
+"Flags: -santa 0 -norudolph"
+
+#: src/ui.glade:1537
+msgid ""
+"Small Santa with three reindeers.\n"
+"Flags: -santa 1 -norudolph"
+msgstr ""
+"Malý Santa se třemi soby. \n"
+"Flags: -santa 1 -norudolph"
+
+#: src/ui.glade:1568
+msgid ""
+"Santa with three reindeers.\n"
+"Flags: -santa 2 -norudolph"
+msgstr ""
+"Santa se třemi soby. \n"
+"Flags: -santa 2 -norudolph"
+
+#: src/ui.glade:1599
+msgid ""
+"Santa with Dasher, Dancer, Prancer, Vixen, Comet, Cupid, Dunder and Blixem.\n"
+"Flags: -santa 3 -norudolph"
+msgstr ""
+"Santa s Dasherem, Tanečníkem, Prancerem, Liškou, Kometou, Amorem, Dunderem a "
+"Blixemem.\n"
+"Flags: -santa 3 -norudolph"
+
+#: src/ui.glade:1630
+msgid ""
+"Santa using the train with two reindeers.\n"
+"Flags: -santa 4 -norudolph"
+msgstr ""
+"Santa ve vlaku se dvěma soby.\n"
+"Flags: -santa 4 -norudolph"
+
+#: src/ui.glade:1661
+msgid ""
+"Santa using the train with one reindeer and Rudolph.\n"
+"Flags: -santa 4 -showrudolph"
+msgstr ""
+"Santa ve vlaku s jedním sobem a Rudolfem.\n"
+"Flags: -santa 4 -showrudolph"
+
+#: src/ui.glade:1691
+msgid ""
+"Tiny Santa with two reindeers and Rudolph.\n"
+"Flags: -santa 0 -showrudolph"
+msgstr ""
+"Malý Santa se dvěma soby a Rudolfem.\n"
+"Flags: -santa 0 -showrudolph"
+
+#: src/ui.glade:1723
+msgid ""
+"Small Santa with two reindeers and Rudolph.\n"
+"Flags: -santa 1 -showrudolph"
+msgstr ""
+"Malý Santa se dvěma soby a Rudolfem.\n"
+"Flags: -santa 1 -showrudolph"
+
+#: src/ui.glade:1753
+msgid ""
+"Santa with two reindeers and Rudolph.\n"
+"Flags: -santa 2 -showrudolph"
+msgstr ""
+"Santa se dvěma soby a Rudolfem.\n"
+"Flags: -santa 2 -showrudolph"
+
+#: src/ui.glade:1783
+msgid ""
+"Santa with Dasher, Dancer, Prancer, Vixen, Comet, Cupid,  Dunder,  Blixem "
+"and  Rudolph.\n"
+"Flags: -santa 3 -showrudolph"
+msgstr ""
+"Santa s Dasherem, Dancerem, Prancerem, Liškou, Kometou, Cupidem, Dunderem, "
+"Blixemem a Rudolphem.\n"
+"Flags: -santa 3 -showrudolph"
+
+#: src/ui.glade:1810
+msgid "Show Santa"
+msgstr "Ukaž Santu"
+
+#: src/ui.glade:1814
+msgid ""
+"To show or not to show Santa.\n"
+"Flags: -showsanta, -nosanta"
+msgstr ""
+"Ukázat či neukázat Ježíška.\n"
+"Flags: -showsanta, -nosanta"
+
+#: src/ui.glade:1831 src/ui.glade:3011 src/ui.glade:3100 src/ui.glade:3129
+#: src/ui.glade:3140 src/ui.glade:3151 src/ui.glade:3179 src/ui.glade:3190
+msgid " "
+msgstr " "
+
+#: src/ui.glade:1862
+msgid "Santa Settings"
+msgstr ""
+
+#: src/ui.glade:1904
+msgid "Without Rudolph"
+msgstr "Bez Rudolfa"
+
+#: src/ui.glade:1919
+msgid "With Rudolph"
+msgstr "S Rudolfem"
+
+#: src/ui.glade:1932 src/ui.glade:1944 src/ui.glade:2030 src/ui.glade:2042
+#: src/ui.glade:2054 src/ui.glade:2066 src/ui.glade:2260 src/ui.glade:2417
+#: src/ui.glade:2429 src/ui.glade:2441 src/ui.glade:2453 src/ui.glade:2811
+#: src/ui.glade:3793 src/ui.glade:3805 src/ui.glade:3817 src/ui.glade:4125
+#: src/ui.glade:4137 src/ui.glade:4355 src/ui.glade:4367 src/ui.glade:4801
+#: src/ui.glade:4813 src/ui.glade:4825 src/ui.glade:4837 src/ui.glade:4849
+#: src/ui.glade:4861 src/ui.glade:5157 src/ui.glade:5169 src/ui.glade:5181
+#: src/ui.glade:5193
+msgid "    "
+msgstr "    "
+
+#: src/ui.glade:1986
+msgid ""
+"Scale of Santa.\n"
+"Flags: -santascale <n>"
+msgstr ""
+"Ježíškova stupnice.\n"
+"Flags: -santascale <n>"
+
+#: src/ui.glade:2007
+msgid ""
+"Santa's speed.\n"
+"Flag: -santaspeedfactor"
+msgstr ""
+"Santova rychlost.\n"
+"Flag: -santaspeedfactor"
+
+#: src/ui.glade:2181
+msgid "Santa"
+msgstr "Santa"
+
+#: src/ui.glade:2219
+msgid "Scenery Settings"
+msgstr ""
+
+#: src/ui.glade:2269
+msgid "Allow Overlap"
+msgstr ""
+
+#: src/ui.glade:2273
+msgid ""
+"To allow overlap or not when placing scenery.\n"
+"Flags: -treeoverlap, -notreeoverlap"
+msgstr ""
+"Povolit nebo nepovolit překrytí při umísťování scenérie.\n"
+"Flags: -treeoverlap, -notreeoverlap"
+
+#: src/ui.glade:2286
+msgid "Show Fluff"
+msgstr ""
+
+#: src/ui.glade:2290
+msgid ""
+"If set, try to show fluff on fallen snow and trees if possible.\n"
+"Flags: -fluffy, -nofluffy"
+msgstr ""
+"Pokud je nastaveno, pokuste se, pokud je to možné, ukázat chmýří na padlém "
+"sněhu a stromech.\n"
+"Flags: -fluffy, -nofluffy"
+
+#: src/ui.glade:2302
+msgid "Show  scenery"
+msgstr "Zobrazit scenérii"
+
+#: src/ui.glade:2306
+msgid ""
+"To show or not to show scenery.\n"
+"Flags: -showtrees, -notrees"
+msgstr ""
+"Ukázat či neukázat scenérii.\n"
+"Flags: -showtrees, -notrees"
+
+#: src/ui.glade:2330
+msgid ""
+"Woody tree.\n"
+"Flags: -treetype 1 or: -treetype all"
+msgstr ""
+"Dřevitý strom. \n"
+"Flags: -treetype 1 or: -treetype all"
+
+#: src/ui.glade:2356
+msgid ""
+"Snowy tree.\n"
+"Flags: -treetype 6 or: -treetype all"
+msgstr ""
+"Zasněžený strom. \n"
+"Flags: -treetype 6 or: -treetype all"
+
+#: src/ui.glade:2382
+msgid ""
+"Leavy tree.\n"
+"Flags: -treetype 2 or: -treetype all"
+msgstr ""
+"Listnatý strom. \n"
+"Flags: -treetype 2 or: -treetype all"
+
+#: src/ui.glade:2464
+msgid "Number of scenery items."
+msgstr ""
+
+#: src/ui.glade:2483
+msgid "Size of Scenery Items."
+msgstr ""
+
+#: src/ui.glade:2501
+msgid "Height of "
+msgstr ""
+
+#: src/ui.glade:2537
+msgid "Max # Items:"
+msgstr ""
+
+#: src/ui.glade:2551
+msgid "Scene Height:"
+msgstr ""
+
+#: src/ui.glade:2569
+msgid ""
+"Vintage tree, you can set the color.\n"
+"Flag: -treetype 0"
+msgstr ""
+"Vintage strom, můžete nastavit barvu. \n"
+"Flag: -treetype 0"
+
+#: src/ui.glade:2600
+msgid ""
+"Set color of vintage tree.\n"
+"                        Flag: -tc"
+msgstr ""
+
+#: src/ui.glade:2635
+msgid ""
+"Reindeer.\n"
+"Flags: -treetype 4 or: -treetype all"
+msgstr ""
+"Sob. \n"
+"Flags: -treetype 4 or: -treetype all"
+
+#: src/ui.glade:2661
+msgid ""
+"Moose.\n"
+"Flags: -treetype 5 or: -treetype all"
+msgstr ""
+"Los.\n"
+"Flags: -treetype 5 or: -treetype all"
+
+#: src/ui.glade:2687
+msgid ""
+"Polar bear.\n"
+"Flags: -treetype 7 or: -treetype all"
+msgstr ""
+"Lední medvěd.\n"
+"Flags: -treetype 7 or: -treetype all"
+
+#: src/ui.glade:2727 src/ui.glade:2753 src/ui.glade:2779
+msgid ""
+"Small house.\n"
+"Flags: -treetype 3 or: -treetype all"
+msgstr ""
+"Malý dům. \n"
+"Flags: -treetype 3 or: -treetype all"
+
+#: src/ui.glade:2974
+msgid "Scenery"
+msgstr "Scenérie"
+
+#: src/ui.glade:2991
+msgid "Show birds"
+msgstr "Ukaž ptáky"
+
+#: src/ui.glade:2995
+msgid ""
+"If set: show birds.\n"
+"Flags: -showbirds 1, -showbirds 0"
+msgstr ""
+"Je-li nastaveno: zobrazit ptáky.\n"
+"Flags: -showbirds 1, -showbirds 0"
+
+#: src/ui.glade:3042
+msgid "Bird Settings"
+msgstr ""
+
+#: src/ui.glade:3083
+msgid ""
+"Give the birds a fancy color.\n"
+"                        Flag: -birdscolor"
+msgstr ""
+
+#: src/ui.glade:3109
+msgid "Show Attraction Point"
+msgstr ""
+
+#: src/ui.glade:3114
+msgid ""
+"Show the point where the birds want to go.\n"
+"Flags: -showattr 0, -showattr 1"
+msgstr ""
+"Ukažte bod, kam chtějí ptáci jít. \n"
+"Flags: -showattr 0, -showattr 1"
+
+#: src/ui.glade:3160
+msgid "Follow Santa"
+msgstr ""
+
+#: src/ui.glade:3164
+msgid ""
+"Birds are attracted by an attraction point. Here you can choose to follow "
+"Santa.\n"
+"Flags: -followsanta 0, -followsanta 1"
+msgstr ""
+"Ptáky přitahuje atrakce. Zde si můžete vybrat, zda budete Santa sledovat.\n"
+"Flags: -followsanta 0, -followsanta 1"
+
+#: src/ui.glade:3201
+msgid ""
+"Influence the size of the birds.\n"
+"Flag: -birdsscale\n"
+msgstr ""
+"Ovlivněte velikost ptáků. \n"
+"Flag: -birdsscale\n"
+
+#: src/ui.glade:3221
+msgid ""
+"Speed of birds in arbitrary units.\n"
+"Flag: -birdsspeed"
+msgstr ""
+"Rychlost ptáků v libovolných jednotkách. \n"
+"Flag: -birdsspeed"
+
+#: src/ui.glade:3240
+msgid ""
+"Desired number of birds. If zero, no birds are shown.\n"
+"Flag: -nbirds"
+msgstr ""
+"Požadovaný počet ptáků. Pokud je nula, nezobrazí se žádní ptáci.\n"
+"Flag: -nbirds"
+
+#: src/ui.glade:3262
+msgid ""
+"Number of nearest neighbours the birds should look at.\n"
+"Flag: -neighbours"
+msgstr ""
+"Počet nejbližších sousedů, na které by se ptáci měli podívat.\n"
+"Flag: -neighbours"
+
+#: src/ui.glade:3281
+msgid ""
+"Anarchy level: the higher, the more anarchy.\n"
+"Flag: -anarchy"
+msgstr ""
+"Úroveň anarchie: čím vyšší, tím větší anarchie.\n"
+"Flag: -anarchy"
+
+#: src/ui.glade:3301
+msgid ""
+"Tendency to adjust speed to neighbours.\n"
+"Flag: -followneighbours"
+msgstr ""
+"Tendence přizpůsobovat rychlost sousedům.\n"
+"Flag: -followneighbours"
+
+#: src/ui.glade:3320
+msgid ""
+"Preferred distance from other birds.\n"
+"Flag: -prefdistance"
+msgstr ""
+"Preferovaná vzdálenost od ostatních ptáků. \n"
+"Flag: -prefdistance"
+
+#: src/ui.glade:3339
+msgid ""
+"Tendency to keep desired distance to neighbours.\n"
+"Flag: -disweight"
+msgstr ""
+"Tendence udržovat požadovanou vzdálenost od sousedů.\n"
+"Flag: -disweight"
+
+#: src/ui.glade:3358
+msgid ""
+"Viewing distance.\n"
+"NOTE: Santa has no knowledge of viewing distance, so when birds are "
+"following Santa, the relative positions of Santa and birds will be "
+"temporarely out of sync when you change the viewing distance. This is only "
+"noticeable when the birds are following Santa.\n"
+"Flag: -viewingdistance"
+msgstr ""
+"Pozorovací vzdálenost.\n"
+"POZNÁMKA: Santa nezná vzdálenost pohledu, takže když ptáci sledují Santu, "
+"relativní pozice Santy a ptáků budou dočasně nesynchronizované, když změníte "
+"vzdálenost pohledu. To je patrné pouze tehdy, když ptáci následují Santu.\n"
+"Flag: -viewingdistance"
+
+#: src/ui.glade:3378
+msgid ""
+"Percentage of screen to be used for the attraction point.\n"
+"Flag: -attrspace"
+msgstr ""
+"Procento obrazovky, které se má použít pro bod přitažlivosti.\n"
+"Flag: -attrspace"
+
+#: src/ui.glade:3397
+msgid ""
+"Tendency to concentrate on the attraction point.\n"
+"Flag: -focuscentre"
+msgstr ""
+"Tendence soustředit se na přitažlivý bod.\n"
+"Flag: -focuscentre"
+
+#: src/ui.glade:3448
+msgid "Max # Birds:"
+msgstr ""
+
+#: src/ui.glade:3464
+msgid "Group Size:"
+msgstr ""
+
+#: src/ui.glade:3478
+msgid "Speed Volatility:"
+msgstr ""
+
+#: src/ui.glade:3494
+msgid "Speed Match:"
+msgstr ""
+
+#: src/ui.glade:3508
+msgid "Neighbor Distance:"
+msgstr ""
+
+#: src/ui.glade:3522
+msgid "Distance Strength:"
+msgstr ""
+
+#: src/ui.glade:3536
+msgid "Viewing distance:"
+msgstr "Pozorovací vzdálenost:"
+
+#: src/ui.glade:3552
+msgid "Attraction Range:"
+msgstr ""
+
+#: src/ui.glade:3568
+msgid "Attraction Strength:"
+msgstr ""
+
+#: src/ui.glade:3581
+msgid "Flock:"
+msgstr ""
+
+#: src/ui.glade:3593
+msgid "Birds:"
+msgstr ""
+
+#: src/ui.glade:3605
+msgid "Neighbors:"
+msgstr ""
+
+#: src/ui.glade:3714
+msgid "Birds"
+msgstr "Ptactvo"
+
+#: src/ui.glade:3752
+msgid "Sky Settings"
+msgstr ""
+
+#: src/ui.glade:3831 src/ui.glade:4151
+msgid "Brightness:"
+msgstr ""
+
+#: src/ui.glade:3861
+msgid "Number:"
+msgstr "Číslo:"
+
+#: src/ui.glade:3871
+msgid "Stars"
+msgstr "hvězdy"
+
+#: src/ui.glade:3876
+msgid ""
+"To show or not show stars.\n"
+"Flag: -stars  (0 means: no stars)"
+msgstr ""
+"Zobrazit nebo nezobrazit hvězdy.\n"
+"Flag: -stars  (0 means: no stars)"
+
+#: src/ui.glade:3889
+msgid "Moon"
+msgstr "Měsíc"
+
+#: src/ui.glade:3894
+msgid ""
+"To show or not show moon.\n"
+"Flags: -moon 1, -moon 0"
+msgstr ""
+"Ukázat nebo neukázat měsíc.\n"
+"Flags: -moon 1, -moon 0"
+
+#: src/ui.glade:3907
+msgid "Aurora"
+msgstr "Aurora"
+
+#: src/ui.glade:3912
+msgid ""
+"To show or not show aurora.\n"
+"Note: the aurora is best viewed using a dark background.\n"
+"Flags: -aurora 1, -aurora 0"
+msgstr ""
+"Zobrazit nebo nezobrazit polární záři.\n"
+"Poznámka: polární záři je nejlépe vidět na tmavém pozadí.\n"
+"Flags: -aurora 1, -aurora 0"
+
+#: src/ui.glade:3927
+msgid ""
+"Number of twinkling stars.\n"
+"Flag: -stars"
+msgstr ""
+"Počet blikajících hvězd. \n"
+"Flag: -stars"
+
+#: src/ui.glade:3946
+msgid "Animation speed of aurora."
+msgstr ""
+
+#: src/ui.glade:3964
+msgid "Brightness of aurora."
+msgstr ""
+
+#: src/ui.glade:3982
+msgid "Width of aurora.\n"
+msgstr ""
+
+#: src/ui.glade:4004
+msgid "Height of aurora."
+msgstr ""
+
+#: src/ui.glade:4028
+msgid "Width:"
+msgstr "Šířka:"
+
+#: src/ui.glade:4043
+msgid "Height:"
+msgstr "Výška:"
+
+#: src/ui.glade:4060
+msgid "Left"
+msgstr "Vlevo, odjet"
+
+#: src/ui.glade:4064
+msgid ""
+"Place aurora left on the screen.\n"
+"Flag: -auroraleft"
+msgstr ""
+"Umístěte polární záři vlevo na obrazovku. \n"
+"Flag: -auroraleft"
+
+#: src/ui.glade:4078
+msgid "Middle"
+msgstr "Střední"
+
+#: src/ui.glade:4082
+msgid ""
+"Place aurora in the middle of the screen.\n"
+"Flag: -auroramiddle"
+msgstr ""
+"Umístěte polární záři doprostřed obrazovky. \n"
+"Flag: -auroramiddle"
+
+#: src/ui.glade:4097
+msgid "Right"
+msgstr "Že jo"
+
+#: src/ui.glade:4101
+msgid ""
+"Place aurora in the right of the screen.\n"
+"Flag: -auroraright"
+msgstr ""
+"Umístěte polární záři na pravou stranu obrazovky. \n"
+"Flag: -auroraright"
+
+#: src/ui.glade:4163
+msgid ""
+"Brightness of moon's halo.\n"
+"Flag: -halobrightness"
+msgstr ""
+"Jas měsíčního halo.\n"
+"Flag: -halobrightness"
+
+#: src/ui.glade:4180
+msgid "Meteors"
+msgstr "Meteory"
+
+#: src/ui.glade:4185
+msgid ""
+"To show or not to show meteors.\n"
+"Flags: -meteors, -nometeors"
+msgstr ""
+"Ukázat či neukázat meteory.\n"
+"Flags: -meteors, -nometeors"
+
+#: src/ui.glade:4202
+msgid "Frequency:"
+msgstr "Frekvence:"
+
+#: src/ui.glade:4214
+msgid ""
+"Frequency of meteors to appear.\n"
+"Flags: -meteorfrequency"
+msgstr ""
+"Frekvence výskytu meteorů.\n"
+"Flags: -meteorfrequency"
+
+#: src/ui.glade:4232
+msgid "Yellow"
+msgstr ""
+
+#: src/ui.glade:4236
+msgid ""
+"Choose between yellow-ish and white-ish moon.\n"
+"                            Flag: -mooncolor [0,1]"
+msgstr ""
+
+#: src/ui.glade:4283
+msgid ""
+"Relative size of the moon.\n"
+"Flag: -moonsize"
+msgstr ""
+"Relativní velikost měsíce.\n"
+"Flag: -moonsize"
+
+#: src/ui.glade:4302
+msgid ""
+"Speed of moon in pixels/minute.\n"
+"Flag: -moonspeed"
+msgstr ""
+"Rychlost Měsíce v pixelech/minutu.\n"
+"Flag: -moonspeed"
+
+#: src/ui.glade:4324
+msgid "Lift:"
+msgstr ""
+
+#: src/ui.glade:4336
+msgid "Lift Aurora above ground."
+msgstr ""
+
+#: src/ui.glade:4376
+msgid "Halo"
+msgstr "Svatozář"
+
+#: src/ui.glade:4380
+msgid ""
+"To show or not to show halo around moon.\n"
+"Flags: -halo 1, -halo 0"
+msgstr ""
+"Ukázat nebo nezobrazit halo kolem Měsíce.\n"
+"Flags: -halo 1, -halo 0"
+
+#: src/ui.glade:4561
+msgid "Sky"
+msgstr ""
+
+#: src/ui.glade:4601
+msgid "Advanced Settings"
+msgstr ""
+
+#: src/ui.glade:4638
+msgid "Black"
+msgstr "Černá"
+
+#: src/ui.glade:4642
+msgid ""
+"When activated, the background will be black.\n"
+"Flag: -bg  (this button will be automatically deactivated when -bg is given)"
+msgstr ""
+
+#: src/ui.glade:4656
+msgid ""
+"If you have more than one monitor, choose where \n"
+"you want snow falling. Choose 'all monitors' if you want snow in all "
+"monitors.\n"
+"NOTE: when changing monitor, the app will refresh. Flag: -screen"
+msgstr ""
+
+#: src/ui.glade:4665
+msgid "Monitor 1"
+msgstr ""
+
+#: src/ui.glade:4675
+msgid "On all Work Spaces"
+msgstr ""
+
+#: src/ui.glade:4679
+msgid ""
+"Use all workspaces to snow in.\n"
+"NOTE: this doesn't work properly in enlightenment.\n"
+"Flags: -allworkspaces 1, -allworkspaces 0"
+msgstr ""
+"K zasněžování použijte všechny pracovní prostory.\n"
+"POZNÁMKA: v osvícení to nefunguje správně.\n"
+"Flags: -allworkspaces 1, -allworkspaces 0"
+
+#: src/ui.glade:4693
+msgid "Menu Colors"
+msgstr ""
+
+#: src/ui.glade:4697
+msgid ""
+"Toggle between xsnow's own menu colors and standard menu colors.\n"
+"Activated: use xsnow colors.\n"
+"Deactivated: use default colors.\n"
+"Flags: -theme 1, -theme 0"
+msgstr ""
+"Přepínat mezi vlastními barvami nabídky xsnow a standardními barvami "
+"nabídky.\n"
+"Aktivováno: použít barvy xsnow.\n"
+"Deaktivováno: použít výchozí barvy.\n"
+"Flags: -theme 1, -theme 0"
+
+#: src/ui.glade:4711
+msgid "Create Outline"
+msgstr ""
+
+#: src/ui.glade:4715
+msgid ""
+"To draw an outline around the snow window.\n"
+"Flag: -outline 1/0"
+msgstr ""
+"Chcete-li nakreslit obrys kolem okna sněhu.\n"
+"Flag: -outline 1/0"
+
+#: src/ui.glade:4727
+msgid "Below Windows"
+msgstr ""
+
+#: src/ui.glade:4731
+msgid ""
+"When activated, it will be snowing below your windows, else  it will be "
+"snowing upon you windows too.\n"
+"On some desktop environments, when snowing above your  windows you will not "
+"be able to click on any window.\n"
+"Therefore, you will be asked to click a button, to be sure that  things are "
+"OK.\n"
+"Flag: -above"
+msgstr ""
+"Když je aktivován, bude sněžit pod vašimi okny, jinak bude sněžit i na vaše "
+"okna.\n"
+"V některých prostředích plochy, když sněží nad vašimi okny, nebudete moci "
+"kliknout na žádné okno.\n"
+"Proto, budete požádáni, abyste klikli na tlačítko, abyste se ujistili, že je "
+"vše v pořádku. \n"
+"Flag: -above"
+
+#: src/ui.glade:4746
+msgid "Click to Confirm"
+msgstr ""
+
+#: src/ui.glade:4750
+msgid "To make sure you can click."
+msgstr "Abyste se ujistili, že můžete kliknout."
+
+#: src/ui.glade:4766
+msgid "Show Screensaver"
+msgstr ""
+
+#: src/ui.glade:4770
+msgid ""
+"Activate xscreensaver.\n"
+"Click and don't touch mouse and keyboard for a few seconds..."
+msgstr ""
+"Aktivujte xscreensaver.\n"
+"Klikněte a několik sekund se nedotýkejte myši a klávesnice..."
+
+#: src/ui.glade:4785
+msgid ""
+"Choose here the picture you want as background when  xscreensaver is "
+"active.\n"
+"Flag: -bg"
+msgstr ""
+"Zde vyberte obrázek, který chcete jako pozadí, když je xscreensaver "
+"aktivní.\n"
+"Flag: -bg"
+
+#: src/ui.glade:4789
+msgid "Choose background"
+msgstr "Vyberte pozadí"
+
+#: src/ui.glade:4872
+msgid ""
+"Transparency of painted items:\n"
+"0: no transparency.\n"
+"100: fully transparent, you will see nothing!\n"
+"Flag: -transparency"
+msgstr ""
+"Průhlednost malovaných předmětů:\n"
+"0: žádná průhlednost.\n"
+"100: plně průhledná, nic neuvidíte!\n"
+"Flag: -transparency"
+
+#: src/ui.glade:4896
+msgid ""
+"Overall drawing scale.\n"
+"Flag: -scale"
+msgstr ""
+"Celkové měřítko výkresu.\n"
+"Flag: -scale"
+
+#: src/ui.glade:4916
+msgid ""
+"Use this if snow falls below the bottom of your screen, or  fallen snow "
+"hides something that should not be hidden.\n"
+"Flag: -offsets"
+msgstr ""
+"Toto použijte, pokud sníh padá pod spodní část obrazovky nebo padlý sníh "
+"skrývá něco, co by nemělo být skryto.\n"
+"Flag: -offsets"
+
+#: src/ui.glade:4935
+msgid ""
+"Use this if no snow collects on your windows, or if snow  collects separated "
+"from your windows. \n"
+"Some basic window managers need this setting (e.g. TWM  needs in general a "
+"value of 25 .. 28).\n"
+"Flag: -offsety"
+msgstr ""
+"Tuto možnost použijte, pokud se na vašich oknech nehromadí sníh nebo pokud "
+"se sníh shromažďuje odděleně od oken. \n"
+"Někteří základní správci oken potřebují toto nastavení (např. TWM potřebuje "
+"obecně hodnotu 25 .. 28).\n"
+"Flag: -offsety"
+
+#: src/ui.glade:4955
+msgid ""
+"Windows wider than 80 percent of the screen and closer to the top  than the "
+"number in this widget will not collect snow.\n"
+"In some cases, there are invisible windows near the top of the screen, which "
+"are handled by xsnow as normal windows: snow is collected upon them. By "
+"entering a suitable number here, this undesired behaviour can be avoided.\n"
+"Flag: -ignoretop\n"
+"\n"
+msgstr ""
+"Okna širší než 80 procent obrazovky a blíže k horní části, než je číslo v "
+"tomto widgetu, nebudou shromažďovat sníh.\n"
+"V některých případech jsou v horní části obrazovky neviditelná okna, se "
+"kterými xsnow zachází jako normální okna: sbírá se na nich sníh. Zadáním "
+"vhodného čísla zde lze tomuto nežádoucímu chování předejít.\n"
+"Flag: -ignoretop\n"
+"\n"
+
+#: src/ui.glade:4977
+msgid ""
+"Windows wider than 80 percent of the screen and closer to the  bottom than "
+"the number in this widget will not collect snow.\n"
+"\n"
+"In some cases, there are invisible windows near the bottom  of  the screen, "
+"which are handled by xsnow as normal windows: snow is collected upon them. "
+"By entering a suitable  number here, this undesired behaviour can be "
+"avoided.\n"
+"Flag: -ignorebottom"
+msgstr ""
+"Okna širší než 80 procent obrazovky a blíže ke dnu, než je číslo v tomto "
+"widgetu, nebudou sbírat sníh.\n"
+"\n"
+"V některých případech jsou v dolní části obrazovky neviditelná okna, která "
+"ovládá xsnow jako normální okna: sbírá se na nich sníh. Zadáním vhodného "
+"čísla zde lze tomuto nežádoucímu chování předejít.\n"
+"Flag: -ignorebottom"
+
+#: src/ui.glade:4999
+msgid "Ignore on Bottoms:"
+msgstr ""
+
+#: src/ui.glade:5014
+msgid "Ignore on Tops:"
+msgstr ""
+
+#: src/ui.glade:5030
+msgid "Window Tops:"
+msgstr ""
+
+#: src/ui.glade:5046
+msgid "Window Bottoms:"
+msgstr ""
+
+#: src/ui.glade:5063
+msgid "Scale:"
+msgstr "Měřítko:"
+
+#: src/ui.glade:5079
+msgid "Transparency:"
+msgstr ""
+
+#: src/ui.glade:5092
+msgid "Lift Snow:"
+msgstr ""
+
+#: src/ui.glade:5104
+msgid "Large Windows:"
+msgstr ""
+
+#: src/ui.glade:5118
+msgid "Cpu factor:"
+msgstr ""
+
+#: src/ui.glade:5132
+msgid ""
+"The higher, the smoother xsnow will run, but will also use  more cpu power.\n"
+"Flag: -cpuload"
+msgstr ""
+"Čím vyšší, tím plynulejší xsnow poběží, ale bude také spotřebovávat více "
+"výkonu procesoru.\n"
+"Flag: -cpuload"
+
+#: src/ui.glade:5383
+msgid "Advanced"
+msgstr ""
+
+#: src/ui.glade:5406
+msgid "en"
+msgstr "en"
+
+#: src/ui.glade:5409
+msgid "it"
+msgstr "to"
+
+#~ msgid "Warning: don't eat yellow snow!"
+#~ msgstr "Upozornění: nejezte žlutý sníh!"
+
+#~ msgid "Color"
+#~ msgstr "Barva"
+
+#~ msgid "Anarchy:"
+#~ msgstr "Anarchie:"
+
+#~ msgid "# Birds:"
+#~ msgstr "# ptáci:"
+
+#~ msgid "Drawing scale:"
+#~ msgstr "Měřítko výkresu:"
+
+#~ msgid "Neighbours:"
+#~ msgstr "sousedé:"
+
+#~ msgid "Preferred distance:"
+#~ msgstr "Preferovaná vzdálenost:"
+
+#~ msgid "Distance weight:"
+#~ msgstr "Hmotnost na vzdálenost:"
+
+#~ msgid "Restart due to change of screen or language settings ...\n"
+#~ msgstr "Restartovat kvůli změně nastavení obrazovky nebo jazyka ...\n"
+
+#~ msgid "Restart due to change of display settings...\n"
+#~ msgstr "Restartovat kvůli změně nastavení displeje...\n"
+
+#~ msgid "Restart"
+#~ msgstr "Restartujte"
+
+#~ msgid "Restart birds."
+#~ msgstr "Restartujte ptáky."
+
+#~ msgid ""
+#~ "If you have more than one monitor, choose where you want snow falling. "
+#~ "Choose 'all monitors' if you want snow in all monitors.\n"
+#~ "NOTE: when changing monitor, xsnow will restart.\n"
+#~ "Flag: -screen"
+#~ msgstr ""
+#~ "Pokud máte více než jeden monitor, vyberte si, kde chcete, aby sníh "
+#~ "padal. Vyberte 'všechny monitory', pokud chcete sníh na všech "
+#~ "monitorech.\n"
+#~ "POZNÁMKA: při výměně monitoru se xsnow restartuje.\n"
+#~ "Flag: -screen"
+
+#~ msgid "Birds only"
+#~ msgstr "Pouze ptáci"
+
+#~ msgid ""
+#~ "If set: show no Santa, snow or scenery.\n"
+#~ "Flags: -birdsonly 0, -birdsony 1"
+#~ msgstr ""
+#~ "Pokud je nastaveno: nezobrazovat Santu, sníh ani scenérii.\n"
+#~ "Flags: -birdsonly 0, -birdsony 1"
+
+#~ msgid "Show fluff"
+#~ msgstr "Ukaž chmýří"
+
+#~ msgid ""
+#~ "Scale of scenery.\n"
+#~ "Flag: sceneryscale <n>"
+#~ msgstr ""
+#~ "Měřítko scenérie. \n"
+#~ "Flag: sceneryscale <n>"
+
+#~ msgid ""
+#~ "Desired number of scenery items.\n"
+#~ "Flag: -trees"
+#~ msgstr ""
+#~ "Požadovaný počet položek scenérie. \n"
+#~ "Flag: -trees"
+
+#~ msgid ""
+#~ "Bottom percentage of screen available for scenery.\n"
+#~ "Flag: -treefill"
+#~ msgstr ""
+#~ "Dolní procento obrazovky dostupné pro scenérii.\n"
+#~ "Flag: -treefill"
+
+#~ msgid "# Items:"
+#~ msgstr "# položky:"
+
+#~ msgid "% Window fill:"
+#~ msgstr "% výplně okna:"
+
+#~ msgid "Bright:"
+#~ msgstr "Jasný:"
+
+#~ msgid ""
+#~ "Animation speed of aurora: real: 10, for a more dramatic effect choose: "
+#~ "100\n"
+#~ "Flag: -auroraspeed"
+#~ msgstr ""
+#~ "Rychlost animace polární záře: reálná: 10, pro dramatičtější efekt "
+#~ "zvolte: 100\n"
+#~ "Flag: -auroraspeed"
+
+#~ msgid ""
+#~ "Brightness of aurora.\n"
+#~ "Flags: -aurorabrightness"
+#~ msgstr ""
+#~ "Jas polární záře. \n"
+#~ "Flags: -aurorabrightness"
+
+#~ msgid ""
+#~ "Width of aurora in percentage of screen width.\n"
+#~ "Flag: -aurorawidth"
+#~ msgstr ""
+#~ "Šířka polární záře v procentech šířky obrazovky.\n"
+#~ "Flag: -aurorawidth"
+
+#~ msgid ""
+#~ "Vertical size of aurora.\n"
+#~ "Flag: -auroraheight"
+#~ msgstr ""
+#~ "Vertikální velikost polární záře. \n"
+#~ "Flag: -auroraheight"
+
+#~ msgid "Base:"
+#~ msgstr "Základna:"
+
+#~ msgid ""
+#~ "Baseline height of aurora, in percentage of screen height.\n"
+#~ "Flag: -aurorabase"
+#~ msgstr ""
+#~ "Základní výška polární záře v procentech výšky obrazovky. \n"
+#~ "Flag: -aurorabase"
+
+#~ msgid "Focus to attraction point:"
+#~ msgstr "Zaměření na přitažlivý bod:"
+
+#~ msgid "Adjust speed to neighbours:"
+#~ msgstr "Přizpůsobte rychlost sousedům:"
+
+#~ msgid ""
+#~ "Follow \n"
+#~ "Santa"
+#~ msgstr ""
+#~ "Sledujte \n"
+#~ " Santa"
+
+#~ msgid "Attraction point range"
+#~ msgstr "Rozsah přitažlivých bodů"
+
+#~ msgid ""
+#~ "Show \n"
+#~ "attr point"
+#~ msgstr ""
+#~ "Zobrazit \n"
+#~ " bod attr"
+
+#~ msgid "Xscreensaver: "
+#~ msgstr "Xscreensaver: "
+
+#~ msgid ""
+#~ "When activated, the background will be black.\n"
+#~ "Flag: -bg  (this button will be automatically desactivated when -bg is "
+#~ "given)"
+#~ msgstr ""
+#~ "Po aktivaci bude pozadí černé. \n"
+#~ "Flag: -bg  (this button will be automatically desactivated when -bg is "
+#~ "given)"
+
+#~ msgid "window type etc."
+#~ msgstr "typ okna atd."
+
+#~ msgid "Scale"
+#~ msgstr "Měřítko"
+
+#~ msgid "Cpu factor"
+#~ msgstr "Faktor CPU"
+
+#~ msgid "Lift snow on windows"
+#~ msgstr "Zvedněte sníh na okna"
+
+#~ msgid "Lift snow on bottom"
+#~ msgstr "Zvedněte sníh na dno"
+
+#~ msgid "Ignore large bottom windows"
+#~ msgstr "Ignorujte velká spodní okna"
+
+#~ msgid "Ignore large top windows"
+#~ msgstr "Ignorujte velká horní okna"
+
+#~ msgid ""
+#~ "This setting determines how many seconds pass between  two  gusts of "
+#~ "wind.\n"
+#~ "Flag: -windtimer"
+#~ msgstr ""
+#~ "Toto nastavení určuje, kolik sekund uplyne mezi dvěma poryvy větru.\n"
+#~ "Flag: -windtimer"
+
+#~ msgid "Intensity:"
+#~ msgstr "Intenzita:"
+
+#~ msgid "Wind"
+#~ msgstr "Vítr"
+
+#~ msgid "Whirl:"
+#~ msgstr "Vír:"
+
+#~ msgid "Timer:"
+#~ msgstr "Časovač:"
+
+#~ msgid "Now!"
+#~ msgstr "Nyní!"
+
+#~ msgid "Celestials"
+#~ msgstr "Nebeští"
+
+#~ msgid "  "
+#~ msgstr "  "
+
+#~ msgid "Bird color"
+#~ msgstr "Ptačí barva"
+
+#~ msgid "Actual mean distance from neighbours."
+#~ msgstr "Skutečná střední vzdálenost od sousedů."
+
+#~ msgid "label"
+#~ msgstr "označení"
+
+#~ msgid "Distance used to get the desired number of neighbours."
+#~ msgstr "Vzdálenost použitá k získání požadovaného počtu sousedů."
+
+#~ msgid "version"
+#~ msgstr "verze"
+
+#, c-format
+#~ msgid "Range: %d\n"
+#~ msgstr "Rozsah: %d\n"
+
+#, c-format
+#~ msgid "Mean distance: %3d\n"
+#~ msgstr "Střední vzdálenost: %3d\n"
+
+#~ msgid "All defaults"
+#~ msgstr "Všechny výchozí hodnoty"
+
+#~ msgid ""
+#~ "Apply defaults for all preferences (except settings).\n"
+#~ "Flag: -defaults"
+#~ msgstr ""
+#~ "Použít výchozí hodnoty pro všechny předvolby (kromě nastavení).\n"
+#~ "Flag: -defaults"
+
+#~ msgid "&#8195; &#8195; &#8195; &#8195; &#8195; &#8195; &#8195;"
+#~ msgstr "&#8195; &#8195; &#8195; &#8195; &#8195; &#8195; &#8195;"
+
+#~ msgid "Allow overlap"
+#~ msgstr "Povolit překrytí"
+
+#~ msgid "Windy"
+#~ msgstr "Větrný"
+
+#~ msgid "Max # snowflakes:"
+#~ msgstr "Maximálně # sněhových vloček:"
+
+#~ msgid "# Snowflakes:"
+#~ msgstr "#Sněhové vločky:"
+
+#~ msgid "In every tab you find the following rescue buttons:"
+#~ msgstr "Na každé kartě najdete následující záchranná tlačítka:"
+
+#~ msgid "Choose your Santa"
+#~ msgstr "Vyberte si svého Santu"
+
+#~ msgid ""
+#~ "Menu\n"
+#~ "colors"
+#~ msgstr ""
+#~ "Barvy nabídky\n"
+#~ "."
+
+#~ msgid ""
+#~ "On all\n"
+#~ "workspaces"
+#~ msgstr ""
+#~ "Na všech \n"
+#~ " pracovních plochách"
+
+#~ msgid ""
+#~ "Below\n"
+#~ "windows"
+#~ msgstr ""
+#~ "Pod \n"
+#~ " okny"
+
+#~ msgid ""
+#~ "Click to\n"
+#~ "confirm"
+#~ msgstr ""
+#~ "Kliknutím \n"
+#~ " potvrďte"
+
+#~ msgid "monitor 1"
+#~ msgstr "monitor 1"
+
+#~ msgid ""
+#~ "Create\n"
+#~ "outline"
+#~ msgstr ""
+#~ "Vytvořte\n"
+#~ "obrys"
+
+#, c-format
+#~ msgid "%s. Snow window: %#lx"
+#~ msgstr "%s. Sněhové okno: %#lx"
+
+#, c-format
+#~ msgid "Desktop type: %s"
+#~ msgstr "Typ plochy: %s"
+
+#~ msgid "Try and click any image!"
+#~ msgstr "Zkuste a klikněte na libovolný obrázek!"
+
+#~ msgid "<b>Defaults </b>"
+#~ msgstr "<b>Výchozí </b>"
+
+#~ msgid "Set default preferences for this tab."
+#~ msgstr "Nastavte výchozí předvolby pro tuto kartu."
+
+#~ msgid "   "
+#~ msgstr "   "
+
+#~ msgid ""
+#~ "  \n"
+#~ "  "
+#~ msgstr ""
+#~ "  \n"
+#~ "  "
+
+#~ msgid ""
+#~ " \n"
+#~ " \n"
+#~ " \n"
+#~ " \n"
+#~ " \n"
+#~ " \n"
+#~ " \n"
+#~ " \n"
+#~ " \n"
+#~ msgstr ""
+#~ " \n"
+#~ " \n"
+#~ " \n"
+#~ " \n"
+#~ " \n"
+#~ " \n"
+#~ " \n"
+#~ " \n"
+#~ " \n"
+
+#~ msgid ""
+#~ "If everything is ok, it is now snowing on your desktop, and birds are "
+#~ "flying. You are encouraged to define your own preferences using the tabs "
+#~ "above."
+#~ msgstr ""
+#~ "Pokud je vše v pořádku, na vaší ploše nyní sněží a ptáci létají. "
+#~ "Doporučujeme vám definovat své vlastní preference pomocí výše uvedených "
+#~ "karet."
+
+#~ msgid ""
+#~ "Use the <b>settings</b> tab if xsnow is misbehaving.\n"
+#~ "Use the <b>birds</b> tab if birds are misbehaving."
+#~ msgstr ""
+#~ "Pokud se xsnow chová špatně, použijte záložku <b>nastavení</b>. \n"
+#~ "Pokud se ptáci chovají špatně, použijte záložku <b>ptáci</b>."
+
+#~ msgid "<b>Vintage </b>"
+#~ msgstr "<b>Ročník </b>"
+
+#~ msgid "Set vintage preferences for this tab."
+#~ msgstr "Nastavte pro tuto kartu předvolby vintage."
+
+#~ msgid "Welcome at xsnow!"
+#~ msgstr "Vítejte na xsnow!"
+
+#~ msgid ""
+#~ "Vintage preferences: the look and feel of the original xsnow, created in "
+#~ "1993 by Rick Jansen."
+#~ msgstr ""
+#~ "Vintage preference: vzhled a dojem originálu xsnow, vytvořeného v roce "
+#~ "1993 Rick Jansen."
+
+#~ msgid ""
+#~ "If the system is too busy, all panels get this color, in which case you "
+#~ "could  adapt some settings in \"snow\", \"birds\", \"settings\", or "
+#~ "\"celestials\"."
+#~ msgstr ""
+#~ "Pokud je systém příliš zaneprázdněn, všechny panely získají tuto barvu, v "
+#~ "takovém případě můžete upravit některá nastavení v \"sníh\", \"ptáci\", "
+#~ "\"nastavení\" nebo \"nebeská obloha\"."
+
+#~ msgid "Welcome"
+#~ msgstr "Vítejte"
+
+#~ msgid "Choose your favorite snow"
+#~ msgstr "Vyberte si svůj oblíbený sníh"
+
+#~ msgid "Choose your favorite Santa"
+#~ msgstr "Vyberte si svého oblíbeného Santu"
+
+#~ msgid "Compose your favorite scenery"
+#~ msgstr "Vytvořte si svou oblíbenou scenérii"
+
+#~ msgid "Compose here your favorite celestial conditions"
+#~ msgstr "Zde sepište své oblíbené nebeské podmínky"
+
+#~ msgid "Birds settings"
+#~ msgstr "Nastavení ptáků"
+
+#~ msgid "Donate"
+#~ msgstr "Darovat"
+
+#~ msgid ""
+#~ "Donate one euro or so to inspire the maintainer of xsnow, here is a "
+#~ "paypal link. "
+#~ msgstr ""
+#~ "Darujte jedno euro nebo tak, abyste inspirovali správce xsnow, zde je "
+#~ "odkaz na paypal. "
+
+#~ msgid "Contact"
+#~ msgstr "Kontakt"
+
+#~ msgid "Please report any comments to the maintainer of xsnow."
+#~ msgstr "Jakékoli komentáře prosím nahlaste správci xsnow."
+
+#~ msgid "Settings"
+#~ msgstr "Nastavení"
+
+#~ msgid "<b>All defaults </b>"
+#~ msgstr "<b>Všechny výchozí hodnoty </b>"
+
+#~ msgid "Set default preferences for all (except settings) tabs."
+#~ msgstr "Nastavte výchozí předvolby pro všechny karty (kromě nastavení)."
+
+#~ msgid "Set vintage preferences for all (except settings) tabs."
+#~ msgstr "Nastavte předvolby vintage pro všechny karty (kromě nastavení)."
+
+#~ msgid ""
+#~ "Apply defaults for all preferences (except settings).\n"
+#~ "Flags: -defaults"
+#~ msgstr ""
+#~ "Použít výchozí hodnoty pro všechny předvolby (kromě nastavení).\n"
+#~ "Flags: -defaults"
+
+#~ msgid ""
+#~ "Apply default values for all preferences (except settings).\n"
+#~ "Flag: -defaults"
+#~ msgstr ""
+#~ "Použít výchozí hodnoty pro všechny předvolby (kromě nastavení).\n"
+#~ "Flag: -defaults"
+
+#~ msgid "<b>All vintage </b>"
+#~ msgstr "<b>Vše staré </b>"
+
+#~ msgid "All vintage"
+#~ msgstr "Vše vintage"
+
+#~ msgid ""
+#~ "Use vintage values for all preferences (except settings).\n"
+#~ "Flag: -vintage"
+#~ msgstr ""
+#~ "Použít historické hodnoty pro všechny předvolby (kromě nastavení).\n"
+#~ "Flag: -vintage"
+
+#~ msgid "Hide menu"
+#~ msgstr "Skrýt nabídku"
+
+#~ msgid ""
+#~ "Leave menu.\n"
+#~ "Flag: -nomenu"
+#~ msgstr ""
+#~ "Opustit nabídku. \n"
+#~ "Flag: -nomenu"
+
+#~ msgid "Vintage"
+#~ msgstr "Vinobraní"
+
+#~ msgid "Apply vintage values for the preferences in this tab."
+#~ msgstr "Použijte historické hodnoty pro předvolby na této kartě."
+
+#~ msgid ""
+#~ "Apply vintage values for all preferences (except settings).\n"
+#~ "Flag: -vintage"
+#~ msgstr ""
+#~ "Použít historické hodnoty pro všechny předvolby (kromě nastavení).\n"
+#~ "Flag: -vintage"
+
+#~ msgid "Quit xsnow"
+#~ msgstr "Ukončit xsnow"
+
+#~ msgid "Quit xsnow."
+#~ msgstr "Konec xsnow."
+
+#~ msgid ""
+#~ "\n"
+#~ "Alas! This not an X11 session, xsnow will probably not run.\n"
+#~ "\n"
+#~ "If you want to try it anyway, set the environment variable "
+#~ "XSNOW_FORCE_RUN, eg:\n"
+#~ "\n"
+#~ "    XSNOW_FORCE_RUN=1 xsnow\n"
+#~ "\n"
+#~ "Or, you could force an X11 session, for example by tweaking /etc/gdm3/"
+#~ "daemon.conf.\n"
+#~ "\n"
+#~ msgstr ""
+#~ "\n"
+#~ "Běda! Toto není relace X11, xsnow pravděpodobně nepoběží.\n"
+#~ "\n"
+#~ "Pokud to přesto chcete zkusit, nastavte proměnnou prostředí "
+#~ "XSNOW_FORCE_RUN, např.:\n"
+#~ "\n"
+#~ "    XSNOW_FORCE_RUN=1 xsnow\n"
+#~ "\n"
+#~ "Nebo můžete vynutit relaci X11, například vyladěním /etc/gdm3/daemon."
+#~ "conf.\n"
+#~ "\n"
+
+#~ msgid "Ok, things are as they are. "
+#~ msgstr "Dobře, věci jsou tak, jak jsou. "
+
+#~ msgid "Transparency "
+#~ msgstr "Průhlednost "
+
+#~ msgid ""
+#~ "Settings for Xscreensaver. You can choose a background, and choose to use "
+#~ "it or not.\n"
+#~ "Make sure you add a line like\n"
+#~ "xsnow -root\n"
+#~ "after the line 'programs:' in the file ~/.xscreensaver and you run "
+#~ "xscreensaver-demo to choose for xsnow.\n"
+#~ "To activate xscreensaver on the command line:\n"
+#~ "xscreensaver-command  -activate\n"
+#~ "See also the man page:\n"
+#~ "man xsnow"
+#~ msgstr ""
+#~ "Nastavení pro Xscreensaver. Můžete si vybrat pozadí a rozhodnout se, zda "
+#~ "ho použít nebo ne. \n"
+#~ " Ujistěte se, že jste přidali řádek jako \n"
+#~ " xsnow -root \n"
+#~ " za řádek 'programs:' v souboru ~/.xscreensaver a spustíte xscreensaver-"
+#~ "demo a vyberete si pro xsnow.\n"
+#~ "Pro aktivaci xscreensaveru na příkazovém řádku:\n"
+#~ "xscreensaver-command -activate\n"
+#~ "Viz také manuálovou stránku:\n"
+#~ "man xsnow"
+
+#~ msgid "Wayland (Expect some slugginess)"
+#~ msgstr "Wayland (očekávejte nějakou pomalost)"
+
+#~ msgid "Probably X11"
+#~ msgstr "Pravděpodobně X11"
+
+#~ msgid "Color:"
+#~ msgstr "Barva:"
+
+#~ msgid ""
+#~ "Set color of vintage tree.\n"
+#~ "Flag: -tc"
+#~ msgstr ""
+#~ "Nastavit barvu vintage stromu. \n"
+#~ "Flag: -tc"
+
+#~ msgid ""
+#~ "Choose between yellow-ish and white-ish moon.\n"
+#~ "Flag: -mooncolor [0,1]"
+#~ msgstr ""
+#~ "Vyberte si mezi nažloutlým a bílým měsícem.\n"
+#~ "Flag: -mooncolor [0,1]"
+
+#~ msgid ""
+#~ "Give the birds a fancy color.\n"
+#~ "Flag: -birdscolor"
+#~ msgstr ""
+#~ "Dejte ptákům luxusní barvu. \n"
+#~ "Flag: -birdscolor"
+
+#~ msgid ""
+#~ "The color of the snow.\n"
+#~ "Flag: -sc"
+#~ msgstr ""
+#~ "Barva sněhu.\n"
+#~ "Flag: -sc"
+
+#, c-format
+#~ msgid "XWinInfo failed\n"
+#~ msgstr "XWinInfo se nezdařilo \n"
+
+#, c-format
+#~ msgid "Force snow on root: window: %#lx, depth: %d\n"
+#~ msgstr "Vynutit sníh na kořen: okno: %#lx, hloubka: %d\n"
+
+#, c-format
+#~ msgid ""
+#~ "NOTE: you probably need to tweak 'Lift snow on windows' in the 'settings' "
+#~ "panel.\n"
+#~ msgstr ""
+#~ "POZNÁMKA: Pravděpodobně budete muset vyladit 'Zvedat sníh na okna' v "
+#~ "panelu 'nastavení'.\n"
+
+#~ msgid "Force a gust of wind immediately.\n"
+#~ msgstr "Okamžitě vynuťte poryv větru.\n"
