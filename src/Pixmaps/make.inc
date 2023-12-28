@@ -3,6 +3,7 @@
 #-# plasmasnow: Let it snow on your desktop
 #-# Copyright (C) 1984,1988,1990,1993-1995,2000-2001 Rick Jansen
 #-# 	      2019,2020,2021,2022,2023 Willem Vermin
+#-#          2024 Mark Capella
 #-# 
 #-# This program is free software: you can redistribute it and/or modify
 #-# it under the terms of the GNU General Public License as published by
@@ -78,6 +79,8 @@ flake4.xpm \
 flake5.xpm \
 flake6.xpm \
 garland.xpm \
+greenTree.xpm \
+huis41.xpm \
 huis4.xpm \
 MediumSanta1.xpm \
 MediumSanta2.xpm \
@@ -89,6 +92,8 @@ MediumSantaRudolf3.xpm \
 MediumSantaRudolf4.xpm \
 moon1.xpm \
 moon2.xpm \
+plasmasnow.svg \
+plasmasnow.xpm \
 polarbear.xpm \
 RegularSanta1.xpm \
 RegularSanta2.xpm \
@@ -98,9 +103,10 @@ RegularSantaRudolf1.xpm \
 RegularSantaRudolf2.xpm \
 RegularSantaRudolf3.xpm \
 RegularSantaRudolf4.xpm \
+rendie`r.xpm \
 rendier.xpm \
 snowtree.xpm \
 star.xbm \
 tannenbaum.xpm \
-greenTree.xpm \
-tree.xpm
+tree1.xpm \
+tree.xpm 

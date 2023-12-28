@@ -1,168 +1,167 @@
-/* config.h.  Generated from config.h.in by configure.  */
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
 /* Define to 1 if translation of program messages to the user's native
    language is requested. */
-#define ENABLE_NLS 1
+#undef ENABLE_NLS
 
 /* Define to 1 if you have the `alarm' function. */
-#define HAVE_ALARM 1
+#undef HAVE_ALARM
 
 /* Define to 1 if you have the <assert.h> header file. */
-#define HAVE_ASSERT_H 1
+#undef HAVE_ASSERT_H
 
 /* Define to 1 if you have the `backtrace' function. */
-#define HAVE_BACKTRACE 1
+#undef HAVE_BACKTRACE
 
 /* Define to 1 if you have the Mac OS X function
    CFLocaleCopyPreferredLanguages in the CoreFoundation framework. */
-/* #undef HAVE_CFLOCALECOPYPREFERREDLANGUAGES */
+#undef HAVE_CFLOCALECOPYPREFERREDLANGUAGES
 
 /* Define to 1 if you have the Mac OS X function CFPreferencesCopyAppValue in
    the CoreFoundation framework. */
-/* #undef HAVE_CFPREFERENCESCOPYAPPVALUE */
+#undef HAVE_CFPREFERENCESCOPYAPPVALUE
 
 /* Define to 1 if you have the <ctype.h> header file. */
-#define HAVE_CTYPE_H 1
+#undef HAVE_CTYPE_H
 
 /* Define if the GNU dcgettext() function is already present or preinstalled.
    */
-#define HAVE_DCGETTEXT 1
+#undef HAVE_DCGETTEXT
 
 /* Define to 1 if you have the <execinfo.h> header file. */
-#define HAVE_EXECINFO_H 1
+#undef HAVE_EXECINFO_H
 
 /* Define if the GNU gettext() function is already present or preinstalled. */
-#define HAVE_GETTEXT 1
+#undef HAVE_GETTEXT
 
 /* Define to 1 if you have the `gettimeofday' function. */
-#define HAVE_GETTIMEOFDAY 1
+#undef HAVE_GETTIMEOFDAY
 
 /* Define to 1 if you have the `gsl_interp_akima' function. */
-#define HAVE_GSL_INTERP_AKIMA 1
+#undef HAVE_GSL_INTERP_AKIMA
 
 /* Define to 1 if you have the `gsl_interp_cspline' function. */
-#define HAVE_GSL_INTERP_CSPLINE 1
+#undef HAVE_GSL_INTERP_CSPLINE
 
 /* Define to 1 if you have the `gsl_interp_linear' function. */
-#define HAVE_GSL_INTERP_LINEAR 1
+#undef HAVE_GSL_INTERP_LINEAR
 
 /* Define to 1 if you have the `gsl_interp_steffen' function. */
-#define HAVE_GSL_INTERP_STEFFEN 1
+#undef HAVE_GSL_INTERP_STEFFEN
 
 /* Define if you have the iconv() function and it works. */
-/* #undef HAVE_ICONV */
+#undef HAVE_ICONV
 
 /* Define to 1 if you have the <inttypes.h> header file. */
-#define HAVE_INTTYPES_H 1
+#undef HAVE_INTTYPES_H
 
 /* Define to 1 if you have the <iostream> header file. */
-#define HAVE_IOSTREAM 1
+#undef HAVE_IOSTREAM
 
 /* Define to 1 if you have the <math.h> header file. */
-#define HAVE_MATH_H 1
+#undef HAVE_MATH_H
 
 /* Define if you have POSIX threads libraries and header files. */
-#define HAVE_PTHREAD 1
+#undef HAVE_PTHREAD
 
 /* Define to 1 if you have the <pthread.h> header file. */
-#define HAVE_PTHREAD_H 1
+#undef HAVE_PTHREAD_H
 
 /* Have PTHREAD_PRIO_INHERIT. */
-#define HAVE_PTHREAD_PRIO_INHERIT 1
+#undef HAVE_PTHREAD_PRIO_INHERIT
 
 /* Define to 1 if you have the <signal.h> header file. */
-#define HAVE_SIGNAL_H 1
+#undef HAVE_SIGNAL_H
 
 /* Define to 1 if you have the `sqrt' function. */
-#define HAVE_SQRT 1
+#undef HAVE_SQRT
 
 /* Define to 1 if you have the <stdarg.h> header file. */
-#define HAVE_STDARG_H 1
+#undef HAVE_STDARG_H
 
 /* Define to 1 if you have the <stdint.h> header file. */
-#define HAVE_STDINT_H 1
+#undef HAVE_STDINT_H
 
 /* Define to 1 if you have the <stdio.h> header file. */
-#define HAVE_STDIO_H 1
+#undef HAVE_STDIO_H
 
 /* Define to 1 if you have the <stdlib.h> header file. */
-#define HAVE_STDLIB_H 1
+#undef HAVE_STDLIB_H
 
 /* Define to 1 if you have the `strchr' function. */
-#define HAVE_STRCHR 1
+#undef HAVE_STRCHR
 
 /* Define to 1 if you have the `strdup' function. */
-#define HAVE_STRDUP 1
+#undef HAVE_STRDUP
 
 /* Define to 1 if you have the <strings.h> header file. */
-#define HAVE_STRINGS_H 1
+#undef HAVE_STRINGS_H
 
 /* Define to 1 if you have the <string.h> header file. */
-#define HAVE_STRING_H 1
+#undef HAVE_STRING_H
 
 /* Define to 1 if you have the `strstr' function. */
-#define HAVE_STRSTR 1
+#undef HAVE_STRSTR
 
 /* Define to 1 if you have the `strtol' function. */
-#define HAVE_STRTOL 1
+#undef HAVE_STRTOL
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
-#define HAVE_SYS_STAT_H 1
+#undef HAVE_SYS_STAT_H
 
 /* Define to 1 if you have the <sys/types.h> header file. */
-#define HAVE_SYS_TYPES_H 1
+#undef HAVE_SYS_TYPES_H
 
 /* Define to 1 if you have the <unistd.h> header file. */
-#define HAVE_UNISTD_H 1
+#undef HAVE_UNISTD_H
 
 /* Define to 1 if you have the <unordered_map> header file. */
-#define HAVE_UNORDERED_MAP 1
+#undef HAVE_UNORDERED_MAP
 
 /* Define to 1 if you have the <unordered_set> header file. */
-#define HAVE_UNORDERED_SET 1
+#undef HAVE_UNORDERED_SET
 
 /* Define to 1 if you have the `XdbeAllocateBackBufferName' function. */
-#define HAVE_XDBEALLOCATEBACKBUFFERNAME 1
+#undef HAVE_XDBEALLOCATEBACKBUFFERNAME
 
 /* Define to 1 if you have the `XineramaQueryScreens' function. */
-#define HAVE_XINERAMAQUERYSCREENS 1
+#undef HAVE_XINERAMAQUERYSCREENS
 
 /* Define to 1 if the system has the type `_Bool'. */
-#define HAVE__BOOL 1
+#undef HAVE__BOOL
 
 /* Name of package */
-#define PACKAGE "plasmasnow"
+#undef PACKAGE
 
 /* Define to the address where bug reports for this package should be sent. */
-#define PACKAGE_BUGREPORT "markcapella@twcny.rr.com"
+#undef PACKAGE_BUGREPORT
 
 /* Define to the full name of this package. */
-#define PACKAGE_NAME "plasmasnow"
+#undef PACKAGE_NAME
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "plasmasnow 4.56"
+#undef PACKAGE_STRING
 
 /* Define to the one symbol short name of this package. */
-#define PACKAGE_TARNAME "plasmasnow"
+#undef PACKAGE_TARNAME
 
 /* Define to the home page for this package. */
-#define PACKAGE_URL ""
+#undef PACKAGE_URL
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "4.56"
+#undef PACKAGE_VERSION
 
 /* Define to necessary symbol if this constant uses a non-standard name on
    your system. */
-/* #undef PTHREAD_CREATE_JOINABLE */
+#undef PTHREAD_CREATE_JOINABLE
 
 /* Define to 1 if all of the C90 standard headers exist (not just the ones
    required in a freestanding environment). This macro is provided for
    backward compatibility; new code need not use it. */
-#define STDC_HEADERS 1
+#undef STDC_HEADERS
 
 /* Version number of package */
-#define VERSION "4.56"
+#undef VERSION
 
 /* Define to `unsigned int' if <sys/types.h> does not define. */
-/* #undef size_t */
+#undef size_t
