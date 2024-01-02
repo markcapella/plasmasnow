@@ -7,10 +7,10 @@
 ## Description
 
         A fast re-take on a cool app, with graphics and UI upgrade, including
-a QT screen color picker that works on Plasma, and dual snow colors !
+        QT screen color picker that works on Plasma, and dual snow colors !
 
      plasmasnow is derived from Willem Vermin xsnow 3.7.5 and Rick Jansen's
- xsnow-1.42.
+     xsnow-1.42.
 
 
 ## Installation

@@ -435,6 +435,7 @@ int main_c(int argc, char *argv[]) {
     }
 
     Flags.Done = 0;
+
     windows_init();
     moon_init();
     aurora_init();
@@ -540,22 +541,23 @@ void set_below_above() {
 
 void X11WindowById(Window *xwin) {
     *xwin = 0;
-    // user supplied window id:
     if (Flags.WindowId) {
         *xwin = Flags.WindowId;
         return;
     }
+
+    // user ask to point to a window
     if (Flags.XWinInfoHandling) {
-        // user ask to point to a window
         printf(_("Click on a window ...\n"));
         fflush(stdout);
-        int rc;
-        rc = xdo_select_window_with_click(global.xdo, xwin);
+
+        int rc = xdo_select_window_with_click(global.xdo, xwin);
         if (rc == XDO_ERROR) {
             fprintf(stderr, "XWinInfo failed\n");
             exit(1);
         }
     }
+
     return;
 }
 
@@ -905,41 +907,39 @@ int do_ui_check() {
     return TRUE;
 }
 
+// if we are snowing in the desktop, we check if the size has changed,
+// this can happen after changing of the displays settings
+// If the size has been changed, we refresh the app.
 int onTimerEventDisplayChanged() {
-    // if we are snowing in the desktop, we check if the size has changed,
-    // this can happen after changing of the displays settings
-    // If the size has been changed, we refresh the app.
-
     if (Flags.Done) {
-        return FALSE;
+        return -1;
     }
-
-    P("Trans: %d xxposures: %d Desktop: %d\n", global.Trans, global.xxposures,
-        global.Desktop);
 
     if (!global.Desktop) {
-        return TRUE;
+        return -1;
     }
 
+    // I(_("Refresh due to change of screen or language settings ...\n"));
     if (global.ForceRestart) {
         DoRestart = 1;
         Flags.Done = 1;
-        I(_("Refresh due to change of screen or language settings ...\n"));
-    } else {
-        unsigned int w, h;
-        Display *display = XOpenDisplay(Flags.DisplayName);
-        Screen *screen = DefaultScreenOfDisplay(display);
-        w = WidthOfScreen(screen);
-        h = HeightOfScreen(screen);
-        P("width height: %d %d %d %d\n", w, h, global.Wroot, global.Hroot);
-        if (global.Wroot != w || global.Hroot != h) {
-            DoRestart = 1;
-            Flags.Done = 1;
-            I(_("Refresh due to change of display settings...\n"));
-        }
-        XCloseDisplay(display);
+        return -1;
     }
-    return TRUE;
+
+    // P("width height: %d %d %d %d\n", w, h, global.Wroot, global.Hroot);
+    // I(_("Refresh due to change of display settings...\n"));
+    Display *display = XOpenDisplay(Flags.DisplayName);
+    Screen *screen = DefaultScreenOfDisplay(display);
+
+    unsigned int w = WidthOfScreen(screen);
+    unsigned int h = HeightOfScreen(screen);
+    if (global.Wroot != w || global.Hroot != h) {
+        DoRestart = 1;
+        Flags.Done = 1;
+    }
+
+    XCloseDisplay(display);
+    return -1;
 }
 
 /** *********************************************************************
