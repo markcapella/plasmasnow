@@ -724,7 +724,7 @@ tarfile = $(top_builddir)/$(PACKAGE)-$(VERSION).tar.gz
 EXTRA_DIST = gen_snow_includes.sh gen_ui_xml.sh tocc.sh toascii.sh xdo-copyright 
 TESTS = test1.sh
 appicondir = $(datadir)/pixmaps
-appicon_DATA = Pixmaps/plasmasnow.svg Pixmaps/plasmapicker.png
+appicon_DATA = Pixmaps/plasmasnow.png Pixmaps/plasmapicker.png
 man6_MANS = plasmasnow.6
 CLEANFILES = plasmasnow.6 ui_xml.h snow_includes.h plasmasnow_out_2 plasmasnow_out_3 \
 	     changelog.inc tarfile.inc toascii toascii.c

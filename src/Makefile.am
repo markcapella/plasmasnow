@@ -125,7 +125,7 @@ plasmasnow-docs.$(OBJEXT): changelog.inc
 plasmasnow-selfrep.$(OBJEXT): $(tarfile_inc)
 
 appicondir=$(datadir)/pixmaps
-appicon_DATA=Pixmaps/plasmasnow.svg Pixmaps/plasmapicker.png
+appicon_DATA=Pixmaps/plasmasnow.png Pixmaps/plasmapicker.png
 
 man6_MANS = plasmasnow.6
 plasmasnow.6: plasmasnow

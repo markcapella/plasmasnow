@@ -6,7 +6,7 @@ Type=Application
 Terminal=false
 
 Exec=plasmasnow
-Icon=plasmasnow.svg
+Icon=plasmasnow.png
 
 StartupNotify=true
 Categories=Game;Simulation
