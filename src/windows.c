@@ -41,14 +41,17 @@
 #include <pthread.h>
 #include <stdio.h>
 
-static int do_sendevent(void *);
+
 static long TransWorkSpace =
     -SOMENUMBER; // workspace on which transparent window is placed
 
-static WinInfo *Windows = NULL;
-static int NWindows;
-static int do_wupdate(void *);
+static int mNumberOfWindows;
+static WinInfo *mWindowsList = NULL;
+
 static void DetermineVisualWorkspaces(void);
+
+static int do_sendevent();
+static int do_wupdate();
 
 // ColorPicker
 void uninitQPickerDialog();
@@ -87,8 +90,7 @@ int WorkspaceActive() {
     return 0;
 }
 
-int do_sendevent(void *dummy) {
-    P("do_sendevent %d\n", counter++);
+int do_sendevent() {
     XExposeEvent event;
 
     event.type = Expose;
@@ -102,12 +104,10 @@ int do_sendevent(void *dummy) {
 
     XSendEvent(global.display, global.SnowWin, True, Expose, (XEvent *)&event);
     return TRUE;
-    (void)dummy;
 }
 
-int do_wupdate(void *dummy) {
+int do_wupdate() {
     static long PrevWorkSpace = -123;
-    P("do_wupdate %d %d\n", counter++, global.WindowsChanged);
     if (Flags.Done) {
         return FALSE;
     }
@@ -121,7 +121,6 @@ int do_wupdate(void *dummy) {
         P("lock counter: %d\n", lockcounter);
         return TRUE;
     }
-    P("do_wupdate running %d\n", lockcounter);
 
     // once in a while, we force updating windows
     static int wcounter = 0;
@@ -131,7 +130,8 @@ int do_wupdate(void *dummy) {
         wcounter = 0;
     }
     if (!global.WindowsChanged) {
-        goto end;
+        Unlock_fallen();
+        return TRUE;
     }
 
     global.WindowsChanged = 0;
@@ -148,78 +148,64 @@ int do_wupdate(void *dummy) {
     } else {
         I("Cannot get current workspace\n");
         Flags.Done = 1;
-        goto end;
+        Unlock_fallen();
+        return TRUE;
     }
 
-    P("Update windows\n");
-
-    if (Windows) {
-        free(Windows);
+    // P("Update windows\n");
+    if (mWindowsList) {
+        free(mWindowsList);
     }
 
-    // special hack too keep global.SnowWin below (needed for example in
+    // Special hack too keep global.SnowWin below (needed for example in
     // FVWM/xcompmgr, where global.SnowWin is not click-through)
-    {
-        P("keep below %#lx\n", global.SnowWin);
-        if (Flags.BelowAll) {
-            XWindowChanges changes;
-            changes.stack_mode = Below;
-            XConfigureWindow(
-                global.display, global.SnowWin, CWStackMode, &changes);
-        }
+    if (Flags.BelowAll) {
+        XWindowChanges changes;
+        changes.stack_mode = Below;
+        XConfigureWindow(global.display, global.SnowWin, CWStackMode, &changes);
     }
 
-    if (GetWindows(&Windows, &NWindows) < 0) {
-        I("Cannot get windows\n");
+    // I("Cannot get windows\n");
+    if (GetWindows(&mWindowsList, &mNumberOfWindows) < 0) {
         Flags.Done = 1;
-        goto end;
+        Unlock_fallen();
+        return TRUE;
     }
 
-    int i;
-    for (i = 0; i < NWindows; i++) {
-        WinInfo *w = &Windows[i];
-        P("SnowWinX SnowWinY: %d %d\n", global.SnowWinX, global.SnowWinY);
-        w->x += global.WindowOffsetX - global.SnowWinX;
-        w->y += global.WindowOffsetY - global.SnowWinY;
+    // P("SnowWinX SnowWinY: %d %d\n", global.SnowWinX, global.SnowWinY);
+    for (int i = 0; i < mNumberOfWindows; i++) {
+        // WinInfo *w = &mWindowsList[i];
+        mWindowsList[i].x += global.WindowOffsetX - global.SnowWinX;
+        mWindowsList[i].y += global.WindowOffsetY - global.SnowWinY;
     }
 
     // Take care of the situation that the transparent window changes from
     // workspace, which can happen if in a dynamic number of workspaces
     // environment a workspace is emptied.
-    WinInfo *winfo;
-    winfo = FindWindow(Windows, NWindows, global.SnowWin);
+    WinInfo *winfo = FindWindow(mWindowsList, mNumberOfWindows, global.SnowWin);
 
     // check also on valid winfo: after toggling 'below'
     // winfo is nil sometimes
-
     if (global.Trans && winfo) {
         // in xfce and maybe others, workspace info is not to be found
         // in our transparent window. winfo->ws will be 0, and we keep
         // the same value for TransWorkSpace.
-
         if (winfo->ws > 0) {
             TransWorkSpace = winfo->ws;
         }
-        P("TransWorkSpace %ld %#lx %#lx %ld\n", TransWorkSpace, winfo->ws,
-            global.SnowWin, GetCurrentWorkspace());
     }
 
-    P("do_wupdate: %d %p\n", global.Trans, (void *)winfo);
+    // if (!TransA && !winfo)  // let op
     if (global.SnowWin != global.Rootwindow) {
-        // if (!TransA && !winfo)  // let op
         if (!global.Trans && !winfo) {
-            I("No transparent window & no SnowWin %#lx found\n",
-                global.SnowWin);
             Flags.Done = 1;
         }
     }
 
     UpdateFallenSnowRegions();
 
-end:
     Unlock_fallen();
     return TRUE;
-    (void)dummy;
 }
 
 void DetermineVisualWorkspaces() {
@@ -326,48 +312,41 @@ void UpdateFallenSnowRegionsWithLock() {
 // Have a look at the windows we are snowing on
 // Also update of fallensnow area's
 void UpdateFallenSnowRegions() {
+    fprintf(stdout, "windows.c: UpdateFallenSnowRegions() Starts.\n");
+
     // threads: locking by caller
-    WinInfo *w;
     FallenSnow *fsnow;
-    int i;
+
     // add fallensnow regions:
-    w = Windows;
-    for (i = 0; i < NWindows; i++) {
-        // P("%d %#lx\n",i,w->id);
-        {
-            fsnow = FindFallen(global.FsnowFirst, w->id);
-            P("%#lx %d\n", w->id, w->dock);
-            if (fsnow) {
-                fsnow->win = *w; // update window properties
-                if ((!fsnow->win.sticky) &&
-                    fsnow->win.ws != global.CWorkSpace) {
-                    P("CleanFallenArea\n");
-                    CleanFallenArea(fsnow, 0, fsnow->w);
-                }
-            }
-            if (!fsnow) {
-                // window found in Windows, nut not in list of fallensnow,
-                // add it, but not if we are snowing or birding in this window
-                // (Desktop for example) and also not if this window has y <= 0
-                // and also not if this window is a "dock"
-                P("               %#lx %d\n", w->id, w->dock);
-                if (w->id != global.SnowWin && w->y > 0 && !(w->dock)) {
-                    if (((int)(w->w) == global.SnowWinWidth && w->x == 0 &&
-                            w->y <
-                                100)) // maybe a transparent xpenguins window?
-                    {
-                        P("skipping: %d %#lx %d %d %d\n", global.counter++,
-                            w->id, w->w, w->x, w->y);
-                    } else {
-                        PushFallenSnow(&global.FsnowFirst, w,
-                            w->x + Flags.OffsetX, w->y + Flags.OffsetY,
-                            w->w + Flags.OffsetW, Flags.MaxWinSnowDepth);
-                    }
-                }
-                // P("UpdateFallenSnowRegions:\n");PrintFallenSnow(global.FsnowFirst);
+    WinInfo* addWin = mWindowsList;
+    for (int i = 0; i < mNumberOfWindows; i++) {
+        fsnow = FindFallen(global.FsnowFirst, addWin->id);
+        if (fsnow) {
+            fsnow->win = *addWin;
+            if ((!fsnow->win.sticky) &&
+                fsnow->win.ws != global.CWorkSpace) {
+                CleanFallenArea(fsnow, 0, fsnow->w);
             }
         }
-        w++;
+
+        // window found in mWindowsList, but not in list of fallensnow,
+        // add it, but not if we are snowing or birding in this window
+        // (Desktop for example) and also not if this window has y <= 0
+        // and also not if this window is a "dock"
+        if (!fsnow) {
+            if (addWin->id != global.SnowWin && addWin->y > 0 && !(addWin->dock)) {
+                if ((int) (addWin->w) == global.SnowWinWidth &&
+                    addWin->x == 0 && addWin->y < 100) {
+                    /* maybe a transparent xpenguins window? */
+                } else {
+                    PushFallenSnow(&global.FsnowFirst, addWin,
+                    addWin->x + Flags.OffsetX, addWin->y + Flags.OffsetY,
+                    addWin->w + Flags.OffsetW, Flags.MaxWinSnowDepth);
+                }
+            }
+        }
+
+        addWin++;
     }
 
     // remove fallensnow regions
@@ -379,16 +358,18 @@ void UpdateFallenSnowRegions() {
     }
 
     // nf+1: prevent allocation of zero bytes
-    long int *toremove = (long int *)malloc(sizeof(*toremove) * (nf + 1));
     int ntoremove = 0;
+    long int *toremove = (long int *) malloc(sizeof(*toremove) * (nf + 1));
+
     fsnow = global.FsnowFirst;
     while (fsnow) {
         if (fsnow->win.id != 0) {
-            w = FindWindow(Windows, NWindows, fsnow->win.id);
-            if (!w ||
-                (w->w > 0.8 * global.SnowWinWidth && w->ya < Flags.IgnoreTop) ||
-                (w->w > 0.8 * global.SnowWinWidth &&
-                    (int)global.SnowWinHeight - w->ya < Flags.IgnoreBottom)) {
+            WinInfo* removeWin = FindWindow(mWindowsList, mNumberOfWindows, fsnow->win.id);
+            if (!removeWin ||
+                (removeWin->w > 0.8 * global.SnowWinWidth && removeWin->ya < Flags.IgnoreTop) ||
+                (removeWin->w > 0.8 * global.SnowWinWidth &&
+                    (int)global.SnowWinHeight - removeWin->ya < Flags.IgnoreBottom)) {
+                fprintf(stdout, "windows.c: UpdateFallenSnowRegions(1) Triggers.\n");
                 GenerateFlakesFromFallen(fsnow, 0, fsnow->w, -10.0);
                 toremove[ntoremove++] = fsnow->win.id;
             }
@@ -398,71 +379,47 @@ void UpdateFallenSnowRegions() {
             // the window can change
             P("%#lx hidden:%d\n", fsnow->win.id, fsnow->win.hidden);
             if (fsnow->win.hidden) {
-                P("%#lx is hidden %d\n", fsnow->win.id, counter++);
+                // fprintf(stdout, "windows.c: UpdateFallenSnowRegions(2) Triggers.\n");
                 CleanFallenArea(fsnow, 0, fsnow->w);
-
                 GenerateFlakesFromFallen(fsnow, 0, fsnow->w, -10.0);
                 toremove[ntoremove++] = fsnow->win.id;
-
-                P("CleanFallenArea\n");
             }
         }
 
         fsnow = fsnow->next;
     }
 
-    // test if window has been moved or resized
-    // moved: move fallen area accordingly
-    // resized: remove fallen area: add it to toremove
-    w = Windows;
-    for (i = 0; i < NWindows; i++) {
-        fsnow = FindFallen(global.FsnowFirst, w->id);
+    // Test if window has been moved or resized.
+    WinInfo* movedWin = mWindowsList;
+    for (int i = 0; i < mNumberOfWindows; i++) {
+        fsnow = FindFallen(global.FsnowFirst, movedWin->id);
+
         if (fsnow) {
-            if ((unsigned int)fsnow->w ==
-                w->w + Flags.OffsetW) // width has not changed
-            {
-                if (fsnow->x != w->x + Flags.OffsetX ||
-                    fsnow->y != w->y + Flags.OffsetY) {
-                    CleanFallenArea(fsnow, 0, fsnow->w);
-                    P("CleanFallenArea\n");
+            if (fsnow->x != movedWin->x + Flags.OffsetX ||
+                fsnow->y != movedWin->y + Flags.OffsetY ||
+                (unsigned int) fsnow->w != movedWin->w + Flags.OffsetW) {
 
-                    GenerateFlakesFromFallen(fsnow, 0, fsnow->w, -10.0);
-                    toremove[ntoremove++] = fsnow->win.id;
-
-                    fsnow->x = w->x + Flags.OffsetX;
-                    fsnow->y = w->y + Flags.OffsetY;
-                    XFlush(global.display);
-                }
-            } else {
+                fprintf(stdout, "windows.c: UpdateFallenSnowRegions(3) Triggers.\n");
+                CleanFallenArea(fsnow, 0, fsnow->w);
+                GenerateFlakesFromFallen(fsnow, 0, fsnow->w, -10.0);
                 toremove[ntoremove++] = fsnow->win.id;
+
+                fsnow->x = movedWin->x + Flags.OffsetX;
+                fsnow->y = movedWin->y + Flags.OffsetY;
+                XFlush(global.display);
             }
         }
-        w++;
+
+        movedWin++;
     }
 
-    for (i = 0; i < ntoremove; i++) {
+    for (int i = 0; i < ntoremove; i++) {
         CleanFallen(toremove[i]);
         RemoveFallenSnow(&global.FsnowFirst, toremove[i]);
     }
-
     free(toremove);
-}
 
-Window XWinInfo(char **name)
-// not used
-{
-    Window win = Select_Window(global.display, 1);
-    if (name) {
-        XTextProperty text_prop;
-        int rc = XGetWMName(global.display, win, &text_prop);
-        if (!rc) {
-            (*name) = strdup("No Name");
-        } else {
-            (*name) = strndup((char *)text_prop.value, text_prop.nitems);
-        }
-        XFree(text_prop.value);
-    }
-    return win;
+    fprintf(stdout, "windows.c: UpdateFallenSnowRegions() Finishes.\n");
 }
 
 // gets location and size of xinerama screen xscreen, -1: full screen

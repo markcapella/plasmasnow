@@ -27,13 +27,17 @@
 extern void windows_ui(void);
 extern void windows_draw(void);
 extern void windows_init(void);
+
 extern int WorkspaceActive(void);
+
 extern void InitDisplayDimensions();
 extern void setabove(GtkWindow *w);
 extern void DisplayDimensions(void);
-extern Window XWinInfo(char **name);
+
 extern void UpdateFallenSnowRegions(void);
 extern void UpdateFallenSnowRegionsWithLock(void);
+
 extern void SetBackground(void);
-extern int xinerama(
-    Display *display, int xscreen, int *x, int *y, int *w, int *h);
+
+extern int xinerama(Display *display, int xscreen,
+    int *x, int *y, int *w, int *h);
