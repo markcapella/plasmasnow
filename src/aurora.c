@@ -83,12 +83,8 @@ static unsigned short
     xsubi[3]; // this is used by erand48() in the compute thread
 
 void aurora_init() {
-    fprintf(stdout, "aurora: aurora_init() Starts.\n");
-
     // lock everything
-    P("init: 1\n");
     lock_init();
-    P("init: 2\n");
 
     static int firstcall = 1;
     if (!firstcall) {
@@ -157,11 +153,7 @@ void aurora_init() {
         pthread_create(&thread, NULL, do_aurora, &a);
     }
 
-    P("end init 1\n");
     unlock_init();
-    P("end init 2\n");
-
-    fprintf(stdout, "aurora: aurora_init() Finishes.\n");
 }
 
 void aurora_sem_init() {
@@ -170,21 +162,16 @@ void aurora_sem_init() {
     sem_init(&copy_sem, 0, 1);
 }
 
+
 int lock_comp() { return sem_wait(&comp_sem); }
-
 int unlock_comp() { return sem_post(&comp_sem); }
-
 int lock_init() { return sem_wait(&init_sem); }
-
 int unlock_init() { return sem_post(&init_sem); }
-
 int lock_copy() { return sem_wait(&copy_sem); }
-
 int unlock_copy() { return sem_post(&copy_sem); }
 
-void aurora_ui() {
-    //fprintf(stdout, "aurora: aurora_ui() Starts.\n");
 
+void aurora_ui() {
     UIDO(Aurora, );
 
     UIDO(AuroraBase, aurora_init(););
@@ -194,16 +181,11 @@ void aurora_ui() {
     UIDO(AuroraBrightness, );
     UIDO(AuroraSpeed, );
 
-    UIDO(AuroraLeft,
-        //fprintf(stdout, "aurora: aurora_ui() AuroraLeft Starts.\n");
-        aurora_init();
-        //fprintf(stdout, "aurora: aurora_ui() AuroraLeft Finishes.\n");
-    );
+    UIDO(AuroraLeft, aurora_init(); );
     UIDO(AuroraMiddle, aurora_init(););
     UIDO(AuroraRight, aurora_init(););
-
-    //fprintf(stdout, "aurora: aurora_ui() Finishes.\n");
 }
+
 
 void aurora_draw(cairo_t *cr) {
     P("aurora_draw %d %d\n", Flags.Aurora, global.counter++);
@@ -445,8 +427,6 @@ double cscale(double d, int imax, float ah, double az, double h) {
 }
 
 void aurora_setparms(AuroraMap *a) {
-    fprintf(stdout, "aurora: aurora_setparms() Starts.\n");
-
     int f = turnfuzz * global.SnowWinWidth + 2;
     a->w = a->width - 2 * f; // Flags.AuroraWidth*0.01*global.SnowWinWidth;
 
@@ -500,8 +480,6 @@ void aurora_setparms(AuroraMap *a) {
 
     a->step = 1;
     aurora_computeparms(a);
-
-    fprintf(stdout, "aurora: aurora_setparms() Finishes.\n");
 }
 
 void aurora_changeparms(AuroraMap *a) {

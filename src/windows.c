@@ -312,8 +312,6 @@ void UpdateFallenSnowRegionsWithLock() {
 // Have a look at the windows we are snowing on
 // Also update of fallensnow area's
 void UpdateFallenSnowRegions() {
-    fprintf(stdout, "windows.c: UpdateFallenSnowRegions() Starts.\n");
-
     // threads: locking by caller
     FallenSnow *fsnow;
 
@@ -369,7 +367,6 @@ void UpdateFallenSnowRegions() {
                 (removeWin->w > 0.8 * global.SnowWinWidth && removeWin->ya < Flags.IgnoreTop) ||
                 (removeWin->w > 0.8 * global.SnowWinWidth &&
                     (int)global.SnowWinHeight - removeWin->ya < Flags.IgnoreBottom)) {
-                fprintf(stdout, "windows.c: UpdateFallenSnowRegions(1) Triggers.\n");
                 GenerateFlakesFromFallen(fsnow, 0, fsnow->w, -10.0);
                 toremove[ntoremove++] = fsnow->win.id;
             }
@@ -379,7 +376,6 @@ void UpdateFallenSnowRegions() {
             // the window can change
             P("%#lx hidden:%d\n", fsnow->win.id, fsnow->win.hidden);
             if (fsnow->win.hidden) {
-                // fprintf(stdout, "windows.c: UpdateFallenSnowRegions(2) Triggers.\n");
                 CleanFallenArea(fsnow, 0, fsnow->w);
                 GenerateFlakesFromFallen(fsnow, 0, fsnow->w, -10.0);
                 toremove[ntoremove++] = fsnow->win.id;
@@ -399,7 +395,6 @@ void UpdateFallenSnowRegions() {
                 fsnow->y != movedWin->y + Flags.OffsetY ||
                 (unsigned int) fsnow->w != movedWin->w + Flags.OffsetW) {
 
-                fprintf(stdout, "windows.c: UpdateFallenSnowRegions(3) Triggers.\n");
                 CleanFallenArea(fsnow, 0, fsnow->w);
                 GenerateFlakesFromFallen(fsnow, 0, fsnow->w, -10.0);
                 toremove[ntoremove++] = fsnow->win.id;
@@ -418,8 +413,6 @@ void UpdateFallenSnowRegions() {
         RemoveFallenSnow(&global.FsnowFirst, toremove[i]);
     }
     free(toremove);
-
-    fprintf(stdout, "windows.c: UpdateFallenSnowRegions() Finishes.\n");
 }
 
 // gets location and size of xinerama screen xscreen, -1: full screen

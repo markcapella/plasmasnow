@@ -34,40 +34,28 @@ class PlasmaColorDialog : public QColorDialog {
 
     public:
         PlasmaColorDialog() {
-            fprintf(stdout, "colorPicker.cpp: PlasmaColorDialog(CONSTRUCTOR) Starts.\n");
-
             mAlreadyInitialized = false;
             mAlreadyShowingQPickerDialog = false;
             mActiveCallerName = nullptr;
             mAlreadyTerminated = false;
 
             mColor = Qt::black;
-
-            fprintf(stdout, "colorPicker.cpp: PlasmaColorDialog(CONSTRUCTOR) Finishes.\n");
         }
 
-        void closeEvent(__attribute__((unused)) QCloseEvent *event) {
-            fprintf(stdout, "colorPicker.cpp: closeEvent(%d) Starts.\n", isVisible());
-            hide();
 
-            fprintf(stdout, "colorPicker.cpp: closeEvent() Finishes.\n");
+        void closeEvent(__attribute__((unused)) QCloseEvent *event) {
+            hide();
         }
 
         void reject() {
-            fprintf(stdout, "colorPicker.cpp: reject(%d) Starts.\n", isVisible());
             hide();
-
-            fprintf(stdout, "colorPicker.cpp: reject() Finishes.\n");
         }
 
         void accept() {
-            fprintf(stdout, "colorPicker.cpp: accept(%d) Starts.\n", isVisible());
             setPlasmaColor(currentColor());
-
             hide();
-
-            fprintf(stdout, "colorPicker.cpp: accept() Finishes.\n");
         }
+
 
         bool isAlreadyInitialized() {
             return mAlreadyInitialized;
@@ -108,13 +96,13 @@ class PlasmaColorDialog : public QColorDialog {
 
 /** *********************************************************************
  **
- ** Main app Globals.
+ ** Main Globals.
  **
  **/
 static int argc = 1;
 static std::string argv[] = { "" };
-
 static QApplication* mColorApp = new QApplication(argc, (char**) argv);
+
 static PlasmaColorDialog* mColorDialog = new PlasmaColorDialog();
 
 
@@ -162,53 +150,46 @@ int getQPickerBlue() {
 
 /** *********************************************************************
  **
- ** Show the main dialog, allowing user interaction.
+ ** Show the main colorpicker dialog box, allowing user interaction.
  **
  **/
 extern "C"
-bool showQPickerDialog(char* inElementTag, char* inColorString) {
-    fprintf(stdout, "colorPicker.cpp: showQPickerDialog() Starts.\n");
+bool startQPickerDialog(char* inElementTag, char* inColorString) {
+    // Early out if we're alreaady active.
     if (mColorDialog->isQPickerActive()) {
-        fprintf(stdout,
-            "colorPicker.cpp: showQPickerDialog() Finishes - Can\'t set color"
-            " while QPickerDialog is already working.\n");
         return false;
     }
 
+    // Create initial dialog globals.
+    mColorDialog->setWindowTitle("Select Color");
+    mColorApp->setWindowIcon(
+        QIcon("/usr/local/share/pixmaps/plasmapicker.png"));
+    mColorDialog->setOption(QColorDialog::DontUseNativeDialog);
+    mColorDialog->setQPickerActive(true);
+    mColorDialog->setAlreadyInitialized(true);
+
+    // Create this dialogs specifics.
+    mColorDialog->setQPickerCallerName(inElementTag);
     QColor inColor(inColorString);
     if (inColor.isValid()) {
         mColorDialog->setPlasmaColor(inColor);
     }
+    mColorDialog->setCurrentColor(mColorDialog->getPlasmaColor());
 
-    mColorDialog->setWindowTitle("Select Color");
-    mColorApp->setWindowIcon(
-        QIcon("/usr/local/share/pixmaps/plasmapicker.png"));
-
-    mColorDialog->setAlreadyInitialized(true);
-    mColorDialog->setQPickerActive(true);
-    mColorDialog->setQPickerCallerName(inElementTag);
-    mColorDialog->setOption(QColorDialog::DontUseNativeDialog);
-    mColorDialog->setCurrentColor(inColor);
     mColorDialog->open();
-
-    fprintf(stdout, "colorPicker.cpp: showQPickerDialog() Finishes.\n");
     return true;
 }
 
 
 /** *********************************************************************
  **
- ** ...
+ ** Close the main colorPicker dialog box.
  **
  **/
 extern "C"
 void endQPickerDialog() {
-    fprintf(stdout, "colorPicker.cpp: endQPickerDialog() Starts.\n");
-
     mColorDialog->setQPickerActive(false);
     mColorDialog->setQPickerCallerName(nullptr);
-
-    fprintf(stdout, "colorPicker.cpp: endQPickerDialog() Finishes.\n");
 }
 
 
@@ -219,18 +200,11 @@ void endQPickerDialog() {
  **/
 extern "C"
 void uninitQPickerDialog() {
-    fprintf(stdout, "colorPicker.cpp: uninitQPickerDialog() Starts.\n");
     if (mColorApp != nullptr) {
-        fprintf(stdout, "colorPicker.cpp: uninitQPickerDialog()    PAYLOAD Starts.\n");
-
         endQPickerDialog();
         mColorDialog->setAlreadyTerminated(true);
 
         mColorApp->closeAllWindows();
         mColorApp = nullptr;
-
-        fprintf(stdout, "colorPicker.cpp: uninitQPickerDialog()    PAYLOAD Finishes.\n");
     }
-
-    fprintf(stdout, "colorPicker.cpp: uninitQPickerDialog() Finishes.\n");
 }

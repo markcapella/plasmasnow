@@ -35,25 +35,26 @@
  *   DOIT_S: for flags with a char* value (colors, mostly)
  *
  *   Macro DOIT will call macro's that are not meant for read/write from
- *   .xsnowrc Macro DOIT_ALL calls all DOIT_* macro's This will result in: see
+ *   .plasmasnowrc Macro DOIT_ALL calls all DOIT_* macro's This will result in:
+ *
  *   flags.h: creation of member HaloBright in type FLAGS  (see flags.h) see
  *   flags.c: definition of default value in DefaultFlags.HaloBright  (25)
  *            definition of vintage value in VintageFlags.Halobright  (0)
- *            definition of WriteFlags() to write the flags to .xsnowrc
- *            definition of ReadFlags() to read flags from .xsnowrc
+ *            definition of WriteFlags() to write the flags to .plasmasnowrc
+ *            definition of ReadFlags() to read flags from .plasmasnowrc
  *
  * buttons.h
  *   definition of button-related entities.
  *
  *   example:
- *     BUTTON(scalecode      ,xsnow_celestials  ,HaloBright           ,1  )
+ *     BUTTON(scalecode      ,plasmasnow_celestials  ,HaloBright           ,1  )
  *     this takes care that flag 'HaloBright' is associated with a button
  *     in the 'celestials' tab with the glade-id 'id-HaloBright' and that a
  *     value of 1 is used in the expansion of scalecode. In this case, the
  * button should be a GtkScale button.
  *
  *   The macro ALL_BUTTONS takes care that scalecode is called as
- *     scalecode(xsnow_celestials,HaloBright,1)
+ *     scalecode(plasmasnow_celestials,HaloBright,1)
  *     and that all other BUTTON macro's are called
  *
  *   The following types of buttons are implemented:
@@ -69,7 +70,7 @@
  *         glade-id's
  *
  *       define call-backs
- *         these call backs have names like 'button_xsnow_celestials_HaloBright'
+ *         these call backs have names like 'button_plasmasnow_celestials_HaloBright'
  *         the code ensures that for example Flags.HaloBright gets the value
  *         of the corresponding button.
  *
@@ -79,14 +80,14 @@
  *
  *       connects signals of buttons to the corresponding call-backs, for
  *         example, button with glade-id 'id-HaloBright', when changed, will
- * result in a call of button_xsnow_celestials_HaloBright().
+ * result in a call of button_plasmasnow_celestials_HaloBright().
  *
  *       create function setTabDefaults(int tab, int vintage) that gives the
- *         buttons in the given tab (for example 'xsnow_celestials') and the
+ *         buttons in the given tab (for example 'plasmasnow_celestials') and the
  *         corresponding flags their default (vintage = 0) or vintage
  *
  * (vintage=1) value. One will notice, that some buttons need extra care, for
- * example flag TreeType in xsnow_scenery.
+ * example flag TreeType in plasmasnow_scenery.
  *
  *   glade, ui.glade
  *
@@ -125,7 +126,7 @@
  *     In main.c the flags in the 'settings' tab are handled, and calls are
  *     made to for example scenery_ui() which is supposed to handle flags
  *     related with the 'scenery' tab. If Flags.Changes > 0, the flags are
- * written to .xsnowrc.
+ * written to .plasmasnowrc.
  *
  *   Documentation of flags
  *
@@ -240,7 +241,7 @@ static gboolean handleMainWindowStateEvents(
 static int ui_running = False;
 
 // ColorPicker
-bool showQPickerDialog(char* callerTag, char* colorAsString);
+bool startQPickerDialog(char* callerTag, char* colorAsString);
 
 int getQPickerRed();
 int getQPickerGreen();
@@ -262,7 +263,7 @@ static int nlang;
  **/
 
 void updateMainWindowUI() {
-    UIDO(ThemeXsnow, updateMainWindowTheme(););
+    UIDO(mAppTheme, updateMainWindowTheme(););
     UIDO(Screen, handle_screen(););
     UIDO(Outline, ClearScreen(););
     UIDOS(Language, handle_language(1););
@@ -272,7 +273,7 @@ void updateMainWindowTheme() {
     if (!ui_running) {
         return;
     }
-    if (Flags.ThemeXsnow) {
+    if (Flags.mAppTheme) {
         gtk_style_context_add_class(mStyleContext, "plasmaColor");
         gtk_style_context_remove_class(mStyleContext, "plasmaNoColor");
     } else {
@@ -493,9 +494,6 @@ static void getAllButtonFormIDs() {
 
 #define colorcode(type, name, m)                                               \
     NEWLINE MODULE_EXPORT void buttoncb(type, name)(GtkWidget * w) NEWLINE {   \
-        NEWLINE fprintf(stdout,                                                \
-            "ui.c: [colorcode] Starts CALLBACK  %s %s %d %s.\n",               \
-            NEWLINE #name, #type, m, Flags.name);                              \
         NEWLINE if (!human_interaction) {                                      \
             NEWLINE fprintf(                                                   \
                 stdout, "ui.c: [colorcode] Errors CALLBACK - No Interact.\n"); \
@@ -507,7 +505,6 @@ static void getAllButtonFormIDs() {
         NEWLINE gtk_color_chooser_get_rgba(GTK_COLOR_CHOOSER(w), &color);      \
         NEWLINE free(Flags.name);                                              \
         NEWLINE rgba2color(&color, &Flags.name);                               \
-        NEWLINE fprintf(stdout, "ui.c: [colorcode] Finishes CALLBACK.\n");     \
         NEWLINE                                                                \
     }
 
@@ -529,145 +526,31 @@ ALL_BUTTONS
 
 // QColorDialog "Widgets".
 void onClickedSnowColor() {
-    fprintf(stdout, "ui.c: [qcolorcode] Starts CALLBACK  %s %s %d %s.\n",
-        "SnowColor", "1", 1, Flags.SnowColor);
-
     if (!human_interaction) {
-        fprintf(stdout, "ui.c: [qcolorcode] Errors CALLBACK - No Interact.\n");
         return;
     }
-
-    showQPickerDialog("SnowColorTAG", Flags.SnowColor);
-
-        // Build color string from picker components.
-        //static char cbuffer[16];
-        //snprintf(cbuffer, 16, "#%02x%02x%02x", getQPickerRed(),
-        //    getQPickerGreen(), getQPickerBlue());
-        //fprintf(stdout, "ui.c: [qcolorcode]    STRING [%s].\n", cbuffer);
-
-        // Set Flags to new color string.
-        //static GdkRGBA color;
-        //gdk_rgba_parse(&color, cbuffer);
-
-        //free(Flags.SnowColor);
-        //rgba2color(&color, &Flags.SnowColor);
-
-        // Set qcolorbutton to display color selection.
-        //gtk_widget_override_background_color(
-        //    Button.SnowColor, GTK_STATE_FLAG_NORMAL, &color);
-    //}
-
-    fprintf(stdout, "ui.c: [qcolorcode] Finishes CALLBACK  %s %s %d [%s].\n",
-        "SnowColor", "1", 1, Flags.SnowColor);
+    startQPickerDialog("SnowColorTAG", Flags.SnowColor);
 }
 
 void onClickedSnowColor2() {
-    fprintf(stdout, "ui.c: [qcolorcode] Starts CALLBACK  %s %s %d %s.\n",
-        "SnowColor2", "1", 1, Flags.SnowColor2);
-
     if (!human_interaction) {
-        fprintf(stdout, "ui.c: [qcolorcode] Errors CALLBACK - No Interact.\n");
         return;
     }
-
-    showQPickerDialog("SnowColor2TAG", Flags.SnowColor2);
-
-    //showQPickerDialog(Flags.name, Flags.SnowColor2);
-    // Set color picker from Flags, allow user to change.
-    // if (showQPickerDialog(Flags.SnowColor2)) {
-    //     // Build color string from picker components.
-    //     static char cbuffer[16];
-    //     snprintf(cbuffer, 16, "#%02x%02x%02x", getQPickerRed(),
-    //         getQPickerGreen(), getQPickerBlue());
-    //     fprintf(stdout, "ui.c: [qcolorcode]    STRING [%s].\n", cbuffer);
-    //
-    //     // Set Flags to new color string.
-    //     static GdkRGBA color;
-    //     gdk_rgba_parse(&color, cbuffer);
-    //
-    //     free(Flags.SnowColor2);
-    //     rgba2color(&color, &Flags.SnowColor2);
-    //
-    //     // Set qcolorbutton to display color selection.
-    //     gtk_widget_override_background_color(
-    //         Button.SnowColor2, GTK_STATE_FLAG_NORMAL, &color);
-    //}
-
-    fprintf(stdout, "ui.c: [qcolorcode] Finishes CALLBACK  %s %s %d [%s].\n",
-        "SnowColor2", "1", 1, Flags.SnowColor2);
+    startQPickerDialog("SnowColor2TAG", Flags.SnowColor2);
 }
 
 void onClickedBirdsColor() {
-    fprintf(stdout, "ui.c: [qcolorcode] Starts CALLBACK  %s %s %d %s.\n",
-        "BirdsColor", "1", 1, Flags.BirdsColor);
-
     if (!human_interaction) {
-        fprintf(stdout, "ui.c: [qcolorcode] Errors CALLBACK - No Interact.\n");
         return;
     }
-
-
-    showQPickerDialog("BirdsColorTAG", Flags.BirdsColor);
-
-    // Set color picker from Flags, allow user to change.
-    //if (showQPickerDialog("BirdsColorTAG", Flags.BirdsColor)) {
-    // if (showQPickerDialog(Flags.name, Flags.BirdsColor)) {
-        // Build color string from picker components.
-    //    static char cbuffer[16];
-    //    snprintf(cbuffer, 16, "#%02x%02x%02x", getQPickerRed(),
-    //        getQPickerGreen(), getQPickerBlue());
-    //    fprintf(stdout, "ui.c: [qcolorcode]    STRING [%s].\n", cbuffer);
-
-    //    // Set Flags to new color string.
-    //    static GdkRGBA color;
-    //    gdk_rgba_parse(&color, cbuffer);
-
-    //    free(Flags.BirdsColor);
-    //    rgba2color(&color, &Flags.BirdsColor);
-
-        // Set qcolorbutton to display color selection.
-    //    gtk_widget_override_background_color(
-    //        Button.BirdsColor, GTK_STATE_FLAG_NORMAL, &color);
-    //}
-
-    fprintf(stdout, "ui.c: [qcolorcode] Finishes CALLBACK  %s %s %d [%s].\n",
-        "BirdsColor", "1", 1, Flags.BirdsColor);
+    startQPickerDialog("BirdsColorTAG", Flags.BirdsColor);
 }
 
 void onClickedTreeColor() {
-    fprintf(stdout, "ui.c: [qcolorcode] Starts CALLBACK  %s %s %d %s.\n",
-        "TreeColor", "1", 1, Flags.TreeColor);
-
     if (!human_interaction) {
-        fprintf(stdout, "ui.c: [qcolorcode] Errors CALLBACK - No Interact.\n");
         return;
     }
-
-    showQPickerDialog("TreeColorTAG", Flags.TreeColor);
-
-    // Set color picker from Flags, allow user to change.
-    //if (showQPickerDialog("TreeColorTAG", Flags.TreeColor)) {
-    //if (showQPickerDialog(Flags.name, Flags.TreeColor)) {
-        // Build color string from picker components.
-    //    static char cbuffer[16];
-    //    snprintf(cbuffer, 16, "#%02x%02x%02x", getQPickerRed(),
-    //        getQPickerGreen(), getQPickerBlue());
-    //    fprintf(stdout, "ui.c: [qcolorcode]    STRING [%s].\n", cbuffer);
-
-        // Set Flags to new color string.
-    //    static GdkRGBA color;
-    //    gdk_rgba_parse(&color, cbuffer);
-
-    //    free(Flags.TreeColor);
-    //    rgba2color(&color, &Flags.TreeColor);
-
-        // Set qcolorbutton to display color selection.
-    //    gtk_widget_override_background_color(
-    //        Button.TreeColor, GTK_STATE_FLAG_NORMAL, &color);
-    //}
-
-    fprintf(stdout, "ui.c: [qcolorcode] Finishes CALLBACK  %s %s %d [%s].\n",
-        "TreeColor", "1", 1, Flags.TreeColor);
+    startQPickerDialog("TreeColorTAG", Flags.TreeColor);
 }
 
 #pragma GCC diagnostic pop
@@ -699,16 +582,12 @@ void onClickedTreeColor() {
         GTK_RANGE(Button.name), m *((gdouble)Flags.name));
 
 #define colorcode(type, name, m)                                               \
-    NEWLINE fprintf(stdout,                                                    \
-        "ui.c: [colorcode] Starts SET BUTTON %s %s %d %s.\n", NEWLINE #name,   \
-        #type, m, Flags.name);                                                 \
     NEWLINE P("color %s %s %d %s\n", #name, #type m, Flags.name);              \
     NEWLINE                                                                    \
     NEWLINE gdk_rgba_parse(&color, Flags.name);                                \
     NEWLINE gtk_color_chooser_set_rgba(                                        \
         GTK_COLOR_CHOOSER(Button.name), &color);                               \
-    NEWLINE                                                                    \
-    NEWLINE fprintf(stdout, "ui.c: [colorcode] Finishes SET BUTTON.\n");
+    NEWLINE
 
 #define filecode(type, name, m)                                                \
     NEWLINE P("file %s %s %d %s\n", #name, #type, m, Flags.name);              \
@@ -722,8 +601,6 @@ static void initAllButtonValues() {
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-
-    fprintf(stdout, "ui.c: initAllButtonValues() Starts COLOR BUTTONS");
 
     // QColorDialog Widgets.
     gdk_rgba_parse(&color, Flags.SnowColor);
@@ -741,8 +618,6 @@ static void initAllButtonValues() {
     gdk_rgba_parse(&color, Flags.TreeColor);
     gtk_widget_override_background_color(
         Button.TreeColor, GTK_STATE_FLAG_NORMAL, &color);
-
-    fprintf(stdout, "ui.c: initAllButtonValues() Finishes COLOR BUTTONS");
 
 #pragma GCC diagnostic pop
 }
@@ -1093,18 +968,18 @@ void setTabDefaults(int tab) {
     }
 
     switch (tab) {
-    case xsnow_scenery:
+    case plasmasnow_scenery:
         free(Flags.TreeType);
         Flags.TreeType = strdup(DEFAULT(TreeType));
         break;
-    case xsnow_snow:
+    case plasmasnow_snow:
         Flags.VintageFlakes = 0;
         break;
-    case xsnow_santa:
+    case plasmasnow_santa:
         Flags.SantaSize = DEFAULT(SantaSize);
         Flags.Rudolf = DEFAULT(Rudolf);
         break;
-    case xsnow_settings:
+    case plasmasnow_settings:
         set_belowall_default();
         free(Flags.BackgroundFile);
         Flags.BackgroundFile = strdup(background);
@@ -1196,7 +1071,7 @@ void handleFileChooserPreview(GtkFileChooser *file_chooser, gpointer data) {
 void initUIClass() {
     ui_running = True;
 
-    builder = gtk_builder_new_from_string(xsnow_xml, -1);
+    builder = gtk_builder_new_from_string(plasmasnow_xml, -1);
 #ifdef HAVE_GETTEXT
     gtk_builder_set_translation_domain(builder, TEXTDOMAIN);
 #endif
@@ -1215,11 +1090,17 @@ void initUIClass() {
     applyMainWindowCSSTheme();
 
     gtk_window_set_title(GTK_WINDOW(mMainWindow), "");
-    if (getenv("XSNOW_RESTART")) {
-        gtk_window_set_position(
-            GTK_WINDOW(mMainWindow), GTK_WIN_POS_CENTER_ALWAYS);
+
+    fprintf(stdout, "---> ui.c: initUIClass() Starts.\n");
+    if (getenv("plasmasnow_RESTART")) {
+        gtk_window_set_position(GTK_WINDOW(mMainWindow),
+            GTK_WIN_POS_CENTER_ALWAYS);
+        fprintf(stdout, "---> ui.c: initUIClass()    RESTART.\n");
     }
+    fprintf(stdout, "---> ui.c: initUIClass() Finiihes.\n");
+
     gtk_widget_show_all(mMainWindow);
+
 
     init_buttons();
     connectAllButtonSignals();
@@ -1509,7 +1390,6 @@ int ui_run_nomenu() {
 /** *********************************************************************
  ** ... .
  **/
-
 static void onClickedActivateXScreenSaver(GtkApplication *app) {
     GtkWidget *window;
     GtkWidget *grid;
@@ -1520,7 +1400,7 @@ static void onClickedActivateXScreenSaver(GtkApplication *app) {
     window = gtk_application_window_new(app);
 
     gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
-    gtk_window_set_title(GTK_WINDOW(window), "Xsnow");
+    gtk_window_set_title(GTK_WINDOW(window), "plasmaSnow");
     gtk_window_set_decorated(GTK_WINDOW(window), FALSE);
     gtk_window_set_keep_above(GTK_WINDOW(window), TRUE);
     gtk_container_set_border_width(GTK_CONTAINER(window), 10);
@@ -1651,11 +1531,7 @@ void onClickedTreeButton(GtkWidget *w) {
 
 MODULE_EXPORT
 void onClickedQuitApplication() {
-    fprintf(stdout, "ui.c: onClickedQuitApplication() Starts.\n");
-
     Flags.Done = 1;
-
-    fprintf(stdout, "ui.c: onClickedQuitApplication() Finishes.\n");
 }
 
 MODULE_EXPORT
@@ -1675,34 +1551,34 @@ void onClickedActivateScreensaver() {
  **/
 
 MODULE_EXPORT
-void onClickedSetSnowDefaults() { setTabDefaults(xsnow_snow); }
+void onClickedSetSnowDefaults() { setTabDefaults(plasmasnow_snow); }
 
 MODULE_EXPORT
-void onClickedSetSantaDefaults() { setTabDefaults(xsnow_santa); }
+void onClickedSetSantaDefaults() { setTabDefaults(plasmasnow_santa); }
 
 MODULE_EXPORT
-void onClickedSetSceneryDefaults() { setTabDefaults(xsnow_scenery); }
+void onClickedSetSceneryDefaults() { setTabDefaults(plasmasnow_scenery); }
 
 MODULE_EXPORT
-void onClickedSetCelestialsDefaults() { setTabDefaults(xsnow_celestials); }
+void onClickedSetCelestialsDefaults() { setTabDefaults(plasmasnow_celestials); }
 
 MODULE_EXPORT
 void onClickedSetBirdsDefaults() {
     P("onClickedDefaultBirds\n");
-    setTabDefaults(xsnow_birds);
+    setTabDefaults(plasmasnow_birds);
 }
 
 MODULE_EXPORT
-void onClickedSetAdvancedDefaults() { setTabDefaults(xsnow_settings); }
+void onClickedSetAdvancedDefaults() { setTabDefaults(plasmasnow_settings); }
 
 MODULE_EXPORT
 void onClickedSetAllDefaults() {
-    setTabDefaults(xsnow_settings);
+    setTabDefaults(plasmasnow_settings);
 
-    setTabDefaults(xsnow_snow);
-    setTabDefaults(xsnow_santa);
-    setTabDefaults(xsnow_scenery);
-    setTabDefaults(xsnow_celestials);
-    setTabDefaults(xsnow_birds);
+    setTabDefaults(plasmasnow_snow);
+    setTabDefaults(plasmasnow_santa);
+    setTabDefaults(plasmasnow_scenery);
+    setTabDefaults(plasmasnow_celestials);
+    setTabDefaults(plasmasnow_birds);
     // set_belowall_default();
 }

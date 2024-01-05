@@ -58,7 +58,7 @@ static int KillFlakes =
 static float SnowSpeedFactor;
 
 static SnowMap *snowPix;
-static char ***xsnow_xpm = NULL;
+static char ***plasmasnow_xpm = NULL;
 static int NFlakeTypesVintage;
 static int MaxFlakeTypes;
 
@@ -107,7 +107,7 @@ void snow_init() {
     NFlakeTypesVintage = MaxFlakeTypes;
 
     add_random_flakes(EXTRA_FLAKES); // will change MaxFlakeTypes
-    //                            and create xsnow_xpm, containing
+    //                            and create plasmasnow_xpm, containing
     //                            vintage and new flakes
 
     snowPix = (SnowMap *)malloc(MaxFlakeTypes * sizeof(SnowMap));
@@ -131,8 +131,8 @@ void snow_init() {
     // now we would like to be able to get rid of the snow xpms:
     /*
        for (i=0; i<MaxFlakeTypes; i++)
-       xpm_destroy(xsnow_xpm[i]);
-       free(xsnow_xpm);
+       xpm_destroy(plasmasnow_xpm[i]);
+       free(plasmasnow_xpm);
        */
     // but we cannot: they are needed if user changes color
 }
@@ -147,25 +147,17 @@ void SetSnowSize() {
 }
 
 void snow_ui() {
-    //fprintf(stdout, "snow.c: snow_ui() Starts.\n");
-
     UIDO(
         NoSnowFlakes, if (Flags.NoSnowFlakes) { ClearScreen(); });
 
     UIDO(SnowFlakesFactor, InitFlakesPerSecond(););
 
     UIDOS(SnowColor, InitSnowColor(); ClearScreen(););
-        //fprintf(stdout, "snow.c: snow_ui(1)    isQPickerActive(): %d.\n", isQPickerActive());
-        //fprintf(stdout, "snow.c: snow_ui(1)    getQPickerCallerName(): %s.\n", getQPickerCallerName());
-        //fprintf(stdout, "snow.c: snow_ui(1)    isQPickerVisible(): %d.\n", isQPickerVisible());
-        //fprintf(stdout, "snow.c: snow_ui(1)    isQPickerTerminated(): %d.\n", isQPickerTerminated());
-
     if (isQPickerActive() && !strcmp(getQPickerCallerName(), "SnowColorTAG") &&
         !isQPickerVisible()) {
         static char cbuffer[16];
         snprintf(cbuffer, 16, "#%02x%02x%02x", getQPickerRed(),
             getQPickerGreen(), getQPickerBlue());
-        fprintf(stdout, "ui.c: [qcolorcode]    SnowColor [%s].\n", cbuffer);
 
         static GdkRGBA color;
         gdk_rgba_parse(&color, cbuffer);
@@ -176,17 +168,11 @@ void snow_ui() {
     }
 
     UIDOS(SnowColor2, InitSnowColor(); ClearScreen(););
-        //fprintf(stdout, "snow.c: snow_ui(2)    isQPickerActive(): %d.\n", isQPickerActive());
-        //fprintf(stdout, "snow.c: snow_ui(2)    getQPickerCallerName(): %s.\n", getQPickerCallerName());
-        //fprintf(stdout, "snow.c: snow_ui(2)    isQPickerVisible(): %d.\n", isQPickerVisible());
-        //fprintf(stdout, "snow.c: snow_ui(2)    isQPickerTerminated(): %d.\n", isQPickerTerminated());
-
     if (isQPickerActive() && !strcmp(getQPickerCallerName(), "SnowColor2TAG") &&
         !isQPickerVisible()) {
         static char cbuffer[16];
         snprintf(cbuffer, 16, "#%02x%02x%02x", getQPickerRed(),
             getQPickerGreen(), getQPickerBlue());
-        fprintf(stdout, "ui.c: [qcolorcode]    SnowColor2 [%s].\n", cbuffer);
 
         static GdkRGBA color;
         gdk_rgba_parse(&color, cbuffer);
@@ -204,21 +190,16 @@ void snow_ui() {
     if (ScaleChanged(&prev)) {
         init_snow_pix();
     }
-
-    //fprintf(stdout, "snow.c: snow_ui() Finishes.\n");
 }
 
 void init_snow_pix() {
-    // fprintf(stdout, "snow.c: init_snow_pix() Starts.\n");
-
     (void)LocalScale;
     int flake;
-    P("%d init_snow_pix\n", counter++);
 
     for (flake = 0; flake < MaxFlakeTypes; flake++) {
         SnowMap *rp = &snowPix[flake];
         int w, h;
-        sscanf(xsnow_xpm[flake][0], "%d %d", &w, &h);
+        sscanf(plasmasnow_xpm[flake][0], "%d %d", &w, &h);
         w *= 0.01 * Flags.Scale * LocalScale * global.WindowScale;
         h *= 0.01 * Flags.Scale * LocalScale * global.WindowScale;
         rp->width = w;
@@ -227,24 +208,11 @@ void init_snow_pix() {
         char **x;
         int lines;
         if (flakeColorToggle == 1) {
-            xpm_set_color(xsnow_xpm[flake], &x, &lines, Flags.SnowColor);
+            xpm_set_color(plasmasnow_xpm[flake], &x, &lines, Flags.SnowColor);
         } else {
-            xpm_set_color(xsnow_xpm[flake], &x, &lines, Flags.SnowColor2);
-            // Color t;
-            // GdkColor t = Color();
-            // t.set_red(getQPickerRed());
-            // t.set_green(getQPickerGreen());
-            // t.set_blue(getQPickerBlue());
-            // fprintf(stdout, "snow.c: init_snow_pix() : XYZZY COLORNAME
-            // Starts."); char hexcol[16]; snprintf(hexcol, sizeof hexcol,
-            // "#%02x%02x%02x",
-            //    getQPickerRed(), getQPickerGreen(), getQPickerBlue());
-            //  char* bob = getCCCName(); // Flags.SnowColor; // getCCCName();
-            //  fprintf(stdout, "XYZZY [ %s ].", bob);
-            // fprintf(stdout, "snow.c: init_snow_pix() : COLORNAME [ %s ].\n",
-            // hexcol); fprintf(stdout, "snow.c: init_snow_pix() : XYZZY
-            // COLORNAME Finishes.");
+            xpm_set_color(plasmasnow_xpm[flake], &x, &lines, Flags.SnowColor2);
         }
+
         flakeColorToggle++;
         if (flakeColorToggle == 2) {
             flakeColorToggle = 0;
@@ -535,24 +503,18 @@ int do_UpdateSnowFlake(Snow *flake) {
                                         fsnow, nx - fsnow->x, flakew);
                                 }
 
-                                //fprintf(stdout, "snow: do_UpdateSnowFlake() Flags.NoFluffy: %i\n", Flags.NoFluffy);
-
-                                // always erase flake, but repaint it on top
-                                // of the correct position on fsnow (if
-                                // !NoFluffy))
+                                // Always erase flake, but repaint it on top
+                                // of the correct position on fsnow (if !NoFluffy)).
                                 if (HandleFallenSnow(fsnow)) {
                                     if (!Flags.NoFluffy) {
-                                        //fprintf(stdout, "snow: do_UpdateSnowFlake() FLUFFIFY.\n");
                                         fluffify(flake, .9);
                                     }
 
                                     if (flake->fluff) {
-                                        //fprintf(stdout, "snow: do_UpdateSnowFlake() (flake->fluff).\n");
                                         Unlock_fallen();
                                         return TRUE;
 
                                     } else {
-                                        //fprintf(stdout, "snow: do_UpdateSnowFlake() (!flake->fluff).\n");
                                         DelFlake(flake);
                                         Unlock_fallen();
                                         return FALSE;
@@ -927,11 +889,11 @@ void genxpmflake(char ***xpm, int w, int h) {
 void add_random_flakes(int n) {
     int i;
     // create a new array with snow-xpm's:
-    if (xsnow_xpm) {
+    if (plasmasnow_xpm) {
         for (i = 0; i < MaxFlakeTypes; i++) {
-            xpm_destroy(xsnow_xpm[i]);
+            xpm_destroy(plasmasnow_xpm[i]);
         }
-        free(xsnow_xpm);
+        free(plasmasnow_xpm);
     }
     if (n < 1) {
         n = 1;
@@ -954,7 +916,7 @@ void add_random_flakes(int n) {
     }
     MaxFlakeTypes = n + NFlakeTypesVintage;
     x[MaxFlakeTypes] = NULL;
-    xsnow_xpm = x;
+    plasmasnow_xpm = x;
 }
 
 void fluffify(Snow *flake, float t) {

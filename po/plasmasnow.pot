@@ -39,7 +39,7 @@ msgstr ""
 
 #: src/main.c:356
 #, c-format
-msgid "Xsnow needs gtk version >= %s, found version %s \n"
+msgid "plasmasnow needs gtk version >= %s, found version %s \n"
 msgstr ""
 
 #: src/main.c:367
@@ -96,7 +96,7 @@ msgstr ""
 
 #: src/main.c:668
 #, c-format
-msgid "NOTE: xsnow will probably run, but some glitches are to be expected.\n"
+msgid "NOTE: plasmasnow will probably run, but some glitches are to be expected.\n"
 msgstr ""
 
 #: src/main.c:681
@@ -195,14 +195,14 @@ msgstr ""
 #, c-format
 msgid ""
 "\n"
-"Xsnow: Caught signal %d\n"
+"plasmasnow: Caught signal %d\n"
 msgstr ""
 
 #: src/utils.c:244
 #, c-format
 msgid ""
 "\n"
-"Thanks for using xsnow\n"
+"Thanks for using plasmasnow\n"
 msgstr ""
 
 #: src/windows.c:585
@@ -265,7 +265,7 @@ msgid "plasmasnow is derived from Willem Vermin's xSnow 3.7.5."
 msgstr ""
 
 #: src/ui.glade:545
-msgid "xsnow 3.7.5 is derived from Rick Jansen's xsnow-1.42."
+msgid "plasmasnow 3.7.5 is derived from Rick Jansen's plasmasnow-1.42."
 msgstr ""
 
 #: src/ui.glade:695
@@ -1068,8 +1068,8 @@ msgstr ""
 
 #: src/ui.glade:4697
 msgid ""
-"Toggle between xsnow's own menu colors and standard menu colors.\n"
-"Activated: use xsnow colors.\n"
+"Toggle between plasmasnow's own menu colors and standard menu colors.\n"
+"Activated: use plasmasnow colors.\n"
 "Deactivated: use default colors.\n"
 "Flags: -theme 1, -theme 0"
 msgstr ""
@@ -1163,7 +1163,7 @@ msgid ""
 "Windows wider than 80 percent of the screen and closer to the top  than the "
 "number in this widget will not collect snow.\n"
 "In some cases, there are invisible windows near the top of the screen, which "
-"are handled by xsnow as normal windows: snow is collected upon them. By "
+"are handled by plasmasnow as normal windows: snow is collected upon them. By "
 "entering a suitable number here, this undesired behaviour can be avoided.\n"
 "Flag: -ignoretop\n"
 "\n"
@@ -1175,7 +1175,7 @@ msgid ""
 "the number in this widget will not collect snow.\n"
 "\n"
 "In some cases, there are invisible windows near the bottom  of  the screen, "
-"which are handled by xsnow as normal windows: snow is collected upon them. "
+"which are handled by plasmasnow as normal windows: snow is collected upon them. "
 "By entering a suitable  number here, this undesired behaviour can be "
 "avoided.\n"
 "Flag: -ignorebottom"
@@ -1219,7 +1219,7 @@ msgstr ""
 
 #: src/ui.glade:5132
 msgid ""
-"The higher, the smoother xsnow will run, but will also use  more cpu power.\n"
+"The higher, the smoother plasmasnow will run, but will also use  more cpu power.\n"
 "Flag: -cpuload"
 msgstr ""
 

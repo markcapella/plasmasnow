@@ -1,12 +1,12 @@
-# Language for xsnow
+# Language for plasmasnow
 # Copyright (C) 2023 Willem Vermin
 # Willem Vermin <wvermin@gmail.com>, 2023
-# This file is distributed under the same license as the xsnow package.
+# This file is distributed under the same license as the plasmasnow package.
 #
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xsnow 3.6.1.gettext~pre7\n"
+"Project-Id-Version: plasmasnow 3.6.1.gettext~pre7\n"
 "Report-Msgid-Bugs-To: wvermin@gmail.com\n"
 "POT-Creation-Date: 2023-02-11 15:09+0100\n"
 "PO-Revision-Date: 2023-01-12 14:23+0100\n"
@@ -43,7 +43,7 @@ msgstr ""
 
 #: src/main.c:431
 #, c-format
-msgid "Xsnow needs gtk version >= %s, found version %s \n"
+msgid "plasmasnow needs gtk version >= %s, found version %s \n"
 msgstr ""
 
 #: src/main.c:441
@@ -100,7 +100,7 @@ msgstr ""
 
 #: src/main.c:772 src/windows.c:670
 #, c-format
-msgid "NOTE: xsnow will probably run, but some glitches are to be expected.\n"
+msgid "NOTE: plasmasnow will probably run, but some glitches are to be expected.\n"
 msgstr ""
 
 #: src/main.c:779
@@ -212,14 +212,14 @@ msgstr ""
 #, c-format
 msgid ""
 "\n"
-"Xsnow: Caught signal %d\n"
+"plasmasnow: Caught signal %d\n"
 msgstr ""
 
 #: src/utils.c:248
 #, c-format
 msgid ""
 "\n"
-"Thanks for using xsnow\n"
+"Thanks for using plasmasnow\n"
 msgstr ""
 
 #: src/windows.c:571
@@ -283,12 +283,12 @@ msgstr ""
 #: src/ui.glade:144
 msgid ""
 "\n"
-"Alas! This not an X11 session, xsnow will probably not run.\n"
+"Alas! This not an X11 session, plasmasnow will probably not run.\n"
 "\n"
-"If you want to try it anyway, set the environment variable XSNOW_FORCE_RUN, "
+"If you want to try it anyway, set the environment variable PLASMASNOW_FORCE_RUN, "
 "eg:\n"
 "\n"
-"    XSNOW_FORCE_RUN=1 xsnow\n"
+"    PLASMASNOW_FORCE_RUN=1 plasmasnow\n"
 "\n"
 "Or, you could force an X11 session, for example by tweaking /etc/gdm3/daemon."
 "conf.\n"
@@ -308,7 +308,7 @@ msgstr ""
 
 #: src/ui.glade:475
 msgid ""
-"Use the <b>settings</b> tab if xsnow is misbehaving.\n"
+"Use the <b>settings</b> tab if plasmasnow is misbehaving.\n"
 "Use the <b>birds</b> tab if birds are misbehaving."
 msgstr ""
 
@@ -358,12 +358,12 @@ msgid "   "
 msgstr ""
 
 #: src/ui.glade:718
-msgid "Welcome at xsnow!"
+msgid "Welcome at plasmasnow!"
 msgstr ""
 
 #: src/ui.glade:773
 msgid ""
-"Vintage preferences: the look and feel of the original xsnow, created in "
+"Vintage preferences: the look and feel of the original plasmasnow, created in "
 "1993 by Rick Jansen."
 msgstr ""
 
@@ -384,7 +384,7 @@ msgstr ""
 
 #: src/ui.glade:887
 msgid ""
-"Donate one euro or so to inspire the maintainer of xsnow, here is a paypal "
+"Donate one euro or so to inspire the maintainer of plasmasnow, here is a paypal "
 "link. "
 msgstr ""
 
@@ -417,17 +417,17 @@ msgid "Contact"
 msgstr ""
 
 #: src/ui.glade:938
-msgid "Please report any comments to the maintainer of xsnow."
+msgid "Please report any comments to the maintainer of plasmasnow."
 msgstr ""
 
 #: src/ui.glade:948 src/ui.glade:1553 src/ui.glade:2386 src/ui.glade:2895
 #: src/ui.glade:3384 src/ui.glade:4280 src/ui.glade:5374
-msgid "Quit xsnow"
+msgid "Quit plasmasnow"
 msgstr ""
 
 #: src/ui.glade:953 src/ui.glade:1557 src/ui.glade:2390 src/ui.glade:2899
 #: src/ui.glade:3388 src/ui.glade:4284 src/ui.glade:5378
-msgid "Quit xsnow."
+msgid "Quit plasmasnow."
 msgstr ""
 
 #: src/ui.glade:991
@@ -1326,7 +1326,7 @@ msgstr ""
 
 #: src/ui.glade:5185
 msgid ""
-"The higher, the smoother xsnow will run, but will also use  more cpu power.\n"
+"The higher, the smoother plasmasnow will run, but will also use  more cpu power.\n"
 "Flag: -cpuload"
 msgstr ""
 
@@ -1349,7 +1349,7 @@ msgid ""
 "Windows wider than 80 percent of the screen and closer to the top  than the "
 "number in this widget will not collect snow.\n"
 "In some cases, there are invisible windows near the top of the screen, which "
-"are handled by xsnow as normal windows: snow is collected upon them. By "
+"are handled by plasmasnow as normal windows: snow is collected upon them. By "
 "entering a suitable number here, this undesired behaviour can be avoided.\n"
 "Flag: -ignoretop\n"
 "\n"
@@ -1365,7 +1365,7 @@ msgid ""
 "the number in this widget will not collect snow.\n"
 "\n"
 "In some cases, there are invisible windows near the bottom  of  the screen, "
-"which are handled by xsnow as normal windows: snow is collected upon them. "
+"which are handled by plasmasnow as normal windows: snow is collected upon them. "
 "By entering a suitable  number here, this undesired behaviour can be "
 "avoided.\n"
 "Flag: -ignorebottom"
@@ -1383,8 +1383,8 @@ msgstr ""
 
 #: src/ui.glade:5531
 msgid ""
-"Toggle between xsnow's own menu colors and standard menu colors.\n"
-"Activated: use xsnow colors.\n"
+"Toggle between plasmasnow's own menu colors and standard menu colors.\n"
+"Activated: use plasmasnow colors.\n"
 "Deactivated: use default colors.\n"
 "Flags: -theme 1, -theme 0"
 msgstr ""
@@ -1433,7 +1433,7 @@ msgstr ""
 msgid ""
 "If you have more than one monitor, choose where you want snow falling. "
 "Choose 'all monitors' if you want snow in all monitors.\n"
-"NOTE: when changing monitor, xsnow will restart.\n"
+"NOTE: when changing monitor, plasmasnow will restart.\n"
 "Flag: -screen"
 msgstr ""
 
@@ -1481,13 +1481,13 @@ msgid ""
 "Settings for Xscreensaver. You can choose a background, and choose to use it "
 "or not.\n"
 "Make sure you add a line like\n"
-"xsnow -root\n"
+"plasmasnow -root\n"
 "after the line 'programs:' in the file ~/.xscreensaver and you run "
-"xscreensaver-demo to choose for xsnow.\n"
+"xscreensaver-demo to choose for plasmasnow.\n"
 "To activate xscreensaver on the command line:\n"
 "xscreensaver-command  -activate\n"
 "See also the man page:\n"
-"man xsnow"
+"man plasmasnow"
 msgstr ""
 
 #: src/ui.glade:5736

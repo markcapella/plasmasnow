@@ -225,8 +225,8 @@ extern struct _global {
 
         float WindowScale;
 
-        unsigned int MaxSnowFlakeHeight; /* Biggest flake */
-        unsigned int MaxSnowFlakeWidth;  /* Biggest flake */
+        unsigned int MaxFlakeHeight; /* Biggest flake */
+        unsigned int MaxFlakeWidth;  /* Biggest flake */
         int FlakeCount;                  /* number of flakes */
         int FluffCount;                  /* number of fluff flakes */
 

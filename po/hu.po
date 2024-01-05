@@ -5,18 +5,18 @@
 # # (abc_1003) Xsnow
 # # (abc_1004) Xscreensaver
 # # (abc_1005) XsnoW
-# # (abc_1006) xsnow
+# # (abc_1006) plasmasnow
 # # (abc_1007) %l#x
 # # (abc_1008) Rick Jansen
-# Language for xsnow
+# Language for plasmasnow
 # Copyright (C) 2023 Willem Vermin
 # Willem Vermin <wvermin@gmail.com>, 2023
-# This file is distributed under the same license as the xsnow package.
+# This file is distributed under the same license as the plasmasnow package.
 #
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xsnow 3.7.0~pre04\n"
+"Project-Id-Version: plasmasnow 3.7.0~pre04\n"
 "Report-Msgid-Bugs-To: Willem Vermin wvermin@gmail.com\n"
 "POT-Creation-Date: 2023-02-17 13:40+0100\n"
 "PO-Revision-Date: 2023-02-17 13:40+0100\n"
@@ -53,8 +53,8 @@ msgstr "Észlelt Wayland asztali számítógép \n"
 
 #: src/main.c:431
 #, c-format
-msgid "Xsnow needs gtk version >= %s, found version %s \n"
-msgstr "Xsnow >= %s gtk verziót igényel, %s verzió található \n"
+msgid "plasmasnow needs gtk version >= %s, found version %s \n"
+msgstr "plasmasnow >= %s gtk verziót igényel, %s verzió található \n"
 
 #: src/main.c:441
 msgid "Continuing with flag"
@@ -110,9 +110,9 @@ msgstr "Nem lehet átlátszó ablakot létrehozni \n"
 
 #: src/main.c:772 src/windows.c:670
 #, c-format
-msgid "NOTE: xsnow will probably run, but some glitches are to be expected.\n"
+msgid "NOTE: plasmasnow will probably run, but some glitches are to be expected.\n"
 msgstr ""
-"MEGJEGYZÉS: xsnow valószínűleg futni fog, de bizonyos hibákra kell "
+"MEGJEGYZÉS: plasmasnow valószínűleg futni fog, de bizonyos hibákra kell "
 "számítani. \n"
 
 #: src/main.c:779
@@ -225,19 +225,19 @@ msgstr "Az önreplikáció nincs itt fordítva. \n"
 #, c-format
 msgid ""
 "\n"
-"Xsnow: Caught signal %d\n"
+"plasmasnow: Caught signal %d\n"
 msgstr ""
 "\n"
-"Xsnow: Fogott jel %d\n"
+"plasmasnow: Fogott jel %d\n"
 
 #: src/utils.c:247
 #, c-format
 msgid ""
 "\n"
-"Thanks for using xsnow\n"
+"Thanks for using plasmasnow\n"
 msgstr ""
 "\n"
-"Köszönjük az xsnow használatát\n"
+"Köszönjük az plasmasnow használatát\n"
 
 #: src/windows.c:571
 #, c-format
@@ -302,26 +302,26 @@ msgstr "Lásd még a man oldalt."
 #: src/ui.glade:144
 msgid ""
 "\n"
-"Alas! This not an X11 session, xsnow will probably not run.\n"
+"Alas! This not an X11 session, plasmasnow will probably not run.\n"
 "\n"
-"If you want to try it anyway, set the environment variable XSNOW_FORCE_RUN, "
+"If you want to try it anyway, set the environment variable PLASMASNOW_FORCE_RUN, "
 "eg:\n"
 "\n"
-"    XSNOW_FORCE_RUN=1 xsnow\n"
+"    PLASMASNOW_FORCE_RUN=1 plasmasnow\n"
 "\n"
 "Or, you could force an X11 session, for example by tweaking /etc/gdm3/daemon."
 "conf.\n"
 "\n"
 msgstr ""
 "\n"
-"Jaj! Ez nem X11 munkamenet, xsnow valószínűleg nem fog futni.\n"
+"Jaj! Ez nem X11 munkamenet, plasmasnow valószínűleg nem fog futni.\n"
 "\n"
-"Ha mégis ki akarja próbálni, állítsa be az XSNOW_FORCE_RUN környezeti "
+"Ha mégis ki akarja próbálni, állítsa be az PLASMASNOW_FORCE_RUN környezeti "
 "változót, pl.:\n"
 "\n"
 " \n"
 " \n"
-"    XSNOW_FORCE_RUN=1 xsnow\n"
+"    PLASMASNOW_FORCE_RUN=1 plasmasnow\n"
 "\n"
 " Vagy kényszeríthet egy X11 munkamenetet, például az /etc/gdm3/daemon.conf. "
 "módosításával.\n"
@@ -342,10 +342,10 @@ msgstr ""
 
 #: src/ui.glade:490
 msgid ""
-"Use the <b>settings</b> tab if xsnow is misbehaving.\n"
+"Use the <b>settings</b> tab if plasmasnow is misbehaving.\n"
 "Use the <b>birds</b> tab if birds are misbehaving."
 msgstr ""
-"Használja a <b>beállítások</b> lapot, ha xsnow rosszul viselkedik. \n"
+"Használja a <b>beállítások</b> lapot, ha plasmasnow rosszul viselkedik. \n"
 " Ha a madarak rosszul viselkednek, használja a <b>madarak</b> lapot."
 
 #: src/ui.glade:507
@@ -398,15 +398,15 @@ msgid "   "
 msgstr "   "
 
 #: src/ui.glade:744
-msgid "Welcome at xsnow!"
-msgstr "Üdvözöljük itt: xsnow!"
+msgid "Welcome at plasmasnow!"
+msgstr "Üdvözöljük itt: plasmasnow!"
 
 #: src/ui.glade:802
 msgid ""
-"Vintage preferences: the look and feel of the original xsnow, created in "
+"Vintage preferences: the look and feel of the original plasmasnow, created in "
 "1993 by Rick Jansen."
 msgstr ""
-"Vintage preferenciák: az eredeti xsnow megjelenése és hangulata, amelyet "
+"Vintage preferenciák: az eredeti plasmasnow megjelenése és hangulata, amelyet "
 "1993-ban készített Rick Jansen."
 
 #: src/ui.glade:893 src/ui.glade:1556 src/ui.glade:2432 src/ui.glade:2996
@@ -429,10 +429,10 @@ msgstr "Adományoz"
 
 #: src/ui.glade:918
 msgid ""
-"Donate one euro or so to inspire the maintainer of xsnow, here is a paypal "
+"Donate one euro or so to inspire the maintainer of plasmasnow, here is a paypal "
 "link. "
 msgstr ""
-"Adományozzon egy eurót, hogy inspirálja az xsnow fenntartóját, itt van egy "
+"Adományozzon egy eurót, hogy inspirálja az plasmasnow fenntartóját, itt van egy "
 "paypal link. "
 
 #: src/ui.glade:928 src/ui.glade:1575 src/ui.glade:2451 src/ui.glade:3015
@@ -469,18 +469,18 @@ msgid "Contact"
 msgstr "Kapcsolatba lépni"
 
 #: src/ui.glade:971
-msgid "Please report any comments to the maintainer of xsnow."
-msgstr "Kérjük, minden észrevételét jelentse az xsnow karbantartójának."
+msgid "Please report any comments to the maintainer of plasmasnow."
+msgstr "Kérjük, minden észrevételét jelentse az plasmasnow karbantartójának."
 
 #: src/ui.glade:981 src/ui.glade:1606 src/ui.glade:2482 src/ui.glade:3046
 #: src/ui.glade:3543 src/ui.glade:4482 src/ui.glade:5625
-msgid "Quit xsnow"
-msgstr "Kilépés xsnow"
+msgid "Quit plasmasnow"
+msgstr "Kilépés plasmasnow"
 
 #: src/ui.glade:986 src/ui.glade:1610 src/ui.glade:2486 src/ui.glade:3050
 #: src/ui.glade:3547 src/ui.glade:4486 src/ui.glade:5629
-msgid "Quit xsnow."
-msgstr "Kilépés xsnow."
+msgid "Quit plasmasnow."
+msgstr "Kilépés plasmasnow."
 
 #: src/ui.glade:1026
 msgid ""
@@ -1592,10 +1592,10 @@ msgstr "Cpu tényező"
 
 #: src/ui.glade:5431
 msgid ""
-"The higher, the smoother xsnow will run, but will also use  more cpu power.\n"
+"The higher, the smoother plasmasnow will run, but will also use  more cpu power.\n"
 "Flag: -cpuload"
 msgstr ""
-"Minél magasabb, annál simábban fog futni xsnow, de több processzort is "
+"Minél magasabb, annál simábban fog futni plasmasnow, de több processzort is "
 "használ. \n"
 "Flag: -cpuload"
 
@@ -1620,7 +1620,7 @@ msgid ""
 "Windows wider than 80 percent of the screen and closer to the top  than the "
 "number in this widget will not collect snow.\n"
 "In some cases, there are invisible windows near the top of the screen, which "
-"are handled by xsnow as normal windows: snow is collected upon them. By "
+"are handled by plasmasnow as normal windows: snow is collected upon them. By "
 "entering a suitable number here, this undesired behaviour can be avoided.\n"
 "Flag: -ignoretop\n"
 "\n"
@@ -1628,7 +1628,7 @@ msgstr ""
 "A képernyő 80 százalékánál szélesebb és az ebben a widgetben lévő számnál "
 "közelebb eső ablakok nem gyűjtik a havat.\n"
 "Bizonyos esetekben a képernyő tetején vannak láthatatlan ablakok, amelyeket "
-"xsnow a következőképpen kezel normál ablakok: a hó összegyűlik rajtuk. Egy "
+"plasmasnow a következőképpen kezel normál ablakok: a hó összegyűlik rajtuk. Egy "
 "megfelelő szám megadásával elkerülhető ez a nem kívánt viselkedés.\n"
 "Flag: -ignoretop\n"
 "\n"
@@ -1643,7 +1643,7 @@ msgid ""
 "the number in this widget will not collect snow.\n"
 "\n"
 "In some cases, there are invisible windows near the bottom  of  the screen, "
-"which are handled by xsnow as normal windows: snow is collected upon them. "
+"which are handled by plasmasnow as normal windows: snow is collected upon them. "
 "By entering a suitable  number here, this undesired behaviour can be "
 "avoided.\n"
 "Flag: -ignorebottom"
@@ -1652,7 +1652,7 @@ msgstr ""
 "mint az ebben a widgetben szereplő szám, nem gyűjtik a havat.\n"
 "\n"
 "Bizonyos esetekben a képernyő alján vannak láthatatlan ablakok, amelyeket a "
-"xsnow normál ablakokhoz hasonlóan: a hó összegyűlik rajtuk. Egy megfelelő "
+"plasmasnow normál ablakokhoz hasonlóan: a hó összegyűlik rajtuk. Egy megfelelő "
 "szám megadásával elkerülhető ez a nem kívánt viselkedés.\n"
 "Flag: -ignorebottom"
 
@@ -1670,13 +1670,13 @@ msgstr ""
 
 #: src/ui.glade:5783
 msgid ""
-"Toggle between xsnow's own menu colors and standard menu colors.\n"
-"Activated: use xsnow colors.\n"
+"Toggle between plasmasnow's own menu colors and standard menu colors.\n"
+"Activated: use plasmasnow colors.\n"
 "Deactivated: use default colors.\n"
 "Flags: -theme 1, -theme 0"
 msgstr ""
-"Váltás xsnow saját menüszínei és normál menüszínei között.\n"
-"Aktiválva: xsnow színek használata.\n"
+"Váltás plasmasnow saját menüszínei és normál menüszínei között.\n"
+"Aktiválva: plasmasnow színek használata.\n"
 "Deaktiválva: alapértelmezett színek használata.\n"
 "Flags: -theme 1, -theme 0"
 
@@ -1740,12 +1740,12 @@ msgstr "Hogy biztosan tud-e kattintani."
 msgid ""
 "If you have more than one monitor, choose where you want snow falling. "
 "Choose 'all monitors' if you want snow in all monitors.\n"
-"NOTE: when changing monitor, xsnow will restart.\n"
+"NOTE: when changing monitor, plasmasnow will restart.\n"
 "Flag: -screen"
 msgstr ""
 "Ha egynél több monitorja van, válassza ki, hol szeretne havat esni. Válassza "
 "az „összes monitor” lehetőséget, ha havat szeretne minden monitoron.\n"
-"MEGJEGYZÉS: monitorváltáskor az xsnow újraindul.\n"
+"MEGJEGYZÉS: monitorváltáskor az plasmasnow újraindul.\n"
 "Flag: -screen"
 
 #: src/ui.glade:5875
@@ -1804,24 +1804,24 @@ msgid ""
 "Settings for Xscreensaver. You can choose a background, and choose to use it "
 "or not.\n"
 "Make sure you add a line like\n"
-"xsnow -root\n"
+"plasmasnow -root\n"
 "after the line 'programs:' in the file ~/.xscreensaver and you run "
-"xscreensaver-demo to choose for xsnow.\n"
+"xscreensaver-demo to choose for plasmasnow.\n"
 "To activate xscreensaver on the command line:\n"
 "xscreensaver-command  -activate\n"
 "See also the man page:\n"
-"man xsnow"
+"man plasmasnow"
 msgstr ""
 "Beállítások ehhez: Xscreensaver. Kiválaszthat egy hátteret, és eldöntheti, "
 "hogy használja-e vagy sem.\n"
 " Ügyeljen arra, hogy a ~/.xscreensaver fájlban a 'programs:' sor után adjon "
 "hozzá egy sort, például \n"
-"xsnow -root\n"
-" futtatja az xscreensaver-demo-t xsnow.\n"
+"plasmasnow -root\n"
+" futtatja az xscreensaver-demo-t plasmasnow.\n"
 "Az xscreensaver aktiválásához a parancssorban:\n"
 "xscreensaver-command -activate\n"
 "Lásd még a man oldalt:\n"
-"man xsnow"
+"man plasmasnow"
 
 #: src/ui.glade:5992
 msgid "Xscreensaver: "

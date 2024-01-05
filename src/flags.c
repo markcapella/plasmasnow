@@ -164,7 +164,7 @@ int HandleFlags(int argc, char *argv[]) {
                 PrintVersion();
                 return 1;
             } else if (!strcmp(arg, "-changelog")) {
-                docs_changelog();
+                displayPlasmaSnowDocumentation();
                 return 1;
             }
 #ifdef SELFREP
@@ -201,11 +201,9 @@ int HandleFlags(int argc, char *argv[]) {
                 Flags.Desktop = 1;
 
             } else if (strcmp(arg, "-auroraleft") == 0) {
-                fprintf(stdout, "flags: HandleFlags() Starts.\n");
                 Flags.AuroraLeft = 1;
                 Flags.AuroraMiddle = 0;
                 Flags.AuroraRight = 0;
-                fprintf(stdout, "flags: HandleFlags() Finishes.\n");
 
             } else if (strcmp(arg, "-auroramiddle") == 0) {
                 Flags.AuroraLeft = 0;
@@ -257,7 +255,7 @@ int HandleFlags(int argc, char *argv[]) {
             handle_ia(-ssnowdepth, MaxScrSnowDepth);
             handle_ia(-stars, NStars);
             handle_ia(-stopafter, StopAfter);
-            handle_ia(-theme, ThemeXsnow);
+            handle_ia(-theme, mAppTheme);
             handle_ia(-treefill, TreeFill);
             handle_ia(-treescale, TreeScale);
             handle_ia(-trees, DesiredNumberOfTrees);

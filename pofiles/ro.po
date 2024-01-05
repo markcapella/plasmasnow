@@ -1,22 +1,22 @@
 # # Sometimes the translations contain rubbish, please replace them.
 # # (abc_1000) &#8195;
 # # (abc_1001) Rick Jansen
-# # (abc_1002) xsnow
+# # (abc_1002) plasmasnow
 # # (abc_1003) %l#x
 # # (abc_1004) Xsnow
 # # (abc_1005) \n
 # # (abc_1006) XsnoW
 # # (abc_1007) XSNOW
 # # (abc_1008) Xscreensaver
-# Language for xsnow
+# Language for plasmasnow
 # Copyright (C) 2023 Willem Vermin
 # Willem Vermin <wvermin@gmail.com>, 2023
-# This file is distributed under the same license as the xsnow package.
+# This file is distributed under the same license as the plasmasnow package.
 #
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xsnow 3.7.0~pre04\n"
+"Project-Id-Version: plasmasnow 3.7.0~pre04\n"
 "Report-Msgid-Bugs-To: Willem Vermin wvermin@gmail.com\n"
 "POT-Creation-Date: 2023-02-17 13:40+0100\n"
 "PO-Revision-Date: 2023-02-17 13:40+0100\n"
@@ -53,8 +53,8 @@ msgstr "Desktop Wayland detectat\n"
 
 #: src/main.c:431
 #, c-format
-msgid "Xsnow needs gtk version >= %s, found version %s \n"
-msgstr "Xsnow are nevoie de versiunea gtk >= %s, a găsit versiunea %s \n"
+msgid "plasmasnow needs gtk version >= %s, found version %s \n"
+msgstr "plasmasnow are nevoie de versiunea gtk >= %s, a găsit versiunea %s \n"
 
 #: src/main.c:441
 msgid "Continuing with flag"
@@ -110,8 +110,8 @@ msgstr "Nu se poate crea o fereastră transparentă \n"
 
 #: src/main.c:772 src/windows.c:670
 #, c-format
-msgid "NOTE: xsnow will probably run, but some glitches are to be expected.\n"
-msgstr "NOTĂ: xsnow va rula probabil, dar sunt de așteptat unele erori.\n"
+msgid "NOTE: plasmasnow will probably run, but some glitches are to be expected.\n"
+msgstr "NOTĂ: plasmasnow va rula probabil, dar sunt de așteptat unele erori.\n"
 
 #: src/main.c:779
 #, c-format
@@ -223,19 +223,19 @@ msgstr "Auto-replicarea nu este compilată în.\n"
 #, c-format
 msgid ""
 "\n"
-"Xsnow: Caught signal %d\n"
+"plasmasnow: Caught signal %d\n"
 msgstr ""
 "\n"
-"Xsnow: semnal prins %d\n"
+"plasmasnow: semnal prins %d\n"
 
 #: src/utils.c:247
 #, c-format
 msgid ""
 "\n"
-"Thanks for using xsnow\n"
+"Thanks for using plasmasnow\n"
 msgstr ""
 "\n"
-"Vă mulțumim că ați folosit xsnow\n"
+"Vă mulțumim că ați folosit plasmasnow\n"
 
 #: src/windows.c:571
 #, c-format
@@ -300,23 +300,23 @@ msgstr "Vezi și pagina de manual."
 #: src/ui.glade:144
 msgid ""
 "\n"
-"Alas! This not an X11 session, xsnow will probably not run.\n"
+"Alas! This not an X11 session, plasmasnow will probably not run.\n"
 "\n"
-"If you want to try it anyway, set the environment variable XSNOW_FORCE_RUN, "
+"If you want to try it anyway, set the environment variable PLASMASNOW_FORCE_RUN, "
 "eg:\n"
 "\n"
-"    XSNOW_FORCE_RUN=1 xsnow\n"
+"    PLASMASNOW_FORCE_RUN=1 plasmasnow\n"
 "\n"
 "Or, you could force an X11 session, for example by tweaking /etc/gdm3/daemon."
 "conf.\n"
 "\n"
 msgstr ""
 "\n"
-" Vai! Aceasta nu este o sesiune X11, xsnow probabil că nu va rula.\n"
+" Vai! Aceasta nu este o sesiune X11, plasmasnow probabil că nu va rula.\n"
 "\n"
 "Dacă doriți să o încercați oricum, setați variabila de mediu , de exemplu:\n"
 "\n"
-"    XSNOW_FORCE_RUN=1 xsnow\n"
+"    PLASMASNOW_FORCE_RUN=1 plasmasnow\n"
 " \n"
 "\n"
 " Sau puteți forța o sesiune X11, de exemplu, modificând /etc/gdm3/daemon."
@@ -338,10 +338,10 @@ msgstr ""
 
 #: src/ui.glade:490
 msgid ""
-"Use the <b>settings</b> tab if xsnow is misbehaving.\n"
+"Use the <b>settings</b> tab if plasmasnow is misbehaving.\n"
 "Use the <b>birds</b> tab if birds are misbehaving."
 msgstr ""
-"Folosiți fila <b>Setări</b> dacă xsnow se comportă greșit. \n"
+"Folosiți fila <b>Setări</b> dacă plasmasnow se comportă greșit. \n"
 " Folosiți fila <b>Păsări</b> dacă păsările se comportă greșit."
 
 #: src/ui.glade:507
@@ -392,15 +392,15 @@ msgid "   "
 msgstr "   "
 
 #: src/ui.glade:744
-msgid "Welcome at xsnow!"
-msgstr "Bun venit la xsnow!"
+msgid "Welcome at plasmasnow!"
+msgstr "Bun venit la plasmasnow!"
 
 #: src/ui.glade:802
 msgid ""
-"Vintage preferences: the look and feel of the original xsnow, created in "
+"Vintage preferences: the look and feel of the original plasmasnow, created in "
 "1993 by Rick Jansen."
 msgstr ""
-"Preferințe vintage: aspectul și senzația originalului xsnow, creat în 1993 "
+"Preferințe vintage: aspectul și senzația originalului plasmasnow, creat în 1993 "
 "de Rick Jansen."
 
 #: src/ui.glade:893 src/ui.glade:1556 src/ui.glade:2432 src/ui.glade:2996
@@ -423,10 +423,10 @@ msgstr "Donează"
 
 #: src/ui.glade:918
 msgid ""
-"Donate one euro or so to inspire the maintainer of xsnow, here is a paypal "
+"Donate one euro or so to inspire the maintainer of plasmasnow, here is a paypal "
 "link. "
 msgstr ""
-"Donează aproximativ un euro pentru a-l inspira pe menținătorul xsnow, iată "
+"Donează aproximativ un euro pentru a-l inspira pe menținătorul plasmasnow, iată "
 "un link paypal. "
 
 #: src/ui.glade:928 src/ui.glade:1575 src/ui.glade:2451 src/ui.glade:3015
@@ -462,18 +462,18 @@ msgid "Contact"
 msgstr "A lua legatura"
 
 #: src/ui.glade:971
-msgid "Please report any comments to the maintainer of xsnow."
-msgstr "Vă rugăm să raportați orice comentariu administratorului xsnow."
+msgid "Please report any comments to the maintainer of plasmasnow."
+msgstr "Vă rugăm să raportați orice comentariu administratorului plasmasnow."
 
 #: src/ui.glade:981 src/ui.glade:1606 src/ui.glade:2482 src/ui.glade:3046
 #: src/ui.glade:3543 src/ui.glade:4482 src/ui.glade:5625
-msgid "Quit xsnow"
-msgstr "Ieșire xsnow"
+msgid "Quit plasmasnow"
+msgstr "Ieșire plasmasnow"
 
 #: src/ui.glade:986 src/ui.glade:1610 src/ui.glade:2486 src/ui.glade:3050
 #: src/ui.glade:3547 src/ui.glade:4486 src/ui.glade:5629
-msgid "Quit xsnow."
-msgstr "Ieșire xsnow."
+msgid "Quit plasmasnow."
+msgstr "Ieșire plasmasnow."
 
 #: src/ui.glade:1026
 msgid ""
@@ -1588,10 +1588,10 @@ msgstr "factor CPU"
 
 #: src/ui.glade:5431
 msgid ""
-"The higher, the smoother xsnow will run, but will also use  more cpu power.\n"
+"The higher, the smoother plasmasnow will run, but will also use  more cpu power.\n"
 "Flag: -cpuload"
 msgstr ""
-"Cu cât va fi mai mare, cu atât va funcționa mai ușor xsnow, dar va folosi și "
+"Cu cât va fi mai mare, cu atât va funcționa mai ușor plasmasnow, dar va folosi și "
 "mai multă putere CPU.\n"
 "Flag: -cpuload"
 
@@ -1616,7 +1616,7 @@ msgid ""
 "Windows wider than 80 percent of the screen and closer to the top  than the "
 "number in this widget will not collect snow.\n"
 "In some cases, there are invisible windows near the top of the screen, which "
-"are handled by xsnow as normal windows: snow is collected upon them. By "
+"are handled by plasmasnow as normal windows: snow is collected upon them. By "
 "entering a suitable number here, this undesired behaviour can be avoided.\n"
 "Flag: -ignoretop\n"
 "\n"
@@ -1624,7 +1624,7 @@ msgstr ""
 "Ferestrele mai late de 80% din ecran și mai aproape de partea de sus decât "
 "numărul din acest widget nu vor colecta zăpadă.\n"
 "În unele cazuri, există ferestre invizibile în partea de sus a ecranului, "
-"care sunt gestionate de xsnow ca ferestre normale: zăpada se adună peste "
+"care sunt gestionate de plasmasnow ca ferestre normale: zăpada se adună peste "
 "ele. Prin introducerea unui număr adecvat aici, acest comportament nedorit "
 "poate fi evitat.\n"
 "Flag: -ignoretop\n"
@@ -1640,7 +1640,7 @@ msgid ""
 "the number in this widget will not collect snow.\n"
 "\n"
 "In some cases, there are invisible windows near the bottom  of  the screen, "
-"which are handled by xsnow as normal windows: snow is collected upon them. "
+"which are handled by plasmasnow as normal windows: snow is collected upon them. "
 "By entering a suitable  number here, this undesired behaviour can be "
 "avoided.\n"
 "Flag: -ignorebottom"
@@ -1649,7 +1649,7 @@ msgstr ""
 "numărul din acest widget nu vor colecta zăpadă.\n"
 "\n"
 "În unele cazuri, există ferestre invizibile în partea de jos a ecranului, "
-"care sunt gestionate de xsnow ca ferestre normale: zăpada se adună peste "
+"care sunt gestionate de plasmasnow ca ferestre normale: zăpada se adună peste "
 "ele. Prin introducerea unui număr adecvat aici, acest comportament nedorit "
 "poate fi evitat.\n"
 "Flag: -ignorebottom"
@@ -1668,13 +1668,13 @@ msgstr ""
 
 #: src/ui.glade:5783
 msgid ""
-"Toggle between xsnow's own menu colors and standard menu colors.\n"
-"Activated: use xsnow colors.\n"
+"Toggle between plasmasnow's own menu colors and standard menu colors.\n"
+"Activated: use plasmasnow colors.\n"
 "Deactivated: use default colors.\n"
 "Flags: -theme 1, -theme 0"
 msgstr ""
-"Comutați între culorile meniului xsnow și culorile standard ale meniului.\n"
-"Activat: utilizați culorile xsnow.\n"
+"Comutați între culorile meniului plasmasnow și culorile standard ale meniului.\n"
+"Activat: utilizați culorile plasmasnow.\n"
 "Dezactivat: utilizați culorile implicite.\n"
 "Flags: -theme 1, -theme 0"
 
@@ -1738,12 +1738,12 @@ msgstr "Pentru a vă asigura că puteți face clic."
 msgid ""
 "If you have more than one monitor, choose where you want snow falling. "
 "Choose 'all monitors' if you want snow in all monitors.\n"
-"NOTE: when changing monitor, xsnow will restart.\n"
+"NOTE: when changing monitor, plasmasnow will restart.\n"
 "Flag: -screen"
 msgstr ""
 "Dacă aveți mai multe monitoare, alegeți unde doriți să cadă zăpadă. Alegeți "
 "„toate monitoare” dacă doriți zăpadă în toate monitoare.\n"
-"NOTĂ: când schimbați monitorul, xsnow va reporni.\n"
+"NOTĂ: când schimbați monitorul, plasmasnow va reporni.\n"
 "Flag: -screen"
 
 #: src/ui.glade:5875
@@ -1801,24 +1801,24 @@ msgid ""
 "Settings for Xscreensaver. You can choose a background, and choose to use it "
 "or not.\n"
 "Make sure you add a line like\n"
-"xsnow -root\n"
+"plasmasnow -root\n"
 "after the line 'programs:' in the file ~/.xscreensaver and you run "
-"xscreensaver-demo to choose for xsnow.\n"
+"xscreensaver-demo to choose for plasmasnow.\n"
 "To activate xscreensaver on the command line:\n"
 "xscreensaver-command  -activate\n"
 "See also the man page:\n"
-"man xsnow"
+"man plasmasnow"
 msgstr ""
 "Setări pentru Xscreensaver. Puteți alege un fundal și alegeți să îl "
 "utilizați sau nu.\n"
 "Asigurați-vă că adăugați o linie ca \n"
-"xsnow -root\n"
+"plasmasnow -root\n"
 "după linia „programe:” în fișierul ~/.xscreensaver și rulați xscreensaver-"
-"demo pentru a alege pentru xsnow.\n"
+"demo pentru a alege pentru plasmasnow.\n"
 "Pentru a activa xscreensaver pe linia de comandă:\n"
 "xscreensaver-command -activate\n"
 "Vezi și pagina de manual:\n"
-"man xsnow"
+"man plasmasnow"
 
 #: src/ui.glade:5992
 msgid "Xscreensaver: "

@@ -25,9 +25,5 @@
 
 
 int main(int argc, char *argv[]) {
-    fprintf(stdout, "mainstub: main() Starts.\n");
-
 	return main_c(argc, argv);
-
-    fprintf(stdout, "mainstub: main() Finishes.\n");
 }

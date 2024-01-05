@@ -47,17 +47,26 @@ date +%s > bootdate
 
 autoreconf -fvi || exit 1
 (
+echo
 echo removing po/*.gmo end po/*.po
 rm -f po/*.gmo po/*.po
+
+echo
+echo Removing Odd Tempfiles.
+rm configure~ config.h.in~ autom4te.cache/* po/*.po~
+
+echo
 echo "Copying pofiles/*.po to po/"
 cp pofiles/*.po po
 cd po
 
 pofiles=`echo *.po`
 languages=`echo $pofiles | sed 's/\.po//g'`
-echo '# Set of available languages.' > LINGUAS
-echo "$languages" >> LINGUAS
+
+echo
 echo "Created po/LINGUAS:"
+   echo '# Set of available languages.' > LINGUAS
+   echo "$languages" >> LINGUAS
 cat LINGUAS
 echo 
 )

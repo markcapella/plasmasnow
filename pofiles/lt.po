@@ -4,19 +4,19 @@
 # # (abc_1002) XsnoW
 # # (abc_1003) \n
 # # (abc_1004) &#8195;
-# # (abc_1005) xsnow
+# # (abc_1005) plasmasnow
 # # (abc_1006) XSNOW
 # # (abc_1007) Xscreensaver
 # # (abc_1008) Rick Jansen
-# Language for xsnow
+# Language for plasmasnow
 # Copyright (C) 2023 Willem Vermin
 # Willem Vermin <wvermin@gmail.com>, 2023
-# This file is distributed under the same license as the xsnow package.
+# This file is distributed under the same license as the plasmasnow package.
 #
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xsnow 3.7.0~pre04\n"
+"Project-Id-Version: plasmasnow 3.7.0~pre04\n"
 "Report-Msgid-Bugs-To: Willem Vermin wvermin@gmail.com\n"
 "POT-Creation-Date: 2023-02-17 13:40+0100\n"
 "PO-Revision-Date: 2023-02-17 13:40+0100\n"
@@ -53,8 +53,8 @@ msgstr "Aptiktas „Wayland“ darbalaukis \n"
 
 #: src/main.c:431
 #, c-format
-msgid "Xsnow needs gtk version >= %s, found version %s \n"
-msgstr "Xsnow reikia gtk versijos >u003d %s, rasta versija %s \n"
+msgid "plasmasnow needs gtk version >= %s, found version %s \n"
+msgstr "plasmasnow reikia gtk versijos >u003d %s, rasta versija %s \n"
 
 #: src/main.c:441
 msgid "Continuing with flag"
@@ -110,9 +110,9 @@ msgstr "Negalima sukurti skaidraus lango \n"
 
 #: src/main.c:772 src/windows.c:670
 #, c-format
-msgid "NOTE: xsnow will probably run, but some glitches are to be expected.\n"
+msgid "NOTE: plasmasnow will probably run, but some glitches are to be expected.\n"
 msgstr ""
-"PASTABA: xsnow tikriausiai veiks, bet galima tikėtis tam tikrų "
+"PASTABA: plasmasnow tikriausiai veiks, bet galima tikėtis tam tikrų "
 "nesklandumų. \n"
 
 #: src/main.c:779
@@ -224,19 +224,19 @@ msgstr "Savarankiškas replikavimas nesukompiliuotas.\n"
 #, c-format
 msgid ""
 "\n"
-"Xsnow: Caught signal %d\n"
+"plasmasnow: Caught signal %d\n"
 msgstr ""
 "\n"
-"Xsnow: užfiksuotas signalas %d\n"
+"plasmasnow: užfiksuotas signalas %d\n"
 
 #: src/utils.c:247
 #, c-format
 msgid ""
 "\n"
-"Thanks for using xsnow\n"
+"Thanks for using plasmasnow\n"
 msgstr ""
 "\n"
-"Dėkojame, kad naudojatės xsnow\n"
+"Dėkojame, kad naudojatės plasmasnow\n"
 
 #: src/windows.c:571
 #, c-format
@@ -301,23 +301,23 @@ msgstr "Taip pat žiūrėkite vadovo puslapį."
 #: src/ui.glade:144
 msgid ""
 "\n"
-"Alas! This not an X11 session, xsnow will probably not run.\n"
+"Alas! This not an X11 session, plasmasnow will probably not run.\n"
 "\n"
-"If you want to try it anyway, set the environment variable XSNOW_FORCE_RUN, "
+"If you want to try it anyway, set the environment variable PLASMASNOW_FORCE_RUN, "
 "eg:\n"
 "\n"
-"    XSNOW_FORCE_RUN=1 xsnow\n"
+"    PLASMASNOW_FORCE_RUN=1 plasmasnow\n"
 "\n"
 "Or, you could force an X11 session, for example by tweaking /etc/gdm3/daemon."
 "conf.\n"
 "\n"
 msgstr ""
 "\n"
-"Deja! Tai ne X11 seansas, xsnow tikriausiai nebus paleista.\n"
+"Deja! Tai ne X11 seansas, plasmasnow tikriausiai nebus paleista.\n"
 "\n"
 "Jei vis tiek norite tai išbandyti, nustatykite aplinkos kintamąjį \n"
 "\n"
-"    XSNOW_FORCE_RUN=1 xsnow\n"
+"    PLASMASNOW_FORCE_RUN=1 plasmasnow\n"
 "\n"
 " \n"
 " Arba galite priverstinai pradėti X11 seansą, pavyzdžiui, pakoreguodami /etc/"
@@ -340,10 +340,10 @@ msgstr ""
 
 #: src/ui.glade:490
 msgid ""
-"Use the <b>settings</b> tab if xsnow is misbehaving.\n"
+"Use the <b>settings</b> tab if plasmasnow is misbehaving.\n"
 "Use the <b>birds</b> tab if birds are misbehaving."
 msgstr ""
-"Jei xsnow elgiasi netinkamai, naudokite <b>nustatymų</b> skirtuką. \n"
+"Jei plasmasnow elgiasi netinkamai, naudokite <b>nustatymų</b> skirtuką. \n"
 " Jei paukščiai elgiasi netinkamai, naudokite skirtuką <b>paukščiai</b>."
 
 #: src/ui.glade:507
@@ -394,15 +394,15 @@ msgid "   "
 msgstr "   "
 
 #: src/ui.glade:744
-msgid "Welcome at xsnow!"
-msgstr "Sveiki atvykę į xsnow!"
+msgid "Welcome at plasmasnow!"
+msgstr "Sveiki atvykę į plasmasnow!"
 
 #: src/ui.glade:802
 msgid ""
-"Vintage preferences: the look and feel of the original xsnow, created in "
+"Vintage preferences: the look and feel of the original plasmasnow, created in "
 "1993 by Rick Jansen."
 msgstr ""
-"Senovinės nuostatos: originalo xsnow, kurį 1993 m. sukūrė Rick Jansen, "
+"Senovinės nuostatos: originalo plasmasnow, kurį 1993 m. sukūrė Rick Jansen, "
 "išvaizda ir pojūtis."
 
 #: src/ui.glade:893 src/ui.glade:1556 src/ui.glade:2432 src/ui.glade:2996
@@ -424,10 +424,10 @@ msgstr "Paaukoti"
 
 #: src/ui.glade:918
 msgid ""
-"Donate one euro or so to inspire the maintainer of xsnow, here is a paypal "
+"Donate one euro or so to inspire the maintainer of plasmasnow, here is a paypal "
 "link. "
 msgstr ""
-"Paaukokite vieną eurą, kad įkvėptumėte xsnow prižiūrėtoją, čia yra paypal "
+"Paaukokite vieną eurą, kad įkvėptumėte plasmasnow prižiūrėtoją, čia yra paypal "
 "nuoroda. "
 
 #: src/ui.glade:928 src/ui.glade:1575 src/ui.glade:2451 src/ui.glade:3015
@@ -463,18 +463,18 @@ msgid "Contact"
 msgstr "kontaktas"
 
 #: src/ui.glade:971
-msgid "Please report any comments to the maintainer of xsnow."
-msgstr "Praneškite apie bet kokius komentarus xsnow prižiūrėtojui."
+msgid "Please report any comments to the maintainer of plasmasnow."
+msgstr "Praneškite apie bet kokius komentarus plasmasnow prižiūrėtojui."
 
 #: src/ui.glade:981 src/ui.glade:1606 src/ui.glade:2482 src/ui.glade:3046
 #: src/ui.glade:3543 src/ui.glade:4482 src/ui.glade:5625
-msgid "Quit xsnow"
-msgstr "Baigti xsnow"
+msgid "Quit plasmasnow"
+msgstr "Baigti plasmasnow"
 
 #: src/ui.glade:986 src/ui.glade:1610 src/ui.glade:2486 src/ui.glade:3050
 #: src/ui.glade:3547 src/ui.glade:4486 src/ui.glade:5629
-msgid "Quit xsnow."
-msgstr "Baigti xsnow."
+msgid "Quit plasmasnow."
+msgstr "Baigti plasmasnow."
 
 #: src/ui.glade:1026
 msgid ""
@@ -1583,10 +1583,10 @@ msgstr "Cpu faktorius"
 
 #: src/ui.glade:5431
 msgid ""
-"The higher, the smoother xsnow will run, but will also use  more cpu power.\n"
+"The higher, the smoother plasmasnow will run, but will also use  more cpu power.\n"
 "Flag: -cpuload"
 msgstr ""
-"Kuo didesnis, tuo sklandžiau xsnow veiks, bet taip pat naudos daugiau "
+"Kuo didesnis, tuo sklandžiau plasmasnow veiks, bet taip pat naudos daugiau "
 "procesoriaus galios. \n"
 "Flag: -cpuload"
 
@@ -1611,7 +1611,7 @@ msgid ""
 "Windows wider than 80 percent of the screen and closer to the top  than the "
 "number in this widget will not collect snow.\n"
 "In some cases, there are invisible windows near the top of the screen, which "
-"are handled by xsnow as normal windows: snow is collected upon them. By "
+"are handled by plasmasnow as normal windows: snow is collected upon them. By "
 "entering a suitable number here, this undesired behaviour can be avoided.\n"
 "Flag: -ignoretop\n"
 "\n"
@@ -1619,7 +1619,7 @@ msgstr ""
 "Langai, platesni nei 80 procentų ekrano ir arčiau viršaus nei nurodytas "
 "šiame valdiklyje, nerinks sniego.\n"
 "Kai kuriais atvejais netoli ekrano viršaus yra nematomi langai, kuriuos "
-"tvarko xsnow kaip normalūs langai: ant jų kaupiasi sniegas. Čia įvedus "
+"tvarko plasmasnow kaip normalūs langai: ant jų kaupiasi sniegas. Čia įvedus "
 "tinkamą skaičių galima išvengti šio nepageidaujamo elgesio.\n"
 "Flag: -ignoretop\n"
 "\n"
@@ -1634,7 +1634,7 @@ msgid ""
 "the number in this widget will not collect snow.\n"
 "\n"
 "In some cases, there are invisible windows near the bottom  of  the screen, "
-"which are handled by xsnow as normal windows: snow is collected upon them. "
+"which are handled by plasmasnow as normal windows: snow is collected upon them. "
 "By entering a suitable  number here, this undesired behaviour can be "
 "avoided.\n"
 "Flag: -ignorebottom"
@@ -1643,7 +1643,7 @@ msgstr ""
 "šiame valdiklyje, sniego nesurinks.\n"
 "\n"
 "Kai kuriais atvejais netoli ekrano apačios yra nematomi langai, kuriuos "
-"tvarko xsnow kaip įprasti langai: ant jų kaupiasi sniegas. Čia įvedus "
+"tvarko plasmasnow kaip įprasti langai: ant jų kaupiasi sniegas. Čia įvedus "
 "tinkamą skaičių galima išvengti šio nepageidaujamo elgesio.\n"
 "Flag: -ignorebottom"
 
@@ -1661,13 +1661,13 @@ msgstr ""
 
 #: src/ui.glade:5783
 msgid ""
-"Toggle between xsnow's own menu colors and standard menu colors.\n"
-"Activated: use xsnow colors.\n"
+"Toggle between plasmasnow's own menu colors and standard menu colors.\n"
+"Activated: use plasmasnow colors.\n"
 "Deactivated: use default colors.\n"
 "Flags: -theme 1, -theme 0"
 msgstr ""
-"Perjungti xsnow meniu spalvas į standartines meniu spalvas.\n"
-"Suaktyvinta: naudoti xsnow spalvas.\n"
+"Perjungti plasmasnow meniu spalvas į standartines meniu spalvas.\n"
+"Suaktyvinta: naudoti plasmasnow spalvas.\n"
 "Išjungta: naudoti numatytąsias spalvas.\n"
 "Flags: -theme 1, -theme 0"
 
@@ -1730,13 +1730,13 @@ msgstr "Norėdami įsitikinti, kad galite spustelėti."
 msgid ""
 "If you have more than one monitor, choose where you want snow falling. "
 "Choose 'all monitors' if you want snow in all monitors.\n"
-"NOTE: when changing monitor, xsnow will restart.\n"
+"NOTE: when changing monitor, plasmasnow will restart.\n"
 "Flag: -screen"
 msgstr ""
 "Jei turite daugiau nei vieną monitorių, pasirinkite, kur norite snigti. "
 "Pasirinkite „visi monitoriai“, jei norite, kad visuose monitoriuose būtų "
 "sniego.\n"
-"PASTABA: pakeitus monitorių, xsnow bus paleistas iš naujo.\n"
+"PASTABA: pakeitus monitorių, plasmasnow bus paleistas iš naujo.\n"
 "Flag: -screen"
 
 #: src/ui.glade:5875
@@ -1794,22 +1794,22 @@ msgid ""
 "Settings for Xscreensaver. You can choose a background, and choose to use it "
 "or not.\n"
 "Make sure you add a line like\n"
-"xsnow -root\n"
+"plasmasnow -root\n"
 "after the line 'programs:' in the file ~/.xscreensaver and you run "
-"xscreensaver-demo to choose for xsnow.\n"
+"xscreensaver-demo to choose for plasmasnow.\n"
 "To activate xscreensaver on the command line:\n"
 "xscreensaver-command  -activate\n"
 "See also the man page:\n"
-"man xsnow"
+"man plasmasnow"
 msgstr ""
 "Nustatymai, skirti Xscreensaver. Galite pasirinkti foną ir pasirinkti jį "
 "naudoti ar ne.\n"
 "Įsitikinkite, kad po eilutės „programs:“ faile ~/.xscreensaver ir "
-"paleidžiate xscreensaver-demo, kad galėtumėte pasirinkti xsnow.\n"
+"paleidžiate xscreensaver-demo, kad galėtumėte pasirinkti plasmasnow.\n"
 " Norėdami suaktyvinti xscreensaver komandinėje eilutėje:\n"
 "xscreensaver-command -activate\n"
 "Taip pat žiūrėkite vadovo puslapį:\n"
-"man xsnow"
+"man plasmasnow"
 
 #: src/ui.glade:5992
 msgid "Xscreensaver: "

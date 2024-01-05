@@ -135,7 +135,7 @@ static Pixel BlackPix;
 static void HandleCpuFactor(void);
 static void RestartDisplay(void);
 static void SigHandler(int signum);
-static int XsnowErrors(Display *dpy, XErrorEvent *err);
+static int x11_Error_Handler(Display *dpy, XErrorEvent *err);
 static void drawit(cairo_t *cr);
 static void restart_do_draw_all(void);
 static void set_below_above(void);
@@ -172,8 +172,6 @@ void uninitQPickerDialog();
  **/
 
 int main_c(int argc, char *argv[]) {
-    fprintf(stdout, "main: main_c() Starts.\n");
-
     signal(SIGINT, SigHandler);
     signal(SIGTERM, SigHandler);
     signal(SIGHUP, SigHandler);
@@ -191,8 +189,8 @@ int main_c(int argc, char *argv[]) {
     global.cpufactor = 1.0;
     global.WindowScale = 1.0;
 
-    global.MaxSnowFlakeHeight = 0;
-    global.MaxSnowFlakeWidth = 0;
+    global.MaxFlakeHeight = 0;
+    global.MaxFlakeWidth = 0;
     global.FlakeCount = 0; /* # active flakes */
     global.FluffCount = 0;
 
@@ -238,31 +236,26 @@ int main_c(int argc, char *argv[]) {
 
         if (!strcmp(arg, "-h") || !strcmp(arg, "-help")) {
             docs_usage(0);
-            fprintf(stdout, "main: main_c() Finishes - Only Help requested.\n");
             return 0;
         }
 
         if (!strcmp(arg, "-H") || !strcmp(arg, "-manpage")) {
             docs_usage(1);
-            fprintf(stdout, "main: main_c() Finishes - only Manpage requested.\n");
             return 0;
         }
 
         if (!strcmp(arg, "-v") || !strcmp(arg, "-version")) {
             PrintVersion();
-            fprintf(stdout, "main: main_c() Finishes - only Version requested.\n");
             return 0;
 
         } else if (!strcmp(arg, "-changelog")) {
-            docs_changelog();
-            fprintf(stdout, "main: main_c() Finishes - only Changelog requested.\n");
+            displayPlasmaSnowDocumentation();
             return 0;
 
         }
 #ifdef SELFREP
         else if (!strcmp(arg, "-selfrep")) {
             selfrep();
-            fprintf(stdout, "main: main_c() Finises - only Selfrep requested.\n");
             return 0;
 
         }
@@ -280,12 +273,10 @@ int main_c(int argc, char *argv[]) {
         case -1: // wrong flag
             uninitQPickerDialog();
             Thanks();
-            fprintf(stdout, "main: main_c() Finishes - Something odd requested.\n");
             return 1;
             break;
 
         case 1: // manpage or help
-            fprintf(stdout, "main: main_c() Finishes - only Manpage or Help requested.\n");
             return 0;
             break;
 
@@ -352,7 +343,6 @@ int main_c(int argc, char *argv[]) {
         if (!ui_run_nomenu()) {
             uninitQPickerDialog();
             Thanks();
-            fprintf(stdout, "main: main_c() Finishes - Something odd requested.\n");
             return 0;
         }
 
@@ -369,7 +359,7 @@ int main_c(int argc, char *argv[]) {
     global.xdo->debug = 0;
 
     XSynchronize(global.display, dosync);
-    XSetErrorHandler(XsnowErrors);
+    XSetErrorHandler(x11_Error_Handler);
     int screen = DefaultScreen(global.display);
     global.Screen = screen;
     global.Black = BlackPixel(global.display, screen);
@@ -403,7 +393,6 @@ int main_c(int argc, char *argv[]) {
     }
 
     if (!StartWindow()) {
-        fprintf(stdout, "main: main_c() Finishes - Can\'t StartWindow().\n");
         return 1;
     }
 
@@ -459,9 +448,7 @@ int main_c(int argc, char *argv[]) {
     add_to_mainloop(
         PRIORITY_DEFAULT, time_display_dimensions, do_display_dimensions);
 
-    fprintf(stdout, "main: main_c() Starts add do_ui_check().\n");
     add_to_mainloop(PRIORITY_HIGH, time_ui_check, do_ui_check);
-    fprintf(stdout, "main: main_c() Finishes add do_ui_check().\n");
 
     if (Flags.StopAfter > 0) {
         add_to_mainloop(PRIORITY_DEFAULT, Flags.StopAfter, do_stopafter);
@@ -501,11 +488,9 @@ int main_c(int argc, char *argv[]) {
 
     } else {
         uninitQPickerDialog();
-        fprintf(stdout, "main: main_c() Finishes - (!DoRestart).\n");
         Thanks();
     }
 
-    fprintf(stdout, "main: main_c() Finishes.\n");
     return 0;
 }
 
@@ -856,18 +841,13 @@ int set_sticky(int s) {
 // Note: if changes != 0, the settings will be written to .plasmasnowrc
 //
 int do_ui_check() {
-    //fprintf(stdout, "main: do_ui_check() Starts.\n");
-
     if (Flags.Done) {
         gtk_main_quit();
     }
 
     if (Flags.NoMenu) {
-        fprintf(stdout, "main: do_ui_check() Finishes - NO MENU.\n");
         return TRUE;
     }
-
-    // fprintf(stdout, "main: do_ui_check() Starts.\n");
 
     Santa_ui();
     scenery_ui();
@@ -903,7 +883,6 @@ int do_ui_check() {
         Flags.Changes = 0;
     }
 
-    //fprintf(stdout, "main: do_ui_check() Finishes.\n");
     return TRUE;
 }
 
@@ -1045,7 +1024,7 @@ void SigHandler(int signum) {
     Flags.Done = 1;
 }
 
-int XsnowErrors(Display *dpy, XErrorEvent *err) {
+int x11_Error_Handler(Display *dpy, XErrorEvent *err) {
     static int count = 0;
     const int countmax = 1000;
     char msg[1024];

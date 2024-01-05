@@ -6,17 +6,17 @@
 # # (abc_1004) XsnoW
 # # (abc_1005) Rick Jansen
 # # (abc_1006) %l#x
-# # (abc_1007) xsnow
+# # (abc_1007) plasmasnow
 # # (abc_1008) XSNOW
-# Language for xsnow
+# Language for plasmasnow
 # Copyright (C) 2023 Willem Vermin
 # Willem Vermin <wvermin@gmail.com>, 2023
-# This file is distributed under the same license as the xsnow package.
+# This file is distributed under the same license as the plasmasnow package.
 #
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xsnow 3.7.0~pre04\n"
+"Project-Id-Version: plasmasnow 3.7.0~pre04\n"
 "Report-Msgid-Bugs-To: Willem Vermin wvermin@gmail.com\n"
 "POT-Creation-Date: 2023-02-17 13:40+0100\n"
 "PO-Revision-Date: 2023-02-17 13:40+0100\n"
@@ -53,8 +53,8 @@ msgstr "Atklāta Wayland darbvirsma \n"
 
 #: src/main.c:431
 #, c-format
-msgid "Xsnow needs gtk version >= %s, found version %s \n"
-msgstr "Xsnow nepieciešama gtk versija >= %s, atrasta versija %s \n"
+msgid "plasmasnow needs gtk version >= %s, found version %s \n"
+msgstr "plasmasnow nepieciešama gtk versija >= %s, atrasta versija %s \n"
 
 #: src/main.c:441
 msgid "Continuing with flag"
@@ -110,9 +110,9 @@ msgstr "Nevar izveidot caurspīdīgu logu \n"
 
 #: src/main.c:772 src/windows.c:670
 #, c-format
-msgid "NOTE: xsnow will probably run, but some glitches are to be expected.\n"
+msgid "NOTE: plasmasnow will probably run, but some glitches are to be expected.\n"
 msgstr ""
-"PIEZĪME. xsnow, iespējams, darbosies, taču ir sagaidāmi daži traucējumi. \n"
+"PIEZĪME. plasmasnow, iespējams, darbosies, taču ir sagaidāmi daži traucējumi. \n"
 
 #: src/main.c:779
 #, c-format
@@ -223,19 +223,19 @@ msgstr "Pašreplicēšana nav kompilēta. \n"
 #, c-format
 msgid ""
 "\n"
-"Xsnow: Caught signal %d\n"
+"plasmasnow: Caught signal %d\n"
 msgstr ""
 "\n"
-"Xsnow: noķerts signāls %d\n"
+"plasmasnow: noķerts signāls %d\n"
 
 #: src/utils.c:247
 #, c-format
 msgid ""
 "\n"
-"Thanks for using xsnow\n"
+"Thanks for using plasmasnow\n"
 msgstr ""
 "\n"
-"Paldies, ka izmantojāt xsnow\n"
+"Paldies, ka izmantojāt plasmasnow\n"
 
 #: src/windows.c:571
 #, c-format
@@ -300,25 +300,25 @@ msgstr "Skatiet arī mana lapu."
 #: src/ui.glade:144
 msgid ""
 "\n"
-"Alas! This not an X11 session, xsnow will probably not run.\n"
+"Alas! This not an X11 session, plasmasnow will probably not run.\n"
 "\n"
-"If you want to try it anyway, set the environment variable XSNOW_FORCE_RUN, "
+"If you want to try it anyway, set the environment variable PLASMASNOW_FORCE_RUN, "
 "eg:\n"
 "\n"
-"    XSNOW_FORCE_RUN=1 xsnow\n"
+"    PLASMASNOW_FORCE_RUN=1 plasmasnow\n"
 "\n"
 "Or, you could force an X11 session, for example by tweaking /etc/gdm3/daemon."
 "conf.\n"
 "\n"
 msgstr ""
 "\n"
-" Diemžēl! Šī nav X11 sesija, xsnow, visticamāk, nedarbosies.\n"
+" Diemžēl! Šī nav X11 sesija, plasmasnow, visticamāk, nedarbosies.\n"
 "\n"
-"Ja tomēr vēlaties to izmēģināt, iestatiet vides mainīgo XSNOW_FORCE_RUN, "
+"Ja tomēr vēlaties to izmēģināt, iestatiet vides mainīgo PLASMASNOW_FORCE_RUN, "
 "piemēram:\n"
 "\n"
 " \n"
-"    XSNOW_FORCE_RUN=1 xsnow\n"
+"    PLASMASNOW_FORCE_RUN=1 plasmasnow\n"
 "\n"
 " Vai arī varat piespiest X11 sesiju, piemēram, pielāgojot /etc/gdm3/daemon."
 "conf.\n"
@@ -339,10 +339,10 @@ msgstr ""
 
 #: src/ui.glade:490
 msgid ""
-"Use the <b>settings</b> tab if xsnow is misbehaving.\n"
+"Use the <b>settings</b> tab if plasmasnow is misbehaving.\n"
 "Use the <b>birds</b> tab if birds are misbehaving."
 msgstr ""
-"Izmantojiet cilni <b>Iestatījumi</b>, ja xsnow darbojas nepareizi. \n"
+"Izmantojiet cilni <b>Iestatījumi</b>, ja plasmasnow darbojas nepareizi. \n"
 " Ja putni nepareizi uzvedas, izmantojiet cilni <b>putni</b>."
 
 #: src/ui.glade:507
@@ -391,15 +391,15 @@ msgid "   "
 msgstr "   "
 
 #: src/ui.glade:744
-msgid "Welcome at xsnow!"
-msgstr "Laipni lūdzam vietnē xsnow!"
+msgid "Welcome at plasmasnow!"
+msgstr "Laipni lūdzam vietnē plasmasnow!"
 
 #: src/ui.glade:802
 msgid ""
-"Vintage preferences: the look and feel of the original xsnow, created in "
+"Vintage preferences: the look and feel of the original plasmasnow, created in "
 "1993 by Rick Jansen."
 msgstr ""
-"Vintage preferences: oriģināla xsnow izskats un darbība, ko 1993. gadā "
+"Vintage preferences: oriģināla plasmasnow izskats un darbība, ko 1993. gadā "
 "izveidoja Rick Jansen."
 
 #: src/ui.glade:893 src/ui.glade:1556 src/ui.glade:2432 src/ui.glade:2996
@@ -422,10 +422,10 @@ msgstr "Ziedot"
 
 #: src/ui.glade:918
 msgid ""
-"Donate one euro or so to inspire the maintainer of xsnow, here is a paypal "
+"Donate one euro or so to inspire the maintainer of plasmasnow, here is a paypal "
 "link. "
 msgstr ""
-"Ziedojiet apmēram vienu eiro, lai iedvesmotu xsnow uzturētāju, šeit ir "
+"Ziedojiet apmēram vienu eiro, lai iedvesmotu plasmasnow uzturētāju, šeit ir "
 "paypal saite. "
 
 #: src/ui.glade:928 src/ui.glade:1575 src/ui.glade:2451 src/ui.glade:3015
@@ -461,18 +461,18 @@ msgid "Contact"
 msgstr "Sazināties"
 
 #: src/ui.glade:971
-msgid "Please report any comments to the maintainer of xsnow."
-msgstr "Lūdzu, ziņojiet par komentāriem xsnow uzturētājam."
+msgid "Please report any comments to the maintainer of plasmasnow."
+msgstr "Lūdzu, ziņojiet par komentāriem plasmasnow uzturētājam."
 
 #: src/ui.glade:981 src/ui.glade:1606 src/ui.glade:2482 src/ui.glade:3046
 #: src/ui.glade:3543 src/ui.glade:4482 src/ui.glade:5625
-msgid "Quit xsnow"
-msgstr "Iziet xsnow"
+msgid "Quit plasmasnow"
+msgstr "Iziet plasmasnow"
 
 #: src/ui.glade:986 src/ui.glade:1610 src/ui.glade:2486 src/ui.glade:3050
 #: src/ui.glade:3547 src/ui.glade:4486 src/ui.glade:5629
-msgid "Quit xsnow."
-msgstr "Iziet xsnow."
+msgid "Quit plasmasnow."
+msgstr "Iziet plasmasnow."
 
 #: src/ui.glade:1026
 msgid ""
@@ -1582,10 +1582,10 @@ msgstr "CPU faktors"
 
 #: src/ui.glade:5431
 msgid ""
-"The higher, the smoother xsnow will run, but will also use  more cpu power.\n"
+"The higher, the smoother plasmasnow will run, but will also use  more cpu power.\n"
 "Flag: -cpuload"
 msgstr ""
-"Jo augstāks, jo vienmērīgāk xsnow darbosies, taču tas arī izmantos vairāk "
+"Jo augstāks, jo vienmērīgāk plasmasnow darbosies, taču tas arī izmantos vairāk "
 "procesora jaudas. \n"
 "Flag: -cpuload"
 
@@ -1610,14 +1610,14 @@ msgid ""
 "Windows wider than 80 percent of the screen and closer to the top  than the "
 "number in this widget will not collect snow.\n"
 "In some cases, there are invisible windows near the top of the screen, which "
-"are handled by xsnow as normal windows: snow is collected upon them. By "
+"are handled by plasmasnow as normal windows: snow is collected upon them. By "
 "entering a suitable number here, this undesired behaviour can be avoided.\n"
 "Flag: -ignoretop\n"
 "\n"
 msgstr ""
 "Logi, kas platāki par 80 procentiem no ekrāna un tuvāk augšai nekā šajā "
 "logrīkā norādītais skaitlis, nesavāc sniegu.\n"
-"Dažos gadījumos ekrāna augšdaļā ir neredzami logi, kurus apstrādā xsnow kā "
+"Dažos gadījumos ekrāna augšdaļā ir neredzami logi, kurus apstrādā plasmasnow kā "
 "normāli logi: uz tiem tiek savākts sniegs. Ievadot šeit piemērotu numuru, no "
 "šīs nevēlamās darbības var izvairīties.\n"
 "Flag: -ignoretop\n"
@@ -1633,7 +1633,7 @@ msgid ""
 "the number in this widget will not collect snow.\n"
 "\n"
 "In some cases, there are invisible windows near the bottom  of  the screen, "
-"which are handled by xsnow as normal windows: snow is collected upon them. "
+"which are handled by plasmasnow as normal windows: snow is collected upon them. "
 "By entering a suitable  number here, this undesired behaviour can be "
 "avoided.\n"
 "Flag: -ignorebottom"
@@ -1641,7 +1641,7 @@ msgstr ""
 "Logi, kas platāki par 80 procentiem no ekrāna un tuvāk apakšai nekā šajā "
 "logrīkā norādītais skaitlis, nesavāc sniegu.\n"
 "\n"
-"Dažos gadījumos ekrāna apakšdaļā ir neredzami logi, kurus apstrādā xsnow kā "
+"Dažos gadījumos ekrāna apakšdaļā ir neredzami logi, kurus apstrādā plasmasnow kā "
 "parasti logi: uz tiem tiek savākts sniegs. Ievadot šeit piemērotu numuru, no "
 "šīs nevēlamās darbības var izvairīties.\n"
 "Flag: -ignorebottom"
@@ -1660,13 +1660,13 @@ msgstr ""
 
 #: src/ui.glade:5783
 msgid ""
-"Toggle between xsnow's own menu colors and standard menu colors.\n"
-"Activated: use xsnow colors.\n"
+"Toggle between plasmasnow's own menu colors and standard menu colors.\n"
+"Activated: use plasmasnow colors.\n"
 "Deactivated: use default colors.\n"
 "Flags: -theme 1, -theme 0"
 msgstr ""
-"Pārslēgties starp xsnow pašas izvēlnes krāsām un standarta izvēlnes krāsām.\n"
-"Aktivizēts: izmantojiet xsnow krāsas.\n"
+"Pārslēgties starp plasmasnow pašas izvēlnes krāsām un standarta izvēlnes krāsām.\n"
+"Aktivizēts: izmantojiet plasmasnow krāsas.\n"
 "Deaktivizēts: izmantojiet noklusējuma krāsas.\n"
 "Flags: -theme 1, -theme 0"
 
@@ -1730,13 +1730,13 @@ msgstr "Lai pārliecinātos, ka varat noklikšķināt."
 msgid ""
 "If you have more than one monitor, choose where you want snow falling. "
 "Choose 'all monitors' if you want snow in all monitors.\n"
-"NOTE: when changing monitor, xsnow will restart.\n"
+"NOTE: when changing monitor, plasmasnow will restart.\n"
 "Flag: -screen"
 msgstr ""
 "Ja jums ir vairāk nekā viens monitors, izvēlieties vietu, kur vēlaties "
 "snigt. Izvēlieties 'visi monitori', ja vēlaties, lai visos monitoros būtu "
 "sniegs.\n"
-"PIEZĪME: mainot monitoru, xsnow tiks restartēts.\n"
+"PIEZĪME: mainot monitoru, plasmasnow tiks restartēts.\n"
 "Flag: -screen"
 
 #: src/ui.glade:5875
@@ -1794,24 +1794,24 @@ msgid ""
 "Settings for Xscreensaver. You can choose a background, and choose to use it "
 "or not.\n"
 "Make sure you add a line like\n"
-"xsnow -root\n"
+"plasmasnow -root\n"
 "after the line 'programs:' in the file ~/.xscreensaver and you run "
-"xscreensaver-demo to choose for xsnow.\n"
+"xscreensaver-demo to choose for plasmasnow.\n"
 "To activate xscreensaver on the command line:\n"
 "xscreensaver-command  -activate\n"
 "See also the man page:\n"
-"man xsnow"
+"man plasmasnow"
 msgstr ""
 "Iestatījumi Xscreensaver. Varat izvēlēties fonu un izvēlēties to izmantot "
 "vai nē.\n"
 "Pārliecinieties, ka failā ~/.xscreensaver pēc rindas 'programs:' ir "
 "pievienota tāda rindiņa kā\n"
-"xsnow -root\n"
-" palaižat xscreensaver-demo, lai izvēlētos xsnow.\n"
+"plasmasnow -root\n"
+" palaižat xscreensaver-demo, lai izvēlētos plasmasnow.\n"
 "Lai komandrindā aktivizētu xscreensaver:\n"
 "xscreensaver-command -activate\n"
 "Skatiet arī rokasgrāmatu:\n"
-"man xsnow"
+"man plasmasnow"
 
 #: src/ui.glade:5992
 msgid "Xscreensaver: "

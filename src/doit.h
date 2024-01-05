@@ -111,7 +111,7 @@
     DOIT_I(SnowSize, 8, 8)                                                     \
     DOIT_I(SnowSpeedFactor, 100, 100)                                          \
     DOIT_I(Stars, 1, 0)                                                        \
-    DOIT_I(ThemeXsnow, 1, 1)                                                   \
+    DOIT_I(mAppTheme, 1, 1)                                                   \
     DOIT_I(Outline, 0, 0)                                                      \
     DOIT_I(TreeFill, 30, 30)                                                   \
     DOIT_I(TreeScale, 100, 100)                                                \

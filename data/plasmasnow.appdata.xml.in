@@ -1,28 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop">
-  <id>xsnow.desktop</id>
+  <id>plasmasnow.desktop</id>
   <metadata_license>gpl-3+</metadata_license>
-  <name>Xsnow</name>
+  <name>plasmasnow</name>
   <summary>Let it snow on your desktop.</summary>
   <description>
     <p>
-       Xsnow creates on your desktop:
+       plasmasnow creates on your desktop:
        <ul>
        <li> Snow </li>
        <li> Santa </li>
        <li> Moon </li>
        <li> Stars </li>
-       <li> Meteorites </li>
-       <li> Flock of birds </li>
-       <li> Trees, animals and houses </li>
+       <li> Sky </li>
+       <li> Birds </li>
+       <li> Scenery </li>
     </ul>
     </p>
     <p>
-       Preferences can be set with the comprehensive graphical interface 
-       or on the command line.
+       Preferences can be set with the comprehensive graphical interface.
     </p>
     <p>
-       Xsnow can also be used in combination with XScreenSaver.
+       plasmasnow can also be used in combination with XScreenSaver.
     </p>
   </description>
   <keywords>
@@ -30,21 +29,21 @@
     <keyword>santa</keyword>
     <keyword>xmas</keyword>
   </keywords>
-  <url type="homepage">https://sourceforge.net/projects/xsnow/</url>
-  <url type="bugtracker">https://sourceforge.net/p/xsnow/tickets/</url>
+  <url type="homepage">https://github.com/markcapella/plasmasnow</url>
+  <url type="bugtracker">https://github.com/markcapella/plasmasnow/issues/</url>
   <provides>
-    <binary>xsnow</binary>
+    <binary>plasmasnow</binary>
   </provides>
   <releases>
-    <release version="XSNOW_VERSION" date="XSNOW_DATE"/>
+    <release version="plasmasnow_VERSION" date="plasmasnow_DATE"/>
   </releases>
   <screenshots>
     <screenshot type="default">
-       <image>https://a.fsdn.com/con/app/proj/xsnow/screenshots/xsnow-3.3.2.png/max/max/1</image>
+       <image>https://github.com/markcapella/plasmasnow/blob/main/assets/images/screenshot.png</image>
     </screenshot>
   </screenshots>
   <project_license>gpl-3+</project_license>
-  <developer_name>Willem Vermin</developer_name>
-  <update_contact>wvermin@gmail.com</update_contact>
+  <developer_name>Mark Capella</developer_name>
+  <update_contact>markcapella@twcny.rr.com</update_contact>
 </component>
 

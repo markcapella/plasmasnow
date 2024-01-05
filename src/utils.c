@@ -79,16 +79,12 @@ FILE *HomeOpen(const char *file, const char *mode, char **path) {
 }
 
 void ClearScreen() {
-    fprintf(stdout, "utils: ClearScreen() Starts.\n");
-
     // remove all our snow-related drawings
     XClearArea(global.display, global.SnowWin, 0, 0, 0, 0, True);
     // Yes this is hairy: also remove meteor.
     // It could be that a meteor region is still hanging around
     meteor_erase();
     XFlush(global.display);
-
-    fprintf(stdout, "utils: ClearScreen() Finishes.\n");
 }
 
 ssize_t mywrite(int fd, const void *buf, size_t count) {
@@ -237,7 +233,7 @@ void rgba2color(GdkRGBA *c, char **s) {
 
 void Thanks(void) {
     if (global.HaltedByInterrupt) {
-        printf(_("\nXsnow: Caught signal %d\n"), global.HaltedByInterrupt);
+        printf(_("\nplasmasnow: Caught signal %d\n"), global.HaltedByInterrupt);
     }
     if (strlen(global.Message)) {
         printf("\n%s\n", global.Message);

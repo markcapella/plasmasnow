@@ -543,7 +543,7 @@
                 <property name="can-focus">False</property>
                 <property name="halign">center</property>
                 <property name="valign">center</property>
-                <property name="label" translatable="yes">xsnow 3.7.5 is derived from Rick Jansen's xsnow-1.42.</property>
+                <property name="label" translatable="yes">plasmasnow 3.7.5 is derived from Rick Jansen's plasmasnow-1.42.</property>
               </object>
               <packing>
                 <property name="left-attach">2</property>
@@ -4656,13 +4656,13 @@ Flags: -allworkspaces 1, -allworkspaces 0</property>
               </packing>
             </child>
             <child>
-              <object class="GtkToggleButton" id="id-ThemeXsnow">
+              <object class="GtkToggleButton" id="id-mAppTheme">
                 <property name="label" translatable="yes">Menu Colors</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">Toggle between xsnow's own menu colors and standard menu colors.
-Activated: use xsnow colors.
+                <property name="tooltip-text" translatable="yes">Toggle between plasmasnow's own menu colors and standard menu colors.
+Activated: use plasmasnow colors.
 Deactivated: use default colors.
 Flags: -theme 1, -theme 0</property>
                 <property name="double-buffered">False</property>
@@ -4908,7 +4908,7 @@ Flag: -offsety</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">Windows wider than 80 percent of the screen and closer to the top  than the number in this widget will not collect snow.
-In some cases, there are invisible windows near the top of the screen, which are handled by xsnow as normal windows: snow is collected upon them. By entering a suitable number here, this undesired behaviour can be avoided.
+In some cases, there are invisible windows near the top of the screen, which are handled by plasmasnow as normal windows: snow is collected upon them. By entering a suitable number here, this undesired behaviour can be avoided.
 Flag: -ignoretop
 
 </property>
@@ -4931,7 +4931,7 @@ Flag: -ignoretop
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">Windows wider than 80 percent of the screen and closer to the  bottom than the number in this widget will not collect snow.
 
-In some cases, there are invisible windows near the bottom  of  the screen, which are handled by xsnow as normal windows: snow is collected upon them. By entering a suitable  number here, this undesired behaviour can be avoided.
+In some cases, there are invisible windows near the bottom  of  the screen, which are handled by plasmasnow as normal windows: snow is collected upon them. By entering a suitable  number here, this undesired behaviour can be avoided.
 Flag: -ignorebottom</property>
                 <property name="double-buffered">False</property>
                 <property name="adjustment">ignorebottomadjustment</property>
@@ -5084,7 +5084,7 @@ Flag: -ignorebottom</property>
                 <property name="name">general-cpuload</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">The higher, the smoother xsnow will run, but will also use  more cpu power.
+                <property name="tooltip-text" translatable="yes">The higher, the smoother plasmasnow will run, but will also use  more cpu power.
 Flag: -cpuload</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>

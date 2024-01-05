@@ -399,12 +399,8 @@ int PopFallenSnow(FallenSnow **list) {
 
 // remove by id
 int RemoveFallenSnow(FallenSnow **list, Window id) {
-    fprintf(stdout, "fallensnow.c: RemoveFallenSnow() Starts.\n");
-
     // threads: locking by caller
-    P("RemoveFallenSnow\n");
     if (*list == NULL) {
-        fprintf(stdout, "fallensnow.c: RemoveFallenSnow() Finishes - LIST NULL.\n");
         return 0;
     }
 
@@ -414,14 +410,12 @@ int RemoveFallenSnow(FallenSnow **list, Window id) {
 
         FreeFallenSnow(*list);
         *list = fallen;
-        fprintf(stdout, "fallensnow.c: RemoveFallenSnow() Finishes - NEXT.\n");
         return 1;
     }
 
     FallenSnow* scratch = NULL;
     while (true) {
         if (fallen->next == NULL) {
-            fprintf(stdout, "fallensnow.c: RemoveFallenSnow() Finishes - NEXT NULL.\n");
             return 0;
         }
 
@@ -435,19 +429,16 @@ int RemoveFallenSnow(FallenSnow **list, Window id) {
     fallen->next = scratch->next;
     FreeFallenSnow(scratch);
 
-    fprintf(stdout, "fallensnow.c: RemoveFallenSnow() Finishes.\n");
     return 1;
 }
 
 void FreeFallenSnow(FallenSnow *fallen) {
-    fprintf(stdout, "fallensnow.c: FreeFallenSnow() Starts.\n");
     // threads: locking by caller
     free(fallen->acth);
     free(fallen->desh);
     cairo_surface_destroy(fallen->surface);
     cairo_surface_destroy(fallen->surface1);
     free(fallen);
-    fprintf(stdout, "fallensnow.c: FreeFallenSnow() Finishes.\n");
 }
 
 FallenSnow *FindFallen(FallenSnow *first, Window id) {
@@ -480,11 +471,8 @@ void PrintFallenSnow(FallenSnow *list) {
 }
 
 void CleanFallenArea(FallenSnow *fsnow, int xstart, int w) {
-    fprintf(stdout, "fallensnow.c: CleanFallenArea() Starts.\n");
-
     // threads: locking by caller
     if (global.IsDouble) {
-        fprintf(stdout, "fallensnow.c: CleanFallenArea() Finishes - EARLY.\n");
         return;
     }
 
@@ -492,17 +480,12 @@ void CleanFallenArea(FallenSnow *fsnow, int xstart, int w) {
     int y = fsnow->prevy;
     if (!global.IsDouble) {
         myXClearArea(global.display, global.SnowWin, x + xstart, y, w,
-            fsnow->h + global.MaxSnowFlakeHeight, global.xxposures);
+            fsnow->h + global.MaxFlakeHeight, global.xxposures);
     }
-
-    fprintf(stdout, "fallensnow.c: CleanFallenArea() Finishes.\n");
 }
 
 // clean area for fallensnow with id
 void CleanFallen(Window id) {
-    // threads: locking by caller
-    fprintf(stdout, "fallensnow.c: CleanFallen() Starts.\n");
-
     // search the id
     FallenSnow* fsnow = global.FsnowFirst;
     while (fsnow) {
@@ -512,8 +495,6 @@ void CleanFallen(Window id) {
         }
         fsnow = fsnow->next;
     }
-
-    fprintf(stdout, "fallensnow.c: CleanFallen() Finishes.\n");
 }
 
 void CreateSurfaceFromFallen(FallenSnow *fsnow) {
@@ -762,8 +743,6 @@ void DrawFallen(FallenSnow *fsnow) {
 }
 
 void GenerateFlakesFromFallen(FallenSnow *fsnow, int x, int w, float vy) {
-    fprintf(stdout, "fallensnow.c: GenerateFlakesFromFallen() Starts.\n");
-
     // threads: locking by caller
     if (!Flags.BlowSnow || Flags.NoSnowFlakes) {
         return;
@@ -814,8 +793,6 @@ void GenerateFlakesFromFallen(FallenSnow *fsnow, int x, int w, float vy) {
             }
         }
     }
-
-    fprintf(stdout, "fallensnow.c: GenerateFlakesFromFallen() Finishes.\n");
 }
 
 void EraseFallenPixel(FallenSnow *fsnow, int x) {

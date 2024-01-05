@@ -225,7 +225,6 @@ void scenery_ui() {
         static char cbuffer[16];
         snprintf(cbuffer, 16, "#%02x%02x%02x", getQPickerRed(),
             getQPickerGreen(), getQPickerBlue());
-        fprintf(stdout, "ui.c: [qcolorcode]    TreeColor [%s].\n", cbuffer);
 
         static GdkRGBA color;
         gdk_rgba_parse(&color, cbuffer);

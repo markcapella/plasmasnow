@@ -38,40 +38,89 @@ static void manout(const char *flag, const char *txt, ...);
 static int doman;
 static void printdescription(void);
 
+
+/** *********************************************************************
+ ** Main Globals.
+ **/
+#define F(x) DefaultFlags.x\
+
+
+/** *********************************************************************
+ ** External Helper method.
+ **/
+void displayPlasmaSnowDocumentation() {
+    #include "changelog.inc"
+}
+
+
+/** *********************************************************************
+ ** Helper method.
+ **/
 void printdescription() {
-    printf("Xsnow shows an animation of Santa and snow on your desktop.\n");
-    printf("Xsnow can also run in one or more windows, see options -xwininfo, "
+    printf("plasmasnow shows an animation of Santa and snow on your desktop.\n");
+    printf("plasmasnow can also run in one or more windows, see options -xwininfo, "
            "-id .\n");
     printf("(These options only work satisfactorily in an X11 environment.)\n");
     printf(
-        "Xsnow depends on an X11 environment. This is forced by setting the\n");
+        "plasmasnow depends on an X11 environment. This is forced by setting the\n");
     printf(
         "environment variable GDK_BACKEND=x11 before initializing the GTK.\n");
-    printf("Hopefully, this will ensure that xsnow also runs in a Wayland "
+    printf("Hopefully, this will ensure that plasmasnow also runs in a Wayland "
            "environment\n");
     printf("for some time.\n");
     if (doman) {
         printf(".PP\n");
     }
-    printf("If xsnow is misbehaving, try to remove the file $HOME/.xsnowrc.\n");
+    printf("If plasmasnow is misbehaving, try to remove the file $HOME/.plasmasnowrc.\n");
 }
 
-#define F(x) DefaultFlags.x
 
+/** *********************************************************************
+ ** Helper method.
+ **/
+char *replace_all(const char *s, const char *needle, const char *rep) {
+    if (strlen(needle) == 0) {
+        return strdup(s);
+    }
+    char *result = strdup("");
+    const char *haystack = s; // startpoint to search for needle
+    while (1) {
+        const char *q = strstr(haystack, needle);
+        if (q == NULL) // no needle in haystack
+        {              // cat haystack to result
+            result =
+                (char *)realloc(result, strlen(result) + strlen(haystack) + 1);
+            REALLOC_CHECK(result);
+            result = strcat(result, haystack);
+            break;
+        } else // needle is in haystack
+        {      // cat first part of haystack + rep to result
+            result = (char *)realloc(
+                result, strlen(result) + strlen(haystack) + strlen(rep) + 1);
+            REALLOC_CHECK(result);
+            result = strncat(result, haystack, q - haystack);
+            result = strcat(result, rep);
+            haystack = q + strlen(needle);
+        }
+    }
+    return result;
+}
+
+/** *********************************************************************
+ ** Main DOC method.
+ **/
 void docs_usage(int man) {
-
     if (man) {
         doman = 1;
-        printf(".\\\" DO NOT MODIFY THIS FILE! It was created by xsnow "
-               "-manpage .\n");
-        printf(".TH XSNOW \"6\" \"2023\" \"xsnow\\-" VERSION
+        printf(".\\\" DO NOT MODIFY THIS FILE! It was created by plasmasnow -manpage .\n");
+        printf(".TH plasmasnow \"6\" \"2023\" \"plasmasnow\\-" VERSION
                "\" \"User Commands\"\n");
         printf(".SH NAME\n");
         printf(".\\\" Turn of hyphenation:\n");
         printf(".hy 0\n");
-        printf("xsnow \\- Snow and Santa on your desktop\n");
+        printf("plasmasnow \\- Snow and Santa on your desktop\n");
         printf(".SH SYNOPSIS\n");
-        printf(".B xsnow\n");
+        printf(".B plasmasnow\n");
         printf("[\\fIOPTION\\fR]...\n");
         printf(".PP\n");
         printf(".SH DESCRIPTION\n");
@@ -80,11 +129,11 @@ void docs_usage(int man) {
         printf(".SS \"General options:\n");
     } else {
         doman = 0;
-        printf("XSNOW 2023 xsnow-" VERSION " User Commands\n");
+        printf("plasmasnow 2023 plasmasnow-" VERSION " User Commands\n");
         printf("NAME\n");
-        printf("xsnow - Snow and Santa on your desktop\n");
+        printf("plasmasnow - Snow and Santa on your desktop\n");
         printf("SYNOPSIS\n");
-        printf("xsnow ");
+        printf("plasmasnow ");
         printf("[OPTION...\n");
         printf("\n");
         printdescription();
@@ -104,22 +153,23 @@ void docs_usage(int man) {
     }
     manout("-h, -help", "print this text.");
     manout("-H, -manpage", "print man page.");
-    manout("-v, -version", "prints version of xsnow.");
+    manout("-v, -version", "prints version of plasmasnow.");
     manout("-changelog", "prints ChangeLog.");
+
 #ifdef SELFREP
     manout("-selfrep", "put tar ball on stdout, so you can do:");
-    manout(".", "xsnow -selfrep > xsnow.tar.gz");
+    manout(".", "plasmasnow -selfrep > plasmasnow.tar.gz");
 #endif
+
     manout("-display <c>", "Drop the snowflakes on the given display.");
-    manout(
-        " ", "Make sure the display is nearby, so you can hear them enjoy...");
+    manout(" ", "Make sure the display is nearby, so you can hear them enjoy...");
     manout("-screen <n>", "If you have multiple monitors: snow in monitor n.");
     manout(".", "-1: use all monitors (default: %d)", F(Screen));
     manout(".", "Note: for this to work, Xinerama has to be functional.");
-    manout(
-        "-outline <n>", "1: draw outline around snow window. 0: no outline.");
+    manout("-outline <n>", "1: draw outline around snow window. 0: no outline.");
     manout(".", "Default: %d.", F(Outline));
-    manout("-vintage", "Run xsnow in vintage settings.");
+
+    manout("-vintage", "Run plasmasnow in vintage settings.");
     manout("-defaults", "Do not read config file (see FILES).");
     manout("-noconfig", "Do not read or write config file (see FILES).");
     manout("-hidemenu", "Start with hidden interactive menu.");
@@ -136,8 +186,8 @@ void docs_usage(int man) {
     manout("-transparency <n>", "Transparency in % (default: %d)",
         F(Transparency));
     manout("-theme <n>",
-        "1: use xsnow theme for menu; 0: use system theme (default: %d)",
-        F(ThemeXsnow));
+        "1: use plasmasnow theme for menu; 0: use system theme (default: %d)",
+        F(mAppTheme));
     manout("-checkgtk <n>",
         "0: Do not check gtk version before starting the user interface.");
     manout(" ", "1: Check gtk version before starting the user interface.");
@@ -155,7 +205,7 @@ void docs_usage(int man) {
         "NOTE: in some environments this results in an un-clickable desktop.");
     manout("-xwininfo  ", "Use a cursor to point at the window you want the "
                           "snow to be fallen in.");
-    manout("-stopafter <n>", "Stop xsnow after so many seconds.");
+    manout("-stopafter <n>", "Stop plasmasnow after so many seconds.");
     manout("-root, --root ", "Force to paint on (virtual) root window.");
     manout(".", "Use this for xscreensaver:");
     manout(".",
@@ -168,15 +218,15 @@ void docs_usage(int man) {
         "Run the program xscreensaver-demo to create the file ~/.xscreensaver");
     manout(".",
         "In the file ~.xscreensaver add after the line 'programs:' this line:");
-    manout(".", "    xsnow -root");
+    manout(".", "    plasmasnow -root");
     manout(".",
-        "Use the program xscreensaver-demo to select xsnow as screensaver.");
+        "Use the program xscreensaver-demo to select plasmasnow as screensaver.");
     manout(".", "You probably want to select: Mode: Only One Screen Saver.");
     manout("-bg <f>     ",
         "file to be used as background when running under xscreensaver.");
     manout("-noisy     ",
         "Write extra info about some mouse clicks, X errors etc, to stdout.");
-    manout("-cpuload <n>", "How busy is your system with xsnow:");
+    manout("-cpuload <n>", "How busy is your system with plasmasnow:");
     manout(" ", "the higher, the more load on the system (default: %d).",
         F(CpuLoad));
 
@@ -371,12 +421,12 @@ void docs_usage(int man) {
         F(OffsetW));
     manout("-offsets <n>", "Correction for bottom coordinate of your screen. A "
                            "negative value lifts");
-    manout(" ", "the xsnow screen up. Default %d.", F(OffsetS));
+    manout(" ", "the plasmasnow screen up. Default %d.", F(OffsetS));
     manout("-ignoretop <n>",
         "Do not collect snow on window > 0.8*width of screen and closer than");
     manout(" ", "<n> pixels from the top. Sometimes an hidden window is "
                 "sitting there,");
-    manout(" ", "but treated as a normal window by xsnow. Default %d.",
+    manout(" ", "but treated as a normal window by plasmasnow. Default %d.",
         F(IgnoreTop));
     manout("-ignorebottom <n>",
         "Analog to -ignoretop, but now for the bottom. Default %d.",
@@ -430,7 +480,7 @@ void docs_usage(int man) {
     } else {
         printf("\n   LANGUAGES\n\n");
     }
-    manout(" ", "Xsnow comes with some translations to non-english languages.");
+    manout(" ", "plasmasnow comes with some translations to non-english languages.");
     manout(".", "The translations are done with the aid of ");
     manout(" ", "translate.google.com (implemented in package 'trans'),");
     manout(" ", "so there will be room for improvement. Any suggestions are "
@@ -444,7 +494,7 @@ void docs_usage(int man) {
         printf("\n   FILES\n\n");
     }
     manout(
-        "$HOME/.xsnowrc", "Settings are read from and written to this file.");
+        "$HOME/.plasmasnowrc", "Settings are read from and written to this file.");
     manout(" ",
         "See flags -noconfig and -defaults how to influence this behaviour.");
     manout(".", "    NOTE: the following settings are not read or written:");
@@ -453,14 +503,14 @@ void docs_usage(int man) {
     manout(".", "          -nomenu -stopafter -xwininfo -display    -noisy    "
                 "-checkgtk");
     manout(" ", " ");
-    manout("$HOME/xsnow/pixmaps/tree.xpm",
-        "If present, xsnow will try this file for displaying");
+    manout("$HOME/plasmasnow/pixmaps/tree.xpm",
+        "If present, plasmasnow will try this file for displaying");
     manout(" ", "the trees. The format must be xpm (X PixMap) format, see");
     manout(" ", "https://en.wikipedia.org/wiki/X_PixMap .");
     manout(" ", " ");
-    manout("$HOME/xsnow/pixmaps/santa<n>.xpm", "where <n> = 1,2,3,4.");
+    manout("$HOME/plasmasnow/pixmaps/santa<n>.xpm", "where <n> = 1,2,3,4.");
     manout(" ",
-        "If present, xsnow will try this files (4 of them) for displaying");
+        "If present, plasmasnow will try this files (4 of them) for displaying");
     manout(" ", "Santa. The format must be xpm (X PixMap) format, see");
     manout(" ", "https://en.wikipedia.org/wiki/X_PixMap .");
     manout(".", "    NOTE: To show: activate the first Santa in the menu.");
@@ -473,127 +523,10 @@ void docs_usage(int man) {
     } else {
         printf("\n   EXAMPLES\n\n");
     }
-    manout(".", "    $ xsnow -defaults        # run with defaults.");
-    manout(".", "    $ xsnow                  # run using values from the "
+    manout(".", "    $ plasmasnow -defaults        # run with defaults.");
+    manout(".", "    $ plasmasnow                  # run using values from the "
                 "config file.");
-    manout(".", "    $ xsnow -treetype 1,2    # use tree types 1 and 2.");
-
-    if (doman) {
-        printf(".PP\n");
-        printf(".SS \"WINDOW MANAGER ISSUES\n");
-        printf(".br\n");
-    } else {
-        printf("\n   WINDOW MANAGER ISSUES\n\n");
-    }
-    manout(" ", "In general, xsnow works better when using a compositing "
-                "window manager");
-    manout(" ", "like xcompmgr, compton or picom.");
-    manout(" ", "However, with some window managers (FVWM for example), the "
-                "xsnow-window");
-    manout(" ", "is transparent, but not click-through.");
-    manout(" ", "Flags to be tried in this case include: -root, -doublebuffer, "
-                "-xwininfo, -id.");
-    manout(".", "Here follow some window managers with their issues:");
-    manout(".", " ");
-    manout("Tiling window managers",
-        "Here you need to float windows with class=Xsnow.");
-    manout("AWESOME", "Without compositor: no issues.");
-    manout(".", "With compositor: no click-through xsnow window,");
-    manout(" ", "and issues with multi-monitor setup.");
-    manout("BSPWM",
-        "No issues if you add to your bspwmrc (the bspwm configuration file):");
-    manout(".", "    bspc rule -a Xsnow state=floating border=off");
-    manout("CINNAMON", "No issues.");
-    manout("DWM", "No issues, except the \"Below Windows\" setting in the "
-                  "\"settings\" panel.");
-    manout("ENLIGHTENMENT", "With one monitor: no issuses.");
-    manout(".", "With more montors: probems with showing in 'all monitors'");
-    manout("FLUXBOX", "Without compositor: no issues.");
-    manout(".", "With compositor: no click-through xsnow window");
-    manout("FVWM", "Without compositor: no issues.");
-    manout(".", "With compositor: no click-through xsnow window");
-    manout("GNOME on Xorg", "No issues.");
-    manout("GNOME on Wayland", "Most windows don't catch snow.");
-    manout("HERBSTLUFTWM", "No issues.");
-    manout("I3", "Without compositor: windows don't catch snow, use the next "
-                 "line in \"config\":");
-    manout(".", "    for_window [class=\"Xsnow\"] floating enable;border none");
-    manout(".", "With compositor: unworkable.");
-    manout("JVM", "No issues.");
-    manout("LXDE", "With compositor: no issues.");
-    manout(".", "Without compositor: works with one monitor.");
-    manout(".", "Maybe you need to run with the flag -xwininfo");
-    manout("LXQT", "Without compositor: unworkable.");
-    manout(" ", "With compositor: no issues.");
-    manout("MATE", "No issues.");
-    manout("OPENBOX", "No issues.");
-    manout("PLASMA (KDE)", "No issues.");
-    manout(
-        "SPECTRWM", "Various issues. In any case you need in spectrwm.conf:");
-    manout(".", "    quirk[Xsnow] = FLOAT");
-    manout("TWM", "Without compositor: no issues.");
-    manout(".", "With compositor: no click-through xsnow window and");
-    manout(".", "you need to tweak settings->lift snow on windows.");
-    manout("WINDOW MAKER", "Without compositor: no issues.");
-    manout(" ", "With compositor: no click-through xsnow window");
-    manout("XFCE", "No issues when compositing is on, unworkable when "
-                   "compositing is off.");
-    manout(".", "See settings -> Window Manager Tweaks -> Compositor");
-    manout("XMONAD", "No issues if you add to your xmonad.hs:");
-    manout(".", " import XMonad.Hooks.EwmhDesktops");
-    manout(".", " xmonad $ ewmh $ defaultConfig");
-    manout(".", " in the ManageHook section:");
-    manout(".", "    className = ? \"Xsnow\" --> doFloat");
-
-    if (doman) {
-        printf(".PP\n");
-        printf(".SS \"BUGS\n");
-        printf(".br\n");
-    } else {
-        printf("\n   BUGS\n\n");
-    }
-    manout(".", "- Xsnow needs a complete rewrite: the code is a mess.");
-    manout(".", "- The flags are not consistent, caused by trying to be");
-    manout(" ", "    compatible with older versions.");
-    manout(".", "- Xsnow stresses the Xserver too much.");
-    manout(
-        ".", "- Xsnow does run in Wayland, but will not snow on all windows.");
-    manout(".", "- Xsnow tries to create a click-through window. This is not "
-                "successful");
-    manout(" ",
-        "  in for example FVWM/xcompmgr. In that case, xsnow tries to keep");
-    manout(" ",
-        "  the snow window below all others, resulting in a transient effect");
-    manout(" ",
-        "  when you click on the desktop. Sadly, no FVWM menu will appear...");
-    manout(".", "- Remnants of fluffy snow can persist after removing the");
-    manout(" ",
-        "    fallen snow. These will gradually disappear, so no big deal.");
-    manout(".", "- Remnants of meteors can persist after passage of Santa.");
-    manout(" ", "    These will eventually be wiped out by snow or Santa.");
-    manout(".", "- Xsnow tries to adapt its snowing window if the display");
-    manout(" ", "    settings are changed while xsnow is running.");
-    manout(" ", "    This does not function always well.");
-    manout(".",
-        "- Xsnow does not play well with 'xcompmgr -a'. In some environments");
-    manout(
-        " ", "    (Raspberry 64 bit) xcompmgr is started with the flag '-a',");
-    manout(" ", "    resulting in a black snow window. Remedy:");
-    manout(" ", "    In a terminal window type:");
-    manout(" ", "      killall xcompmgr");
-    manout(" ", "      nohup xcompmgr -n &");
-    manout(" ", "    and try again.");
-    manout(".", "- In XFCE, compositing must be enabled for xsnow.");
-    manout(" ", "    Settings -> Window Manager Tweaks -> Compositor -> Enable "
-                "display compositing");
-
-    manout(".",
-        "- In multi-screen environments, it depends on the display settings");
-    manout(" ", "    if it is snowing on all screens. Experiment!");
-
-    manout(".", "");
-    manout(".", "Please report your comments via:");
-    manout(".", "   https://ratrabbit.nl/ratrabbit/contact .");
+    manout(".", "    $ plasmasnow -treetype 1,2    # use tree types 1 and 2.");
 
     if (doman) {
         printf(".PP\n");
@@ -602,7 +535,7 @@ void docs_usage(int man) {
     } else {
         printf("\n   HOMEPAGE\n");
     }
-    manout(" ", "https://ratrabbit.nl/ratrabbit/xsnow");
+    manout(" ", "https://github.com/markcapella/plasmasnow");
 
     if (doman) {
         printf(".PP\n");
@@ -618,40 +551,13 @@ void docs_usage(int man) {
     manout(" ", "FOR A PARTICULAR PURPOSE.");
 }
 
-char *replace_all(const char *s, const char *needle, const char *rep) {
-    if (strlen(needle) == 0) {
-        return strdup(s);
-    }
-    char *result = strdup("");
-    const char *haystack = s; // startpoint to search for needle
-    while (1) {
-        const char *q = strstr(haystack, needle);
-        if (q == NULL) // no needle in haystack
-        {              // cat haystack to result
-            result =
-                (char *)realloc(result, strlen(result) + strlen(haystack) + 1);
-            REALLOC_CHECK(result);
-            result = strcat(result, haystack);
-            break;
-        } else // needle is in haystack
-        {      // cat first part of haystack + rep to result
-            result = (char *)realloc(
-                result, strlen(result) + strlen(haystack) + strlen(rep) + 1);
-            REALLOC_CHECK(result);
-            result = strncat(result, haystack, q - haystack);
-            result = strcat(result, rep);
-            haystack = q + strlen(needle);
-        }
-    }
-    return result;
-}
 
-//
-// doman == 1: output in man page format
-// flag: " ": normal continuation line
-//       otherwize : skip to new paragraph and use bold format
-// txt: Line to output
-//
+/** *********************************************************************
+ * doman == 1: output in man page format
+ * flag: " ": normal continuation line
+ *       otherwize : skip to new paragraph and use bold format
+ * txt: Line to output
+ **/
 void manout(const char *flag, const char *txt, ...) {
     va_list args;
     va_start(args, txt);
@@ -677,6 +583,7 @@ void manout(const char *flag, const char *txt, ...) {
         }
         free(mantxt);
         free(manflag);
+
     } else {
         if (!strcmp(flag, " ")) {
             // printf("\t\t  %s\n",txt);
@@ -695,9 +602,6 @@ void manout(const char *flag, const char *txt, ...) {
             printf("\n");
         }
     }
-    va_end(args);
-}
 
-void docs_changelog() {
-#include "changelog.inc"
+    va_end(args);
 }
