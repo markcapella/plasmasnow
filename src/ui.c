@@ -1244,22 +1244,28 @@ void applyMainWindowCSSTheme() {
 
         ".plasmaColor   *                        { color:            #065522; }"
         ".plasmaColor   *                        { border-color:     #B4EEB4; }"
+
         ".plasmaColor   headerbar                { background:       #B3F4CA; }"
         ".plasmaColor   stack                    { background:       #EAFBF0; }"
+
         ".plasmaColor   *:disabled *             { color:            #8FB39B; }"
+
         ".plasmaColor   button.radio             { background:       #E2FDEC; }"
         ".plasmaColor   button.toggle            { background:       #E2FDEC; }"
         ".plasmaColor   button.confirm           { background-color: #FFFF00; }"
         ".plasmaColor   button:active            { background:       #0DAB44; }"
-        ".plasmaColor   button:checked           { background:       #6AF69B; }"
+        ".plasmaColor   button:checked           { background:   springgreen; }"
+
         ".plasmaColor   radiobutton:active       { background:       #0DAB44; }"
         ".plasmaColor   radiobutton:checked      { background:       #6AF69B; }"
+
         ".plasmaColor   scale trough             { background:       #0DAB44; }"
         ".plasmaColor   scale trough highlight   { background:       #313ae4; }"
 
         ".plasmaNoColor *                        { color:            #065522; }"
         ".plasmaNoColor *                        { border-color:     #B4EEB4; }"
         ".plasmaNoColor *:disabled *             { color:            #8FB39B; }"
+
         ".plasmaNoColor button.radio             { background:       #efedeb; }"
         ".plasmaNoColor button.toggle            { background:       #f0efed; }"
         ".plasmaNoColor button:active            { background:       #c2bebb; }"
