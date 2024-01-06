@@ -367,11 +367,10 @@
             <property name="margin-top">8</property>
             <property name="margin-bottom">8</property>
             <child>
-              <!-- n-columns=1 n-rows=3 -->
+              <!-- n-columns=1 n-rows=2 -->
               <object class="GtkGrid" id="header-about">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="margin-top">15</property>
                 <child>
                   <object class="GtkSeparator">
                     <property name="height-request">8</property>
@@ -407,7 +406,6 @@
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="double-buffered">False</property>
-                    <property name="margin-top">25</property>
                     <property name="label" translatable="yes">plasmaSnow</property>
                     <property name="width-chars">96</property>
                     <attributes>
@@ -418,9 +416,6 @@
                     <property name="left-attach">0</property>
                     <property name="top-attach">0</property>
                   </packing>
-                </child>
-                <child>
-                  <placeholder/>
                 </child>
               </object>
               <packing>
@@ -934,13 +929,12 @@ Flags: -blowsnow, -noblowsnow</property>
             </child>
             <child>
               <!-- n-columns=1 n-rows=2 -->
-              <object class="GtkGrid">
+              <object class="GtkGrid" id="header-snow">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">center</property>
                 <property name="valign">center</property>
-                <property name="margin-top">15</property>
                 <child>
                   <object class="GtkSeparator">
                     <property name="height-request">8</property>
@@ -958,7 +952,6 @@ Flags: -blowsnow, -noblowsnow</property>
                   <object class="GtkLabel">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-top">25</property>
                     <property name="label" translatable="yes">Snow Settings</property>
                     <property name="justify">center</property>
                     <property name="width-chars">96</property>
@@ -1838,10 +1831,9 @@ Flags: -showsanta, -nosanta</property>
             </child>
             <child>
               <!-- n-columns=1 n-rows=2 -->
-              <object class="GtkGrid">
+              <object class="GtkGrid" id="header-santa">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="margin-top">15</property>
                 <child>
                   <object class="GtkSeparator">
                     <property name="height-request">8</property>
@@ -1859,7 +1851,6 @@ Flags: -showsanta, -nosanta</property>
                   <object class="GtkLabel">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-top">25</property>
                     <property name="label" translatable="yes">Santa Settings</property>
                     <property name="justify">center</property>
                     <property name="width-chars">96</property>
@@ -2219,10 +2210,9 @@ Flag: -santaspeedfactor</property>
             <property name="margin-bottom">8</property>
             <child>
               <!-- n-columns=1 n-rows=2 -->
-              <object class="GtkGrid">
+              <object class="GtkGrid" id="header-scenery">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="margin-top">15</property>
                 <child>
                   <object class="GtkSeparator">
                     <property name="height-request">8</property>
@@ -2240,7 +2230,6 @@ Flag: -santaspeedfactor</property>
                   <object class="GtkLabel">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-top">25</property>
                     <property name="label" translatable="yes">Scenery Settings</property>
                     <property name="justify">center</property>
                     <property name="width-chars">96</property>
@@ -2942,10 +2931,9 @@ Flags: -showbirds 1, -showbirds 0</property>
             </child>
             <child>
               <!-- n-columns=1 n-rows=2 -->
-              <object class="GtkGrid">
+              <object class="GtkGrid" id="header-birds">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="margin-top">15</property>
                 <child>
                   <object class="GtkSeparator">
                     <property name="height-request">8</property>
@@ -2963,7 +2951,6 @@ Flags: -showbirds 1, -showbirds 0</property>
                   <object class="GtkLabel">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-top">25</property>
                     <property name="label" translatable="yes">Bird Settings</property>
                     <property name="justify">center</property>
                     <property name="width-chars">96</property>
@@ -3672,10 +3659,9 @@ Flag: -focuscentre</property>
             <property name="margin-bottom">8</property>
             <child>
               <!-- n-columns=1 n-rows=2 -->
-              <object class="GtkGrid">
+              <object class="GtkGrid" id="header-sky">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="margin-top">15</property>
                 <child>
                   <object class="GtkSeparator">
                     <property name="height-request">8</property>
@@ -3693,7 +3679,6 @@ Flag: -focuscentre</property>
                   <object class="GtkLabel">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-top">25</property>
                     <property name="label" translatable="yes">Sky Settings</property>
                     <property name="justify">center</property>
                     <property name="width-chars">96</property>
@@ -4545,7 +4530,6 @@ Flags: -halo 1, -halo 0</property>
               <object class="GtkGrid" id="header-advanced">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="margin-top">15</property>
                 <child>
                   <object class="GtkSeparator">
                     <property name="height-request">8</property>
@@ -4564,7 +4548,6 @@ Flags: -halo 1, -halo 0</property>
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="double-buffered">False</property>
-                    <property name="margin-top">25</property>
                     <property name="label" translatable="yes">Advanced Settings</property>
                     <property name="width-chars">96</property>
                     <attributes>
