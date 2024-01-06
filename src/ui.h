@@ -33,7 +33,9 @@ extern void ui_set_birds_header(const char *text);
 extern void ui_set_celestials_header(const char *text);
 
 extern void ui_set_sticky(int x);
-extern void ui_background(int m);
+
+extern void addBusyStyleClass();
+extern void removeBusyStyleClass();
 
 extern void ui_gray_ww(const int m);
 extern void ui_gray_erase(const int m);

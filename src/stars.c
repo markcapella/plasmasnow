@@ -37,7 +37,7 @@
 static int
     NStars; // is copied from Flags.NStars in init_stars. We cannot have that
 //                               // NStars is changed outside init_stars
-static Skoordinaten *Stars = NULL;
+static StarCoordinate *Stars = NULL;
 static char *StarColor[STARANIMATIONS] = {
     (char *)"gold", (char *)"gold1", (char *)"gold4", (char *)"orange"};
 static int do_ustars();
@@ -97,10 +97,10 @@ void init_stars() {
     NStars = Flags.NStars;
     P("initstars %d\n", NStars);
     // Nstars+1: we do not allocate 0 bytes
-    Stars = (Skoordinaten *)realloc(Stars, (NStars + 1) * sizeof(Skoordinaten));
+    Stars = (StarCoordinate *)realloc(Stars, (NStars + 1) * sizeof(StarCoordinate));
     REALLOC_CHECK(Stars);
     for (i = 0; i < NStars; i++) {
-        Skoordinaten *star = &Stars[i];
+        StarCoordinate *star = &Stars[i];
         star->x = randint(global.SnowWinWidth);
         star->y = randint(global.SnowWinHeight / 4);
         star->color = randint(STARANIMATIONS);
@@ -119,7 +119,7 @@ void stars_draw(cairo_t *cr) {
     cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
     for (i = 0; i < NStars; i++) {
         P("stars_draw i: %d %d %d\n", i, NStars, counter++);
-        Skoordinaten *star = &Stars[i];
+        StarCoordinate *star = &Stars[i];
         int x = star->x;
         int y = star->y;
         int color = star->color;
@@ -137,7 +137,7 @@ void stars_erase() {
     int i;
     for (i = 0; i < NStars; i++) {
         P("stars_erase i: %d %d %d\n", i, NStars, counter++);
-        Skoordinaten *star = &Stars[i];
+        StarCoordinate *star = &Stars[i];
         int x = star->x;
         int y = star->y;
         myXClearArea(global.display, global.SnowWin, x, y, StarSize, StarSize,

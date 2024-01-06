@@ -125,7 +125,7 @@ XPM_TYPE ***Santas[MAXSANTA + 1][2] = {{RegularSanta, RegularSantaRudolf},
 #include "Pixmaps/extratree.xpm"
 //------
 
-XPM_TYPE **xpmtrees[MAXTREETYPE + 1 ] = {tannenbaum_xpm, tree_xpm, greenTree_xpm,
+XPM_TYPE **xpmtrees[ NUM_ALL_SCENE_TYPES ] = {tannenbaum_xpm, tree_xpm, greenTree_xpm,
     huis4_xpm, reindeer_xpm, eland_xpm, snowtree_xpm, polarbear_xpm,
     candycane_xpm, garland_xpm, extratree_xpm };
 

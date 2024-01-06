@@ -19,7 +19,6 @@
 #-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-# 
 */
-
 #include "loadmeasure.h"
 #include "clocks.h"
 #include "debug.h"
@@ -32,67 +31,62 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static int do_loadmeasure();
 
-int loadmeasure_ui() {
-    // nothing to do
-    return 0;
-}
-void loadmeasure_draw() {
-    // nothing to draw
-    //
+/***********************************************************
+ * Module consts.
+ */
+bool mIsSystemBusy = false;
+int mWarningCount = 0;
+int mLoadPressure = 0;
+double mPreviousTime = 0;
+
+
+/** *********************************************************************
+ ** Add update method to mainloop.
+ **/
+void addLoadMonitorToMainloop() {
+    add_to_mainloop(PRIORITY_DEFAULT, TIME_BETWEEN_LOAD_MONITOR_EVENTS, updateLoadMonitor);
 }
 
-void loadmeasure_init() {
-    add_to_mainloop(PRIORITY_DEFAULT, time_measure, do_loadmeasure);
-}
-
-// changes background color of ui if load to high
-int do_loadmeasure() {
+/** *********************************************************************
+ ** Periodically heck app performance.
+ **
+ ** ) Enable or disable CSS "Busy" Style
+ **/
+int updateLoadMonitor() {
     double tnow = wallclock();
-    static double tprev;
-    static int count = 0;
-    static int status = 0;
-    static int warncount = 0;
-
-    if (tnow - tprev > 1.2 * time_measure) {
-        // if (tnow-tprev > 0.9*time_measure)   // for testing purposes
-        count++;
+    if ((tnow - mPreviousTime) >
+        (TIME_BETWEEN_LOAD_MONITOR_EVENTS * EXCESSIVE_LOAD_MONITOR_TIME_PCT)) {
+        mLoadPressure++;
     } else {
-        count--;
+        mLoadPressure--;
     }
-    P(" %d %d %f %f\n", count, status, time_measure, tnow - tprev);
+    mPreviousTime = tnow;
 
-    if (count > 10) {
-        if (status == 0) {
-            if (warncount < 5) {
-                warncount++;
-                P("pink %d %d %f %f\n", count, status, time_measure,
-                    tnow - tprev);
-                printf("system is too busy, suggest to lower 'cpu load' in "
-                       "'settings'\n");
-                printf(" or have a look at 'snow': 'Intensity', 'Max # of "
-                       "flakes', ...\n");
-                printf(" or specify a smaller number of birds in 'birds'\n");
+    if (mLoadPressure > LOAD_PRESSURE_HIGH) {
+        if (!mIsSystemBusy) {
+            mIsSystemBusy = true;
+            if (mWarningCount < WARNING_COUNT_MAX) {
+                mWarningCount++;
             }
-            if (!Flags.NoMenu) {
-                ui_background(1);
+ 
+           if (!Flags.NoMenu) {
+                addBusyStyleClass();
             }
-            status = 1;
         }
-        count = 0;
+        mLoadPressure = 0;
+        return true;
     }
-    if (count < -10) {
-        if (status == 1) {
-            P("white %d %d %f %f\n", count, status, time_measure, tnow - tprev);
+
+    if (mLoadPressure < LOAD_PRESSURE_LOW) {
+        if (mIsSystemBusy) {
+            mIsSystemBusy = false;
             if (!Flags.NoMenu) {
-                ui_background(0);
+                removeBusyStyleClass();
             }
-            status = 0;
         }
-        count = 0;
+        mLoadPressure = 0;
     }
-    tprev = tnow;
-    return TRUE;
-    // (void) d;
+
+    return true;
 }

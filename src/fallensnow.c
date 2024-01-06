@@ -48,12 +48,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define NOTACTIVE                                                              \
-    (!WorkspaceActive() || Flags.NoSnowFlakes ||            \
-        (Flags.NoKeepSWin && Flags.NoKeepSBot))
 
-
-static void drawquartcircle(int n, short int *y); // nb: dimension of y > n+1
+/***********************************************************
+ * Module Method stubs.
+ */
+static void drawquartcircle(int n, short int *y);
 
 static void CreateSurfaceFromFallen(FallenSnow *fsnow);
 static void EraseFallenPixel(FallenSnow *fsnow, int x);
@@ -69,12 +68,17 @@ static int unlock_swap(void);
 static void *do_fallen();
 static void check_fallen(void);
 
-// pop first element
 static int PopFallenSnow(FallenSnow **list);
 
 
+/***********************************************************
+ * Module consts.
+ */
 static sem_t swap_sem;
 static sem_t fallen_sem;
+
+#define NOTACTIVE (!WorkspaceActive() || Flags.NoSnowFlakes || \
+    (Flags.NoKeepSWin && Flags.NoKeepSBot))
 
 void fallen_sem_init() {
     sem_init(&swap_sem, 0, 1);

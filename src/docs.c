@@ -269,7 +269,7 @@ void docs_usage(int man) {
         printf("\n  Scenery options:\n\n");
     }
     manout("-treetype <n>[,<n> ...]",
-        "Choose tree types: minimum 0, maximum %d (default: %s).", MAXTREETYPE,
+        "Choose tree types: minimum 0, maximum %d (default: %s).", NUM_BASE_SCENE_TYPES,
         F(TreeType));
     manout(" ", "Thanks to Carla Vermin for numbers >=3!");
     manout(" ", "Credits: Image by b0red on Pixabay.");

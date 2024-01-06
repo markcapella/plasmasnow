@@ -176,44 +176,48 @@ int make_trans_window(Display *display, GtkWidget *transwindow, int xscreen,
 // disappear. It works again, if we express our wishes after starting gtk_main
 // and the best place is in the draw event.
 //
+// We want to reset the settings at least once to be sure.
+// Things like sticky and below should be stored in the widget beforehand.
+// Use the value of p itself, not what it points to.
+// Following the C standard, we have to use an array to subtract pointers.
+
 int setvaria(GtkWidget *widget) {
-    // We want to reset the settings at least once to be sure.
-    // Things like sticky and below should be stored in the widget beforehand.
-    // Use the value of p itself, not what it points to.
-    // Following the C standard, we have to use an array to subtract pointers.
+    // must be >= 0, and is equal to the number of times the settings
+    // will be done when called more than once
     enum {
         rep = 1,
         nrep
-    }; // must be >= 0, and is equal to the number of times the settings
-    //                      will be done when called more than once
+    };
     static char something[nrep];
-    char *p = (char *)g_object_get_data(G_OBJECT(widget), "trans_done");
+
+    char *p = (char *) g_object_get_data(G_OBJECT(widget), "trans_done");
     if (!p) {
         p = &something[0];
     }
+
     P("setvaria %p %p %d\n", p, &something, (int)(p - &something[0]));
     if (p - &something[0] >= rep) {
         return FALSE;
     }
     p++;
+
     g_object_set_data(G_OBJECT(widget), "trans_done", p);
-
-    P("setvaria %p %p %d\n", p, (void *)widget, (int)(p - &something[0]));
-
+    P("setvaria %p %p %d\n", p, (void *)widget, (int) (p - &something[0]));
     GdkWindow *gdk_window1 = gtk_widget_get_window(widget);
+
     const int Usepassthru = 0;
     if (Usepassthru) {
-        gdk_window_set_pass_through(
-            gdk_window1, TRUE); // does not work as expected
+        // does not work as expected
+        gdk_window_set_pass_through(gdk_window1, TRUE);
     } else {
         cairo_region_t *cairo_region1 = cairo_region_create();
         gdk_window_input_shape_combine_region(gdk_window1, cairo_region1, 0, 0);
         cairo_region_destroy(cairo_region1);
     }
-    P("setvaria %d widget: %p gdkwin: %p passthru: %d\n", counter++,
-        (void *)widget, (void *)gdk_window1,
-        gdk_window_get_pass_through(gdk_window1));
 
+    P("setvaria %d widget: %p gdkwin: %p passthru: %d\n",
+        counter++, (void *) widget, (void *) gdk_window1,
+        gdk_window_get_pass_through(gdk_window1));
     if (!g_object_get_data(G_OBJECT(widget), "trans_nobelow")) {
         if (g_object_get_data(G_OBJECT(widget), "trans_below")) {
             setbelow(GTK_WINDOW(widget));
@@ -222,12 +226,11 @@ int setvaria(GtkWidget *widget) {
         }
     }
 
-    if (1) {
-        if (g_object_get_data(G_OBJECT(widget), "trans_sticky")) {
-            gtk_window_stick(GTK_WINDOW(widget));
-        } else {
-            gtk_window_unstick(GTK_WINDOW(widget));
-        }
+    // Set the Trans Window Sticky Flag.
+    if (g_object_get_data(G_OBJECT(widget), "trans_sticky")) {
+        gtk_window_stick(GTK_WINDOW(widget));
+    } else {
+        gtk_window_unstick(GTK_WINDOW(widget));
     }
 
     return FALSE;

@@ -247,13 +247,9 @@ void DetermineVisualWorkspaces() {
     }
 
     // This is for bspwm and possibly other tiling window magagers.
-    //
     // Determine which workspaces are visible: place a window (ProbeWindow)
     // in each xinerama screen, and ask in which workspace the window
     // is located.
-
-    // int prevsticky = set_sticky(1);
-
     ProbeWindow = XCreateWindow(global.display, global.Rootwindow, 1, 1, 1, 1,
         10, DefaultDepth(global.display, global.Screen), InputOutput,
         DefaultVisual(global.display, global.Screen), valuemask, &attr);

@@ -85,16 +85,51 @@
 
 #include "vroot.h"
 
+/***********************************************************
+ * Module Method stubs.
+ */
+static void HandleCpuFactor();
+static void RestartDisplay();
+static void SigHandler(int);
+
+static int x11ErrorHandler(Display*, XErrorEvent*);
+static void getX11Window(Window*);
+static int HandleX11Cairo();
+
+static void drawit(cairo_t*);
+static int do_drawit(void*);
+static int do_draw_all(gpointer);
+static void restart_do_draw_all();
+static gboolean on_draw_event(GtkWidget*, cairo_t*, gpointer);
+static void rectangle_draw(cairo_t*);
+
+static int StartWindow();
+static void SetWindowScale();
+static int handleConfigureWindowEvents();
+
+static int onTimerEventDisplayChanged();
+static void mybindtestdomain();
+static void set_below_above();
+
+static void GetDesktopSession();
+static void DoAllWorkspaces();
+
+static int do_ui_check();
+static int do_stopafter();
+static int do_display_dimensions();
+static int do_testing();
+
+void uninitQPickerDialog();
+
+
+/***********************************************************
+ * Module consts.
+ */
 #ifdef DEBUG
 #undef DEBUG
 #endif
-// #define DEBUG
 
 #define BMETHOD XdbeBackground
-// #define BMETHOD XdbeUndefined
-// #define BMETHOD XdbeUntouched
-// #define BMETHOD XdbeCopied       // to see if double buffering is actually
-// used
 
 struct _global global;
 
@@ -122,7 +157,7 @@ static GtkWidget *TransA = NULL;
 static char *SnowWinName = NULL;
 static int wantx = 0;
 static int wanty = 0;
-static int IsSticky = 0;
+static int mIsSticky = 0;
 static int X11cairo = 0;
 static int PrevW = 0;
 static int PrevH = 0;
@@ -131,46 +166,10 @@ static int PrevH = 0;
 static const char *BlackColor = "black";
 static Pixel BlackPix;
 
-/* Forward decls */
-static void HandleCpuFactor(void);
-static void RestartDisplay(void);
-static void SigHandler(int signum);
-static int x11_Error_Handler(Display *dpy, XErrorEvent *err);
-static void drawit(cairo_t *cr);
-static void restart_do_draw_all(void);
-static void set_below_above(void);
-static void DoAllWorkspaces(void);
-static void X11WindowById(Window *xwin);
-static int HandleX11Cairo(void);
-static int StartWindow(void);
-static void SetWindowScale(void);
-static void GetDesktopSession(void);
-static void rectangle_draw(cairo_t *cr);
-static void mybindtestdomain(void);
-
-// callbacks
-static int onTimerEventDisplayChanged();
-static int do_draw_all(gpointer widget);
-static int handleConfigureWindowEvents();
-
-static int do_testing();
-static int do_ui_check();
-static int do_stopafter();
-
-static int do_display_dimensions();
-static int do_drawit(void *);
-
-static gboolean on_draw_event(
-    GtkWidget *widget, cairo_t *cr, gpointer user_data);
-
-// ColorPicker
-void uninitQPickerDialog();
-
 
 /** *********************************************************************
  ** main.c: 
  **/
-
 int main_c(int argc, char *argv[]) {
     signal(SIGINT, SigHandler);
     signal(SIGTERM, SigHandler);
@@ -359,7 +358,7 @@ int main_c(int argc, char *argv[]) {
     global.xdo->debug = 0;
 
     XSynchronize(global.display, dosync);
-    XSetErrorHandler(x11_Error_Handler);
+    XSetErrorHandler(x11ErrorHandler);
     int screen = DefaultScreen(global.display);
     global.Screen = screen;
     global.Black = BlackPixel(global.display, screen);
@@ -437,7 +436,7 @@ int main_c(int argc, char *argv[]) {
     stars_init();
     blowoff_init();
     treesnow_init();
-    loadmeasure_init();
+    addLoadMonitorToMainloop();
     fallensnow_init();
 
     add_to_mainloop(
@@ -494,58 +493,67 @@ int main_c(int argc, char *argv[]) {
     return 0;
 }
 
-
 /** *********************************************************************
- ** main.c: 
+ ** 
  **/
-
 void set_below_above() {
-    P("%d set_below_above %d\n", global.counter++, Flags.BelowAll);
     XWindowChanges changes;
+
     // to be sure: we do it in gtk mode and window mode
     if (Flags.BelowAll) {
         if (TransA) {
             setbelow(GTK_WINDOW(TransA));
         }
+
         changes.stack_mode = Below;
         if (global.SnowWin) {
-            XConfigureWindow(
-                global.display, global.SnowWin, CWStackMode, &changes);
+            XConfigureWindow(global.display, global.SnowWin,
+                CWStackMode, &changes);
         }
     } else {
         if (TransA) {
             setabove(GTK_WINDOW(TransA));
         }
+
         changes.stack_mode = Above;
         if (global.SnowWin) {
-            XConfigureWindow(
-                global.display, global.SnowWin, CWStackMode, &changes);
+            XConfigureWindow(global.display, global.SnowWin,
+                CWStackMode, &changes);
         }
     }
 }
 
-void X11WindowById(Window *xwin) {
-    *xwin = 0;
+/** *********************************************************************
+ ** Get our X11 Window. If none is available, ask the user to select one.
+ **/
+void getX11Window(Window *xwin) {
     if (Flags.WindowId) {
         *xwin = Flags.WindowId;
         return;
     }
 
-    // user ask to point to a window
+    // Ask user ask to point to a window.
     if (Flags.XWinInfoHandling) {
         printf(_("Click on a window ...\n"));
         fflush(stdout);
-
         int rc = xdo_select_window_with_click(global.xdo, xwin);
         if (rc == XDO_ERROR) {
             fprintf(stderr, "XWinInfo failed\n");
             exit(1);
+        } else {
+            // xwin has result from user window click.
+            return;
         }
     }
 
+    // No window was available.
+    *xwin = 0;
     return;
 }
 
+/** *********************************************************************
+ ** 
+ **/
 void GetDesktopSession() {
     if (global.DesktopSession == NULL) {
         char *desktopsession = NULL;
@@ -581,9 +589,10 @@ int StartWindow() {
     global.XscreensaverMode = 0;
 
     global.Rootwindow = DefaultRootWindow(global.display);
-    Window xwin;
+
     // see if user chooses window
-    X11WindowById(&xwin);
+    Window xwin;
+    getX11Window(&xwin);
     if (xwin) {
         P("StartWindow xwin%#lx\n", xwin);
         global.SnowWin = xwin;
@@ -607,8 +616,6 @@ int StartWindow() {
         gtk_window_set_type_hint(
             GTK_WINDOW(gtkwin), GDK_WINDOW_TYPE_HINT_POPUP_MENU);
 
-        GdkWindow *gdkwin;
-        (void)gdkwin;
         int rc = make_trans_window(global.display, gtkwin,
             Flags.Screen,        // full screen or xinerama
             Flags.AllWorkspaces, // sticky
@@ -620,6 +627,7 @@ int StartWindow() {
             //                      but, depending on window manager that does
             //                      not always succeed
             &wanty);
+
         if (rc) {
             global.Trans = 1;
             global.IsDouble = 1;
@@ -805,6 +813,22 @@ int HandleX11Cairo() {
     return rcv;
 }
 
+/** *********************************************************************
+ ** Set the UI Main Window Sticky Flag.
+ **/
+void set_sticky(int isSticky) {
+    if (!global.Trans) {
+        return;
+    }
+
+    mIsSticky = isSticky;
+    if (mIsSticky) {
+        gtk_window_stick(GTK_WINDOW(TransA));
+    } else {
+        gtk_window_unstick(GTK_WINDOW(TransA));
+    }
+}
+
 void DoAllWorkspaces() {
     if (Flags.AllWorkspaces) {
         P("stick\n");
@@ -819,20 +843,6 @@ void DoAllWorkspaces() {
         }
     }
     ui_set_sticky(Flags.AllWorkspaces);
-}
-
-int set_sticky(int s) {
-    int r = IsSticky;
-    if (global.Trans) {
-        if (s) {
-            IsSticky = 1;
-            gtk_window_stick(GTK_WINDOW(TransA));
-        } else {
-            IsSticky = 0;
-            gtk_window_unstick(GTK_WINDOW(TransA));
-        }
-    }
-    return r;
 }
 
 // here we are handling the buttons in ui
@@ -1010,8 +1020,7 @@ int do_testing() {
     global.counter++;
 
     for (i = 0; i < global.NVisWorkSpaces; i++) {
-        printf("%d: visible: %d %ld\n", global.counter, i,
-            global.VisWorkSpaces[i]);
+        printf("%d: visible: %d %ld\n", global.counter, i, global.VisWorkSpaces[i]);
     }
 
     P("current workspace: %ld\n", global.CWorkSpace);
@@ -1024,11 +1033,16 @@ void SigHandler(int signum) {
     Flags.Done = 1;
 }
 
-int x11_Error_Handler(Display *dpy, XErrorEvent *err) {
+/** *********************************************************************
+ ** Santa helpers.
+ **/
+int x11ErrorHandler(Display *dpy, XErrorEvent *err) {
     static int count = 0;
     const int countmax = 1000;
+
     char msg[1024];
     XGetErrorText(dpy, err->error_code, msg, sizeof(msg));
+
     if (Flags.Noisy) {
         I("%d %s\n", global.counter++, msg);
     }
@@ -1042,12 +1056,10 @@ int x11_Error_Handler(Display *dpy, XErrorEvent *err) {
 }
 
 // the draw callback
-gboolean on_draw_event(GtkWidget *widget, cairo_t *cr, gpointer user_data) {
-    P("Just to check who this is: %p %p\n", (void *)widget, (void *)TransA);
+gboolean on_draw_event(__attribute__((unused)) GtkWidget *widget,
+    cairo_t *cr, __attribute__((unused)) gpointer user_data) {
     drawit(cr);
     return FALSE;
-    (void)widget;
-    (void)user_data;
 }
 
 int do_drawit(void *cr) {
@@ -1227,7 +1239,7 @@ void restart_do_draw_all() {
         }
         draw_all_id =
             add_to_mainloop1(PRIORITY_HIGH, time_draw_all, do_draw_all, TransA);
-        P("started do_draw_all %d %p %f\n", draw_all_id, (void *)TransA,
+        P("started do_draw_all %d %p %f\n", draw_all_id, (void *) TransA,
             time_draw_all);
     } else {
         if (drawit_id) {

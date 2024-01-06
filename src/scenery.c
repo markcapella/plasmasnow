@@ -19,16 +19,7 @@
 #-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-# 
 */
-
-#define DEFAULTTREETYPE 2
-
-#define NOTACTIVE (!WorkspaceActive())
-
 #include <pthread.h>
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
 
 #include "csvpos.h"
 #include "debug.h"
@@ -48,6 +39,14 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+
+/***********************************************************
+ * Module Method stubs.
+ */
 static int do_initbaum();
 static void ReInitTree0(void);
 static void InitTreePixmaps(void);
@@ -59,26 +58,38 @@ static void create_tree_dimensions(int tt);
 static int compartrees(const void *a, const void *b);
 static void setScale(void);
 
+bool isQPickerActive();
+char* getQPickerCallerName();
+bool isQPickerVisible();
+bool isQPickerTerminated();
+int getQPickerRed();
+int getQPickerBlue();
+int getQPickerGreen();
+void endQPickerDialog();
 
 
-
-
+/***********************************************************
+ * Module consts.
+ */
+#define DEFAULTTREETYPE 2
+#define NOTACTIVE (!WorkspaceActive())
 
 static int NTrees = 0;
-static int NtreeTypes = 0;
-static int *TreeType = NULL;
 static int TreeRead = 0;
 
-static int TreeWidth[MAXTREETYPE + 1];
-static int TreeHeight[MAXTREETYPE + 1];
+static int NtreeTypes = 0;
+static int *TreeType = NULL;
+
+static int TreeWidth[NUM_ALL_SCENE_TYPES];
+static int TreeHeight[NUM_ALL_SCENE_TYPES];
 
 static int ExternalTree = False;
 static int Newtrees = 1;
 
 static char **TreeXpm = NULL;
 
-static Pixmap TreePixmap[MAXTREETYPE + 1][2];
-static Pixmap TreeMaskPixmap[MAXTREETYPE + 1][2];
+static Pixmap TreePixmap[NUM_ALL_SCENE_TYPES] [2];
+static Pixmap TreeMaskPixmap[NUM_ALL_SCENE_TYPES] [2];
 
 static Treeinfo **Trees = NULL;
 
@@ -88,83 +99,47 @@ static const float LocalScale = 0.7; // correction scale: if scenery is always
 static float MinScale = 0.6;         // scale for items with low y-coordinate
 
 
-
-
-
-
-
-bool isQPickerActive();
-char* getQPickerCallerName();
-bool isQPickerVisible();
-bool isQPickerTerminated();
-
-int getQPickerRed();
-int getQPickerBlue();
-int getQPickerGreen();
-
-void endQPickerDialog();
-
-
-
-
-
-
-
-
-
-
+/***********************************************************
+ * Main Scenery methods.
+ */
 void scenery_init() {
-    {
-        P("scenery_init\n");
-        // sanitize Flags.TreeType
-        int *a;
-        int n;
-        csvpos(Flags.TreeType, &a, &n);
-        int i;
-        int *b = (int *)malloc(sizeof(int) * n);
-        int m = 0;
-        for (i = 0; i < n; i++) {
-            if (a[i] >= 0 && a[i] <= MAXTREETYPE - 1) {
-                b[m] = a[i];
-                m++;
-            }
+    int *a;
+    int n;
+    csvpos(Flags.TreeType, &a, &n);
+    int *b = (int *)malloc(sizeof(int) * n);
+
+    int m = 0;
+    for (int i = 0; i < n; i++) {
+        if (a[i] >= 0 && a[i] <= NUM_SCENE_GRID_ITEMS) {
+            b[m] = a[i];
+            m++;
         }
-        free(Flags.TreeType);
-        vsc(&Flags.TreeType, b, m);
-        WriteFlags();
-        free(a);
-        free(b);
     }
-    P("treecolor: %s\n", Flags.TreeColor);
+
+    free(Flags.TreeType);
+    vsc(&Flags.TreeType, b, m);
+    WriteFlags();
+
+    free(a);
+    free(b);
+
     setScale();
-    P("treeScale: %f\n", treeScale);
-    // global.TreeRegion = XCreateRegion();
     global.TreeRegion = cairo_region_create();
     InitTreePixmaps();
+
     add_to_mainloop(PRIORITY_DEFAULT, time_initbaum, do_initbaum);
 }
 
-
-
-
-
-
-
-
-
-
+/***********************************************************
+ * Main Scenery method.
+ */
 void setScale() {
     treeScale = LocalScale * 0.01 * Flags.Scale * global.WindowScale;
 }
 
-
-
-
-
-
-
-
-
+/***********************************************************
+ * Main Scenery method.
+ */
 int compartrees(const void *a, const void *b) {
     Treeinfo *ta = *(Treeinfo **)a;
     Treeinfo *tb = *(Treeinfo **)b;
@@ -172,19 +147,9 @@ int compartrees(const void *a, const void *b) {
     return ta->y + ta->h * ta->scale - tb->y - tb->h * tb->scale;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+/***********************************************************
+ * Main Scenery method.
+ */
 int scenery_draw(cairo_t *cr) {
     int i;
 
@@ -200,18 +165,9 @@ int scenery_draw(cairo_t *cr) {
     return TRUE;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
+/***********************************************************
+ * Main Scenery method.
+ */
 void scenery_ui() {
     UIDOS(TreeType, RedrawTrees(););
     UIDO(DesiredNumberOfTrees, RedrawTrees(););
@@ -243,26 +199,25 @@ void scenery_ui() {
     }
 }
 
-
-
-
-
-
-
+/***********************************************************
+ * Main Scenery method.
+ */
 void RedrawTrees() {
     Newtrees = 1; // this signals initbaum to recreate the trees
     reinit_treesnow_region();
     ClearScreen();
 }
 
+/***********************************************************
+ * Main Scenery method.
+ */
+void EraseTrees() {
+    RedrawTrees();
+}
 
-
-
-
-void EraseTrees() { RedrawTrees(); }
-
-
-
+/***********************************************************
+ * Main Scenery method.
+ */
 cairo_surface_t*
 tree_surface(int flip, const char **xpm, float scale) {
     P("xpm[2]: %s\n", xpm[2]);
@@ -298,51 +253,45 @@ tree_surface(int flip, const char **xpm, float scale) {
     return surface;
 }
 
+/***********************************************************
+ * Main Scenery method.
+ */
 void create_tree_dimensions(int tt) {
     sscanf(xpmtrees[tt][0], "%d %d", &TreeWidth[tt], &TreeHeight[tt]);
 }
 
+static int count = 0;
 
-
-
-
-
-// fallen snow and trees must have been initialized
-// tree coordinates and so are recalculated here, in anticipation
-// of a changed window size
-// The function returns immediately if Newtrees==0, otherwize
-
-// an attempt
-// is done to place the DesiredNumberOfTrees
+/***********************************************************
+ * Fallen snow and trees must have been initialized
+ * tree coordinates and so are recalculated here, in anticipation
+ * of a changed window size. The function returns immediately
+ * if Newtrees==0, otherwize an attempt is done to place
+ * the DesiredNumberOfTrees
+ */
 int do_initbaum() {
-
     if (Flags.Done) {
         return FALSE;
     }
 
-    static int count = 0;
     if (global.RemoveFluff && count++ > 2) {
         global.RemoveFluff = 0;
     }
-
     if (Flags.NoTrees || Newtrees == 0) {
         return TRUE;
     }
 
+    count = 0;
+    global.RemoveFluff = 1;
     ClearScreen();
 
     Newtrees = 0;
-    int i, h, w;
-
-    for (i = 0; i < NTrees; i++) {
+    for (int i = 0; i < NTrees; i++) {
         free(Trees[i]);
     }
 
     free(Trees);
     Trees = NULL;
-
-    global.RemoveFluff = 1;
-    count = 0;
 
     cairo_region_destroy(global.gSnowOnTreesRegion);
     cairo_region_destroy(global.TreeRegion);
@@ -356,21 +305,18 @@ int do_initbaum() {
         TreeType = (int *)realloc(TreeType, 1 * sizeof(*TreeType));
         REALLOC_CHECK(TreeType);
         TreeType[0] = 0;
-
     } else {
         if (!strcmp("all", Flags.TreeType))
         // user wants all treetypes
         {
-            ntemp = 1 + MAXTREETYPE;
+            ntemp = NUM_ALL_SCENE_TYPES;
             tmptreetype = (int *)malloc(sizeof(*tmptreetype) * ntemp);
             int i;
             for (i = 0; i < ntemp; i++) {
                 tmptreetype[i] = i;
             }
-        } else if (strlen(Flags.TreeType) == 0)
-        // default: use 1..MAXTREETYPE-1
-        {
-            ntemp = MAXTREETYPE - 1;
+        } else if (strlen(Flags.TreeType) == 0) {
+            ntemp = NUM_SCENE_GRID_ITEMS;
             tmptreetype = (int *)malloc(sizeof(*tmptreetype) * ntemp);
             int i;
             for (i = 0; i < ntemp; i++) {
@@ -382,8 +328,8 @@ int do_initbaum() {
         }
 
         NtreeTypes = 0;
-        for (i = 0; i < ntemp; i++) {
-            if (tmptreetype[i] >= 0 && tmptreetype[i] <= MAXTREETYPE - 1) {
+        for (int i = 0; i < ntemp; i++) {
+            if (tmptreetype[i] >= 0 && tmptreetype[i] <= NUM_SCENE_GRID_ITEMS) {
                 int j;
                 int unique = 1;
                 // investigate if this is already contained in TreeType.
@@ -419,58 +365,56 @@ int do_initbaum() {
 
     // determine placement of trees and NTrees:
     NTrees = 0;
-    for (i = 0; i < 4 * Flags.DesiredNumberOfTrees; i++) {
+    for (int i = 0; i < 4 * Flags.DesiredNumberOfTrees; i++) {
         if (NTrees >= Flags.DesiredNumberOfTrees) {
             break;
         }
 
-
-        //#ifdef USE_EXTRATREE
-        //      if (global.Language && !strcmp(global.Language,"ru") && drand48() < 0.3)
-        //     tt = MAXTREETYPE;
-        //      if (drand48() < 0.02)
-        //     tt = MAXTREETYPE;
-        //#endif
-
         int tt = TreeType[randint(NtreeTypes)];
-        w = TreeWidth[tt];
-        h = TreeHeight[tt];
+
+        int w = TreeWidth[tt];
+        int h = TreeHeight[tt];
+
         int y1 = global.SnowWinHeight - global.MaxScrSnowDepth - h * treeScale;
         int y2 = global.SnowWinHeight * (1.0 - 0.01 * Flags.TreeFill);
         if (y2 > y1) {
             y1 = y2 + 1;
         }
+
         int x = randint(global.SnowWinWidth - w * treeScale);
         int y = y1 - randint(y1 - y2);
+
         float myScale = (1 - MinScale) * (y - y2) / (y1 - y2) + MinScale;
         myScale *= treeScale * 0.01 * Flags.TreeScale;
+
         cairo_rectangle_int_t grect = {
             x - 1, y - 1, (int)(myScale * w + 2), (int)(myScale * h + 2)};
         cairo_region_overlap_t in =
             cairo_region_contains_rectangle(global.TreeRegion, &grect);
 
-        // no overlap considerations if:
+        // No overlap considerations?
         if (!global.IsDouble || !Flags.Overlap) {
             if (in == CAIRO_REGION_OVERLAP_IN ||
                 in == CAIRO_REGION_OVERLAP_PART) {
-                P("skiptree\n");
-                continue;
+                continue; // Skiptree
             }
         }
 
-        int flop = (drand48() > 0.5);
-        Treeinfo *tree = (Treeinfo *)malloc(sizeof(Treeinfo));
+        // Check overlap conditions.
+        Treeinfo *tree = (Treeinfo *) malloc(sizeof(Treeinfo));
+        tree->type = tt;
+
         tree->x = x;
         tree->y = y;
+
         tree->w = w;
         tree->h = h;
-        tree->type = tt;
-        tree->rev = flop;
+
+        tree->rev = (drand48() > 0.5);
         tree->scale = myScale;
         tree->surface = NULL;
 
         cairo_region_t *r;
-
         switch (tt) {
             case -SOMENUMBER:
                 r = gregionfromxpm((const char **)TreeXpm, tree->rev, tree->scale);
@@ -500,9 +444,9 @@ int do_initbaum() {
     return TRUE;
 }
 
-
-
-
+/***********************************************************
+ * Main Scenery method.
+ */
 void create_tree_surfaces() {
     int i;
     for (i = 0; i < NTrees; i++) {
@@ -520,9 +464,9 @@ void create_tree_surfaces() {
     }
 }
 
-
-
-
+/***********************************************************
+ * Main Scenery method.
+ */
 void InitTreePixmaps() {
 
     XpmAttributes attributes;
@@ -569,7 +513,7 @@ void InitTreePixmaps() {
         int i;
         for (i = 0; i < 2; i++) {
             int tt;
-            for (tt = 0; tt <= MAXTREETYPE; tt++) {
+            for (tt = 0; tt <= NUM_BASE_SCENE_TYPES; tt++) {
                 iXpmCreatePixmapFromData(global.display, global.SnowWin,
                     xpmtrees[tt], &TreePixmap[tt][i], &TreeMaskPixmap[tt][i],
                     &attributes, i);
@@ -588,10 +532,10 @@ void InitTreePixmaps() {
     global.OnTrees = 0;
 }
 
-
-
-
-// apply TreeColor to xpmtree[0] and xpmtree[1]
+/***********************************************************
+ * Main Scenery method.
+ * apply TreeColor to xpmtree[0] and xpmtree[1]
+ */
 void ReInitTree0() {
     if (ExternalTree) {
         return;

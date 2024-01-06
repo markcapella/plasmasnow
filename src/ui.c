@@ -170,6 +170,44 @@
 #include <string.h>
 #include <unistd.h>
 
+
+/***********************************************************
+ * Module Method stubs.
+ */
+static void initAllButtonValues(void);
+static void set_santa_buttons(void);
+static void set_tree_buttons(void);
+
+static void applyMainWindowCSSTheme();
+static void updateMainWindowTheme(void);
+
+static void birdscb(GtkWidget *w, void *m);
+static int handleConfirmSecondTimer();
+static void updateConfirmLabel(void);
+static void yesyes(GtkWidget *w, gpointer data);
+static void nono(GtkWidget *w, gpointer data);
+
+static void onClickedActivateXScreenSaver(GtkApplication *app);
+
+static void setTabDefaults(int tab);
+static void set_belowall_default();
+static void handle_screen(void);
+static void handleFileChooserPreview(
+    GtkFileChooser *file_chooser, gpointer data);
+static void setLabelText(GtkLabel *label, const gchar *str);
+
+static gboolean handleMainWindowStateEvents(
+    GtkWidget *widget, GdkEventWindowState *event, gpointer user_data);
+
+bool startQPickerDialog(char* callerTag, char* colorAsString);
+int getQPickerRed();
+int getQPickerGreen();
+int getQPickerBlue();
+
+
+/***********************************************************
+ * Module consts.
+ */
 #ifndef DEBUG
 #define DEBUG
 #endif
@@ -213,39 +251,7 @@ static int iconified = 0;
 #define nsbuffer 1024
 static char sbuffer[nsbuffer];
 
-static void initAllButtonValues(void);
-static void set_santa_buttons(void);
-static void set_tree_buttons(void);
-
-static void applyMainWindowCSSTheme();
-static void updateMainWindowTheme(void);
-
-static void birdscb(GtkWidget *w, void *m);
-static int handleConfirmSecondTimer();
-static void updateConfirmLabel(void);
-static void yesyes(GtkWidget *w, gpointer data);
-static void nono(GtkWidget *w, gpointer data);
-
-static void onClickedActivateXScreenSaver(GtkApplication *app);
-
-static void setTabDefaults(int tab);
-static void set_belowall_default();
-static void handle_screen(void);
-static void handleFileChooserPreview(
-    GtkFileChooser *file_chooser, gpointer data);
-static void setLabelText(GtkLabel *label, const gchar *str);
-
-static gboolean handleMainWindowStateEvents(
-    GtkWidget *widget, GdkEventWindowState *event, gpointer user_data);
-
 static int ui_running = False;
-
-// ColorPicker
-bool startQPickerDialog(char* callerTag, char* colorAsString);
-
-int getQPickerRed();
-int getQPickerGreen();
-int getQPickerBlue();
 
 static int human_interaction = 1;
 
@@ -258,10 +264,10 @@ static GtkStyleContext *mStyleContext;
 static char *lang[100];
 static int nlang;
 
-/** *********************************************************************
- ** Main Window form udpates.
- **/
 
+/** *********************************************************************
+ ** UI Main Methods.
+ **/
 void updateMainWindowUI() {
     UIDO(mAppTheme, updateMainWindowTheme(););
     UIDO(Screen, handle_screen(););
@@ -495,8 +501,6 @@ static void getAllButtonFormIDs() {
 #define colorcode(type, name, m)                                               \
     NEWLINE MODULE_EXPORT void buttoncb(type, name)(GtkWidget * w) NEWLINE {   \
         NEWLINE if (!human_interaction) {                                      \
-            NEWLINE fprintf(                                                   \
-                stdout, "ui.c: [colorcode] Errors CALLBACK - No Interact.\n"); \
             NEWLINE return;                                                    \
             NEWLINE                                                            \
         }                                                                      \
@@ -801,11 +805,8 @@ void onClickedBelowAllWindows(GtkWidget *w) {
         return;
     }
 
-    gint active = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w));
-    P("onClickedBelowAllWindows: %d %d\n", Flags.BelowAllForce, Flags.BelowAll);
-
     if (!Flags.BelowAllForce) {
-        if (active) {
+        if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) {
             Flags.BelowAll = 1;
             return;
         }
@@ -1017,14 +1018,13 @@ void set_buttons() {
 }
 
 /** *********************************************************************
- ** ... .
+ ** Set the UI Main Window Sticky Flag.
  **/
-
-void ui_set_sticky(int x) {
+void ui_set_sticky(int stickyFlag) {
     if (!ui_running) {
         return;
     }
-    if (x) {
+    if (stickyFlag) {
         gtk_window_stick(GTK_WINDOW(mMainWindow));
     } else {
         gtk_window_unstick(GTK_WINDOW(mMainWindow));
@@ -1091,16 +1091,12 @@ void initUIClass() {
 
     gtk_window_set_title(GTK_WINDOW(mMainWindow), "");
 
-    fprintf(stdout, "---> ui.c: initUIClass() Starts.\n");
     if (getenv("plasmasnow_RESTART")) {
         gtk_window_set_position(GTK_WINDOW(mMainWindow),
             GTK_WIN_POS_CENTER_ALWAYS);
-        fprintf(stdout, "---> ui.c: initUIClass()    RESTART.\n");
     }
-    fprintf(stdout, "---> ui.c: initUIClass() Finiihes.\n");
 
     gtk_widget_show_all(mMainWindow);
-
 
     init_buttons();
     connectAllButtonSignals();
@@ -1230,17 +1226,14 @@ static void applyCSSToWindow(
 
 void applyMainWindowCSSTheme() {
     const char* MAIN_WINDOW_CSS =
-        "button.radio            { min-width:        10px;    }"
-        "button.confirm          { background:       #FFFF00; }"
-        "scale                   { padding:          1em;     }"
+        "button.radio                { min-width:        10px;    }"
+        "button.confirm              { background:       #FFFF00; }"
+        "scale                       { padding:          1em;     }"
 
-        ".busy stack             { background:       #FFC0CB; }"
-        ".busy .cpuload slider   { background:       #FF0000; }"
+        ".mAppBusy stack             { background:       #FFC0CB; }"
+        ".mAppBusy .cpuload slider   { background:       #FF0000; }"
 
-        ".button                 { background:       #CCF0D8; }"
-
-        ".blackBorder            { border-color: black; "
-        "                          border-width: 10px; padding: 10px; }\n"
+        ".button                     { background:       #CCF0D8; }"
 
         ".plasmaColor   *                        { color:            #065522; }"
         ".plasmaColor   *                        { border-color:     #B4EEB4; }"
@@ -1284,25 +1277,25 @@ void applyMainWindowCSSTheme() {
 }
 
 /** *********************************************************************
- ** Helpers.
+ ** "Busy" Style class getter / setters.
  **/
-// if m==1: change some colors of the ui
-// if m==0: change back to default colors
-
-void ui_background(int m) {
+void addBusyStyleClass() {
     if (!ui_running) {
         return;
     }
-    if (m) {
-        gtk_style_context_add_class(mStyleContext, "busy");
-    } else {
-        gtk_style_context_remove_class(mStyleContext, "busy");
-    }
+    gtk_style_context_add_class(mStyleContext, "mAppBusy");
 }
 
-// m=0: make active
-// m=1: make inactive
-// however, see transparency and below
+void removeBusyStyleClass() {
+    if (!ui_running) {
+        return;
+    }
+    gtk_style_context_remove_class(mStyleContext, "mAppBusy");
+}
+
+/** *********************************************************************
+ ** See transparency and below
+ **/
 void ui_gray_erase(int m) {
     gtk_widget_set_sensitive(Button.BelowAll, m);
     if (!Flags.BelowAllForce) {
@@ -1310,12 +1303,23 @@ void ui_gray_erase(int m) {
     }
 }
 
-// m=0: make active
-// m=1: make inactive
-void ui_gray_below(int m) { gtk_widget_set_sensitive(Button.BelowAll, !m); }
+/** *********************************************************************
+ **
+ **/
+void ui_gray_below(int m) {
+    gtk_widget_set_sensitive(Button.BelowAll, !m);
+}
 
-void birdscb(GtkWidget *w, void *m) { gtk_widget_set_sensitive(w, !(int *)m); }
+/** *********************************************************************
+ **
+ **/
+void birdscb(GtkWidget *w, void *m) {
+    gtk_widget_set_sensitive(w, !(int *) m);
+}
 
+/** *********************************************************************
+ **
+ **/
 void ui_gray_birds(int m) {
     if (!ui_running) {
         return;
@@ -1488,14 +1492,11 @@ void onClickedTreeButton(GtkWidget *w) {
     int n;
     csvpos(Flags.TreeType, &a, &n);
 
-    gint active = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w));
-    if (active) {
-        a = (int *)realloc(a, sizeof(*a) * (n + 1));
+    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) {
+        a = (int *) realloc(a, sizeof(*a) * (n + 1));
         REALLOC_CHECK(a);
-
         a[n] = p;
         n++;
-
     } else {
         for (int i = 0; i < n; i++) {
             if (a[i] == p) {
