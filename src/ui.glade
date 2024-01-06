@@ -2400,9 +2400,6 @@ Flag: -treetype 0</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
-                <style>
-                  <class name="blackBorder"/>
-                </style>
               </object>
               <packing>
                 <property name="left-attach">2</property>
@@ -5341,8 +5338,6 @@ Flag: -cpuload</property>
       <object class="GtkHeaderBar" id="headerbar">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="halign">center</property>
-        <property name="valign">center</property>
         <property name="has-subtitle">False</property>
         <property name="spacing">0</property>
         <property name="show-close-button">True</property>
