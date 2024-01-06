@@ -484,7 +484,7 @@ void docs_usage(int man) {
     manout(".", "The translations are done with the aid of ");
     manout(" ", "translate.google.com (implemented in package 'trans'),");
     manout(" ", "so there will be room for improvement. Any suggestions are "
-                "welcome: contact@ratrabbit.nl .");
+                "welcome: markcapella@twcny.rr.com.");
 
     if (doman) {
         printf(".PP\n");

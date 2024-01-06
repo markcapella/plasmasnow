@@ -1383,7 +1383,7 @@ int ui_run_nomenu() {
 #define XXFLAGS G_APPLICATION_FLAGS_NONE
 #endif
 
-    app = gtk_application_new("nl.ratrabbit.example", XXFLAGS);
+    app = gtk_application_new("plasmasnow", XXFLAGS);
     g_signal_connect(
         app, "activate", G_CALLBACK(onClickedActivateXScreenSaver), NULL);
 
