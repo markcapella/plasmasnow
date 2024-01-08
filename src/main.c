@@ -20,26 +20,22 @@
 #-# 
  *
  */
-/*
- * contains main_c(), the actual main program, written in C.
- * main_c() is to be called from main(), written in C++,
- * see mainstub.cpp and mainstub.h
- */
 
-#define dosync                                                                 \
-    0 /* synchronise X-server. Change to 1 will detoriate the performance      \
- but allow for better analysis                                                 \
- */
+// Change to 1 for better analysis
+#define dosync 0 // synchronise X-server.
 
 /*
  * Reals dealing with time are declared as double.
  * Other reals as float
  */
 #include <pthread.h>
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+
 #include "mygettext.h"
+
 #include <X11/Intrinsic.h>
 #include <X11/extensions/Xdbe.h>
 #include <X11/extensions/Xinerama.h>
@@ -85,6 +81,7 @@
 
 #include "vroot.h"
 
+
 /***********************************************************
  * Module Method stubs.
  */
@@ -105,9 +102,10 @@ static void rectangle_draw(cairo_t*);
 
 static int StartWindow();
 static void SetWindowScale();
-static int handleConfigureWindowEvents();
 
+static int handleConfigureWindowEvents();
 static int onTimerEventDisplayChanged();
+
 static void mybindtestdomain();
 static void set_below_above();
 
@@ -133,7 +131,7 @@ void uninitQPickerDialog();
 
 struct _global global;
 
-int SnowWinChanged = 1;
+bool mMainWindowNeedsReconfiguration = true;
 cairo_t *CairoDC = NULL;
 cairo_surface_t *CairoSurface = NULL;
 
@@ -146,15 +144,14 @@ char Copyright[] =
 static char **Argv;
 static int Argc;
 
-// timing stuff
-// static double       TotSleepTime = 0;
-
 // windows stuff
 static int DoRestart = 0;
 static guint draw_all_id = 0;
 static guint drawit_id = 0;
 static GtkWidget *TransA = NULL;
+
 static char *SnowWinName = NULL;
+
 static int wantx = 0;
 static int wanty = 0;
 static int mIsSticky = 0;
@@ -162,7 +159,7 @@ static int X11cairo = 0;
 static int PrevW = 0;
 static int PrevH = 0;
 
-/* Colo(u)rs */
+// Colors.
 static const char *BlackColor = "black";
 static Pixel BlackPix;
 
@@ -175,7 +172,8 @@ int main_c(int argc, char *argv[]) {
     signal(SIGTERM, SigHandler);
     signal(SIGHUP, SigHandler);
 
-    srand48((int)(fmod(wallcl() * 1.0e6, 1.0e8)));
+    srand48((int) (fmod(wallcl() * 1.0e6, 1.0e8)));
+
     memset(&global, 0, sizeof(global));
 
     XInitThreads();
@@ -190,12 +188,14 @@ int main_c(int argc, char *argv[]) {
 
     global.MaxFlakeHeight = 0;
     global.MaxFlakeWidth = 0;
+
     global.FlakeCount = 0; /* # active flakes */
     global.FluffCount = 0;
 
     global.SnowWin = 0;
     global.WindowOffsetX = 0;
     global.WindowOffsetY = 0;
+
     global.DesktopSession = NULL;
     global.CWorkSpace = 0;
     global.ChosenWorkSpace = 0;
@@ -439,13 +439,13 @@ int main_c(int argc, char *argv[]) {
     addLoadMonitorToMainloop();
     fallensnow_init();
 
-    add_to_mainloop(
-        PRIORITY_DEFAULT, time_displaychanged, onTimerEventDisplayChanged);
+    add_to_mainloop(PRIORITY_DEFAULT, time_displaychanged,
+        onTimerEventDisplayChanged);
     add_to_mainloop(PRIORITY_DEFAULT, CONFIGURE_WINDOW_EVENT_TIME,
         handleConfigureWindowEvents);
     add_to_mainloop(PRIORITY_DEFAULT, time_testing, do_testing);
-    add_to_mainloop(
-        PRIORITY_DEFAULT, time_display_dimensions, do_display_dimensions);
+    add_to_mainloop(PRIORITY_DEFAULT, time_display_dimensions,
+        do_display_dimensions);
 
     add_to_mainloop(PRIORITY_HIGH, time_ui_check, do_ui_check);
 
@@ -578,6 +578,9 @@ void GetDesktopSession() {
     }
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 int StartWindow() {
     P("Entering StartWindow...\n");
 
@@ -597,6 +600,7 @@ int StartWindow() {
         P("StartWindow xwin%#lx\n", xwin);
         global.SnowWin = xwin;
         X11cairo = 1;
+
     } else if (Flags.ForceRoot) {
         // user specified to run on root window
         printf(_("Trying to snow in root window\n"));
@@ -607,6 +611,7 @@ int StartWindow() {
             global.Rootwindow = global.SnowWin;
         }
         X11cairo = 1;
+
     } else {
         // default behaviour
         // try to create a transparent clickthrough window
@@ -636,10 +641,12 @@ int StartWindow() {
             GtkWidget *drawing_area = gtk_drawing_area_new();
             gtk_container_add(GTK_CONTAINER(TransA), drawing_area);
             g_signal_connect(TransA, "draw", G_CALLBACK(on_draw_event), NULL);
+
             P("calling set_below_above\n");
             set_below_above();
             global.SnowWin = xwin;
-            printf(_("Using transparent window\n"));
+
+            printf(_("\nUsing transparent window\n"));
             P("wantx, wanty: %d %d\n", wantx, wanty);
             if (!strncasecmp(global.DesktopSession, "fvwm", 4) ||
                 !strncasecmp(global.DesktopSession, "lxqt", 4)) {
@@ -686,21 +693,22 @@ int StartWindow() {
 
     if (X11cairo) {
         HandleX11Cairo();
-        drawit_id =
-            add_to_mainloop1(PRIORITY_HIGH, time_draw_all, do_drawit, CairoDC);
+        drawit_id = add_to_mainloop1(PRIORITY_HIGH,
+            time_draw_all, do_drawit, CairoDC);
+
         global.WindowOffsetX = 0;
         global.WindowOffsetY = 0;
+
     } else {
-        // see also windows.c
         global.WindowOffsetX = wantx;
         global.WindowOffsetY = wanty;
     }
 
-    global.IsDouble = global.Trans || global.UseDouble; // just to be sure ...
+    global.IsDouble = global.Trans || global.UseDouble;
 
     XTextProperty x;
     if (XGetWMName(global.display, xwin, &x)) {
-        SnowWinName = strdup((char *)x.value);
+        SnowWinName = strdup((char *) x.value);
     } else {
         SnowWinName = strdup("no name");
     }
@@ -710,79 +718,92 @@ int StartWindow() {
         xdo_move_window(global.xdo, global.SnowWin, wantx, wanty);
         P("wantx wanty: %d %d\n", wantx, wanty);
     }
+
     xdo_wait_for_window_map_state(global.xdo, global.SnowWin, IsViewable);
+
     InitDisplayDimensions();
 
     global.SnowWinX = wantx;
     global.SnowWinY = wanty;
-
-    printf(_("Snowing in %#lx: %s %d+%d %dx%d\n"), global.SnowWin, SnowWinName,
+    printf(_("\nSnowing in %#lx: %s %d+%d %dx%d\n"), global.SnowWin, SnowWinName,
         global.SnowWinX, global.SnowWinY, global.SnowWinWidth,
         global.SnowWinHeight);
+
     PrevW = global.SnowWinWidth;
     PrevH = global.SnowWinHeight;
-
-    P("woffx: %d %d\n", global.WindowOffsetX, global.WindowOffsetY);
+    printf(_("global.WindowOffsetX, global.WindowOffsetY: %d %d\n"),
+        global.WindowOffsetX, global.WindowOffsetY);
 
     fflush(stdout);
 
     SetWindowScale();
+
     if (global.XscreensaverMode && !Flags.BlackBackground) {
         SetBackground();
     }
 
-    /*
-     * to remove titlebar in mwm. Alas, this results in no visuals at all in
-     xfce. XSetWindowAttributes attr; attr.override_redirect = True;
-     XChangeWindowAttributes(global.display,global.SnowWin,CWOverrideRedirect,&attr);
-     */
     return TRUE;
 }
 
+/** *********************************************************************
+ ** Cairo specific. do_display_dimensions() main_c->StartWindow()
+ **/
 int HandleX11Cairo() {
-    unsigned int w, h;
-    xdo_get_window_size(global.xdo, global.SnowWin, &w, &h);
-    Visual *visual =
-        DefaultVisual(global.display, DefaultScreen(global.display));
-    int rcv;
-    P("double: %d\n", Flags.UseDouble);
+    int resultValue;
+
 #ifdef XDBE_AVAILABLE
     int dodouble = Flags.UseDouble;
 #else
     int dodouble = 0;
 #endif
+
+    unsigned int w, h;
+    xdo_get_window_size(global.xdo, global.SnowWin, &w, &h);
+
 #ifdef XDBE_AVAILABLE
     if (dodouble) {
         static Drawable backBuf = 0;
         if (backBuf) {
             XdbeDeallocateBackBufferName(global.display, backBuf);
         }
-        backBuf =
-            XdbeAllocateBackBufferName(global.display, global.SnowWin, BMETHOD);
+        backBuf = XdbeAllocateBackBufferName(global.display,
+            global.SnowWin, BMETHOD);
+
         if (CairoSurface) {
             cairo_surface_destroy(CairoSurface);
         }
-        CairoSurface =
-            cairo_xlib_surface_create(global.display, backBuf, visual, w, h);
+
+        Visual *visual = DefaultVisual(global.display,
+            DefaultScreen(global.display));
+        CairoSurface = cairo_xlib_surface_create(global.display,
+            backBuf, visual, w, h);
+        printf(_("Using double buffer: %#lx. %dx%d\n"), backBuf, w, h);
+
         global.UseDouble = 1;
         global.IsDouble = 1;
-        printf(_("Using double buffer: %#lx. %dx%d\n"), backBuf, w, h);
-        rcv = TRUE;
+
+        resultValue = TRUE;
     }
 #endif
+
     if (!dodouble) {
+        printf(_("NOT using double buffering:"));
+
+        Visual *visual = DefaultVisual(global.display,
+            DefaultScreen(global.display));
         CairoSurface = cairo_xlib_surface_create(
             global.display, global.SnowWin, visual, w, h);
-        printf(_("NOT using double buffering:"));
+
         if (Flags.UseDouble) {
-            printf(_(
-                " because double buffering is not available on this system\n"));
+            printf(_(" because double buffering is not available "
+                     "on this system.\n"));
         } else {
             printf(_(" on your request.\n"));
         }
         printf(_("NOTE: expect some flicker.\n"));
+
         fflush(stdout);
-        rcv = FALSE;
+        resultValue = FALSE;
     }
 
     if (CairoDC) {
@@ -793,24 +814,25 @@ int HandleX11Cairo() {
     cairo_xlib_surface_set_size(CairoSurface, w, h);
     global.SnowWinWidth = w;
     global.SnowWinHeight = h;
+
     if (Flags.Screen >= 0 && global.Desktop) {
         int winx, winy, winw, winh;
-        int rc =
-            xinerama(global.display, Flags.Screen, &winx, &winy, &winw, &winh);
-        // if (rc && winx==0 && winy==0)
-        if (rc) {
+        if (xinerama(global.display, Flags.Screen,
+            &winx, &winy, &winw, &winh)) {
             global.SnowWinX = winx;
             global.SnowWinY = winy;
             global.SnowWinWidth = winw;
             global.SnowWinHeight = winh;
         }
-        cairo_rectangle(CairoDC, global.SnowWinX, global.SnowWinY,
-            global.SnowWinWidth, global.SnowWinHeight);
+
         P("clipsnow %d %d %d %d\n", global.SnowWinX, global.SnowWinY,
+            global.SnowWinWidth, global.SnowWinHeight);
+        cairo_rectangle(CairoDC, global.SnowWinX, global.SnowWinY,
             global.SnowWinWidth, global.SnowWinHeight);
         cairo_clip(CairoDC);
     }
-    return rcv;
+
+    return resultValue;
 }
 
 /** *********************************************************************
@@ -845,11 +867,12 @@ void DoAllWorkspaces() {
     ui_set_sticky(Flags.AllWorkspaces);
 }
 
-// here we are handling the buttons in ui
-// Ok, this is a long list, and could be implemented more efficient.
-// But, do_ui_check is called not too frequently, so....
-// Note: if changes != 0, the settings will be written to .plasmasnowrc
-//
+/** *********************************************************************
+ * here we are handling the buttons in ui
+ * Ok, this is a long list, and could be implemented more efficient.
+ * But, do_ui_check is called not too frequently, so....
+ * Note: if changes != 0, the settings will be written to .plasmasnowrc
+ **/
 int do_ui_check() {
     if (Flags.Done) {
         gtk_main_quit();
@@ -896,9 +919,11 @@ int do_ui_check() {
     return TRUE;
 }
 
-// if we are snowing in the desktop, we check if the size has changed,
-// this can happen after changing of the displays settings
-// If the size has been changed, we refresh the app.
+/** *********************************************************************
+ * If we are snowing in the desktop, we check if the size has changed,
+ * this can happen after changing of the displays settings
+ * If the size has been changed, we refresh the app.
+ **/
 int onTimerEventDisplayChanged() {
     if (Flags.Done) {
         return -1;
@@ -932,9 +957,8 @@ int onTimerEventDisplayChanged() {
 }
 
 /** *********************************************************************
- ** ... .
+ ** This method ...
  **/
-
 int handleConfigureWindowEvents() {
     if (Flags.Done) {
         return FALSE;
@@ -946,18 +970,20 @@ int handleConfigureWindowEvents() {
     while (XPending(global.display)) {
         XNextEvent(global.display, &ev);
 
+        // Note if *any* windows changed.
         if (ev.type == ConfigureNotify || ev.type == MapNotify ||
             ev.type == UnmapNotify) {
             P("WindowsChanged %d %d\n", counter++, global.WindowsChanged);
             global.WindowsChanged++;
         }
 
+        // Note if we observe our own window change.
         switch (ev.type) {
-        case ConfigureNotify:
-            if (ev.xconfigure.window == global.SnowWin) {
-                SnowWinChanged = 1;
-            }
-            break;
+            case ConfigureNotify:
+                if (ev.xconfigure.window == global.SnowWin) {
+                    mMainWindowNeedsReconfiguration = true;
+                }
+                break;
         }
     }
 
@@ -965,9 +991,8 @@ int handleConfigureWindowEvents() {
 }
 
 /** *********************************************************************
- ** ... .
+ ** This method ...
  **/
-
 void RestartDisplay() {
     P("Restartdisplay: %d W: %d H: %d\n", global.counter++, global.SnowWinWidth,
         global.SnowWinHeight);
@@ -992,9 +1017,8 @@ void RestartDisplay() {
 }
 
 /** *********************************************************************
- ** ... .
+ ** This method ...
  **/
-
 int do_testing() {
     // (void) d;
     if (Flags.Done) {
@@ -1028,6 +1052,9 @@ int do_testing() {
     return TRUE;
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 void SigHandler(int signum) {
     global.HaltedByInterrupt = signum;
     Flags.Done = 1;
@@ -1162,11 +1189,13 @@ end:
     XFlush(global.display);
 }
 
+
 void SetWindowScale() {
     // assuming a standard screen of 1024x576, we suggest to use the scalefactor
     // WindowScale
     float x = global.SnowWinWidth / 1000.0;
     float y = global.SnowWinHeight / 576.0;
+
     if (x < y) {
         global.WindowScale = x;
     } else {
@@ -1175,36 +1204,47 @@ void SetWindowScale() {
     P("WindowScale: %f\n", global.WindowScale);
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 int do_display_dimensions() {
     if (Flags.Done) {
         return FALSE;
     }
-    if (!SnowWinChanged) {
+
+    if (!mMainWindowNeedsReconfiguration) {
         return TRUE;
     }
-    SnowWinChanged = 0;
+    mMainWindowNeedsReconfiguration = false;
 
     P("%d do_display_dimensions %dx%d %dx%d\n", global.counter++,
         global.SnowWinWidth, global.SnowWinHeight, PrevW, PrevH);
     DisplayDimensions();
+
     if (!global.Trans) {
         HandleX11Cairo();
     }
+
     if (PrevW != global.SnowWinWidth || PrevH != global.SnowWinHeight) {
-        printf(
-            _("Window size changed, now snowing in in %#lx: %s %d+%d %dx%d\n"),
+        printf(_("Window size changed, now snowing in in %#lx: %s %d+%d %dx%d\n"),
             global.SnowWin, SnowWinName, global.SnowWinX, global.SnowWinY,
             global.SnowWinWidth, global.SnowWinHeight);
+
         P("Calling RestartDisplay\n");
         RestartDisplay();
+
         PrevW = global.SnowWinWidth;
         PrevH = global.SnowWinHeight;
         SetWindowScale();
     }
+
     fflush(stdout);
     return TRUE;
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 int do_draw_all(gpointer widget) {
     if (Flags.Done) {
         return FALSE;
@@ -1216,8 +1256,13 @@ int do_draw_all(gpointer widget) {
     return TRUE;
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 // handle callbacks for things whose timings depend on cpufactor
 void HandleCpuFactor() {
+    P("handlecpufactor %f %f %d\n", oldcpufactor, cpufactor, counter++);
+
     // re-add things whose timing is dependent on cpufactor
     if (Flags.CpuLoad <= 0) {
         global.cpufactor = 1;
@@ -1225,13 +1270,14 @@ void HandleCpuFactor() {
         global.cpufactor = 100.0 / Flags.CpuLoad;
     }
 
-    P("handlecpufactor %f %f %d\n", oldcpufactor, cpufactor, counter++);
-    add_to_mainloop(
-        PRIORITY_HIGH, time_init_snow, do_initsnow); // remove flakes
+    add_to_mainloop(PRIORITY_HIGH, time_init_snow, do_initsnow);
 
     restart_do_draw_all();
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 void restart_do_draw_all() {
     if (global.Trans) {
         if (draw_all_id) {
@@ -1251,6 +1297,10 @@ void restart_do_draw_all() {
             time_draw_all);
     }
 }
+
+/** *********************************************************************
+ ** This method ...
+ **/
 void rectangle_draw(cairo_t *cr) {
     const int lw = 8;
     cairo_save(cr);
@@ -1262,6 +1312,9 @@ void rectangle_draw(cairo_t *cr) {
     cairo_restore(cr);
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 int do_stopafter() {
     Flags.Done = 1;
     printf(_("Halting because of flag %s\n"), "-stopafter");
@@ -1269,6 +1322,9 @@ int do_stopafter() {
     return FALSE;
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 void mybindtestdomain() {
     global.Language = guess_language();
 #ifdef HAVE_GETTEXT
