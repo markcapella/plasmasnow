@@ -66,7 +66,7 @@
 #define time_change_attr 60.0       // time between changing attraction point
 #define time_clean 1.00             // time between cleaning desktop
 #define time_desktop_type 2.0       // time between showing desktop type
-#define time_display_dimensions 0.5 // time between check of screen dimensions
+#define time_display_dimensions 0.5 // Time between check of screen dimensions.
 #define time_displaychanged 1.00    // time between checks if display has changed
 #define time_emeteor 0.40           // time between meteors erasures
 
@@ -227,7 +227,7 @@ typedef struct _WinInfo {
 
         unsigned int sticky BITS(1); // is visible on all workspaces
         unsigned int dock BITS(1);   // is a "dock" (panel)
-        unsigned int hidden BITS(1); // is hidden (iconified)
+        unsigned int hidden BITS(1); // is hidden / iconized
 } WinInfo;
 
 
