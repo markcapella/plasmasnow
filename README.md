@@ -6,31 +6,31 @@
 
 ## Description
 
-        A fast re-take on a cool app, with graphics and UI upgrade, including
-        QT screen color picker that works on Plasma, and dual snow colors !
+    A fast re-take on a cool app, with graphics and UI upgrade, including
+    QT screen color picker that works on Plasma, and dual snow colors !
 
-     plasmasnow is derived from Willem Vermin plasmasnow 3.7.5 and Rick Jansen's
-     plasmasnow-1.42.
+    plasmasnow is derived from Willem Vermin's : xSnow 3.7.5.
+    xSnow 3.7.5 is derived from Rick Jansen's xsnow-1.42.
 
 
 ## Installation
 
 ###     CD into source repo.
 
-     ./configure
-     make
+    ./configure
+    make
 
-     sudo make install
-     sudo make uninstall
+    sudo make install
+    sudo make uninstall
 
-     make clean
+    make clean
 
 
 ## Usage
 
 ###     GUI Desktop:
 
-        Click the plasmasnow desktop icon that's added to your systems menu
+    Click the plasmasnow desktop icon that's added to your systems menu
     under "Games".
 
 

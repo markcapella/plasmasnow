@@ -526,7 +526,7 @@
                 <property name="can-focus">False</property>
                 <property name="halign">center</property>
                 <property name="valign">center</property>
-                <property name="label" translatable="yes">plasmaSnow is derived from Willem Vermin's xSnow 3.7.5.</property>
+                <property name="label" translatable="yes">plasmasnow is derived from Willem Vermin's : xSnow 3.7.5.</property>
               </object>
               <packing>
                 <property name="left-attach">2</property>
@@ -539,7 +539,7 @@
                 <property name="can-focus">False</property>
                 <property name="halign">center</property>
                 <property name="valign">center</property>
-                <property name="label" translatable="yes">plasmasnow 3.7.5 is derived from Rick Jansen's plasmasnow-1.42.</property>
+                <property name="label" translatable="yes">xSnow 3.7.5 is derived from Rick Jansen's xsnow-1.42.</property>
               </object>
               <packing>
                 <property name="left-attach">2</property>

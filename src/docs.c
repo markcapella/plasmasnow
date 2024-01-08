@@ -116,7 +116,7 @@ void docs_usage(int man) {
         printf(".TH plasmasnow \"6\" \"2023\" \"plasmasnow\\-" VERSION
                "\" \"User Commands\"\n");
         printf(".SH NAME\n");
-        printf(".\\\" Turn of hyphenation:\n");
+        printf(".\\\" Turn off hyphenation:\n");
         printf(".hy 0\n");
         printf("plasmasnow \\- Snow and Santa on your desktop\n");
         printf(".SH SYNOPSIS\n");
