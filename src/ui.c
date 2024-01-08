@@ -246,7 +246,7 @@ static GtkContainer *moonbox;
 static GtkImage *preview;
 static int Nscreens;
 static int HaveXinerama;
-static int iconified = 0;
+static bool mMainWindowIconified;
 
 #define nsbuffer 1024
 static char sbuffer[nsbuffer];
@@ -313,17 +313,17 @@ void handle_language(int restart) {
 /** *********************************************************************
  ** Main WindowState event handler.
  **/
-
 gboolean handleMainWindowStateEvents(
-    GtkWidget *widget, GdkEventWindowState *event, gpointer user_data) {
+    __attribute__((unused)) GtkWidget *widget,
+    GdkEventWindowState *event,
+    __attribute__((unused)) gpointer user_data) {
 
-    (void)widget;
-    (void)user_data;
-
+    // Note when user minimizes us.
     if (event->new_window_state & GDK_WINDOW_STATE_ICONIFIED) {
-        iconified = 1;
-        P("iconified\n");
+        // 01/04/24 Not used.
+        mMainWindowIconified = true;
     }
+
     return TRUE;
 }
 
