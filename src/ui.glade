@@ -2234,6 +2234,7 @@ Flag: -santaspeedfactor</property>
                     <property name="label" translatable="yes">Scenery Settings</property>
                     <property name="justify">center</property>
                     <property name="width-chars">96</property>
+                    <property name="max-width-chars">0</property>
                     <attributes>
                       <attribute name="scale" value="1.5"/>
                     </attributes>
@@ -2425,7 +2426,6 @@ Flag: -treetype 0</property>
                 <property name="can-focus">False</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">end</property>
-                <property name="margin-right">22</property>
                 <property name="label" translatable="yes">Size:</property>
               </object>
               <packing>
@@ -2439,7 +2439,6 @@ Flag: -treetype 0</property>
                 <property name="can-focus">False</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">end</property>
-                <property name="margin-right">22</property>
                 <property name="label" translatable="yes">Max # Items:</property>
               </object>
               <packing>
@@ -2453,7 +2452,6 @@ Flag: -treetype 0</property>
                 <property name="can-focus">False</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">end</property>
-                <property name="margin-right">22</property>
                 <property name="label" translatable="yes">Scene Height:</property>
               </object>
               <packing>
