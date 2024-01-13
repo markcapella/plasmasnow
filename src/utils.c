@@ -81,9 +81,11 @@ FILE *HomeOpen(const char *file, const char *mode, char **path) {
 void ClearScreen() {
     // remove all our snow-related drawings
     XClearArea(global.display, global.SnowWin, 0, 0, 0, 0, True);
+
     // Yes this is hairy: also remove meteor.
     // It could be that a meteor region is still hanging around
     meteor_erase();
+
     XFlush(global.display);
 }
 
@@ -224,6 +226,9 @@ void PrintVersion() {
     printf("\n%s\n", VERSIONBY);
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 void rgba2color(GdkRGBA *c, char **s) {
     *s = (char *)malloc(8);
     sprintf(*s, "#%02lx%02lx%02lx", lrint(c->red * 255), lrint(c->green * 255),
@@ -231,6 +236,9 @@ void rgba2color(GdkRGBA *c, char **s) {
     P("rgba2color %s %d\n", *s, strlen(*s));
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 void Thanks(void) {
     if (global.HaltedByInterrupt) {
         printf(_("\nplasmasnow: Caught signal %d\n"), global.HaltedByInterrupt);
@@ -242,9 +250,14 @@ void Thanks(void) {
     fflush(stdout);
 }
 
-int ScaleChanged(int *prevscale) {
-    int newscale;
-    if (*prevscale != (newscale = (int)(Flags.Scale * global.WindowScale))) {
+/** *********************************************************************
+ ** This method ...
+ **/
+int appScalesHaveChanged(int *prevscale) {
+    const int newscale =
+        (const int) (Flags.Scale * global.WindowScale);
+
+    if (*prevscale != (newscale )) {
         *prevscale = newscale;
         return TRUE;
     }

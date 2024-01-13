@@ -106,7 +106,7 @@ void moon_ui() {
     static int prevh = 0;
 
     static int prev;
-    if (ScaleChanged(&prev)) {
+    if (appScalesHaveChanged(&prev)) {
         P("%d moonscale\n", global.counter);
         moonScale = 0.01 * global.WindowScale * Flags.Scale;
         init_moon_surface();

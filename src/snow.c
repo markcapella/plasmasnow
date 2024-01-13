@@ -187,7 +187,7 @@ void snow_ui() {
     UIDO(SnowSize, SetSnowSize(); Flags.VintageFlakes = 0;);
 
     static int prev = 100;
-    if (ScaleChanged(&prev)) {
+    if (appScalesHaveChanged(&prev)) {
         init_snow_pix();
     }
 }

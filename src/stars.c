@@ -151,7 +151,7 @@ void stars_ui() {
 
     static int prev = 100;
     P("stars_ui %d\n", prev);
-    if (ScaleChanged(&prev)) {
+    if (appScalesHaveChanged(&prev)) {
         set_star_surfaces();
         init_stars();
         P("stars_ui changed\n");

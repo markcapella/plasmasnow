@@ -72,13 +72,17 @@ static int PopFallenSnow(FallenSnow **list);
 
 
 /***********************************************************
- * Module consts.
+ * Module globals and consts.
  */
-static sem_t swap_sem;
-static sem_t fallen_sem;
-
 #define NOTACTIVE (!WorkspaceActive() || Flags.NoSnowFlakes || \
     (Flags.NoKeepSWin && Flags.NoKeepSBot))
+
+
+/** *********************************************************************
+ ** Semaphore & lock helper methods.
+ **/
+static sem_t swap_sem;
+static sem_t fallen_sem;
 
 void fallen_sem_init() {
     sem_init(&swap_sem, 0, 1);
@@ -93,6 +97,52 @@ void fallensnow_init() {
     static pthread_t thread;
 
     pthread_create(&thread, NULL, do_fallen, NULL);
+}
+
+int lock_swap() {
+    return sem_wait(&swap_sem);
+}
+
+int unlock_swap() {
+    return sem_post(&swap_sem);
+}
+
+int lock_fallen() {
+    return sem_wait(&fallen_sem);
+}
+
+int unlock_fallen() {
+    return sem_post(&fallen_sem);
+}
+
+/** *********************************************************************
+ ** Module getters and setters for Window being moved / dragged info.
+ ** tries to get a lock on fallen_sem
+ **
+ ** If (*c)++ <= n, the function returns immediately.
+ **
+ ** If (*c)++ >  n, sem_wait is used, the function returns 0 after getting
+ ** the lock.
+ **
+ ** In both cases, *c is set to zero if the lock is obtained
+ **/
+int lock_fallen_n(int n, int *c) {
+    int rc;
+    if (*c < 0) {
+        *c = 0;
+    }
+    (*c)++;
+
+    if (*c > n) {
+        rc = sem_wait(&fallen_sem);
+    } else {
+        rc = sem_trywait(&fallen_sem);
+    }
+
+    if (rc == 0) {
+        *c = 0;
+    }
+    return rc;
 }
 
 void UpdateFallenSnowAtBottom() {
@@ -138,65 +188,22 @@ void fallensnow_ui() {
     UIDO(IgnoreBottom, );
 }
 
-int lock_fallen() // Note: there is a macro Lock_fallen see fallensnow.h
-{
-    P("lock_fallen\n");
-    return sem_wait(&fallen_sem);
-}
-
-int unlock_fallen() // Note: there is a macro Unlock_fallen, see fallensnow.h
-{
-    P("unlock_fallen\n");
-    return sem_post(&fallen_sem);
-}
-
-// tries to get a lock on fallen_sem
-// if (*c)++ <= n, the function returns immediately,
-// the return value tells if the lock succeeded
-// 0: succes, else no success
-// if (*c)++ >n, sem_wait is used, the function returns 0 after getting
-// the lock.
-// in both cases, *c is set to zero if the lock is obtained
-int lock_fallen_n(int n, int *c) // see fallensnow.h for the macro Lock_fallen_n
-{
-    int rc;
-    if (*c < 0) {
-        *c = 0;
-    }
-    (*c)++;
-    if (*c > n) {
-        rc = sem_wait(&fallen_sem);
-    } else {
-        rc = sem_trywait(&fallen_sem);
-    }
-    P("lock_fallen_n %d %d %d\n", n, *c, rc);
-    if (rc == 0) {
-        *c = 0;
-    }
-    return rc;
-}
-
 void check_fallen() {
-    int i;
-    int rc = sem_getvalue(&fallen_sem, &i);
-    if (rc) {
-        printf("error in get_semvalue()\n");
+    int value;
+    if (sem_getvalue(&fallen_sem, &value)) {
+        printf("plasmasnow: check_fallen() sem_getvalue(&fallen_sem, &value) NOT FOUND, fails.\n");
         traceback();
         exit(1);
     }
-    if (i != 0) {
-        printf("fallen_sem: %d\n", i);
+
+    if (value != 0) {
+        printf("plasmasnow: check_fallen() sem_getvalue(&fallen_sem, &value) NOT CLEAR, fails.\n");
         traceback();
         exit(1);
     }
 }
-
-int lock_swap() { return sem_wait(&swap_sem); }
-
-int unlock_swap() { return sem_post(&swap_sem); }
 
 void *do_fallen() {
-
     while (1) {
         if (Flags.Done) {
             pthread_exit(NULL);

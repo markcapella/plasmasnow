@@ -60,7 +60,7 @@ extern void rgba2color(GdkRGBA *c, char **s);
 extern void Thanks(void);
 extern void myXClearArea(
     Display *display, Window win, int x, int y, int w, int h, int exposures);
-extern int ScaleChanged(int *prev);
+extern int appScalesHaveChanged(int *prev);
 extern int ValidColor(const char *color);
 extern ssize_t mywrite(int fd, const void *buf, size_t count);
 extern int IsReadableFile(char *path);

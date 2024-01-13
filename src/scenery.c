@@ -193,7 +193,7 @@ void scenery_ui() {
     UIDO(Overlap, RedrawTrees(););
 
     static int prev = 100;
-    if (ScaleChanged(&prev)) {
+    if (appScalesHaveChanged(&prev)) {
         setScale();
         RedrawTrees();
     }

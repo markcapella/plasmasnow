@@ -24,10 +24,6 @@
 // Change to 1 for better analysis
 #define dosync 0 // synchronise X-server.
 
-/*
- * Reals dealing with time are declared as double.
- * Other reals as float
- */
 #include <pthread.h>
 
 #ifdef HAVE_CONFIG_H
@@ -40,6 +36,7 @@
 #include <X11/extensions/Xdbe.h>
 #include <X11/extensions/Xinerama.h>
 #include <cairo-xlib.h>
+
 #include <ctype.h>
 #include <gsl/gsl_version.h>
 #include <gtk/gtk.h>
@@ -77,6 +74,7 @@
 #include "windows.h"
 #include "wmctrl.h"
 #include "xdo.h"
+
 #include "plasmasnow.h"
 
 #include "vroot.h"
@@ -89,7 +87,7 @@ static void HandleCpuFactor();
 static void RestartDisplay();
 static void SigHandler(int);
 
-static int x11ErrorHandler(Display*, XErrorEvent*);
+static int handleX11ErrorEvent(Display*, XErrorEvent*);
 static void getX11Window(Window*);
 static int HandleX11Cairo();
 
@@ -103,7 +101,7 @@ static void rectangle_draw(cairo_t*);
 static int StartWindow();
 static void SetWindowScale();
 
-static int handleConfigureWindowEvents();
+static int handlePendingX11Events();
 static int onTimerEventDisplayChanged();
 
 static void mybindtestdomain();
@@ -117,12 +115,22 @@ static int do_stopafter();
 static int do_display_dimensions();
 static int do_testing();
 
+
+// Windows.
+void onWindowCreated(Window);
+void onWindowDestroyed(Window);
+void onWindowMapped(Window);
+void onWindowUnmapped(Window);
+
+// Window dragging methods.
+Window getWindowBeingDragged();
+
+// ColorPicker methods.
 void uninitQPickerDialog();
 
-
-/***********************************************************
- * Module consts.
- */
+/** *********************************************************************
+ ** Module globals and consts.
+ **/
 #ifdef DEBUG
 #undef DEBUG
 #endif
@@ -132,19 +140,19 @@ void uninitQPickerDialog();
 struct _global global;
 
 bool mMainWindowNeedsReconfiguration = true;
+
 cairo_t *CairoDC = NULL;
 cairo_surface_t *CairoSurface = NULL;
 
-// miscellaneous
 char Copyright[] =
     "\nplasmasnow\nCopyright 2023 Mark Capella and "
     "1984,1988,1990,1993-1995,2000-2001 by Rick Jansen, all "
     "rights reserved, 2019,2020 also by Willem Vermin\n";
 
+
 static char **Argv;
 static int Argc;
 
-// windows stuff
 static int DoRestart = 0;
 static guint draw_all_id = 0;
 static guint drawit_id = 0;
@@ -159,9 +167,11 @@ static int X11cairo = 0;
 static int PrevW = 0;
 static int PrevH = 0;
 
-// Colors.
 static const char *BlackColor = "black";
 static Pixel BlackPix;
+
+static int mX11Error_Count = 0;
+const int mX11Error_maxBeforeTermination = 1000;
 
 
 /** *********************************************************************
@@ -224,12 +234,12 @@ int main_c(int argc, char *argv[]) {
 
     global.SantaPlowRegion = 0;
 
-    int i;
-
     InitFlags();
+
     // we search for flags that only produce output to stdout,
     // to enable to run in a non-X environment, in which case
     // gtk_init() would fail.
+    int i;
     for (i = 0; i < argc; i++) {
         char *arg = argv[i];
 
@@ -263,9 +273,7 @@ int main_c(int argc, char *argv[]) {
 
     int rc = HandleFlags(argc, argv);
 
-    handle_language(0); // the langues used is from flags or .plasmasnowrc
-    //                     this changes env LANGUAGE accordingly
-    //                     so that the desired translation is in effect
+    handle_language(0);
     mybindtestdomain();
 
     switch (rc) {
@@ -358,7 +366,9 @@ int main_c(int argc, char *argv[]) {
     global.xdo->debug = 0;
 
     XSynchronize(global.display, dosync);
-    XSetErrorHandler(x11ErrorHandler);
+
+    XSetErrorHandler(handleX11ErrorEvent);
+
     int screen = DefaultScreen(global.display);
     global.Screen = screen;
     global.Black = BlackPixel(global.display, screen);
@@ -413,9 +423,7 @@ int main_c(int argc, char *argv[]) {
             StructureNotifyMask | SubstructureNotifyMask);
     }
 
-    ClearScreen(); // without this, no snow, scenery etc. in KDE; this seems to
-                   // be a vintage comment
-
+    ClearScreen();
     if (!Flags.NoMenu && !global.XscreensaverMode) {
         initUIClass();
         ui_gray_erase(global.Trans);
@@ -423,8 +431,8 @@ int main_c(int argc, char *argv[]) {
     }
 
     Flags.Done = 0;
-
     windows_init();
+
     moon_init();
     aurora_init();
     Santa_init();
@@ -442,7 +450,7 @@ int main_c(int argc, char *argv[]) {
     add_to_mainloop(PRIORITY_DEFAULT, time_displaychanged,
         onTimerEventDisplayChanged);
     add_to_mainloop(PRIORITY_DEFAULT, CONFIGURE_WINDOW_EVENT_TIME,
-        handleConfigureWindowEvents);
+        handlePendingX11Events);
     add_to_mainloop(PRIORITY_DEFAULT, time_testing, do_testing);
     add_to_mainloop(PRIORITY_DEFAULT, time_display_dimensions,
         do_display_dimensions);
@@ -526,28 +534,30 @@ void set_below_above() {
 /** *********************************************************************
  ** Get our X11 Window. If none is available, ask the user to select one.
  **/
-void getX11Window(Window *xwin) {
+void getX11Window(Window *resultWin) {
     if (Flags.WindowId) {
-        *xwin = Flags.WindowId;
+        *resultWin = Flags.WindowId;
         return;
     }
 
-    // Ask user ask to point to a window.
+    // Ask user ask to point to a window and click to select.
     if (Flags.XWinInfoHandling) {
-        printf(_("Click on a window ...\n"));
+        printf(_("plasmasnow: getX11Window() Point to a window and click ...\n"));
         fflush(stdout);
-        int rc = xdo_select_window_with_click(global.xdo, xwin);
-        if (rc == XDO_ERROR) {
-            fprintf(stderr, "XWinInfo failed\n");
-            exit(1);
-        } else {
-            // xwin has result from user window click.
+
+        // Wait for user to click mouse.
+        int rc = xdo_select_window_with_click(global.xdo, resultWin);
+        if (rc != XDO_ERROR) {
+            // Var "resultWin" has result.
             return;
         }
+
+        fprintf(stderr, "plasmasnow: getX11Window() Window detection failed.\n");
+        exit(1);
     }
 
     // No window was available.
-    *xwin = 0;
+    *resultWin = 0;
     return;
 }
 
@@ -613,27 +623,17 @@ int StartWindow() {
         X11cairo = 1;
 
     } else {
-        // default behaviour
         // try to create a transparent clickthrough window
         GtkWidget *gtkwin = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+
         gtk_widget_set_can_focus(gtkwin, TRUE);
         gtk_window_set_decorated(GTK_WINDOW(gtkwin), FALSE);
         gtk_window_set_type_hint(
             GTK_WINDOW(gtkwin), GDK_WINDOW_TYPE_HINT_POPUP_MENU);
 
-        int rc = make_trans_window(global.display, gtkwin,
-            Flags.Screen,        // full screen or xinerama
-            Flags.AllWorkspaces, // sticky
-            Flags.BelowAll,      // below
-            1,                   // dock
-            NULL,                // gdk_window
-            &xwin,               // x11_window
-            &wantx, // make_trans_window tries to place the window here,
-            //                      but, depending on window manager that does
-            //                      not always succeed
-            &wanty);
-
-        if (rc) {
+        if (make_trans_window(global.display, gtkwin,
+            Flags.Screen, Flags.AllWorkspaces, Flags.BelowAll,
+            1, NULL, &xwin, &wantx, &wanty)) {
             global.Trans = 1;
             global.IsDouble = 1;
             global.Desktop = 1;
@@ -653,7 +653,6 @@ int StartWindow() {
                 printf(_("The transparent snow-window is probably not "
                          "click-through, alas..\n"));
             }
-
         } else {
             global.Desktop = 1;
             X11cairo = 1;
@@ -693,9 +692,8 @@ int StartWindow() {
 
     if (X11cairo) {
         HandleX11Cairo();
-        drawit_id = add_to_mainloop1(PRIORITY_HIGH,
-            time_draw_all, do_drawit, CairoDC);
 
+        drawit_id = add_to_mainloop1(PRIORITY_HIGH, time_draw_all, do_drawit, CairoDC);
         global.WindowOffsetX = 0;
         global.WindowOffsetY = 0;
 
@@ -957,32 +955,45 @@ int onTimerEventDisplayChanged() {
 }
 
 /** *********************************************************************
- ** This method ...
+ ** This method handles xlib11 event notifications.
+ ** Undergoing heavy renovation 2024 Rocks !
+ **
+ ** https://www.x.org/releases/current/doc/libX11/libX11/libX11.html#Events
  **/
-int handleConfigureWindowEvents() {
+int handlePendingX11Events() {
     if (Flags.Done) {
         return FALSE;
     }
 
-    XEvent ev;
     XFlush(global.display);
-
     while (XPending(global.display)) {
-        XNextEvent(global.display, &ev);
+        XEvent event;
+        XNextEvent(global.display, &event);
 
-        // Note if *any* windows changed.
-        if (ev.type == ConfigureNotify || ev.type == MapNotify ||
-            ev.type == UnmapNotify) {
-            P("WindowsChanged %d %d\n", counter++, global.WindowsChanged);
-            global.WindowsChanged++;
-        }
-
-        // Note if we observe our own window change.
-        switch (ev.type) {
+        switch (event.type) {
             case ConfigureNotify:
-                if (ev.xconfigure.window == global.SnowWin) {
+                global.WindowsChanged++;
+                if (event.xconfigure.window == global.SnowWin) {
                     mMainWindowNeedsReconfiguration = true;
                 }
+                break;
+
+            case CreateNotify:
+                onWindowCreated(event.xcreatewindow.window);
+                break;
+
+            case MapNotify:
+                global.WindowsChanged++;
+                onWindowMapped(event.xmap.window);
+                break;
+
+            case UnmapNotify:
+                global.WindowsChanged++;
+                onWindowUnmapped(event.xunmap.window);
+                break;
+
+            case DestroyNotify:
+                onWindowDestroyed(event.xdestroywindow.window);
                 break;
         }
     }
@@ -1020,35 +1031,36 @@ void RestartDisplay() {
  ** This method ...
  **/
 int do_testing() {
-    // (void) d;
     if (Flags.Done) {
         return FALSE;
     }
     return TRUE;
+
     int xret, yret;
     unsigned int wret, hret;
+
     xdo_get_window_location(global.xdo, global.SnowWin, &xret, &yret, NULL);
     xdo_get_window_size(global.xdo, global.SnowWin, &wret, &hret);
+
     P("%d wxh %d %d %d %d    %d %d %d %d \n", global.counter++, global.SnowWinX,
         global.SnowWinY, global.SnowWinWidth, global.SnowWinHeight, xret, yret,
         wret, hret);
     P("WorkspaceActive, chosen: %d %ld\n", WorkspaceActive(),
         global.ChosenWorkSpace);
     P("vis:");
-    int i;
-    for (i = 0; i < global.NVisWorkSpaces; i++) {
+
+    for (int i = 0; i < global.NVisWorkSpaces; i++) {
         printf(" %ld", global.VisWorkSpaces[i]);
     }
     printf("\n");
+
     printf("offsets: %d %d\n", global.WindowOffsetX, global.WindowOffsetY);
     global.counter++;
-
-    for (i = 0; i < global.NVisWorkSpaces; i++) {
+    for (int i = 0; i < global.NVisWorkSpaces; i++) {
         printf("%d: visible: %d %ld\n", global.counter, i, global.VisWorkSpaces[i]);
     }
 
     P("current workspace: %ld\n", global.CWorkSpace);
-
     return TRUE;
 }
 
@@ -1061,27 +1073,31 @@ void SigHandler(int signum) {
 }
 
 /** *********************************************************************
- ** Santa helpers.
+ ** This method traps and handles X11 errors.
+ **
+ ** Primarily, we close the app if the system doesn't seem sane.
  **/
-int x11ErrorHandler(Display *dpy, XErrorEvent *err) {
-    static int count = 0;
-    const int countmax = 1000;
-
-    char msg[1024];
+int handleX11ErrorEvent(Display *dpy, XErrorEvent *err) {
+    const int MAX_MESSAGE_BUFFER_LENGTH = 1024;
+    char msg[MAX_MESSAGE_BUFFER_LENGTH];
     XGetErrorText(dpy, err->error_code, msg, sizeof(msg));
+    msg[MAX_MESSAGE_BUFFER_LENGTH - 1] = '\x0'; // EOString
 
-    if (Flags.Noisy) {
-        I("%d %s\n", global.counter++, msg);
-    }
-
-    if (++count > countmax) {
+    // If we notice too many X11 errors, print any global.Message
+    // and set app termination flag.
+    msg[60] = '\x0'; fprintf(stdout, "%s", msg);
+    if (++mX11Error_Count > mX11Error_maxBeforeTermination) {
         snprintf(global.Message, sizeof(global.Message),
-            _("More than %d errors, I quit!"), countmax);
+            _("More than %d errors, I quit!"), mX11Error_maxBeforeTermination);
         Flags.Done = 1;
     }
+
     return 0;
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 // the draw callback
 gboolean on_draw_event(__attribute__((unused)) GtkWidget *widget,
     cairo_t *cr, __attribute__((unused)) gpointer user_data) {

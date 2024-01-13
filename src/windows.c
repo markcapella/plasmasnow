@@ -21,6 +21,7 @@
 */
 
 #include "windows.h"
+
 #include "debug.h"
 #include "dsimple.h"
 #include "fallensnow.h"
@@ -33,45 +34,72 @@
 #include "wmctrl.h"
 #include "xdo.h"
 #include "plasmasnow.h"
+
 #include <X11/Intrinsic.h>
 #include <X11/extensions/Xinerama.h>
+
 #include <ctype.h>
+
 #include <gdk/gdkx.h>
 #include <gtk/gtk.h>
+
 #include <pthread.h>
 #include <stdio.h>
 
 
-static long TransWorkSpace =
-    -SOMENUMBER; // workspace on which transparent window is placed
+/***********************************************************
+ * Module Method stubs.
+ */
 
-static int mNumberOfWindows;
-static WinInfo *mWindowsList = NULL;
-
-static void DetermineVisualWorkspaces(void);
-
+// Workspace.
+static void DetermineVisualWorkspaces();
 static int do_sendevent();
-static int do_wupdate();
+static int updateWindowsList();
 
-// ColorPicker
+ // Windows.
+extern void onWindowCreated(Window);
+extern void onWindowDestroyed(Window);
+extern void onWindowMapped(Window);
+extern void onWindowUnmapped(Window);
+
+// Window dragging methods.
+Window mWindowBeingDragged = None;
+void setWindowBeingDragged(Window);
+Window getDragWindowOf(Window);
+extern Window getWindowBeingDragged();
+
+// ColorPicker methods.
 void uninitQPickerDialog();
 
-void windows_ui() {}
 
-void windows_draw() {
-    // nothing to draw
-}
+/** *********************************************************************
+ ** Module globals and consts.
+ **/
 
+// Workspace on which transparent window is placed.
+static long TransWorkSpace = -SOMENUMBER;
+
+// Main WinInfo (Windows) List.
+static int mNumberOfWindows;
+static WinInfo* mWindowsList = NULL;
+
+
+/** *********************************************************************
+ ** This method ...
+ **/
 void windows_init() {
     if (global.Desktop) {
         DetermineVisualWorkspaces();
-        add_to_mainloop(PRIORITY_DEFAULT, time_wupdate, do_wupdate);
+        add_to_mainloop(PRIORITY_DEFAULT, time_wupdate, updateWindowsList);
     }
     if (!global.IsDouble) {
         add_to_mainloop(PRIORITY_DEFAULT, time_sendevent, do_sendevent);
     }
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 int WorkspaceActive() {
     P("global.Trans etc %d %d %d %d\n", Flags.AllWorkspaces, global.Trans,
         global.CWorkSpace == TransWorkSpace,
@@ -90,6 +118,9 @@ int WorkspaceActive() {
     return 0;
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 int do_sendevent() {
     XExposeEvent event;
 
@@ -106,111 +137,11 @@ int do_sendevent() {
     return TRUE;
 }
 
-int do_wupdate() {
-    static long PrevWorkSpace = -123;
-    if (Flags.Done) {
-        return FALSE;
-    }
-
-    if (Flags.NoKeepSWin) {
-        return TRUE;
-    }
-
-    static int lockcounter = 0;
-    if (Lock_fallen_n(3, &lockcounter)) {
-        P("lock counter: %d\n", lockcounter);
-        return TRUE;
-    }
-
-    // once in a while, we force updating windows
-    static int wcounter = 0;
-    wcounter++;
-    if (wcounter > 9) {
-        global.WindowsChanged = 1;
-        wcounter = 0;
-    }
-    if (!global.WindowsChanged) {
-        Unlock_fallen();
-        return TRUE;
-    }
-
-    global.WindowsChanged = 0;
-
-    long r;
-    r = GetCurrentWorkspace();
-    if (r >= 0) {
-        global.CWorkSpace = r;
-        if (r != PrevWorkSpace) {
-            P("workspace changed from %ld to %ld\n", PrevWorkSpace, r);
-            PrevWorkSpace = r;
-            DetermineVisualWorkspaces();
-        }
-    } else {
-        I("Cannot get current workspace\n");
-        Flags.Done = 1;
-        Unlock_fallen();
-        return TRUE;
-    }
-
-    // P("Update windows\n");
-    if (mWindowsList) {
-        free(mWindowsList);
-    }
-
-    // Special hack too keep global.SnowWin below (needed for example in
-    // FVWM/xcompmgr, where global.SnowWin is not click-through)
-    if (Flags.BelowAll) {
-        XWindowChanges changes;
-        changes.stack_mode = Below;
-        XConfigureWindow(global.display, global.SnowWin, CWStackMode, &changes);
-    }
-
-    // I("Cannot get windows\n");
-    if (GetWindows(&mWindowsList, &mNumberOfWindows) < 0) {
-        Flags.Done = 1;
-        Unlock_fallen();
-        return TRUE;
-    }
-
-    // P("SnowWinX SnowWinY: %d %d\n", global.SnowWinX, global.SnowWinY);
-    for (int i = 0; i < mNumberOfWindows; i++) {
-        // WinInfo *w = &mWindowsList[i];
-        mWindowsList[i].x += global.WindowOffsetX - global.SnowWinX;
-        mWindowsList[i].y += global.WindowOffsetY - global.SnowWinY;
-    }
-
-    // Take care of the situation that the transparent window changes from
-    // workspace, which can happen if in a dynamic number of workspaces
-    // environment a workspace is emptied.
-    WinInfo *winfo = FindWindow(mWindowsList, mNumberOfWindows, global.SnowWin);
-
-    // check also on valid winfo: after toggling 'below'
-    // winfo is nil sometimes
-    if (global.Trans && winfo) {
-        // in xfce and maybe others, workspace info is not to be found
-        // in our transparent window. winfo->ws will be 0, and we keep
-        // the same value for TransWorkSpace.
-        if (winfo->ws > 0) {
-            TransWorkSpace = winfo->ws;
-        }
-    }
-
-    // if (!TransA && !winfo)  // let op
-    if (global.SnowWin != global.Rootwindow) {
-        if (!global.Trans && !winfo) {
-            Flags.Done = 1;
-        }
-    }
-
-    UpdateFallenSnowRegions();
-
-    Unlock_fallen();
-    return TRUE;
-}
-
+/** *********************************************************************
+ ** This method ...
+ **/
 void DetermineVisualWorkspaces() {
     P("%d Entering DetermineVisualWorkspaces\n", global.counter++);
-    static Window ProbeWindow = 0;
     static XClassHint class_hints;
     static XSetWindowAttributes attr;
     static long valuemask;
@@ -224,10 +155,11 @@ void DetermineVisualWorkspaces() {
         return;
     }
 
-    if (ProbeWindow) {
-        XDestroyWindow(global.display, ProbeWindow);
+    static Window probeWindow = 0;
+    if (probeWindow) {
+        XDestroyWindow(global.display, probeWindow);
     } else {
-        P("Creating attrs for ProbeWindow\n");
+        P("Creating attrs for probeWindow\n");
         attr.background_pixel = WhitePixel(global.display, global.Screen);
         attr.border_pixel = WhitePixel(global.display, global.Screen);
         attr.event_mask = ButtonPressMask;
@@ -247,39 +179,38 @@ void DetermineVisualWorkspaces() {
     }
 
     // This is for bspwm and possibly other tiling window magagers.
-    // Determine which workspaces are visible: place a window (ProbeWindow)
+    // Determine which workspaces are visible: place a window (probeWindow)
     // in each xinerama screen, and ask in which workspace the window
     // is located.
-    ProbeWindow = XCreateWindow(global.display, global.Rootwindow, 1, 1, 1, 1,
+    probeWindow = XCreateWindow(global.display, global.Rootwindow, 1, 1, 1, 1,
         10, DefaultDepth(global.display, global.Screen), InputOutput,
         DefaultVisual(global.display, global.Screen), valuemask, &attr);
-    XSetClassHint(global.display, ProbeWindow, &class_hints);
+    XSetClassHint(global.display, probeWindow, &class_hints);
 
     // to prevent the user to determine the intial position (in twm for example)
-    XSetWMNormalHints(global.display, ProbeWindow, &wmsize);
+    XSetWMNormalHints(global.display, probeWindow, &wmsize);
 
-    XChangeProperty(global.display, ProbeWindow, motif_hints, motif_hints, 32,
-        PropModeReplace, (unsigned char *)&hints, 5);
-    xdo_map_window(global.xdo, ProbeWindow);
+    XChangeProperty(global.display, probeWindow, motif_hints, motif_hints, 32,
+        PropModeReplace, (unsigned char *) &hints, 5);
+    xdo_map_window(global.xdo, probeWindow);
 
     global.NVisWorkSpaces = number;
-    int i;
     int prev = -SOMENUMBER;
-    for (i = 0; i < number; i++) {
+    for (int i = 0; i < number; i++) {
         int x = info[i].x_org;
         int y = info[i].y_org;
         int w = info[i].width;
         int h = info[i].height;
 
-        // place ProbeWindow in the center of xinerama screen[i]
+        // place probeWindow in the center of xinerama screen[i]
 
         int xm = x + w / 2;
         int ym = y + h / 2;
         P("movewindow: %d %d\n", xm, ym);
-        xdo_move_window(global.xdo, ProbeWindow, xm, ym);
-        xdo_wait_for_window_map_state(global.xdo, ProbeWindow, IsViewable);
+        xdo_move_window(global.xdo, probeWindow, xm, ym);
+        xdo_wait_for_window_map_state(global.xdo, probeWindow, IsViewable);
         long desktop;
-        int rc = xdo_get_desktop_for_window(global.xdo, ProbeWindow, &desktop);
+        int rc = xdo_get_desktop_for_window(global.xdo, probeWindow, &desktop);
         if (rc == XDO_ERROR) {
             desktop = global.CWorkSpace;
         }
@@ -296,19 +227,22 @@ void DetermineVisualWorkspaces() {
             prev = desktop;
         }
     }
-    xdo_unmap_window(global.xdo, ProbeWindow);
+    xdo_unmap_window(global.xdo, probeWindow);
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 void UpdateFallenSnowRegionsWithLock() {
     Lock_fallen();
     UpdateFallenSnowRegions();
     Unlock_fallen();
 }
 
-// Have a look at the windows we are snowing on
-// Also update of fallensnow area's
+/** *********************************************************************
+ ** This method ...
+ **/
 void UpdateFallenSnowRegions() {
-    // threads: locking by caller
     FallenSnow *fsnow;
 
     // add fallensnow regions:
@@ -328,22 +262,42 @@ void UpdateFallenSnowRegions() {
         // (Desktop for example) and also not if this window has y <= 0
         // and also not if this window is a "dock"
         if (!fsnow) {
-            if (addWin->id != global.SnowWin && addWin->y > 0 && !(addWin->dock)) {
+            if (addWin->id != global.SnowWin &&
+                addWin->y > 0 &&
+                !(addWin->dock)) {
+
                 if ((int) (addWin->w) == global.SnowWinWidth &&
                     addWin->x == 0 && addWin->y < 100) {
-                    /* maybe a transparent xpenguins window? */
-                } else {
-                    PushFallenSnow(&global.FsnowFirst, addWin,
-                    addWin->x + Flags.OffsetX, addWin->y + Flags.OffsetY,
-                    addWin->w + Flags.OffsetW, Flags.MaxWinSnowDepth);
+                    break;
                 }
+
+                //XWindowAttributes addWinAtrributes;
+                //XGetWindowAttributes(global.display, addWin->id, &addWinAtrributes);
+                //if (addWinAtrributes.map_state == IsUnviewable) {
+                    //fprintf(stdout, "windows.c: UpdateFallenSnowRegions() window (%lu)  "
+                    //    "window map_state IsUnViewable: %i\n", addWin->id,
+                    //    (addWinAtrributes.map_state == IsUnviewable));
+                    //break;
+                //}
+
+                //fprintf(stdout, "windows.c: UpdateFallenSnowRegions() "
+                //    "No snow on transient window.\n");
+                if (addWin->id == getWindowBeingDragged()) {
+                    break;
+                }
+
+                // fprintf(stdout, "windows.c: UpdateFallenSnowRegions() "
+                //     "adding a FallenSnow (%lu)\n", addWin->id);
+                PushFallenSnow(&global.FsnowFirst, addWin,
+                addWin->x + Flags.OffsetX, addWin->y + Flags.OffsetY,
+                addWin->w + Flags.OffsetW, Flags.MaxWinSnowDepth);
             }
         }
 
         addWin++;
     }
 
-    // remove fallensnow regions
+    // Count fallensnow regions.
     fsnow = global.FsnowFirst;
     int nf = 0;
     while (fsnow) {
@@ -370,7 +324,6 @@ void UpdateFallenSnowRegions() {
             // test if fsnow->win.id is hidden. If so: clear the area and notify
             // in fsnow we have to test that here, because the hidden status of
             // the window can change
-            P("%#lx hidden:%d\n", fsnow->win.id, fsnow->win.hidden);
             if (fsnow->win.hidden) {
                 CleanFallenArea(fsnow, 0, fsnow->w);
                 GenerateFlakesFromFallen(fsnow, 0, fsnow->w, -10.0);
@@ -385,11 +338,12 @@ void UpdateFallenSnowRegions() {
     WinInfo* movedWin = mWindowsList;
     for (int i = 0; i < mNumberOfWindows; i++) {
         fsnow = FindFallen(global.FsnowFirst, movedWin->id);
-
         if (fsnow) {
             if (fsnow->x != movedWin->x + Flags.OffsetX ||
                 fsnow->y != movedWin->y + Flags.OffsetY ||
                 (unsigned int) fsnow->w != movedWin->w + Flags.OffsetW) {
+                //fprintf(stdout, "windows.c: UpdateFallenSnowRegions() Updating due "
+                //    "to MOVED window : %li\n", movedWin->id);
 
                 CleanFallenArea(fsnow, 0, fsnow->w);
                 GenerateFlakesFromFallen(fsnow, 0, fsnow->w, -10.0);
@@ -398,6 +352,8 @@ void UpdateFallenSnowRegions() {
                 fsnow->x = movedWin->x + Flags.OffsetX;
                 fsnow->y = movedWin->y + Flags.OffsetY;
                 XFlush(global.display);
+
+                continue;
             }
         }
 
@@ -411,59 +367,49 @@ void UpdateFallenSnowRegions() {
     free(toremove);
 }
 
-// gets location and size of xinerama screen xscreen, -1: full screen
-// returns the number of xinerama screens
+/** *********************************************************************
+ ** This method gets the location and size of xinerama screen xscreen.
+ **/
 int xinerama(Display *display, int xscreen, int *x, int *y, int *w, int *h) {
-    int number;
-    XineramaScreenInfo *info = XineramaQueryScreens(display, &number);
-    if (info == NULL) {
-        I("No xinerama...\n");
+    int screenInfoArrayLength;
+    XineramaScreenInfo *screenInfoArray = XineramaQueryScreens(display, &screenInfoArrayLength);
+    if (screenInfoArray == NULL) {
         return FALSE;
-    } else {
-        int scr = xscreen;
-        if (scr > number - 1) {
-            scr = number - 1;
-        }
-
-        int i;
-        for (i = 0; i < number; i++) {
-            P("number: %d\n", info[i].screen_number);
-            P("   x_org:  %d\n", info[i].x_org);
-            P("   y_org:  %d\n", info[i].y_org);
-            P("   width:  %d\n", info[i].width);
-            P("   height: %d\n", info[i].height);
-        }
-
-        if (scr < 0) {
-            // set x,y to 0,0
-            // set width and height to maximum values found
-            int i;
-            *x = 0;
-            *y = 0;
-            *w = 0;
-            *h = 0;
-            for (i = 0; i < number; i++) {
-                if (info[i].width > *w) {
-                    *w = info[i].width;
-                }
-                if (info[i].height > *h) {
-                    *h = info[i].height;
-                }
-            }
-        } else {
-
-            *x = info[scr].x_org;
-            *y = info[scr].y_org;
-            *w = info[scr].width;
-            *h = info[scr].height;
-        }
-        P("Xinerama window: %d+%d %dx%d\n", *x, *y, *w, *h);
-
-        XFree(info);
     }
-    return number;
+
+    // If screen found, use it's x/y, h/w.
+    int boundedXscreen = (xscreen > screenInfoArrayLength - 1) ?
+        screenInfoArrayLength - 1 : xscreen;
+    if (boundedXscreen >= 0) {
+        *w = screenInfoArray[boundedXscreen].width;
+        *h = screenInfoArray[boundedXscreen].height;
+
+        *x = screenInfoArray[boundedXscreen].x_org;
+        *y = screenInfoArray[boundedXscreen].y_org;
+
+        XFree(screenInfoArray);
+        return screenInfoArrayLength;
+    }
+
+    // If not found, try to determine w/h.
+    *w = 0; *h = 0;
+    for (int i = 0; i < screenInfoArrayLength; i++) {
+        if (screenInfoArray[i].width > *w) {
+            *w = screenInfoArray[i].width;
+        }
+        if (screenInfoArray[i].height > *h) {
+            *h = screenInfoArray[i].height;
+        }
+    }
+    *x = 0; *y = 0;
+
+    XFree(screenInfoArray);
+    return screenInfoArrayLength;
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 void InitDisplayDimensions() {
     unsigned int w, h;
     int x, y;
@@ -481,6 +427,9 @@ void InitDisplayDimensions() {
     DisplayDimensions();
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 void DisplayDimensions() {
     P("Displaydimensions\n");
     Lock_fallen();
@@ -523,6 +472,9 @@ void DisplayDimensions() {
     Unlock_fallen();
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 void SetBackground() {
     char *f = Flags.BackgroundFile;
     if (!IsReadableFile(f)) {
@@ -600,4 +552,299 @@ void SetBackground() {
     XDestroyImage(ximage);
     // free(pixels1);  //This is already freed by XDestroyImage
     return;
+}
+
+/** *********************************************************************
+ ** Module MAINLOOP methods.
+ **/
+/** *********************************************************************
+ ** This method is called periodically from the UI mainloop to update
+ ** our internal X11 Windows array. (Laggy huh).
+ **/
+int updateWindowsList() {
+    static long PrevWorkSpace = -123;
+    if (Flags.Done) {
+        return FALSE;
+    }
+    if (Flags.NoKeepSWin) {
+        return TRUE;
+    }
+
+    static int lockcounter = 0;
+    if (Lock_fallen_n(3, &lockcounter)) {
+        return TRUE;
+    }
+
+    // Once in a while, we force updating windows.
+    static int wcounter = 0;
+    wcounter++;
+    if (wcounter > 9) {
+        global.WindowsChanged = 1;
+        wcounter = 0;
+    }
+    if (!global.WindowsChanged) {
+        Unlock_fallen();
+        return TRUE;
+    }
+    global.WindowsChanged = 0;
+
+    // Get current workspace.
+    long currentWorkSpace = GetCurrentWorkspace();
+    if (currentWorkSpace < 0) {
+        Flags.Done = 1;
+        Unlock_fallen();
+        return TRUE;
+    }
+
+    // Update on Workspace change.
+    global.CWorkSpace = currentWorkSpace;
+    if (currentWorkSpace != PrevWorkSpace) {
+        PrevWorkSpace = currentWorkSpace;
+        DetermineVisualWorkspaces();
+    }
+
+    // Special hack too keep global.SnowWin below (needed for example in
+    // FVWM/xcompmgr, where global.SnowWin is not click-through)
+    if (Flags.BelowAll) {
+        XWindowChanges changes;
+        changes.stack_mode = Below;
+        XConfigureWindow(global.display, global.SnowWin, CWStackMode, &changes);
+    }
+
+    // Update windows list. Free any current.
+    if (mWindowsList) {
+        free(mWindowsList);
+    }
+    // Get new list, error if none.
+    if (getX11WindowsList(&mWindowsList, &mNumberOfWindows) < 0) {
+        Flags.Done = 1;
+        Unlock_fallen();
+        return TRUE;
+    }
+    // Update list x/y.
+    for (int i = 0; i < mNumberOfWindows; i++) {
+        mWindowsList[i].x += global.WindowOffsetX - global.SnowWinX;
+        mWindowsList[i].y += global.WindowOffsetY - global.SnowWinY;
+    }
+
+    // Take care of the situation that the transparent window changes from
+    // workspace, which can happen if in a dynamic number of workspaces
+    // environment a workspace is emptied.
+    // check also on valid winfo: after toggling 'below'
+    // winfo is nil sometimes
+    // in xfce and maybe others, workspace info is not to be found
+    // in our transparent window. winfo->ws will be 0, and we keep
+    // the same value for TransWorkSpace.
+    WinInfo *winfo = FindWindow(mWindowsList, mNumberOfWindows, global.SnowWin);
+    if (global.Trans && winfo) {
+        if (winfo->ws > 0) {
+            TransWorkSpace = winfo->ws;
+        }
+    }
+
+    // if (!TransA && !winfo)  // let op
+    if (global.SnowWin != global.Rootwindow) {
+        if (!global.Trans && !winfo) {
+            Flags.Done = 1;
+        }
+    }
+
+    UpdateFallenSnowRegions();
+
+    Unlock_fallen();
+    return TRUE;
+}
+
+
+/** *********************************************************************
+ ** Module EXTERN methods.
+ **/
+
+/** *********************************************************************
+ ** This method handles X11 Windows being created.
+ **
+ ** (Rough life-cycle order.)
+ **/
+void onWindowCreated(__attribute__((unused)) Window window) {
+    // Print all window IDs.  --DEBUG--
+    /*
+    WinInfo* windowListItem = mWindowsList;
+    for (int i = 0; i < mNumberOfWindows; i++) {
+        {
+            Window root, parent;
+            Window* children = NULL;
+            unsigned int windowChildCount;
+            if (XQueryTree(global.display, windowListItem->id,
+                    &root, &parent, &children, &windowChildCount)) {
+                fprintf(stdout, "windows.c: onWindowCreated(%li)   root : %li  "
+                    "WinInfo.id: %li   WinInfo.hidden: %u  #children : %u  parent : %li\n",
+                    window, root, windowListItem->id, windowListItem->hidden,
+                    windowChildCount, parent);
+                if (children) {
+                    XFree((char *) children);
+                }
+            }
+        }
+        windowListItem++;
+    }
+    */
+}
+
+
+/** *********************************************************************
+ ** This method handles X11 Windows being made visible to view.
+ **
+ ** (Rough life-cycle order.)
+ **/
+void onWindowMapped(__attribute__((unused)) Window window) {
+    Lock_fallen();
+
+    /*
+    {
+        Window root, parent;
+        Window* childList = NULL;
+        unsigned int childCount;
+        if (XQueryTree(global.display, window,
+                &root, &parent, &childList, &childCount)) {
+            fprintf(stdout, "windows.c: onWindowMapped(%li)     parent : %li  "
+                "root : %li  #childItem : %u  ",
+                window, parent, root, childCount);
+            Window* thisChild = childList;
+            for (unsigned int i = 0; i < childCount; i++) {
+                fprintf(stdout, ": %lu  ", thisChild[i]);
+            }
+            fprintf(stdout, "\n");
+            XFree((char *) childList);
+        }
+    }
+    */
+
+    // Find the focused window and the current focus state.
+    Window focusedWindow;
+    int focusWindowState;
+    XGetInputFocus(global.display, &focusedWindow, &focusWindowState);
+    //fprintf(stdout, "windows.c: onWindowMapped(%li)   Focused Window WinInfo.id: %li \n",
+    //    window, focusedWindow);
+
+    // Get the parent of the focused window.
+    //Window focusedRoot, focusedParent;
+    //Window *focusedChildren = NULL;
+    //unsigned int focusedChildrenCount;
+    //if (XQueryTree(global.display, focusedWindow,
+    //        &focusedRoot, &focusedParent, &focusedChildren, &focusedChildrenCount)) {
+        //fprintf(stdout, "windows.c: onWindowMapped(%li)       Focused Window parent : %li \n",
+        //    window, focusedParent);
+    //    if (focusedChildren) {
+    //        XFree((char *) focusedChildren);
+    //    }
+    //}
+
+    Window root_return, child_return;
+    int root_x_return, root_y_return, win_x_return, win_y_return;
+    unsigned int pointerState;
+    const unsigned int POINTER_CLICKDOWN = 256;
+    if (XQueryPointer(global.display, focusedWindow, &root_return, &child_return,
+        &root_x_return, &root_y_return, &win_x_return, &win_y_return,
+        &pointerState)) {
+        if (pointerState == POINTER_CLICKDOWN) {
+            //fprintf(stdout, "windows.c: onWindowMapped(%li)       "
+            //    "focusedWindow Pointer State : %u.\n", window, pointerState);
+            setWindowBeingDragged(getDragWindowOf(focusedWindow));
+        } else {
+            //fprintf(stdout, "windows.c: onWindowMapped(%li)       "
+            //    "Can\'t start drag, unknown Pointer State : %u.\n",
+            //    window, pointerState);
+        }
+    } else {
+        //fprintf(stdout, "windows.c: onWindowMapped(%li)       "
+        //    "Can\'t query pointer for focusedWindow.", window);
+    }
+
+    // Found window being "dragged". If it has a fallensnow region,
+    // Erase it now, don't wait for final drop to complete a "MOVE"
+    // event (handled much later in UpdateFallenSnowRegions()).
+    FallenSnow* fsnow = FindFallen(global.FsnowFirst, getWindowBeingDragged());
+    if (fsnow) {
+        //fprintf(stdout, "windows.c: onWindowMapped(%li) "
+        //    "Window Going Boof!\n", window);
+        CleanFallenArea(fsnow, 0, fsnow->w);
+        GenerateFlakesFromFallen(fsnow, 0, fsnow->w, -10.0);
+        CleanFallen(fsnow->win.id);
+        RemoveFallenSnow(&global.FsnowFirst, fsnow->win.id);
+    }
+
+    Unlock_fallen();
+}
+
+/** *********************************************************************
+ ** This method handles X11 Windows being Hidden from view.
+ **
+ ** (Rough life-cycle order.)
+ **/
+void onWindowUnmapped(__attribute__((unused)) Window window) {
+    Lock_fallen();
+    setWindowBeingDragged(None);
+    Unlock_fallen();
+}
+
+/** *********************************************************************
+ ** This method handles X11 Windows being destroyed.
+ **
+ ** (Rough life-cycle order.)
+ **/
+void onWindowDestroyed(__attribute__((unused)) Window window) {
+}
+
+
+/** *********************************************************************
+ ** This method
+ **
+ **/
+void setWindowBeingDragged(Window window) {
+    //fprintf(stdout, "windows.c: setWindowBeingDragged(%li).\n", window);
+    mWindowBeingDragged = window;
+}
+
+/** *********************************************************************
+ ** This method
+ **
+ **/
+extern Window getWindowBeingDragged() {
+    return mWindowBeingDragged;
+}
+
+/** *********************************************************************
+ ** This method determines which window is being dragged.
+ **
+ **/
+Window getDragWindowOf(Window window) {
+    Window windowNode = window;
+    //fprintf(stdout, "windows.c: getDragWindowOf() Called to find : %li!\n", windowNode);
+
+    while (TRUE) {
+        // Check current node in windows list.
+        WinInfo* windowListItem = mWindowsList;
+        for (int i = 0; i < mNumberOfWindows; i++) {
+            if (windowNode == windowListItem->id) {
+                //fprintf(stdout, "windows.c: getDragWindowOf() Found %li!\n", windowNode);
+                return windowNode;
+            }
+            windowListItem++;
+        }
+
+        // Current window node not in list. Move up to parent and loop.
+        Window root, parent;
+        Window* children = NULL;
+        unsigned int windowChildCount;
+        if (!(XQueryTree(global.display, windowNode,
+                &root, &parent, &children, &windowChildCount))) {
+            //fprintf(stdout, "windows.c: getDragWindowOf() no parent found, end of chain.\n");
+            return None;
+        }
+        if (children) {
+            XFree((char *) children);
+        }
+        windowNode = parent;
+        //fprintf(stdout, "windows.c: getDragWindowOf() Checking parent : %li.\n", windowNode);
+    }
 }

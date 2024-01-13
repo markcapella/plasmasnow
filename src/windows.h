@@ -24,8 +24,6 @@
 #include <X11/Intrinsic.h>
 #include <gtk/gtk.h>
 
-extern void windows_ui(void);
-extern void windows_draw(void);
 extern void windows_init(void);
 
 extern int WorkspaceActive(void);

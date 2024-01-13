@@ -79,7 +79,7 @@ void Santa_ui() {
     UIDO(SantaScale, init_Santa_surfaces(); SetSantaSizeSpeed(););
 
     static int prev = 100;
-    if (ScaleChanged(&prev)) {
+    if (appScalesHaveChanged(&prev)) {
         P("%d Santa_scale \n", global.counter);
         init_Santa_surfaces();
         SetSantaSizeSpeed();

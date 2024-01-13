@@ -24,7 +24,11 @@
 #include "plasmasnow.h"
 #include <X11/Xlib.h>
 
+
 extern long int GetCurrentWorkspace();
-extern int GetWindows(WinInfo **w, int *nw);
+
+extern int getX11WindowsList(WinInfo **w, int *nw);
+
 extern WinInfo *FindWindow(WinInfo *windows, int nwin, Window id);
-extern void printwindows(Display *dpy, WinInfo *windows, int nwin);
+
+extern void printAllWinInfoStructs(Display *dpy, WinInfo *windows, int nwin);
