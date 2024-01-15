@@ -32,8 +32,8 @@ extern void InitDisplayDimensions();
 extern void setabove(GtkWindow *w);
 extern void DisplayDimensions(void);
 
-extern void UpdateFallenSnowRegions(void);
-extern void UpdateFallenSnowRegionsWithLock(void);
+extern void updateFallenSnowRegions(void);
+extern void updateFallenSnowRegionsWithLock(void);
 
 extern void SetBackground(void);
 

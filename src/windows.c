@@ -20,31 +20,37 @@
 #-# 
 */
 
-#include "windows.h"
 
-#include "debug.h"
-#include "dsimple.h"
-#include "fallensnow.h"
-#include "flags.h"
-#include "mygettext.h"
-#include "safe_malloc.h"
-#include "scenery.h"
-#include "transwindow.h"
-#include "utils.h"
-#include "wmctrl.h"
-#include "xdo.h"
-#include "plasmasnow.h"
+#include <stdio.h>
+#include <ctype.h>
+#include <stdbool.h>
+
+#include <pthread.h>
 
 #include <X11/Intrinsic.h>
 #include <X11/extensions/Xinerama.h>
 
-#include <ctype.h>
-
 #include <gdk/gdkx.h>
 #include <gtk/gtk.h>
 
-#include <pthread.h>
-#include <stdio.h>
+#include "windows.h"
+#include "debug.h"
+#include "flags.h"
+
+#include "dsimple.h"
+#include "fallensnow.h"
+
+#include "mygettext.h"
+#include "safe_malloc.h"
+#include "transwindow.h"
+
+#include "utils.h"
+#include "wmctrl.h"
+#include "xdo.h"
+
+#include "plasmasnow.h"
+#include "scenery.h"
+
 
 
 /***********************************************************
@@ -63,10 +69,20 @@ extern void onWindowMapped(Window);
 extern void onWindowUnmapped(Window);
 
 // Window dragging methods.
-Window mWindowBeingDragged = None;
-void setWindowBeingDragged(Window);
+void clearWindowDragState();
+void setWindowDragState();
+
+// Window dragging helpers.
 Window getDragWindowOf(Window);
-extern Window getWindowBeingDragged();
+
+bool mWindowDragging = false;
+bool isWindowDraggingActive();
+void setWindowDraggingActive();
+void setWindowDraggingInactive();
+
+Window mWindowBeingDragged = None;
+Window getWindowBeingDragged();
+void setWindowBeingDragged(Window);
 
 // ColorPicker methods.
 void uninitQPickerDialog();
@@ -233,27 +249,27 @@ void DetermineVisualWorkspaces() {
 /** *********************************************************************
  ** This method ...
  **/
-void UpdateFallenSnowRegionsWithLock() {
-    Lock_fallen();
-    UpdateFallenSnowRegions();
-    Unlock_fallen();
+void updateFallenSnowRegionsWithLock() {
+    lockFallenSnowSemaphore();
+    updateFallenSnowRegions();
+    unlockFallenSnowSemaphore();
 }
 
 /** *********************************************************************
  ** This method ...
  **/
-void UpdateFallenSnowRegions() {
+void updateFallenSnowRegions() {
     FallenSnow *fsnow;
 
     // add fallensnow regions:
     WinInfo* addWin = mWindowsList;
     for (int i = 0; i < mNumberOfWindows; i++) {
-        fsnow = FindFallen(global.FsnowFirst, addWin->id);
+        fsnow = findFallenSnowListItem(global.FsnowFirst, addWin->id);
         if (fsnow) {
             fsnow->win = *addWin;
             if ((!fsnow->win.sticky) &&
                 fsnow->win.ws != global.CWorkSpace) {
-                CleanFallenArea(fsnow, 0, fsnow->w);
+                eraseFallenSnowOnDisplay(fsnow, 0, fsnow->w);
             }
         }
 
@@ -263,34 +279,23 @@ void UpdateFallenSnowRegions() {
         // and also not if this window is a "dock"
         if (!fsnow) {
             if (addWin->id != global.SnowWin &&
-                addWin->y > 0 &&
-                !(addWin->dock)) {
-
+                addWin->y > 0 && !(addWin->dock)) {
                 if ((int) (addWin->w) == global.SnowWinWidth &&
                     addWin->x == 0 && addWin->y < 100) {
-                    break;
+                    continue;
                 }
 
-                //XWindowAttributes addWinAtrributes;
-                //XGetWindowAttributes(global.display, addWin->id, &addWinAtrributes);
-                //if (addWinAtrributes.map_state == IsUnviewable) {
-                    //fprintf(stdout, "windows.c: UpdateFallenSnowRegions() window (%lu)  "
-                    //    "window map_state IsUnViewable: %i\n", addWin->id,
-                    //    (addWinAtrributes.map_state == IsUnviewable));
-                    //break;
-                //}
-
-                //fprintf(stdout, "windows.c: UpdateFallenSnowRegions() "
-                //    "No snow on transient window.\n");
-                if (addWin->id == getWindowBeingDragged()) {
-                    break;
+                if (isWindowDraggingActive() &&
+                    addWin->id == getWindowBeingDragged()) {
+                    fprintf(stdout, "windows.c: updateFallenSnowRegions() Window being dragged.\n");
+                    continue;
                 }
 
-                // fprintf(stdout, "windows.c: UpdateFallenSnowRegions() "
+                // fprintf(stdout, "windows.c: updateFallenSnowRegions() "
                 //     "adding a FallenSnow (%lu)\n", addWin->id);
                 PushFallenSnow(&global.FsnowFirst, addWin,
-                addWin->x + Flags.OffsetX, addWin->y + Flags.OffsetY,
-                addWin->w + Flags.OffsetW, Flags.MaxWinSnowDepth);
+                    addWin->x + Flags.OffsetX, addWin->y + Flags.OffsetY,
+                    addWin->w + Flags.OffsetW, Flags.MaxWinSnowDepth);
             }
         }
 
@@ -317,7 +322,7 @@ void UpdateFallenSnowRegions() {
                 (removeWin->w > 0.8 * global.SnowWinWidth && removeWin->ya < Flags.IgnoreTop) ||
                 (removeWin->w > 0.8 * global.SnowWinWidth &&
                     (int)global.SnowWinHeight - removeWin->ya < Flags.IgnoreBottom)) {
-                GenerateFlakesFromFallen(fsnow, 0, fsnow->w, -10.0);
+                generateFallenSnowFlakes(fsnow, 0, fsnow->w, -10.0);
                 toremove[ntoremove++] = fsnow->win.id;
             }
 
@@ -325,8 +330,8 @@ void UpdateFallenSnowRegions() {
             // in fsnow we have to test that here, because the hidden status of
             // the window can change
             if (fsnow->win.hidden) {
-                CleanFallenArea(fsnow, 0, fsnow->w);
-                GenerateFlakesFromFallen(fsnow, 0, fsnow->w, -10.0);
+                eraseFallenSnowOnDisplay(fsnow, 0, fsnow->w);
+                generateFallenSnowFlakes(fsnow, 0, fsnow->w, -10.0);
                 toremove[ntoremove++] = fsnow->win.id;
             }
         }
@@ -337,23 +342,21 @@ void UpdateFallenSnowRegions() {
     // Test if window has been moved or resized.
     WinInfo* movedWin = mWindowsList;
     for (int i = 0; i < mNumberOfWindows; i++) {
-        fsnow = FindFallen(global.FsnowFirst, movedWin->id);
+        fsnow = findFallenSnowListItem(global.FsnowFirst, movedWin->id);
         if (fsnow) {
             if (fsnow->x != movedWin->x + Flags.OffsetX ||
                 fsnow->y != movedWin->y + Flags.OffsetY ||
                 (unsigned int) fsnow->w != movedWin->w + Flags.OffsetW) {
-                //fprintf(stdout, "windows.c: UpdateFallenSnowRegions() Updating due "
+                //fprintf(stdout, "windows.c: updateFallenSnowRegions() Updating due "
                 //    "to MOVED window : %li\n", movedWin->id);
 
-                CleanFallenArea(fsnow, 0, fsnow->w);
-                GenerateFlakesFromFallen(fsnow, 0, fsnow->w, -10.0);
+                eraseFallenSnowOnDisplay(fsnow, 0, fsnow->w);
+                generateFallenSnowFlakes(fsnow, 0, fsnow->w, -10.0);
                 toremove[ntoremove++] = fsnow->win.id;
 
                 fsnow->x = movedWin->x + Flags.OffsetX;
                 fsnow->y = movedWin->y + Flags.OffsetY;
                 XFlush(global.display);
-
-                continue;
             }
         }
 
@@ -361,8 +364,8 @@ void UpdateFallenSnowRegions() {
     }
 
     for (int i = 0; i < ntoremove; i++) {
-        CleanFallen(toremove[i]);
-        RemoveFallenSnow(&global.FsnowFirst, toremove[i]);
+        eraseFallenSnowOnWindow(toremove[i]);
+        removeFallenSnowListItem(&global.FsnowFirst, toremove[i]);
     }
     free(toremove);
 }
@@ -432,7 +435,7 @@ void InitDisplayDimensions() {
  **/
 void DisplayDimensions() {
     P("Displaydimensions\n");
-    Lock_fallen();
+    lockFallenSnowSemaphore();
     unsigned int w, h, b, d;
     int x, y;
     Window root;
@@ -461,15 +464,15 @@ void DisplayDimensions() {
     global.SnowWinBorderWidth = b;
     global.SnowWinDepth = d;
 
-    UpdateFallenSnowAtBottom();
+    updateFallenSnowAtBottom();
 
     RedrawTrees();
 
-    SetMaxScreenSnowDepth();
+    setMaxScreenSnowDepth();
     if (!global.IsDouble) {
         ClearScreen();
     }
-    Unlock_fallen();
+    unlockFallenSnowSemaphore();
 }
 
 /** *********************************************************************
@@ -566,7 +569,7 @@ int updateWindowsList() {
     if (Flags.Done) {
         return FALSE;
     }
-    if (Flags.NoKeepSWin) {
+    if (Flags.NoKeepSnowOnWindows) {
         return TRUE;
     }
 
@@ -583,7 +586,7 @@ int updateWindowsList() {
         wcounter = 0;
     }
     if (!global.WindowsChanged) {
-        Unlock_fallen();
+        unlockFallenSnowSemaphore();
         return TRUE;
     }
     global.WindowsChanged = 0;
@@ -592,7 +595,7 @@ int updateWindowsList() {
     long currentWorkSpace = GetCurrentWorkspace();
     if (currentWorkSpace < 0) {
         Flags.Done = 1;
-        Unlock_fallen();
+        unlockFallenSnowSemaphore();
         return TRUE;
     }
 
@@ -618,7 +621,7 @@ int updateWindowsList() {
     // Get new list, error if none.
     if (getX11WindowsList(&mWindowsList, &mNumberOfWindows) < 0) {
         Flags.Done = 1;
-        Unlock_fallen();
+        unlockFallenSnowSemaphore();
         return TRUE;
     }
     // Update list x/y.
@@ -649,9 +652,9 @@ int updateWindowsList() {
         }
     }
 
-    UpdateFallenSnowRegions();
+    updateFallenSnowRegions();
 
-    Unlock_fallen();
+    unlockFallenSnowSemaphore();
     return TRUE;
 }
 
@@ -666,125 +669,45 @@ int updateWindowsList() {
  ** (Rough life-cycle order.)
  **/
 void onWindowCreated(__attribute__((unused)) Window window) {
-    // Print all window IDs.  --DEBUG--
-    /*
-    WinInfo* windowListItem = mWindowsList;
-    for (int i = 0; i < mNumberOfWindows; i++) {
-        {
-            Window root, parent;
-            Window* children = NULL;
-            unsigned int windowChildCount;
-            if (XQueryTree(global.display, windowListItem->id,
-                    &root, &parent, &children, &windowChildCount)) {
-                fprintf(stdout, "windows.c: onWindowCreated(%li)   root : %li  "
-                    "WinInfo.id: %li   WinInfo.hidden: %u  #children : %u  parent : %li\n",
-                    window, root, windowListItem->id, windowListItem->hidden,
-                    windowChildCount, parent);
-                if (children) {
-                    XFree((char *) children);
-                }
-            }
-        }
-        windowListItem++;
-    }
-    */
 }
-
 
 /** *********************************************************************
  ** This method handles X11 Windows being made visible to view.
  **
- ** (Rough life-cycle order.)
+ ** Our main job is to determine if user is dragging a window,
+ ** and to immediately clear it's fallensnow.
  **/
 void onWindowMapped(__attribute__((unused)) Window window) {
-    Lock_fallen();
 
-    /*
-    {
-        Window root, parent;
-        Window* childList = NULL;
-        unsigned int childCount;
-        if (XQueryTree(global.display, window,
-                &root, &parent, &childList, &childCount)) {
-            fprintf(stdout, "windows.c: onWindowMapped(%li)     parent : %li  "
-                "root : %li  #childItem : %u  ",
-                window, parent, root, childCount);
-            Window* thisChild = childList;
-            for (unsigned int i = 0; i < childCount; i++) {
-                fprintf(stdout, ": %lu  ", thisChild[i]);
-            }
-            fprintf(stdout, "\n");
-            XFree((char *) childList);
+    // Determine window drag state.
+    setWindowDragState();
+
+    // Clear snow from window that just started dragging.
+    if (isWindowDraggingActive()) {
+        FallenSnow* fsnow = findFallenSnowListItem(global.FsnowFirst,
+            getWindowBeingDragged());
+        if (fsnow) {
+            lockFallenSnowSemaphore();
+            eraseFallenSnowOnDisplay(fsnow, 0, fsnow->w);
+            generateFallenSnowFlakes(fsnow, 0, fsnow->w, -10.0);
+            fprintf(stdout, "windows.c: onWindowMapped(%li) "
+                "Window Going Boof!\n", window);
+            eraseFallenSnowOnWindow(fsnow->win.id);
+            removeFallenSnowListItem(&global.FsnowFirst, fsnow->win.id);
+            unlockFallenSnowSemaphore();
         }
     }
-    */
-
-    // Find the focused window and the current focus state.
-    Window focusedWindow;
-    int focusWindowState;
-    XGetInputFocus(global.display, &focusedWindow, &focusWindowState);
-    //fprintf(stdout, "windows.c: onWindowMapped(%li)   Focused Window WinInfo.id: %li \n",
-    //    window, focusedWindow);
-
-    // Get the parent of the focused window.
-    //Window focusedRoot, focusedParent;
-    //Window *focusedChildren = NULL;
-    //unsigned int focusedChildrenCount;
-    //if (XQueryTree(global.display, focusedWindow,
-    //        &focusedRoot, &focusedParent, &focusedChildren, &focusedChildrenCount)) {
-        //fprintf(stdout, "windows.c: onWindowMapped(%li)       Focused Window parent : %li \n",
-        //    window, focusedParent);
-    //    if (focusedChildren) {
-    //        XFree((char *) focusedChildren);
-    //    }
-    //}
-
-    Window root_return, child_return;
-    int root_x_return, root_y_return, win_x_return, win_y_return;
-    unsigned int pointerState;
-    const unsigned int POINTER_CLICKDOWN = 256;
-    if (XQueryPointer(global.display, focusedWindow, &root_return, &child_return,
-        &root_x_return, &root_y_return, &win_x_return, &win_y_return,
-        &pointerState)) {
-        if (pointerState == POINTER_CLICKDOWN) {
-            //fprintf(stdout, "windows.c: onWindowMapped(%li)       "
-            //    "focusedWindow Pointer State : %u.\n", window, pointerState);
-            setWindowBeingDragged(getDragWindowOf(focusedWindow));
-        } else {
-            //fprintf(stdout, "windows.c: onWindowMapped(%li)       "
-            //    "Can\'t start drag, unknown Pointer State : %u.\n",
-            //    window, pointerState);
-        }
-    } else {
-        //fprintf(stdout, "windows.c: onWindowMapped(%li)       "
-        //    "Can\'t query pointer for focusedWindow.", window);
-    }
-
-    // Found window being "dragged". If it has a fallensnow region,
-    // Erase it now, don't wait for final drop to complete a "MOVE"
-    // event (handled much later in UpdateFallenSnowRegions()).
-    FallenSnow* fsnow = FindFallen(global.FsnowFirst, getWindowBeingDragged());
-    if (fsnow) {
-        //fprintf(stdout, "windows.c: onWindowMapped(%li) "
-        //    "Window Going Boof!\n", window);
-        CleanFallenArea(fsnow, 0, fsnow->w);
-        GenerateFlakesFromFallen(fsnow, 0, fsnow->w, -10.0);
-        CleanFallen(fsnow->win.id);
-        RemoveFallenSnow(&global.FsnowFirst, fsnow->win.id);
-    }
-
-    Unlock_fallen();
 }
 
 /** *********************************************************************
  ** This method handles X11 Windows being Hidden from view.
  **
- ** (Rough life-cycle order.)
+ ** Our main job is to clear window drag state.
  **/
 void onWindowUnmapped(__attribute__((unused)) Window window) {
-    Lock_fallen();
-    setWindowBeingDragged(None);
-    Unlock_fallen();
+
+    // Clear window drag state.
+    clearWindowDragState();
 }
 
 /** *********************************************************************
@@ -795,56 +718,100 @@ void onWindowUnmapped(__attribute__((unused)) Window window) {
 void onWindowDestroyed(__attribute__((unused)) Window window) {
 }
 
-
 /** *********************************************************************
- ** This method
- **
+ ** This method clears window drag state.
  **/
-void setWindowBeingDragged(Window window) {
-    //fprintf(stdout, "windows.c: setWindowBeingDragged(%li).\n", window);
-    mWindowBeingDragged = window;
+void clearWindowDragState() {
+    setWindowDraggingInactive();
+    setWindowBeingDragged(None);
 }
 
 /** *********************************************************************
- ** This method
- **
+ ** This method determines window drag state.
  **/
-extern Window getWindowBeingDragged() {
-    return mWindowBeingDragged;
+void setWindowDragState() {
+    // Find the focused window.
+    Window focusedWindow;
+    int focusedWindowState;
+    XGetInputFocus(global.display, &focusedWindow, &focusedWindowState);
+
+    //  Find the focused window pointer click state.
+    Window root_return, child_return;
+    int root_x_return, root_y_return, win_x_return, win_y_return;
+    unsigned int pointerState;
+    if (!XQueryPointer(global.display, focusedWindow, &root_return, &child_return,
+        &root_x_return, &root_y_return, &win_x_return, &win_y_return,
+        &pointerState)) {
+        return;
+    }
+
+    // If click-state isn't clicked-down, or we can't find a dragging
+    // window, we're not dragging. 
+    const unsigned int POINTER_CLICKDOWN = 256;
+    if (pointerState != POINTER_CLICKDOWN) {
+        return;
+    }
+    Window dragWindow = getDragWindowOf(focusedWindow);
+    if (dragWindow == None) {
+        return;
+    }
+
+    setWindowBeingDragged(dragWindow);
+    setWindowDraggingActive();
 }
 
 /** *********************************************************************
- ** This method determines which window is being dragged.
+ ** This method determines which window is being dragged, by
+ ** returning the supplied window or the first parent window in
+ ** its ancestor chain that is in mWindowsList.
  **
  **/
 Window getDragWindowOf(Window window) {
     Window windowNode = window;
-    //fprintf(stdout, "windows.c: getDragWindowOf() Called to find : %li!\n", windowNode);
 
     while (TRUE) {
         // Check current node in windows list.
         WinInfo* windowListItem = mWindowsList;
         for (int i = 0; i < mNumberOfWindows; i++) {
             if (windowNode == windowListItem->id) {
-                //fprintf(stdout, "windows.c: getDragWindowOf() Found %li!\n", windowNode);
                 return windowNode;
             }
             windowListItem++;
         }
 
-        // Current window node not in list. Move up to parent and loop.
+        // Current window node not in list. Move up it's parent
+        // ancestor chain and re-test.
         Window root, parent;
         Window* children = NULL;
         unsigned int windowChildCount;
         if (!(XQueryTree(global.display, windowNode,
                 &root, &parent, &children, &windowChildCount))) {
-            //fprintf(stdout, "windows.c: getDragWindowOf() no parent found, end of chain.\n");
             return None;
         }
         if (children) {
             XFree((char *) children);
         }
         windowNode = parent;
-        //fprintf(stdout, "windows.c: getDragWindowOf() Checking parent : %li.\n", windowNode);
     }
+}
+
+/** *********************************************************************
+ ** These methods are window drag-state helpers.
+ **
+ **/
+bool isWindowDraggingActive() {
+    return mWindowDragging;
+}
+void setWindowDraggingActive() {
+    mWindowDragging = true;
+}
+void setWindowDraggingInactive() {
+    mWindowDragging = false;
+}
+
+extern Window getWindowBeingDragged() {
+    return mWindowBeingDragged;
+}
+void setWindowBeingDragged(Window window) {
+    mWindowBeingDragged = window;
 }

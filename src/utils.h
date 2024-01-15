@@ -58,7 +58,7 @@ extern int randint(int m);
 extern void my_cairo_paint_with_alpha(cairo_t *cr, double alpha);
 extern void rgba2color(GdkRGBA *c, char **s);
 extern void Thanks(void);
-extern void myXClearArea(
+extern void sanelyCheckAndClearDisplayArea(
     Display *display, Window win, int x, int y, int w, int h, int exposures);
 extern int appScalesHaveChanged(int *prev);
 extern int ValidColor(const char *color);

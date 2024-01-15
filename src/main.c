@@ -94,8 +94,10 @@ static int HandleX11Cairo();
 static void drawit(cairo_t*);
 static int do_drawit(void*);
 static int do_draw_all(gpointer);
+
 static void restart_do_draw_all();
 static gboolean on_draw_event(GtkWidget*, cairo_t*, gpointer);
+
 static void rectangle_draw(cairo_t*);
 
 static int StartWindow();
@@ -110,7 +112,7 @@ static void set_below_above();
 static void GetDesktopSession();
 static void DoAllWorkspaces();
 
-static int do_ui_check();
+static int doAllUISettingsUpdates();
 static int do_stopafter();
 static int do_display_dimensions();
 static int do_testing();
@@ -121,9 +123,6 @@ void onWindowCreated(Window);
 void onWindowDestroyed(Window);
 void onWindowMapped(Window);
 void onWindowUnmapped(Window);
-
-// Window dragging methods.
-Window getWindowBeingDragged();
 
 // ColorPicker methods.
 void uninitQPickerDialog();
@@ -188,7 +187,7 @@ int main_c(int argc, char *argv[]) {
 
     XInitThreads();
 
-    fallen_sem_init();
+    initFallenSnowSemaphores();
     aurora_sem_init();
     birds_sem_init();
 
@@ -445,7 +444,7 @@ int main_c(int argc, char *argv[]) {
     blowoff_init();
     treesnow_init();
     addLoadMonitorToMainloop();
-    fallensnow_init();
+    initFallenSnowModule();
 
     add_to_mainloop(PRIORITY_DEFAULT, time_displaychanged,
         onTimerEventDisplayChanged);
@@ -455,7 +454,7 @@ int main_c(int argc, char *argv[]) {
     add_to_mainloop(PRIORITY_DEFAULT, time_display_dimensions,
         do_display_dimensions);
 
-    add_to_mainloop(PRIORITY_HIGH, time_ui_check, do_ui_check);
+    add_to_mainloop(PRIORITY_HIGH, TIME_BETWEEEN_UI_SETTINGS_UPDATES, doAllUISettingsUpdates);
 
     if (Flags.StopAfter > 0) {
         add_to_mainloop(PRIORITY_DEFAULT, Flags.StopAfter, do_stopafter);
@@ -592,16 +591,15 @@ void GetDesktopSession() {
  ** This method ...
  **/
 int StartWindow() {
-    P("Entering StartWindow...\n");
+    global.Rootwindow = DefaultRootWindow(global.display);
+    global.Desktop = 0;
+
+    global.UseDouble = 0;
+    global.IsDouble = 0;
 
     global.Trans = 0;
     global.xxposures = 0;
-    global.Desktop = 0;
-    global.UseDouble = 0;
-    global.IsDouble = 0;
     global.XscreensaverMode = 0;
-
-    global.Rootwindow = DefaultRootWindow(global.display);
 
     // see if user chooses window
     Window xwin;
@@ -868,10 +866,10 @@ void DoAllWorkspaces() {
 /** *********************************************************************
  * here we are handling the buttons in ui
  * Ok, this is a long list, and could be implemented more efficient.
- * But, do_ui_check is called not too frequently, so....
+ * But, doAllUISettingsUpdates is called not too frequently, so....
  * Note: if changes != 0, the settings will be written to .plasmasnowrc
  **/
-int do_ui_check() {
+int doAllUISettingsUpdates() {
     if (Flags.Done) {
         gtk_main_quit();
     }
@@ -889,7 +887,7 @@ int do_ui_check() {
     meteor_ui();
     wind_ui();
     stars_ui();
-    fallensnow_ui();
+    doFallenSnowUISettingsUpdates();
     blowoff_ui();
     treesnow_ui();
     moon_ui();
@@ -900,7 +898,7 @@ int do_ui_check() {
     UIDO(Transparency, );
     UIDO(Scale, );
     UIDO(OffsetS, DisplayDimensions(););
-    UIDO(OffsetY, UpdateFallenSnowRegionsWithLock(););
+    UIDO(OffsetY, updateFallenSnowRegionsWithLock(););
     UIDO(NoFluffy, ClearScreen(););
     UIDO(AllWorkspaces, DoAllWorkspaces(););
     UIDO(BelowAll, set_below_above(););
@@ -1009,7 +1007,7 @@ void RestartDisplay() {
         global.SnowWinHeight);
 
     fflush(stdout);
-    InitFallenSnow();
+    initFallenSnowList();
     init_stars();
     EraseTrees();
 

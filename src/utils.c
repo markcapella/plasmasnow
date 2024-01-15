@@ -108,13 +108,18 @@ ssize_t mywrite(int fd, const void *buf, size_t count) {
     return 0;
 }
 
-void myXClearArea(
-    Display *dsp, Window win, int x, int y, int w, int h, int exposures) {
-    if (w == 0 || h == 0 || w < 0 || h < 0 || w > 20000 || h > 20000) {
-        P("myXClearArea: %d %d %d %d %d\n", x, y, w, h, exposures);
+/** *********************************************************************
+ ** Module MAINLOOP methods.
+ **/
+void sanelyCheckAndClearDisplayArea(Display *dsp, Window win,
+    int x, int y, int w, int h, int exposures) {
+    if (w == 0 || h == 0 ||
+        w < 0 || h < 0 ||
+        w > 20000 || h > 20000) {
         traceback();
         return;
     }
+
     XClearArea(dsp, win, x, y, w, h, exposures);
 }
 

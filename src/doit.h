@@ -88,10 +88,10 @@
     DOIT_I(MoonSize, 100, 100)                                                 \
     DOIT_I(MoonColor, 0, 0)                                                    \
     DOIT_I(NoFluffy, 0, 0)                                                     \
-    DOIT_I(NoKeepSBot, 0, 0)                                                   \
+    DOIT_I(NoKeepSnowOnBottom, 0, 0)                                                   \
     DOIT_I(NoKeepSnow, 0, 0)                                                   \
     DOIT_I(NoKeepSnowOnTrees, 0, 1)                                            \
-    DOIT_I(NoKeepSWin, 0, 0)                                                   \
+    DOIT_I(NoKeepSnowOnWindows, 0, 0)                                                   \
     DOIT_I(NoMeteors, 0, 1)                                                    \
     DOIT_I(NoSanta, 0, 0)                                                      \
     DOIT_I(NoSnowFlakes, 0, 0)                                                 \

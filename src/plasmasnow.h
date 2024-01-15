@@ -71,7 +71,7 @@
 #define time_emeteor 0.40           // time between meteors erasures
 
 // Time between handling window configure events.
-#define CONFIGURE_WINDOW_EVENT_TIME 0.50
+#define CONFIGURE_WINDOW_EVENT_TIME 0.1
 #define time_flakecount 1.00        // time between updates of show flakecount
 #define time_fuse 1.00              // time between testing on too much flakes
 #define time_genflakes 0.10         // time between generation of flakes
@@ -94,7 +94,7 @@
 // vintage
 #define time_switchflakes 0.2
 #define time_testing 2.10  // time between testing code
-#define time_ui_check 0.25 // time between checking values from ui
+#define TIME_BETWEEEN_UI_SETTINGS_UPDATES 0.25 // time between checking values from ui
 #define time_umoon 0.04    // time between update position of moon
 #define time_usanta 0.04   // time between update of santa position
 #define time_ustar 2.00    // time between updating stars
@@ -104,7 +104,7 @@
 
 // time between adjusting height of bottom snow
 #define time_adjust_bottom (time_change_bottom / 20)
-#define time_fallen 0.20         // time between recompute fallen snow surfaces
+#define TIME_BETWWEEN_FALLENSNOW_THREADS 0.20 // time between recompute fallen snow surfaces
 
 // time between updates of snowflakes positions etc
 #define time_snowflakes    (0.02 * global.cpufactor)

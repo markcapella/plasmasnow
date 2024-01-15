@@ -88,7 +88,7 @@ int moon_erase(int force) {
     if (Flags.Halo) {
         halo_erase();
     } else {
-        myXClearArea(global.display, global.SnowWin, OldmoonX, OldmoonY,
+        sanelyCheckAndClearDisplayArea(global.display, global.SnowWin, OldmoonX, OldmoonY,
             2 * global.moonR + 1, 2 * global.moonR + 1, global.xxposures);
     }
     return 0;
@@ -270,6 +270,6 @@ void halo_erase() {
     int y = OldmoonY + global.moonR - haloR;
     int w = 2 * haloR;
     int h = w;
-    myXClearArea(
+    sanelyCheckAndClearDisplayArea(
         global.display, global.SnowWin, x, y, w + 1, h + 1, global.xxposures);
 }

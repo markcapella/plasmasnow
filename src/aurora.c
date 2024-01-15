@@ -208,7 +208,7 @@ void aurora_draw(cairo_t *cr) {
 
 void aurora_erase() {
     P("aurora_erase %d %d %d %d \n", a.x, a.y, a.width, a.height);
-    myXClearArea(global.display, global.SnowWin, a.x, a.y, a.width, a.base,
+    sanelyCheckAndClearDisplayArea(global.display, global.SnowWin, a.x, a.y, a.width, a.base,
         global.xxposures);
 }
 
@@ -405,7 +405,7 @@ void *do_aurora(void *d) {
         }
         P("%d speed %d %f\n", global.counter++, Flags.AuroraSpeed,
             1000000 * time_aurora / (0.2 * Flags.AuroraSpeed));
-        usleep((useconds_t)(1.0e6 * time_aurora / (0.2 * Flags.AuroraSpeed)));
+        usleep((useconds_t) (1.0e6 * time_aurora / (0.2 * Flags.AuroraSpeed)));
     }
     return NULL;
 }

@@ -198,8 +198,7 @@ int xdo_wait_for_window_map_state_orig(
     attr.map_state = IsUnmapped;
     while (tries > 0 && attr.map_state != map_state) {
         XGetWindowAttributes(xdo->xdpy, wid, &attr);
-        usleep(
-            30000); /* TODO(sissel): Use exponential backoff up to 1 second */
+        usleep(30000);
         tries--;
     }
     return 0;
@@ -1266,8 +1265,7 @@ int xdo_wait_for_window_focus(const xdo_t *xdo, Window window, int want_focus) {
 
     while (
         tries > 0 && (want_focus ? focuswin != window : focuswin == window)) {
-        usleep(
-            30000); /* TODO(sissel): Use exponential backoff up to 1 second */
+        usleep(30000); /* TODO(sissel): Use exponential backoff up to 1 second */
         ret = xdo_get_focused_window(xdo, &focuswin);
         if (ret != 0) {
             return ret;

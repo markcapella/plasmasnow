@@ -34,7 +34,7 @@
 #define plasmasnow_settings 6
 
 /*         code           type               name              modifier */
-#define ALL_TOGGLES                                                            \
+#define ALL_TOGGLES                                                                 \
     BUTTON(togglecode, plasmasnow_celestials, Aurora, 1)                            \
     BUTTON(togglecode, plasmasnow_celestials, AuroraLeft, 0)                        \
     BUTTON(togglecode, plasmasnow_celestials, AuroraMiddle, 1)                      \
@@ -45,15 +45,15 @@
     BUTTON(togglecode, plasmasnow_settings, AllWorkspaces, 1)                       \
     BUTTON(togglecode, plasmasnow_settings, BelowAll, 1)                            \
     BUTTON(togglecode, plasmasnow_settings, BelowConfirm, 0)                        \
-    BUTTON(togglecode, plasmasnow_settings, mAppTheme, 1)                          \
+    BUTTON(togglecode, plasmasnow_settings, mAppTheme, 1)                           \
     BUTTON(togglecode, plasmasnow_celestials, NoMeteors, -1) /*i*/                  \
     BUTTON(togglecode, plasmasnow_celestials, Halo, 1)                              \
     BUTTON(togglecode, plasmasnow_celestials, Moon, 1)                              \
     BUTTON(togglecode, plasmasnow_santa, NoSanta, -1) /*i*/                         \
     BUTTON(togglecode, plasmasnow_snow, BlowSnow, 1)                                \
     BUTTON(togglecode, plasmasnow_snow, NoFluffy, -1)          /*i*/                \
-    BUTTON(togglecode, plasmasnow_snow, NoKeepSBot, -1)        /*i*/                \
-    BUTTON(togglecode, plasmasnow_snow, NoKeepSWin, -1)        /*i*/                \
+    BUTTON(togglecode, plasmasnow_snow, NoKeepSnowOnBottom, -1)        /*i*/        \
+    BUTTON(togglecode, plasmasnow_snow, NoKeepSnowOnWindows, -1)        /*i*/       \
     BUTTON(togglecode, plasmasnow_snow, NoKeepSnowOnTrees, -1) /*i*/                \
     BUTTON(togglecode, plasmasnow_snow, NoSnowFlakes, -1)      /*i*/                \
     BUTTON(togglecode, plasmasnow_celestials, Stars, 1)                             \
@@ -64,7 +64,7 @@
     BUTTON(togglecode, plasmasnow_settings, Outline, 1)                             \
     BUTTON(togglecode, plasmasnow_celestials, MoonColor, 1)
 
-#define ALL_SCALES                                                             \
+#define ALL_SCALES                                                                  \
     BUTTON(scalecode, plasmasnow_birds, Anarchy, 1)                                 \
     BUTTON(scalecode, plasmasnow_birds, AttrFactor, 1)                              \
     BUTTON(scalecode, plasmasnow_birds, BirdsScale, 1)                              \

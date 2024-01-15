@@ -176,14 +176,14 @@ int HandleFlags(int argc, char *argv[]) {
             //  ------------------- end of handled in main --------------------
             else if (strcmp(arg, "-nokeepsnow") == 0) {
                 Flags.NoKeepSnow = 1;
-                Flags.NoKeepSWin = 1;
-                Flags.NoKeepSBot = 1;
+                Flags.NoKeepSnowOnWindows = 1;
+                Flags.NoKeepSnowOnBottom = 1;
                 Flags.NoKeepSnowOnTrees = 1;
 
             } else if (strcmp(arg, "-keepsnow") == 0) {
                 Flags.NoKeepSnow = 0;
-                Flags.NoKeepSWin = 0;
-                Flags.NoKeepSBot = 0;
+                Flags.NoKeepSnowOnWindows = 0;
+                Flags.NoKeepSnowOnBottom = 0;
                 Flags.NoKeepSnowOnTrees = 0;
 
             } else if (strcmp(arg, "-vintage") == 0) {
@@ -286,12 +286,12 @@ int HandleFlags(int argc, char *argv[]) {
             handle_iv(-fluffy, NoFluffy, 0);
             handle_iv(-nofluffy, NoFluffy, 1);
             handle_iv(-noisy, Noisy, 1);
-            handle_iv(-nokeepsnowonscreen, NoKeepSBot, 1);
-            handle_iv(-keepsnowonscreen, NoKeepSBot, 0);
+            handle_iv(-nokeepsnowonscreen, NoKeepSnowOnBottom, 1);
+            handle_iv(-keepsnowonscreen, NoKeepSnowOnBottom, 0);
             handle_iv(-nokeepsnowontrees, NoKeepSnowOnTrees, 1);
             handle_iv(-keepsnowontrees, NoKeepSnowOnTrees, 0);
-            handle_iv(-nokeepsnowonwindows, NoKeepSWin, 1);
-            handle_iv(-keepsnowonwindows, NoKeepSWin, 0);
+            handle_iv(-nokeepsnowonwindows, NoKeepSnowOnWindows, 1);
+            handle_iv(-keepsnowonwindows, NoKeepSnowOnWindows, 0);
             handle_iv(-nomenu, NoMenu, 1);
             handle_iv(-nometeors, NoMeteors, 1);
             handle_iv(-meteors, NoMeteors, 0);

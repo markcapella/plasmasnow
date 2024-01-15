@@ -140,7 +140,7 @@ void stars_erase() {
         StarCoordinate *star = &Stars[i];
         int x = star->x;
         int y = star->y;
-        myXClearArea(global.display, global.SnowWin, x, y, StarSize, StarSize,
+        sanelyCheckAndClearDisplayArea(global.display, global.SnowWin, x, y, StarSize, StarSize,
             global.xxposures);
     }
 }

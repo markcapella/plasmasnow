@@ -878,7 +878,7 @@ Flags: -keepsnowontrees, -nokeepsnowontrees</property>
               </packing>
             </child>
             <child>
-              <object class="GtkToggleButton" id="id-NoKeepSBot">
+              <object class="GtkToggleButton" id="id-NoKeepSnowOnBottom">
                 <property name="label" translatable="yes">Show</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
@@ -895,7 +895,7 @@ Flags: -keepsnowonscreen, -nokeepsnowonscreen</property>
               </packing>
             </child>
             <child>
-              <object class="GtkToggleButton" id="id-NoKeepSWin">
+              <object class="GtkToggleButton" id="id-NoKeepSnowOnWindows">
                 <property name="label" translatable="yes">Show</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>

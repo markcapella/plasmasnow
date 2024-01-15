@@ -433,7 +433,7 @@ void *updateBirdSpeed() {
 
             unlock();
         }
-        usleep((useconds_t)(time_update_speed_birds * 1.0e6));
+        usleep((useconds_t) (time_update_speed_birds * 1.0e6));
     }
     return NULL;
     // (void) d;
@@ -712,7 +712,7 @@ int birds_erase(int force) {
         BirdType *bird = &birds[i];
         if (bird->prevdrawable && bird->prevw != 0 && bird->prevh != 0) {
             P("birds_erase xclear %d\n", counter++);
-            myXClearArea(global.display, global.SnowWin, bird->prevx,
+            sanelyCheckAndClearDisplayArea(global.display, global.SnowWin, bird->prevx,
                 bird->prevy, bird->prevw, bird->prevh, global.xxposures);
         }
     }
@@ -742,7 +742,7 @@ int attrbird_erase(int force) {
         px = attrbird.prevx;
         py = attrbird.prevy;
         pw = attrbird.prevw;
-        myXClearArea(global.display, global.SnowWin, px, py, pw, attrbird.prevh,
+        sanelyCheckAndClearDisplayArea(global.display, global.SnowWin, px, py, pw, attrbird.prevh,
             global.xxposures);
     }
     return TRUE;

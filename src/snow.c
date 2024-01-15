@@ -465,7 +465,7 @@ int do_UpdateSnowFlake(Snow *flake) {
     int ny = lrintf(NewY);
 
     if (!flake->fluff) {
-        Lock_fallen();
+        lockFallenSnowSemaphore();
         // determine if non-fluffy-flake touches the fallen snow,
         // if so: make the flake inactive.
         // the bottom pixels of the snowflake are at y = NewY + (height of
@@ -483,7 +483,7 @@ int do_UpdateSnowFlake(Snow *flake) {
                 // if(fsnow->win.id == 0 ||(fsnow->win.ws == global.CWorkSpace
                 // || fsnow->win.sticky))
                 if (fsnow->win.id == 0 ||
-                    (IsVisibleFallen(fsnow) || fsnow->win.sticky)) {
+                    (isFallenSnowOnVisibleWorkspace(fsnow) || fsnow->win.sticky)) {
                     if (nx >= fsnow->x && nx <= fsnow->x + fsnow->w &&
                         ny < fsnow->y + 2) {
                         int i;
@@ -499,24 +499,23 @@ int do_UpdateSnowFlake(Snow *flake) {
                         for (i = istart; i < imax; i++) {
                             if (ny > fsnow->y - fsnow->acth[i] - 1) {
                                 if (fsnow->acth[i] < fsnow->desh[i]) {
-                                    UpdateFallenSnowPartial(
-                                        fsnow, nx - fsnow->x, flakew);
+                                    updateFallenSnowPartial(fsnow, nx - fsnow->x, flakew);
                                 }
 
                                 // Always erase flake, but repaint it on top
                                 // of the correct position on fsnow (if !NoFluffy)).
-                                if (HandleFallenSnow(fsnow)) {
+                                if (canSnowCollectOnWindowOrScreenBottom(fsnow)) {
                                     if (!Flags.NoFluffy) {
                                         fluffify(flake, .9);
                                     }
 
                                     if (flake->fluff) {
-                                        Unlock_fallen();
+                                        unlockFallenSnowSemaphore();
                                         return TRUE;
 
                                     } else {
                                         DelFlake(flake);
-                                        Unlock_fallen();
+                                        unlockFallenSnowSemaphore();
                                         return FALSE;
                                     }
                                 }
@@ -529,7 +528,7 @@ int do_UpdateSnowFlake(Snow *flake) {
             }
             fsnow = fsnow->next;
         }
-        Unlock_fallen();
+        unlockFallenSnowSemaphore();
     }
 
     int x = lrintf(flake->rx);
@@ -668,7 +667,7 @@ void EraseSnowFlake1(Snow *flake) {
     int y = flake->iy - 1;
     int flakew = snowPix[flake->whatFlake].width + 2;
     int flakeh = snowPix[flake->whatFlake].height + 2;
-    myXClearArea(
+    sanelyCheckAndClearDisplayArea(
         global.display, global.SnowWin, x, y, flakew, flakeh, global.xxposures);
 }
 

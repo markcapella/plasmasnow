@@ -115,7 +115,7 @@ int do_emeteor(gpointer data) {
         y -= 1;
         w += 2;
         h += 2;
-        myXClearArea(
+        sanelyCheckAndClearDisplayArea(
             global.display, global.SnowWin, x, y, w, h, global.xxposures);
     }
     meteor.active = 0;

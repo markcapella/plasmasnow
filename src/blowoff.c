@@ -70,18 +70,18 @@ int do_blowoff() {
     FallenSnow *fsnow = global.FsnowFirst;
     while (fsnow) {
         P("blowoff ...\n");
-        if (HandleFallenSnow(fsnow) && !Flags.NoSnowFlakes) {
+        if (canSnowCollectOnWindowOrScreenBottom(fsnow) && !Flags.NoSnowFlakes) {
             if (fsnow->win.id == 0 ||
                 (!fsnow->win.hidden &&
                     //(fsnow->win.ws == global.CWorkSpace ||
                     //fsnow->win.sticky)))
-                    (IsVisibleFallen(fsnow) || fsnow->win.sticky))) {
-                UpdateFallenSnowWithWind(fsnow, fsnow->w / 4, fsnow->h / 4);
+                    (isFallenSnowOnVisibleWorkspace(fsnow) || fsnow->win.sticky))) {
+                updateFallenSnowWithWind(fsnow, fsnow->w / 4, fsnow->h / 4);
             }
         }
         fsnow = fsnow->next;
     }
-    Unlock_fallen();
+    unlockFallenSnowSemaphore();
     return TRUE;
     // (void) d;
 }
