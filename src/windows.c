@@ -75,7 +75,7 @@ void setWindowDragState();
 Window getDragWindowOf(Window);
 
 bool mWindowDragging = false;
-bool isWindowDraggingActive();
+extern bool isWindowDraggingActive();
 void setWindowDraggingActive();
 void setWindowDraggingInactive();
 
@@ -286,7 +286,8 @@ void updateFallenSnowRegions() {
 
                 if (isWindowDraggingActive() &&
                     addWin->id == getWindowBeingDragged()) {
-                    fprintf(stdout, "windows.c: updateFallenSnowRegions() Window being dragged.\n");
+                    // fprintf(stdout, "windows.c: updateFallenSnowRegions()" 
+                    //     "Window being dragged.\n");
                     continue;
                 }
 
@@ -346,8 +347,8 @@ void updateFallenSnowRegions() {
             if (fsnow->x != movedWin->x + Flags.OffsetX ||
                 fsnow->y != movedWin->y + Flags.OffsetY ||
                 (unsigned int) fsnow->w != movedWin->w + Flags.OffsetW) {
-                //fprintf(stdout, "windows.c: updateFallenSnowRegions() Updating due "
-                //    "to MOVED window : %li\n", movedWin->id);
+                // fprintf(stdout, "windows.c: updateFallenSnowRegions() Updating due "
+                //     "to MOVED window : %li\n", movedWin->id);
 
                 eraseFallenSnowOnDisplay(fsnow, 0, fsnow->w);
                 generateFallenSnowFlakes(fsnow, 0, fsnow->w, -10.0);
@@ -590,6 +591,7 @@ int updateWindowsList() {
     }
     global.WindowsChanged = 0;
 
+
     // Get current workspace.
     long currentWorkSpace = GetCurrentWorkspace();
     if (currentWorkSpace < 0) {
@@ -614,40 +616,37 @@ int updateWindowsList() {
     }
 
     // Update windows list. Free any current.
-    if (mWindowsList) {
-        free(mWindowsList);
-    }
-    // Get new list, error if none.
-    if (getX11WindowsList(&mWindowsList, &mNumberOfWindows) < 0) {
-        Flags.Done = 1;
-        unlockFallenSnowSemaphore();
-        return TRUE;
-    }
-    // Update list x/y.
-    for (int i = 0; i < mNumberOfWindows; i++) {
-        mWindowsList[i].x += global.WindowOffsetX - global.SnowWinX;
-        mWindowsList[i].y += global.WindowOffsetY - global.SnowWinY;
-    }
-
-    // Take care of the situation that the transparent window changes from
-    // workspace, which can happen if in a dynamic number of workspaces
-    // environment a workspace is emptied.
-    // check also on valid winfo: after toggling 'below'
-    // winfo is nil sometimes
-    // in xfce and maybe others, workspace info is not to be found
-    // in our transparent window. winfo->ws will be 0, and we keep
-    // the same value for TransWorkSpace.
-    WinInfo *winfo = FindWindow(mWindowsList, mNumberOfWindows, global.SnowWin);
-    if (global.Trans && winfo) {
-        if (winfo->ws > 0) {
-            TransWorkSpace = winfo->ws;
+    if (isWindowDraggingActive()) {
+        // fprintf(stdout, "windows: updateWindowsList() "
+        //     "NOW IGNORING - while Window being dragged.\n");
+    } else {
+        if (mWindowsList) {
+            free(mWindowsList);
         }
-    }
 
-    // if (!TransA && !winfo)  // let op
-    if (global.SnowWin != global.Rootwindow) {
-        if (!global.Trans && !winfo) {
+        // Get new list, error if none.
+        if (getX11WindowsList(&mWindowsList, &mNumberOfWindows) < 0) {
             Flags.Done = 1;
+            unlockFallenSnowSemaphore();
+            return TRUE;
+        }
+
+        for (int i = 0; i < mNumberOfWindows; i++) {
+            mWindowsList[i].x += global.WindowOffsetX - global.SnowWinX;
+            mWindowsList[i].y += global.WindowOffsetY - global.SnowWinY;
+        }
+
+        WinInfo *winfo = FindWindow(mWindowsList, mNumberOfWindows, global.SnowWin);
+        if (global.Trans && winfo) {
+            if (winfo->ws > 0) {
+                TransWorkSpace = winfo->ws;
+            }
+        }
+
+        if (global.SnowWin != global.Rootwindow) {
+            if (!global.Trans && !winfo) {
+                Flags.Done = 1;
+            }
         }
     }
 
@@ -689,8 +688,8 @@ void onWindowMapped(__attribute__((unused)) Window window) {
             lockFallenSnowSemaphore();
             eraseFallenSnowOnDisplay(fsnow, 0, fsnow->w);
             generateFallenSnowFlakes(fsnow, 0, fsnow->w, -10.0);
-            fprintf(stdout, "windows.c: onWindowMapped(%li) "
-                "Window Going Boof!\n", window);
+            // fprintf(stdout, "windows.c: onWindowMapped(%li) "
+            //    "Window Going Boof!\n", window);
             eraseFallenSnowOnWindow(fsnow->win.id);
             removeFallenSnowListItem(&global.FsnowFirst, fsnow->win.id);
             unlockFallenSnowSemaphore();
@@ -721,6 +720,8 @@ void onWindowDestroyed(__attribute__((unused)) Window window) {
  ** This method clears window drag state.
  **/
 void clearWindowDragState() {
+
+    // We're not dragging.
     setWindowDraggingInactive();
     setWindowBeingDragged(None);
 }
@@ -755,6 +756,7 @@ void setWindowDragState() {
         return;
     }
 
+    // We're dragging.
     setWindowBeingDragged(dragWindow);
     setWindowDraggingActive();
 }
@@ -803,9 +805,11 @@ bool isWindowDraggingActive() {
 }
 void setWindowDraggingActive() {
     mWindowDragging = true;
+    // fprintf(stdout, "windows: setWindowDraggingActive().\n");
 }
 void setWindowDraggingInactive() {
     mWindowDragging = false;
+    // fprintf(stdout, "windows: setWindowDraggingInactive().\n");
 }
 
 extern Window getWindowBeingDragged() {

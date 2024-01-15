@@ -124,6 +124,8 @@ void onWindowDestroyed(Window);
 void onWindowMapped(Window);
 void onWindowUnmapped(Window);
 
+bool isWindowDraggingActive();
+
 // ColorPicker methods.
 void uninitQPickerDialog();
 
@@ -432,19 +434,25 @@ int main_c(int argc, char *argv[]) {
     Flags.Done = 0;
     windows_init();
 
-    moon_init();
-    aurora_init();
-    Santa_init();
-    birds_init();
-    scenery_init();
+    // Init app modules.
     snow_init();
-    meteor_init();
-    wind_init();
-    stars_init();
-    blowoff_init();
-    treesnow_init();
-    addLoadMonitorToMainloop();
     initFallenSnowModule();
+    blowoff_init();
+    wind_init();
+
+    Santa_init();
+
+    scenery_init();
+    treesnow_init();
+
+    birds_init();
+
+    stars_init();
+    meteor_init();
+    aurora_init();
+    moon_init();
+
+    addLoadMonitorToMainloop();
 
     add_to_mainloop(PRIORITY_DEFAULT, time_displaychanged,
         onTimerEventDisplayChanged);
@@ -454,10 +462,12 @@ int main_c(int argc, char *argv[]) {
     add_to_mainloop(PRIORITY_DEFAULT, time_display_dimensions,
         do_display_dimensions);
 
-    add_to_mainloop(PRIORITY_HIGH, TIME_BETWEEEN_UI_SETTINGS_UPDATES, doAllUISettingsUpdates);
+    add_to_mainloop(PRIORITY_HIGH,
+        TIME_BETWEEEN_UI_SETTINGS_UPDATES, doAllUISettingsUpdates);
 
     if (Flags.StopAfter > 0) {
-        add_to_mainloop(PRIORITY_DEFAULT, Flags.StopAfter, do_stopafter);
+        add_to_mainloop(PRIORITY_DEFAULT,
+            Flags.StopAfter, do_stopafter);
     }
 
     HandleCpuFactor();
@@ -466,7 +476,6 @@ int main_c(int argc, char *argv[]) {
 
     DoAllWorkspaces(); // to set global.ChosenWorkSpace
 
-    P("Entering main loop\n");
     // main loop
     gtk_main();
 
@@ -847,6 +856,9 @@ void set_sticky(int isSticky) {
     }
 }
 
+/** *********************************************************************
+ **
+ **/
 void DoAllWorkspaces() {
     if (Flags.AllWorkspaces) {
         P("stick\n");
@@ -968,11 +980,20 @@ int handlePendingX11Events() {
         XEvent event;
         XNextEvent(global.display, &event);
 
+        // fprintf(stdout, "main: handlePendingX11Events() "
+        //    "event.type : %i\n", event.type);
+
         switch (event.type) {
             case ConfigureNotify:
-                global.WindowsChanged++;
-                if (event.xconfigure.window == global.SnowWin) {
-                    mMainWindowNeedsReconfiguration = true;
+                if (isWindowDraggingActive()) {
+                    // fprintf(stdout, "main: handlePendingX11Events() "
+                    //     "NOW IGNORING - ConfigureNotify() - "
+                    //     "while Window being dragged.\n");
+                } else {
+                    global.WindowsChanged++;
+                    if (event.xconfigure.window == global.SnowWin) {
+                            mMainWindowNeedsReconfiguration = true;
+                    }
                 }
                 break;
 

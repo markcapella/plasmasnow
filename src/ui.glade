@@ -349,6 +349,7 @@
     <property name="can-focus">False</property>
     <property name="halign">center</property>
     <property name="valign">center</property>
+    <property name="resizable">False</property>
     <signal name="destroy" handler="onClickedQuitApplication" swapped="no"/>
     <child>
       <object class="GtkStack" id="stack">
