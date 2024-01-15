@@ -85,13 +85,41 @@ int unlockFallenSnowSwapSemaphore() {
     return sem_post(&swap_sem);
 }
 
-int lockFallenSnowSemaphoreInternal() {
+int lockFallenSnowBaseSemaphore() {
     return sem_wait(&fallen_sem);
 }
-int unlockFallenSnowSemaphoreInternal() {
+int unlockFallenSnowBaseSemaphore() {
     return sem_post(&fallen_sem);
 }
 
+/** *********************************************************************
+ ** This method lets a caller perform deferred locks.
+ **/
+int softLockFallenSnowBaseSemaphore(
+    int maxSoftTries, int* tryCount) {
+    int resultCode;
+
+    // Guard tryCount and bump.
+    if (*tryCount < 0) {
+        *tryCount = 0;
+    }
+    (*tryCount)++;
+
+    // Set resultCode from soft or hard wait.
+    resultCode = (*tryCount > maxSoftTries) ?
+        sem_wait(&fallen_sem) : sem_trywait(&fallen_sem);
+
+    // Success clears tryCount for next time.
+    if (resultCode == 0) {
+        *tryCount = 0;
+    }
+
+    return resultCode;
+}
+
+/** *********************************************************************
+ ** This method ...
+ **/
 void updateFallenSnowAtBottom() {
     // threads: locking by caller
     FallenSnow *fsnow = findFallenSnowListItem(global.FsnowFirst, 0);
@@ -307,17 +335,18 @@ void CreateDesh(FallenSnow *p) {
  ** This method ...
  **/
 // change to desired heights
-int do_change_deshes(void *dummy) {
-    (void)dummy;
+int do_change_deshes(__attribute__((unused)) void* dummy) {
     static int lockcounter;
-    if (Lock_fallen_n(3, &lockcounter)) {
+    if (softLockFallenSnowBaseSemaphore(3, &lockcounter)) {
         return TRUE;
     }
+
     FallenSnow *fsnow = global.FsnowFirst;
     while (fsnow) {
         CreateDesh(fsnow);
         fsnow = fsnow->next;
     }
+
     unlockFallenSnowSemaphore();
     return TRUE;
 }
@@ -325,9 +354,10 @@ int do_change_deshes(void *dummy) {
 /** *********************************************************************
  ** This method ...
  **/
-int do_adjust_deshes(void *dummy) {
+int do_adjust_deshes(__attribute__((unused))void* dummy) {
     // threads: probably no need for lock, but to be sure:
     lockFallenSnowSemaphore();
+
     FallenSnow *fsnow = global.FsnowFirst;
     while (fsnow) {
         int i;
@@ -343,9 +373,9 @@ int do_adjust_deshes(void *dummy) {
         P("adjustments: %d\n", adjustments);
         fsnow = fsnow->next;
     }
+
     unlockFallenSnowSemaphore();
     return TRUE;
-    (void)dummy;
 }
 
 /** *********************************************************************
@@ -383,6 +413,7 @@ int removeFallenSnowListItem(FallenSnow **list, Window id) {
 
     fallen->next = scratch->next;
     freeFallenSnowDisplayArea(scratch);
+
     return 1;
 }
 

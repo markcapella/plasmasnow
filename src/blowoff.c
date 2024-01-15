@@ -64,7 +64,7 @@ int do_blowoff() {
         return TRUE;
     }
     static int lockcounter = 0;
-    if (Lock_fallen_n(3, &lockcounter)) {
+    if (softLockFallenSnowBaseSemaphore(3, &lockcounter)) {
         return TRUE;
     }
     FallenSnow *fsnow = global.FsnowFirst;

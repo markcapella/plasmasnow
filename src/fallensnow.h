@@ -37,36 +37,41 @@ extern void initFallenSnowSemaphores();
 int lockFallenSnowSwapSemaphore();
 int unlockFallenSnowSwapSemaphore();
 
-extern int lockFallenSnowSemaphoreInternal();
-extern int unlockFallenSnowSemaphoreInternal();
+extern int lockFallenSnowBaseSemaphore();
+extern int unlockFallenSnowBaseSemaphore();
+extern int softLockFallenSnowBaseSemaphore(
+    int maxSoftTries, int* tryCount);
 
 #ifndef __GNUC__
     #define lockFallenSnowSemaphore() \
-        lockFallenSnowSemaphoreInternal()
+        lockFallenSnowBaseSemaphore()
     #define unlockFallenSnowSemaphore() \
-        unlockFallenSnowSemaphoreInternal()
+        unlockFallenSnowBaseSemaphore()
+    #define softLockFallenSnowSemaphore(maxSoftTries,tryCount) \
+        softLockFallenSnowBaseSemaphore(maxSoftTries,tryCount)
 #else
     #define lockFallenSnowSemaphore() __extension__({ \
-            int retval = lockFallenSnowSemaphoreInternal(); \
-            retval; \
-        })
+            int retval = lockFallenSnowBaseSemaphore(); \
+            retval; })
     #define unlockFallenSnowSemaphore() __extension__({ \
-            int retval = unlockFallenSnowSemaphoreInternal(); \
-            retval; \
-        })
+            int retval = unlockFallenSnowBaseSemaphore(); \
+            retval; })
+    #define softLockFallenSnowSemaphore( \
+                maxSoftTries,tryCount) __extension__({ \
+            int retval = softLockFallenSnowBaseSemaphore( \
+                maxSoftTries,tryCount); \
+            retval; })
 #endif
+
 
 void *doExecFallenSnowThread();
 
 extern void initFallenSnowModule();
 extern void doFallenSnowUISettingsUpdates();
-
-
 extern void initFallenSnowList();
 
 extern void setMaxScreenSnowDepth();
 extern void setMaxScreenSnowDepthWithLock();
-
 extern int isFallenSnowOnVisibleWorkspace(FallenSnow *fsnow);
 
 extern void eraseFallenSnowOnWindow(Window id);
@@ -74,13 +79,15 @@ extern void eraseFallenSnowOnDisplay(FallenSnow *fsnow,
     int x, int w);
 void eraseFallenSnowAtPixel(FallenSnow *fsnow, int x);
 
-extern FallenSnow *findFallenSnowListItem(FallenSnow *first, Window id);
+extern FallenSnow *findFallenSnowListItem(
+    FallenSnow *first, Window id);
 
 extern void fallensnow_draw(cairo_t *cr);
 extern void drawFallenSnowListItem(FallenSnow *fsnow);
 void swapFallenSnowListItemSurfaces();
 
-extern int canSnowCollectOnWindowOrScreenBottom(FallenSnow *fsnow);
+extern int canSnowCollectOnWindowOrScreenBottom(
+    FallenSnow *fsnow);
 
 extern void updateFallenSnowWithWind(FallenSnow *fsnow,
     int w, int h);

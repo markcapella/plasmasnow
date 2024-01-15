@@ -20,7 +20,6 @@
 #-# 
 */
 
-
 #include <stdio.h>
 #include <ctype.h>
 #include <stdbool.h>
@@ -574,7 +573,7 @@ int updateWindowsList() {
     }
 
     static int lockcounter = 0;
-    if (Lock_fallen_n(3, &lockcounter)) {
+    if (softLockFallenSnowBaseSemaphore(3, &lockcounter)) {
         return TRUE;
     }
 
