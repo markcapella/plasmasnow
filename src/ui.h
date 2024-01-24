@@ -38,7 +38,6 @@ extern void addBusyStyleClass();
 extern void removeBusyStyleClass();
 
 extern void ui_gray_ww(const int m);
-extern void ui_gray_erase(const int m);
 extern void ui_gray_below(const int m);
 extern void ui_gray_birds(int m);
 extern int ui_checkgtk(void);

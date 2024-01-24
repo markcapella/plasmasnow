@@ -80,13 +80,13 @@ FILE *HomeOpen(const char *file, const char *mode, char **path) {
 
 void ClearScreen() {
     // remove all our snow-related drawings
-    XClearArea(global.display, global.SnowWin, 0, 0, 0, 0, True);
+    XClearArea(mGlobal.display, mGlobal.SnowWin, 0, 0, 0, 0, True);
 
     // Yes this is hairy: also remove meteor.
     // It could be that a meteor region is still hanging around
     meteor_erase();
 
-    XFlush(global.display);
+    XFlush(mGlobal.display);
 }
 
 ssize_t mywrite(int fd, const void *buf, size_t count) {
@@ -112,7 +112,7 @@ ssize_t mywrite(int fd, const void *buf, size_t count) {
  ** Module MAINLOOP methods.
  **/
 void sanelyCheckAndClearDisplayArea(Display *dsp, Window win,
-    int x, int y, int w, int h, int exposures) {
+    int x, int y, int w, int h, Bool exposures) {
     if (w == 0 || h == 0 ||
         w < 0 || h < 0 ||
         w > 20000 || h > 20000) {
@@ -140,17 +140,17 @@ float fsignf(float x) {
 int ValidColor(const char *colorName) {
     XColor scrncolor;
     XColor exactcolor;
-    int scrn = DefaultScreen(global.display);
+    int scrn = DefaultScreen(mGlobal.display);
     return (
-        XAllocNamedColor(global.display, DefaultColormap(global.display, scrn),
+        XAllocNamedColor(mGlobal.display, DefaultColormap(mGlobal.display, scrn),
             colorName, &scrncolor, &exactcolor));
 }
 
 Pixel AllocNamedColor(const char *colorName, Pixel dfltPix) {
     XColor scrncolor;
     XColor exactcolor;
-    int scrn = DefaultScreen(global.display);
-    if (XAllocNamedColor(global.display, DefaultColormap(global.display, scrn),
+    int scrn = DefaultScreen(mGlobal.display);
+    if (XAllocNamedColor(mGlobal.display, DefaultColormap(mGlobal.display, scrn),
             colorName, &scrncolor, &exactcolor)) {
         return scrncolor.pixel;
     } else {
@@ -184,12 +184,12 @@ double gaussian(double mean, double std, double min, double max) {
     return x;
 }
 
-guint add_to_mainloop(gint prio, float time, GSourceFunc func) {
+guint addMethodToMainloop(gint prio, float time, GSourceFunc func) {
     return g_timeout_add_full(
         prio, (int)1000 * (time * (0.95 + 0.1 * drand48())), func, NULL, NULL);
 }
 
-guint add_to_mainloop1(
+guint addMethodWithArgToMainloop(
     gint prio, float time, GSourceFunc func, gpointer datap) {
     return g_timeout_add_full(
         prio, (int)1000 * (time) * (0.95 + 0.1 * drand48()), func, datap, NULL);
@@ -213,7 +213,7 @@ void my_cairo_paint_with_alpha(cairo_t *cr, double alpha) {
     } else {
         cairo_paint_with_alpha(cr, alpha);
     }
-    P("%d alpha %f\n", global.counter++, alpha);
+    P("%d alpha %f\n", mGlobal.counter++, alpha);
 }
 
 void PrintVersion() {
@@ -244,23 +244,9 @@ void rgba2color(GdkRGBA *c, char **s) {
 /** *********************************************************************
  ** This method ...
  **/
-void Thanks(void) {
-    if (global.HaltedByInterrupt) {
-        printf(_("\nplasmasnow: Caught signal %d\n"), global.HaltedByInterrupt);
-    }
-    if (strlen(global.Message)) {
-        printf("\n%s\n", global.Message);
-    }
-    printf(_("\nThanks for using plasmasnow\n"));
-    fflush(stdout);
-}
-
-/** *********************************************************************
- ** This method ...
- **/
 int appScalesHaveChanged(int *prevscale) {
     const int newscale =
-        (const int) (Flags.Scale * global.WindowScale);
+        (const int) (Flags.Scale * mGlobal.WindowScale);
 
     if (*prevscale != (newscale )) {
         *prevscale = newscale;

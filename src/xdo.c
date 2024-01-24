@@ -303,16 +303,21 @@ int xdo_get_window_size(const xdo_t *xdo, Window wid, unsigned int *width_ret,
     return _is_success("XGetWindowAttributes", ret == 0, xdo);
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 int xdo_move_window(const xdo_t *xdo, Window wid, int x, int y) {
     XWindowChanges wc;
-    int ret = 0;
     wc.x = x;
     wc.y = y;
 
-    ret = XConfigureWindow(xdo->xdpy, wid, CWX | CWY, &wc);
-    return _is_success("XConfigureWindow", ret == 0, xdo);
+    return _is_success("XConfigureWindow",
+        XConfigureWindow(xdo->xdpy, wid, CWX | CWY, &wc) == 0, xdo);
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 int xdo_translate_window_with_sizehint(const xdo_t *xdo, Window window,
     unsigned int width, unsigned int height, unsigned int *width_ret,
     unsigned int *height_ret) {
@@ -344,42 +349,45 @@ int xdo_translate_window_with_sizehint(const xdo_t *xdo, Window window,
     return XDO_SUCCESS;
 }
 
-int xdo_set_window_size(
-    const xdo_t *xdo, Window window, int width, int height, int flags) {
-    XWindowChanges wc;
-    int ret = 0;
-    int cw_flags = 0;
+/** *********************************************************************
+ ** This method ...
+ **/
+int xdo_set_window_size(const xdo_t *xdo, Window window,
+    int width, int height, int flags) {
 
     if (flags & SIZE_USEHINTS) {
         flags |= SIZE_USEHINTS_X | SIZE_USEHINTS_Y;
     }
 
+    XWindowChanges wc;
     wc.width = width;
     wc.height = height;
 
     if (flags & SIZE_USEHINTS_X) {
-        xdo_translate_window_with_sizehint(
-            xdo, window, width, height, (unsigned int *)&wc.width, NULL);
+        xdo_translate_window_with_sizehint(xdo, window,
+            width, height, (unsigned int *) & wc.width, NULL);
     }
-
     if (flags & SIZE_USEHINTS_Y) {
-        xdo_translate_window_with_sizehint(
-            xdo, window, width, height, NULL, (unsigned int *)&wc.height);
+        xdo_translate_window_with_sizehint(xdo, window,
+            width, height, NULL, (unsigned int *) & wc.height);
     }
 
+    int cw_flags = 0;
     if (width > 0) {
         cw_flags |= CWWidth;
     }
-
     if (height > 0) {
         cw_flags |= CWHeight;
     }
 
-    ret = XConfigureWindow(xdo->xdpy, window, cw_flags, &wc);
+    int ret = XConfigureWindow(xdo->xdpy, window, cw_flags, &wc);
     XFlush(xdo->xdpy);
     return _is_success("XConfigureWindow", ret == 0, xdo);
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 int xdo_set_window_override_redirect(
     const xdo_t *xdo, Window wid, int override_redirect) {
     int ret;
@@ -391,6 +399,9 @@ int xdo_set_window_override_redirect(
     return _is_success("XChangeWindowAttributes", ret == 0, xdo);
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 int xdo_set_window_class(
     const xdo_t *xdo, Window wid, const char *name, const char *_class) {
     int ret = 0;

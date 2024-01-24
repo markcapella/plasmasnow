@@ -181,7 +181,7 @@ void docs_usage(int man) {
     manout("-doublebuffer <n>",
         "1: use double buffering; 0: do not use double buffering (default: "
         "%d).",
-        F(UseDouble));
+        F(useDoubleBuffers));
     manout(" ", "Only effective with '-root' or '-id' or '-xwininfo'.");
     manout("-transparency <n>", "Transparency in % (default: %d)",
         F(Transparency));

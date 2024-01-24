@@ -55,11 +55,10 @@
 /***********************************************************
  * Module Method stubs.
  */
-
 // Workspace.
 static void DetermineVisualWorkspaces();
 static int do_sendevent();
-static int updateWindowsList();
+extern int updateWindowsList();
 
  // Windows.
 extern void onWindowCreated(Window);
@@ -72,7 +71,7 @@ void clearWindowDragState();
 void setWindowDragState();
 
 // Window dragging helpers.
-Window getDragWindowOf(Window);
+extern Window getDragWindowOf(Window);
 
 bool mWindowDragging = false;
 extern bool isWindowDraggingActive();
@@ -85,7 +84,9 @@ void setWindowBeingDragged(Window);
 
 // ColorPicker methods.
 void uninitQPickerDialog();
+extern void applicationFinish(void);
 
+//extern int getTmpLogFile();
 
 /** *********************************************************************
  ** Module globals and consts.
@@ -95,20 +96,37 @@ void uninitQPickerDialog();
 static long TransWorkSpace = -SOMENUMBER;
 
 // Main WinInfo (Windows) List.
-static int mNumberOfWindows;
-static WinInfo* mWindowsList = NULL;
+static int mWinInfoListLength = 0;
+static WinInfo* mWinInfoList = NULL;
 
+extern void getWinInfoList();
+
+/** *********************************************************************
+ ** This method scans all WinInfos for a requested ID.
+ **/
+WinInfo* findWinInfoByWindowId(Window reqID) {
+    WinInfo* winInfoItem = mWinInfoList;
+    for (int i = 0; i < mWinInfoListLength; i++) {
+        if (winInfoItem->id == reqID) {
+            return winInfoItem;
+        }
+        winInfoItem++;
+    }
+
+    return NULL;
+}
 
 /** *********************************************************************
  ** This method ...
  **/
-void windows_init() {
-    if (global.Desktop) {
+void addWindowsModuleToMainloop() {
+    if (mGlobal.hasDestopWindow) {
         DetermineVisualWorkspaces();
-        add_to_mainloop(PRIORITY_DEFAULT, time_wupdate, updateWindowsList);
+        addMethodToMainloop(PRIORITY_DEFAULT, time_wupdate, updateWindowsList);
     }
-    if (!global.IsDouble) {
-        add_to_mainloop(PRIORITY_DEFAULT, time_sendevent, do_sendevent);
+
+    if (!mGlobal.isDoubleBuffered) {
+        addMethodToMainloop(PRIORITY_DEFAULT, time_sendevent, do_sendevent);
     }
 }
 
@@ -116,20 +134,17 @@ void windows_init() {
  ** This method ...
  **/
 int WorkspaceActive() {
-    P("global.Trans etc %d %d %d %d\n", Flags.AllWorkspaces, global.Trans,
-        global.CWorkSpace == TransWorkSpace,
-        Flags.AllWorkspaces || !global.Trans ||
-            global.CWorkSpace == TransWorkSpace);
     // ah, so difficult ...
     if (Flags.AllWorkspaces) {
         return 1;
     }
-    int i;
-    for (i = 0; i < global.NVisWorkSpaces; i++) {
-        if (global.VisWorkSpaces[i] == global.ChosenWorkSpace) {
+
+    for (int i = 0; i < mGlobal.NVisWorkSpaces; i++) {
+        if (mGlobal.VisWorkSpaces[i] == mGlobal.ChosenWorkSpace) {
             return 1;
         }
     }
+
     return 0;
 }
 
@@ -138,17 +153,18 @@ int WorkspaceActive() {
  **/
 int do_sendevent() {
     XExposeEvent event;
-
     event.type = Expose;
+
     event.send_event = True;
-    event.display = global.display;
-    event.window = global.SnowWin;
+    event.display = mGlobal.display;
+    event.window = mGlobal.SnowWin;
+
     event.x = 0;
     event.y = 0;
-    event.width = global.SnowWinWidth;
-    event.height = global.SnowWinHeight;
+    event.width = mGlobal.SnowWinWidth;
+    event.height = mGlobal.SnowWinHeight;
 
-    XSendEvent(global.display, global.SnowWin, True, Expose, (XEvent *)&event);
+    XSendEvent(mGlobal.display, mGlobal.SnowWin, True, Expose, (XEvent *) &event);
     return TRUE;
 }
 
@@ -156,7 +172,8 @@ int do_sendevent() {
  ** This method ...
  **/
 void DetermineVisualWorkspaces() {
-    P("%d Entering DetermineVisualWorkspaces\n", global.counter++);
+    P("%d Entering DetermineVisualWorkspaces\n", mGlobal.counter++);
+
     static XClassHint class_hints;
     static XSetWindowAttributes attr;
     static long valuemask;
@@ -164,32 +181,33 @@ void DetermineVisualWorkspaces() {
     static Atom motif_hints;
     static XSizeHints wmsize;
 
-    if (!global.Desktop) {
-        global.NVisWorkSpaces = 1;
-        global.VisWorkSpaces[0] = global.CWorkSpace;
+    if (!mGlobal.hasDestopWindow) {
+        mGlobal.NVisWorkSpaces = 1;
+        mGlobal.VisWorkSpaces[0] = mGlobal.CWorkSpace;
         return;
     }
 
     static Window probeWindow = 0;
     if (probeWindow) {
-        XDestroyWindow(global.display, probeWindow);
+        XDestroyWindow(mGlobal.display, probeWindow);
     } else {
-        P("Creating attrs for probeWindow\n");
-        attr.background_pixel = WhitePixel(global.display, global.Screen);
-        attr.border_pixel = WhitePixel(global.display, global.Screen);
+
+        // Probe window
+        attr.background_pixel = WhitePixel(mGlobal.display, mGlobal.Screen);
+        attr.border_pixel = WhitePixel(mGlobal.display, mGlobal.Screen);
         attr.event_mask = ButtonPressMask;
         valuemask = CWBackPixel | CWBorderPixel | CWEventMask;
-        class_hints.res_name = (char *)"plasmasnow";
-        class_hints.res_class = (char *)"plasmasnow";
-        motif_hints = XInternAtom(global.display, "_MOTIF_WM_HINTS", False);
+        class_hints.res_name = (char *) "plasmasnow";
+        class_hints.res_class = (char *) "plasmasnow";
+        motif_hints = XInternAtom(mGlobal.display, "_MOTIF_WM_HINTS", False);
         wmsize.flags = USPosition | USSize;
     }
 
     int number;
-    XineramaScreenInfo *info = XineramaQueryScreens(global.display, &number);
+    XineramaScreenInfo *info = XineramaQueryScreens(mGlobal.display, &number);
     if (number == 1 || info == NULL) {
-        global.NVisWorkSpaces = 1;
-        global.VisWorkSpaces[0] = global.CWorkSpace;
+        mGlobal.NVisWorkSpaces = 1;
+        mGlobal.VisWorkSpaces[0] = mGlobal.CWorkSpace;
         return;
     }
 
@@ -197,19 +215,19 @@ void DetermineVisualWorkspaces() {
     // Determine which workspaces are visible: place a window (probeWindow)
     // in each xinerama screen, and ask in which workspace the window
     // is located.
-    probeWindow = XCreateWindow(global.display, global.Rootwindow, 1, 1, 1, 1,
-        10, DefaultDepth(global.display, global.Screen), InputOutput,
-        DefaultVisual(global.display, global.Screen), valuemask, &attr);
-    XSetClassHint(global.display, probeWindow, &class_hints);
+    probeWindow = XCreateWindow(mGlobal.display, mGlobal.Rootwindow, 1, 1, 1, 1,
+        10, DefaultDepth(mGlobal.display, mGlobal.Screen), InputOutput,
+        DefaultVisual(mGlobal.display, mGlobal.Screen), valuemask, &attr);
+    XSetClassHint(mGlobal.display, probeWindow, &class_hints);
 
     // to prevent the user to determine the intial position (in twm for example)
-    XSetWMNormalHints(global.display, probeWindow, &wmsize);
+    XSetWMNormalHints(mGlobal.display, probeWindow, &wmsize);
 
-    XChangeProperty(global.display, probeWindow, motif_hints, motif_hints, 32,
+    XChangeProperty(mGlobal.display, probeWindow, motif_hints, motif_hints, 32,
         PropModeReplace, (unsigned char *) &hints, 5);
-    xdo_map_window(global.xdo, probeWindow);
+    xdo_map_window(mGlobal.xdo, probeWindow);
 
-    global.NVisWorkSpaces = number;
+    mGlobal.NVisWorkSpaces = number;
     int prev = -SOMENUMBER;
     for (int i = 0; i < number; i++) {
         int x = info[i].x_org;
@@ -222,27 +240,27 @@ void DetermineVisualWorkspaces() {
         int xm = x + w / 2;
         int ym = y + h / 2;
         P("movewindow: %d %d\n", xm, ym);
-        xdo_move_window(global.xdo, probeWindow, xm, ym);
-        xdo_wait_for_window_map_state(global.xdo, probeWindow, IsViewable);
+        xdo_move_window(mGlobal.xdo, probeWindow, xm, ym);
+        xdo_wait_for_window_map_state(mGlobal.xdo, probeWindow, IsViewable);
         long desktop;
-        int rc = xdo_get_desktop_for_window(global.xdo, probeWindow, &desktop);
+        int rc = xdo_get_desktop_for_window(mGlobal.xdo, probeWindow, &desktop);
         if (rc == XDO_ERROR) {
-            desktop = global.CWorkSpace;
+            desktop = mGlobal.CWorkSpace;
         }
         P("desktop: %ld rc: %d\n", desktop, rc);
-        global.VisWorkSpaces[i] = desktop;
+        mGlobal.VisWorkSpaces[i] = desktop;
 
         if (desktop != prev) {
             // this is for the case that the xinerama screens belong to
             // different workspaces, as seems to be the case in e.g. bspwm
             if (prev >= 0) {
-                global.WindowOffsetX = 0;
-                global.WindowOffsetY = 0;
+                mGlobal.WindowOffsetX = 0;
+                mGlobal.WindowOffsetY = 0;
             }
             prev = desktop;
         }
     }
-    xdo_unmap_window(global.xdo, probeWindow);
+    xdo_unmap_window(mGlobal.xdo, probeWindow);
 }
 
 /** *********************************************************************
@@ -261,25 +279,25 @@ void updateFallenSnowRegions() {
     FallenSnow *fsnow;
 
     // add fallensnow regions:
-    WinInfo* addWin = mWindowsList;
-    for (int i = 0; i < mNumberOfWindows; i++) {
-        fsnow = findFallenSnowListItem(global.FsnowFirst, addWin->id);
+    WinInfo* addWin = mWinInfoList;
+    for (int i = 0; i < mWinInfoListLength; i++) {
+        fsnow = findFallenSnowListItem(mGlobal.FsnowFirst, addWin->id);
         if (fsnow) {
             fsnow->win = *addWin;
             if ((!fsnow->win.sticky) &&
-                fsnow->win.ws != global.CWorkSpace) {
+                fsnow->win.ws != mGlobal.CWorkSpace) {
                 eraseFallenSnowOnDisplay(fsnow, 0, fsnow->w);
             }
         }
 
-        // window found in mWindowsList, but not in list of fallensnow,
+        // window found in mWinInfoList, but not in list of fallensnow,
         // add it, but not if we are snowing or birding in this window
         // (Desktop for example) and also not if this window has y <= 0
         // and also not if this window is a "dock"
         if (!fsnow) {
-            if (addWin->id != global.SnowWin &&
+            if (addWin->id != mGlobal.SnowWin &&
                 addWin->y > 0 && !(addWin->dock)) {
-                if ((int) (addWin->w) == global.SnowWinWidth &&
+                if ((int) (addWin->w) == mGlobal.SnowWinWidth &&
                     addWin->x == 0 && addWin->y < 100) {
                     continue;
                 }
@@ -293,7 +311,7 @@ void updateFallenSnowRegions() {
 
                 // fprintf(stdout, "windows.c: updateFallenSnowRegions() "
                 //     "adding a FallenSnow (%lu)\n", addWin->id);
-                PushFallenSnow(&global.FsnowFirst, addWin,
+                PushFallenSnow(&mGlobal.FsnowFirst, addWin,
                     addWin->x + Flags.OffsetX, addWin->y + Flags.OffsetY,
                     addWin->w + Flags.OffsetW, Flags.MaxWinSnowDepth);
             }
@@ -303,7 +321,7 @@ void updateFallenSnowRegions() {
     }
 
     // Count fallensnow regions.
-    fsnow = global.FsnowFirst;
+    fsnow = mGlobal.FsnowFirst;
     int nf = 0;
     while (fsnow) {
         nf++;
@@ -314,14 +332,14 @@ void updateFallenSnowRegions() {
     int ntoremove = 0;
     long int *toremove = (long int *) malloc(sizeof(*toremove) * (nf + 1));
 
-    fsnow = global.FsnowFirst;
+    fsnow = mGlobal.FsnowFirst;
     while (fsnow) {
         if (fsnow->win.id != 0) {
-            WinInfo* removeWin = FindWindow(mWindowsList, mNumberOfWindows, fsnow->win.id);
+            WinInfo* removeWin = findWinInfoByWindowId(fsnow->win.id);
             if (!removeWin ||
-                (removeWin->w > 0.8 * global.SnowWinWidth && removeWin->ya < Flags.IgnoreTop) ||
-                (removeWin->w > 0.8 * global.SnowWinWidth &&
-                    (int)global.SnowWinHeight - removeWin->ya < Flags.IgnoreBottom)) {
+                (removeWin->w > 0.8 * mGlobal.SnowWinWidth && removeWin->ya < Flags.IgnoreTop) ||
+                (removeWin->w > 0.8 * mGlobal.SnowWinWidth &&
+                    (int)mGlobal.SnowWinHeight - removeWin->ya < Flags.IgnoreBottom)) {
                 generateFallenSnowFlakes(fsnow, 0, fsnow->w, -10.0);
                 toremove[ntoremove++] = fsnow->win.id;
             }
@@ -340,9 +358,9 @@ void updateFallenSnowRegions() {
     }
 
     // Test if window has been moved or resized.
-    WinInfo* movedWin = mWindowsList;
-    for (int i = 0; i < mNumberOfWindows; i++) {
-        fsnow = findFallenSnowListItem(global.FsnowFirst, movedWin->id);
+    WinInfo* movedWin = mWinInfoList;
+    for (int i = 0; i < mWinInfoListLength; i++) {
+        fsnow = findFallenSnowListItem(mGlobal.FsnowFirst, movedWin->id);
         if (fsnow) {
             if (fsnow->x != movedWin->x + Flags.OffsetX ||
                 fsnow->y != movedWin->y + Flags.OffsetY ||
@@ -356,7 +374,7 @@ void updateFallenSnowRegions() {
 
                 fsnow->x = movedWin->x + Flags.OffsetX;
                 fsnow->y = movedWin->y + Flags.OffsetY;
-                XFlush(global.display);
+                XFlush(mGlobal.display);
             }
         }
 
@@ -365,7 +383,7 @@ void updateFallenSnowRegions() {
 
     for (int i = 0; i < ntoremove; i++) {
         eraseFallenSnowOnWindow(toremove[i]);
-        removeFallenSnowListItem(&global.FsnowFirst, toremove[i]);
+        removeFallenSnowListItem(&mGlobal.FsnowFirst, toremove[i]);
     }
     free(toremove);
 }
@@ -416,16 +434,16 @@ int xinerama(Display *display, int xscreen, int *x, int *y, int *w, int *h) {
 void InitDisplayDimensions() {
     unsigned int w, h;
     int x, y;
-    xdo_get_window_location(global.xdo, global.Rootwindow, &x, &y, NULL);
-    xdo_get_window_size(global.xdo, global.Rootwindow, &w, &h);
+    xdo_get_window_location(mGlobal.xdo, mGlobal.Rootwindow, &x, &y, NULL);
+    xdo_get_window_size(mGlobal.xdo, mGlobal.Rootwindow, &w, &h);
 
-    P("InitDisplayDimensions root: %p %d %d %d %d\n", (void *)global.Rootwindow,
+    P("InitDisplayDimensions root: %p %d %d %d %d\n", (void *)mGlobal.Rootwindow,
         x, y, w, h);
 
-    global.Xroot = x;
-    global.Yroot = y;
-    global.Wroot = w;
-    global.Hroot = h;
+    mGlobal.Xroot = x;
+    mGlobal.Yroot = y;
+    mGlobal.Wroot = w;
+    mGlobal.Hroot = h;
 
     DisplayDimensions();
 }
@@ -436,42 +454,43 @@ void InitDisplayDimensions() {
 void DisplayDimensions() {
     P("Displaydimensions\n");
     lockFallenSnowSemaphore();
-    unsigned int w, h, b, d;
-    int x, y;
+
+    //
+    xdo_wait_for_window_map_state(mGlobal.xdo, mGlobal.SnowWin, IsViewable);
+
     Window root;
-
-    xdo_wait_for_window_map_state(global.xdo, global.SnowWin, IsViewable);
-
+    int x, y;
+    unsigned int w, h, b, d;
     int rc = XGetGeometry(
-        global.display, global.SnowWin, &root, &x, &y, &w, &h, &b, &d);
-
+        mGlobal.display, mGlobal.SnowWin, &root, &x, &y, &w, &h, &b, &d);
     if (rc == 0) {
         P("Oeps\n");
         I("\nSnow window %#lx has disappeared, it seems. I quit.\n",
-            global.SnowWin);
+            mGlobal.SnowWin);
         uninitQPickerDialog();
-        Thanks();
+        applicationFinish();
         exit(1);
         return;
     }
 
-    global.SnowWinWidth = w;
-    global.SnowWinHeight = h + Flags.OffsetS;
+    //
+    mGlobal.SnowWinWidth = w;
+    mGlobal.SnowWinHeight = h + Flags.OffsetS;
 
-    P("DisplayDimensions: SnowWinX: %d Y:%d W:%d H:%d\n", global.SnowWinX,
-        global.SnowWinY, global.SnowWinWidth, global.SnowWinHeight);
+    P("DisplayDimensions: SnowWinX: %d Y:%d W:%d H:%d\n", mGlobal.SnowWinX,
+        mGlobal.SnowWinY, mGlobal.SnowWinWidth, mGlobal.SnowWinHeight);
 
-    global.SnowWinBorderWidth = b;
-    global.SnowWinDepth = d;
+    mGlobal.SnowWinBorderWidth = b;
+    mGlobal.SnowWinDepth = d;
 
     updateFallenSnowAtBottom();
-
     RedrawTrees();
 
     setMaxScreenSnowDepth();
-    if (!global.IsDouble) {
+    if (!mGlobal.isDoubleBuffered) {
         ClearScreen();
     }
+
     unlockFallenSnowSemaphore();
 }
 
@@ -486,10 +505,10 @@ void SetBackground() {
 
     printf(_("Setting background from %s\n"), f);
 
-    int w = global.SnowWinWidth;
-    int h = global.SnowWinHeight;
-    Display *display = global.display;
-    Window window = global.SnowWin;
+    int w = mGlobal.SnowWinWidth;
+    int h = mGlobal.SnowWinHeight;
+    Display *display = mGlobal.display;
+    Window window = mGlobal.SnowWin;
     int screen_num = DefaultScreen(display);
     int depth = DefaultDepth(display, screen_num);
 
@@ -553,6 +572,7 @@ void SetBackground() {
     g_object_unref(pixbuf);
     XFreePixmap(display, pixmap);
     XDestroyImage(ximage);
+
     // free(pixels1);  //This is already freed by XDestroyImage
     return;
 }
@@ -582,84 +602,93 @@ int updateWindowsList() {
     static int wcounter = 0;
     wcounter++;
     if (wcounter > 9) {
-        global.WindowsChanged = 1;
+        mGlobal.WindowsChanged = 1;
         wcounter = 0;
     }
-    if (!global.WindowsChanged) {
+    if (!mGlobal.WindowsChanged) {
         unlockFallenSnowSemaphore();
         return TRUE;
     }
-    global.WindowsChanged = 0;
-
+    mGlobal.WindowsChanged = 0;
 
     // Get current workspace.
-    long currentWorkSpace = GetCurrentWorkspace();
+    long currentWorkSpace = getCurrentWorkspace();
     if (currentWorkSpace < 0) {
         Flags.Done = 1;
         unlockFallenSnowSemaphore();
+        {   const char* logMsg = "windows: updateWindowsList() Finishes. 5\n";
+            fprintf(stdout, "%s", logMsg);
+        }
         return TRUE;
     }
 
     // Update on Workspace change.
-    global.CWorkSpace = currentWorkSpace;
+    mGlobal.CWorkSpace = currentWorkSpace;
     if (currentWorkSpace != PrevWorkSpace) {
         PrevWorkSpace = currentWorkSpace;
         DetermineVisualWorkspaces();
     }
 
-    // Special hack too keep global.SnowWin below (needed for example in
-    // FVWM/xcompmgr, where global.SnowWin is not click-through)
-    if (Flags.BelowAll) {
-        XWindowChanges changes;
-        changes.stack_mode = Below;
-        XConfigureWindow(global.display, global.SnowWin, CWStackMode, &changes);
+    // Special hack too keep mGlobal.SnowWin below (needed for example in
+    // FVWM/xcompmgr, where mGlobal.SnowWin is not click-through)
+    logAllWindowsStackedTopToBottom();
+
+    //XWindowChanges changes;
+    //changes.stack_mode = Below;
+    //XConfigureWindow(mGlobal.display, mGlobal.SnowWin,
+    //    CWStackMode, &changes);
+
+    logAllWindowsStackedTopToBottom();
+
+    if (isWindowDraggingActive()) {
+        updateFallenSnowRegions();
+        unlockFallenSnowSemaphore();
+        return true;
     }
 
     // Update windows list. Free any current.
-    if (isWindowDraggingActive()) {
-        // fprintf(stdout, "windows: updateWindowsList() "
-        //     "NOW IGNORING - while Window being dragged.\n");
-    } else {
-        if (mWindowsList) {
-            free(mWindowsList);
-        }
+    // Get new list, error if none.
+    getWinInfoList();
 
-        // Get new list, error if none.
-        if (getX11WindowsList(&mWindowsList, &mNumberOfWindows) < 0) {
+    for (int i = 0; i < mWinInfoListLength; i++) {
+        mWinInfoList[i].x += mGlobal.WindowOffsetX - mGlobal.SnowWinX;
+        mWinInfoList[i].y += mGlobal.WindowOffsetY - mGlobal.SnowWinY;
+    }
+
+    WinInfo* winInfo = findWinInfoByWindowId(mGlobal.SnowWin);
+    if (mGlobal.hasTransparentWindow && winInfo) {
+        if (winInfo->ws > 0) {
+            TransWorkSpace = winInfo->ws;
+        }
+    }
+
+    if (mGlobal.SnowWin != mGlobal.Rootwindow) {
+        if (!mGlobal.hasTransparentWindow && !winInfo) {
             Flags.Done = 1;
-            unlockFallenSnowSemaphore();
-            return TRUE;
-        }
-
-        for (int i = 0; i < mNumberOfWindows; i++) {
-            mWindowsList[i].x += global.WindowOffsetX - global.SnowWinX;
-            mWindowsList[i].y += global.WindowOffsetY - global.SnowWinY;
-        }
-
-        WinInfo *winfo = FindWindow(mWindowsList, mNumberOfWindows, global.SnowWin);
-        if (global.Trans && winfo) {
-            if (winfo->ws > 0) {
-                TransWorkSpace = winfo->ws;
-            }
-        }
-
-        if (global.SnowWin != global.Rootwindow) {
-            if (!global.Trans && !winfo) {
-                Flags.Done = 1;
-            }
         }
     }
 
     updateFallenSnowRegions();
 
     unlockFallenSnowSemaphore();
+    /*
+    {   const char* logMsg = "windows: updateWindowsList() Finishes.\n";
+        write(getTmpLogFile(), logMsg, strlen(logMsg));
+    }
+    */
     return TRUE;
 }
 
-
 /** *********************************************************************
- ** Module EXTERN methods.
+ ** This method ...
  **/
+void getWinInfoList() {
+    if (mWinInfoList) {
+        free(mWinInfoList);
+    }
+
+    getX11WindowsList(&mWinInfoList, &mWinInfoListLength);
+}
 
 /** *********************************************************************
  ** This method handles X11 Windows being created.
@@ -667,6 +696,18 @@ int updateWindowsList() {
  ** (Rough life-cycle order.)
  **/
 void onWindowCreated(__attribute__((unused)) Window window) {
+    {   const char* logMsg =
+            "windows: onWindowCreated() Starts.\n";
+        fprintf(stdout, "%s", logMsg);
+    }
+
+    // Update our list to include the new one.
+    getWinInfoList();
+
+    {   const char* logMsg =
+            "windows: onWindowCreated() Finishes.\n";
+        fprintf(stdout, "%s", logMsg);
+    }
 }
 
 /** *********************************************************************
@@ -676,24 +717,30 @@ void onWindowCreated(__attribute__((unused)) Window window) {
  ** and to immediately clear it's fallensnow.
  **/
 void onWindowMapped(__attribute__((unused)) Window window) {
+    {   const char* logMsg = "windows: onWindowMapped() Starts.\n";
+        fprintf(stdout, "%s", logMsg);
+    }
 
     // Determine window drag state.
     setWindowDragState();
 
     // Clear snow from window that just started dragging.
     if (isWindowDraggingActive()) {
-        FallenSnow* fsnow = findFallenSnowListItem(global.FsnowFirst,
+        FallenSnow* fsnow = findFallenSnowListItem(mGlobal.FsnowFirst,
             getWindowBeingDragged());
         if (fsnow) {
             lockFallenSnowSemaphore();
             eraseFallenSnowOnDisplay(fsnow, 0, fsnow->w);
+
             generateFallenSnowFlakes(fsnow, 0, fsnow->w, -10.0);
-            // fprintf(stdout, "windows.c: onWindowMapped(%li) "
-            //    "Window Going Boof!\n", window);
             eraseFallenSnowOnWindow(fsnow->win.id);
-            removeFallenSnowListItem(&global.FsnowFirst, fsnow->win.id);
+            removeFallenSnowListItem(&mGlobal.FsnowFirst, fsnow->win.id);
             unlockFallenSnowSemaphore();
         }
+    }
+
+    {   const char* logMsg = "windows: onWindowMapped() Finishes.\n";
+        fprintf(stdout, "%s", logMsg);
     }
 }
 
@@ -703,9 +750,18 @@ void onWindowMapped(__attribute__((unused)) Window window) {
  ** Our main job is to clear window drag state.
  **/
 void onWindowUnmapped(__attribute__((unused)) Window window) {
+    {   const char* logMsg =
+            "windows: onWindowUnmapped() Starts.\n";
+            fprintf(stdout, "%s", logMsg);
+    }
 
     // Clear window drag state.
     clearWindowDragState();
+
+    {   const char* logMsg =
+            "windows: onWindowUnmapped() Finishes.\n";
+        fprintf(stdout, "%s", logMsg);
+    }
 }
 
 /** *********************************************************************
@@ -714,6 +770,18 @@ void onWindowUnmapped(__attribute__((unused)) Window window) {
  ** (Rough life-cycle order.)
  **/
 void onWindowDestroyed(__attribute__((unused)) Window window) {
+    {   const char* logMsg =
+            "windows: onWindowDestroyed() Starts.\n";
+        fprintf(stdout, "%s", logMsg);
+    }
+
+    // Update our list to reflect the destroyed one.
+    getWinInfoList();
+
+    {   const char* logMsg =
+            "windows: onWindowDestroyed() Finishes.\n";
+        fprintf(stdout, "%s", logMsg);
+    }
 }
 
 /** *********************************************************************
@@ -733,13 +801,13 @@ void setWindowDragState() {
     // Find the focused window.
     Window focusedWindow;
     int focusedWindowState;
-    XGetInputFocus(global.display, &focusedWindow, &focusedWindowState);
+    XGetInputFocus(mGlobal.display, &focusedWindow, &focusedWindowState);
 
     //  Find the focused window pointer click state.
     Window root_return, child_return;
     int root_x_return, root_y_return, win_x_return, win_y_return;
     unsigned int pointerState;
-    if (!XQueryPointer(global.display, focusedWindow, &root_return, &child_return,
+    if (!XQueryPointer(mGlobal.display, focusedWindow, &root_return, &child_return,
         &root_x_return, &root_y_return, &win_x_return, &win_y_return,
         &pointerState)) {
         return;
@@ -764,7 +832,7 @@ void setWindowDragState() {
 /** *********************************************************************
  ** This method determines which window is being dragged, by
  ** returning the supplied window or the first parent window in
- ** its ancestor chain that is in mWindowsList.
+ ** its ancestor chain that is in mWinInfoList.
  **
  **/
 Window getDragWindowOf(Window window) {
@@ -772,8 +840,8 @@ Window getDragWindowOf(Window window) {
 
     while (TRUE) {
         // Check current node in windows list.
-        WinInfo* windowListItem = mWindowsList;
-        for (int i = 0; i < mNumberOfWindows; i++) {
+        WinInfo* windowListItem = mWinInfoList;
+        for (int i = 0; i < mWinInfoListLength; i++) {
             if (windowNode == windowListItem->id) {
                 return windowNode;
             }
@@ -785,7 +853,7 @@ Window getDragWindowOf(Window window) {
         Window root, parent;
         Window* children = NULL;
         unsigned int windowChildCount;
-        if (!(XQueryTree(global.display, windowNode,
+        if (!(XQueryTree(mGlobal.display, windowNode,
                 &root, &parent, &children, &windowChildCount))) {
             return None;
         }
@@ -803,18 +871,19 @@ Window getDragWindowOf(Window window) {
 bool isWindowDraggingActive() {
     return mWindowDragging;
 }
+
 void setWindowDraggingActive() {
     mWindowDragging = true;
-    // fprintf(stdout, "windows: setWindowDraggingActive().\n");
 }
+
 void setWindowDraggingInactive() {
     mWindowDragging = false;
-    // fprintf(stdout, "windows: setWindowDraggingInactive().\n");
 }
 
 extern Window getWindowBeingDragged() {
     return mWindowBeingDragged;
 }
+
 void setWindowBeingDragged(Window window) {
     mWindowBeingDragged = window;
 }

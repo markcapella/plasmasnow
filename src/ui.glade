@@ -390,12 +390,13 @@
                   <object class="GtkButton" id="all-defaults">
                     <property name="label" translatable="yes">All Defaults</property>
                     <property name="visible">True</property>
-                    <property name="can-focus">True</property>
+                    <property name="can-focus">False</property>
                     <property name="receives-default">True</property>
                     <property name="tooltip-text" translatable="yes">Apply default values for the preferences in this tab.</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">end</property>
                     <property name="valign">center</property>
+                    <property name="relief">half</property>
                     <signal name="clicked" handler="onClickedSetAllDefaults" swapped="no"/>
                   </object>
                   <packing>
@@ -4670,45 +4671,6 @@ Flag: -outline 1/0</property>
               </packing>
             </child>
             <child>
-              <object class="GtkToggleButton" id="id-BelowAll">
-                <property name="label" translatable="yes">Below Windows</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">When activated, it will be snowing below your windows, else  it will be snowing upon you windows too.
-On some desktop environments, when snowing above your  windows you will not be able to click on any window.
-Therefore, you will be asked to click a button, to be sure that  things are OK.
-Flag: -above</property>
-                <property name="double-buffered">False</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-              </object>
-              <packing>
-                <property name="left-attach">3</property>
-                <property name="top-attach">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToggleButton" id="id-BelowConfirm">
-                <property name="label" translatable="yes">Click to Confirm</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">To make sure you can click.</property>
-                <property name="double-buffered">False</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <style>
-                  <class name="confirm"/>
-                </style>
-              </object>
-              <packing>
-                <property name="left-attach">3</property>
-                <property name="top-attach">2</property>
-                <property name="width">2</property>
-              </packing>
-            </child>
-            <child>
               <object class="GtkButton">
                 <property name="label" translatable="yes">Show Screensaver</property>
                 <property name="visible">True</property>
@@ -5143,6 +5105,12 @@ Flag: -cpuload</property>
                 <property name="left-attach">0</property>
                 <property name="top-attach">19</property>
               </packing>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
             </child>
             <child>
               <placeholder/>

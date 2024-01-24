@@ -58,8 +58,8 @@ void meteor_init() {
     gdk_rgba_parse(&colors[3], "#f0d0a0");
     gdk_rgba_parse(&colors[4], "#f0d040");
 
-    add_to_mainloop1(PRIORITY_DEFAULT, time_emeteor, do_emeteor, NULL);
-    add_to_mainloop(PRIORITY_DEFAULT, 0.1, do_meteor);
+    addMethodWithArgToMainloop(PRIORITY_DEFAULT, time_emeteor, do_emeteor, NULL);
+    addMethodToMainloop(PRIORITY_DEFAULT, 0.1, do_meteor);
 }
 
 void meteor_ui() {
@@ -91,14 +91,14 @@ void meteor_erase() { do_emeteor(NULL); }
 
 int do_emeteor(gpointer data) {
     (void)data;
-    P("do_emeteor %d\n", global.counter++);
+    P("do_emeteor %d\n", mGlobal.counter++);
     if (Flags.Done) {
         return FALSE;
     }
     if (!meteor.active || NOTACTIVE) {
         return TRUE;
     }
-    if (!global.IsDouble) {
+    if (!mGlobal.isDoubleBuffered) {
         int x = meteor.x1;
         int y = meteor.y1;
         int w = meteor.x2 - x;
@@ -116,7 +116,7 @@ int do_emeteor(gpointer data) {
         w += 2;
         h += 2;
         sanelyCheckAndClearDisplayArea(
-            global.display, global.SnowWin, x, y, w, h, global.xxposures);
+            mGlobal.display, mGlobal.SnowWin, x, y, w, h, mGlobal.xxposures);
     }
     meteor.active = 0;
     return TRUE;
@@ -124,21 +124,21 @@ int do_emeteor(gpointer data) {
 
 int do_meteor() {
     // (void) d;
-    P("do_meteor %d\n", global.counter++);
+    P("do_meteor %d\n", mGlobal.counter++);
     if (Flags.Done) {
         return FALSE;
     }
 
     if (!(NOTACTIVE || meteor.active || Flags.NoMeteors)) {
-        meteor.x1 = randint(global.SnowWinWidth);
-        meteor.y1 = randint(global.SnowWinHeight / 4);
-        meteor.x2 = meteor.x1 + global.SnowWinWidth / 10 -
-                    randint(global.SnowWinWidth / 5);
+        meteor.x1 = randint(mGlobal.SnowWinWidth);
+        meteor.y1 = randint(mGlobal.SnowWinHeight / 4);
+        meteor.x2 = meteor.x1 + mGlobal.SnowWinWidth / 10 -
+                    randint(mGlobal.SnowWinWidth / 5);
         if (meteor.x2 == meteor.x1) {
             meteor.x2 += 5;
         }
-        meteor.y2 = meteor.y1 + global.SnowWinHeight / 5 -
-                    randint(global.SnowWinHeight / 5);
+        meteor.y2 = meteor.y1 + mGlobal.SnowWinHeight / 5 -
+                    randint(mGlobal.SnowWinHeight / 5);
         if (meteor.y2 == meteor.y1) {
             meteor.y2 += 5;
         }
@@ -152,6 +152,6 @@ int do_meteor() {
     float t = (0.5 + drand48()) *
               (Flags.MeteorFrequency * (0.1 - time_meteor) / 100 + time_meteor);
     P("do_meteor %f\n", t);
-    add_to_mainloop(PRIORITY_DEFAULT, t, do_meteor);
+    addMethodToMainloop(PRIORITY_DEFAULT, t, do_meteor);
     return FALSE;
 }

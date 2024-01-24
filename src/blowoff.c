@@ -37,7 +37,7 @@
 static int do_blowoff();
 
 void blowoff_init() {
-    add_to_mainloop(PRIORITY_DEFAULT, time_blowoff, do_blowoff);
+    addMethodToMainloop(PRIORITY_DEFAULT, time_blowoff, do_blowoff);
 }
 
 void blowoff_ui() {
@@ -67,13 +67,13 @@ int do_blowoff() {
     if (softLockFallenSnowBaseSemaphore(3, &lockcounter)) {
         return TRUE;
     }
-    FallenSnow *fsnow = global.FsnowFirst;
+    FallenSnow *fsnow = mGlobal.FsnowFirst;
     while (fsnow) {
         P("blowoff ...\n");
         if (canSnowCollectOnWindowOrScreenBottom(fsnow) && !Flags.NoSnowFlakes) {
             if (fsnow->win.id == 0 ||
                 (!fsnow->win.hidden &&
-                    //(fsnow->win.ws == global.CWorkSpace ||
+                    //(fsnow->win.ws == mGlobal.CWorkSpace ||
                     //fsnow->win.sticky)))
                     (isFallenSnowOnVisibleWorkspace(fsnow) || fsnow->win.sticky))) {
                 updateFallenSnowWithWind(fsnow, fsnow->w / 4, fsnow->h / 4);

@@ -24,11 +24,34 @@
 #include "plasmasnow.h"
 #include <X11/Xlib.h>
 
+extern long int getCurrentWorkspace();
+long int getWindowWorkspace(Window window);
 
-extern long int GetCurrentWorkspace();
+extern WinInfo* findWinInfoByWindowId(Window id);
 
-extern int getX11WindowsList(WinInfo **w, int *nw);
+extern void logAllWinInfoStructs(Display *dpy, WinInfo *windows, int nwin);
 
-extern WinInfo *FindWindow(WinInfo *windows, int nwin, Window id);
+extern void doRaiseWindow(char* argString);
+extern void doLowerWindow(char* argString);
 
-extern void printAllWinInfoStructs(Display *dpy, WinInfo *windows, int nwin);
+Window getWindowMatchName(char* name);
+unsigned long getX11StackedWindowsList(Window** wins);
+
+extern void logAllWindowsStackedTopToBottom();
+extern void getWinInfoList();
+
+unsigned long getRootWindowProperty(Atom prop, Window **wins);
+extern void getX11WindowsList(WinInfo** winInfolist, int *listCount);
+
+void getRawWindowsList(WinInfo** winInfolist, int *listCount);
+void getFinishedWindowsList(WinInfo** winInfolist, int *listCount);
+
+extern void logAllWindowsStackedTopToBottom();
+
+Bool isWindow_Hidden(Window window, int windowMapState);
+Bool isNetWM_Hidden(Window window);
+Bool isWM_Hidden(Window window);
+
+Bool isDesktop_Visible();
+Bool isWindow_Sticky(long workSpace, WinInfo*);
+Bool isWindow_Dock(WinInfo*);

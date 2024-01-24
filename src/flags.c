@@ -228,7 +228,7 @@ int HandleFlags(int argc, char *argv[]) {
             handle_ia(-blowofffactor, BlowOffFactor);
             handle_ia(-checkgtk, CheckGtk);
             handle_ia(-cpuload, CpuLoad);
-            handle_ia(-doublebuffer, UseDouble);
+            handle_ia(-doublebuffer, useDoubleBuffers);
             handle_ia(-flakecountmax, FlakeCountMax);
             handle_ia(-id, WindowId);
             handle_ia(-window - id, WindowId);
@@ -277,7 +277,6 @@ int HandleFlags(int argc, char *argv[]) {
             handle_is(-bg, BackgroundFile);
             handle_is(-lang, Language);
 
-            handle_iv(-above, BelowAllForce, 1);
             handle_iv(-defaults, Defaults, 1);
             handle_iv(-noblowsnow, BlowSnow, 0);
             handle_iv(-blowsnow, BlowSnow, 1);

@@ -42,17 +42,17 @@ static int do_newwind();
 void wind_init() {
     SetWhirl();
     SetWindTimer();
-    add_to_mainloop(PRIORITY_DEFAULT, time_newwind, do_newwind);
-    add_to_mainloop(PRIORITY_DEFAULT, time_wind, do_wind);
+    addMethodToMainloop(PRIORITY_DEFAULT, time_newwind, do_newwind);
+    addMethodToMainloop(PRIORITY_DEFAULT, time_wind, do_wind);
 }
 
 void wind_ui() {
-    UIDO(NoWind, global.Wind = 0; global.NewWind = 0;);
+    UIDO(NoWind, mGlobal.Wind = 0; mGlobal.NewWind = 0;);
     UIDO(WhirlFactor, SetWhirl(););
     UIDO(WhirlTimer, SetWindTimer(););
     if (Flags.WindNow) {
         Flags.WindNow = 0;
-        global.Wind = 2;
+        mGlobal.Wind = 2;
         P("Gust: %d\n", Flags.Changes);
     }
 }
@@ -83,23 +83,23 @@ int do_newwind() {
     }
 
     float r;
-    switch (global.Wind) {
+    switch (mGlobal.Wind) {
     case (0):
     default:
-        r = drand48() * global.Whirl;
-        global.NewWind += r - global.Whirl / 2;
-        if (global.NewWind > global.WindMax) {
-            global.NewWind = global.WindMax;
+        r = drand48() * mGlobal.Whirl;
+        mGlobal.NewWind += r - mGlobal.Whirl / 2;
+        if (mGlobal.NewWind > mGlobal.WindMax) {
+            mGlobal.NewWind = mGlobal.WindMax;
         }
-        if (global.NewWind < -global.WindMax) {
-            global.NewWind = -global.WindMax;
+        if (mGlobal.NewWind < -mGlobal.WindMax) {
+            mGlobal.NewWind = -mGlobal.WindMax;
         }
         break;
     case (1):
-        global.NewWind = global.Direction * 0.6 * global.Whirl;
+        mGlobal.NewWind = mGlobal.Direction * 0.6 * mGlobal.Whirl;
         break;
     case (2):
-        global.NewWind = global.Direction * 1.2 * global.Whirl;
+        mGlobal.NewWind = mGlobal.Direction * 1.2 * mGlobal.Whirl;
         break;
     }
     return TRUE;
@@ -130,7 +130,7 @@ int do_wind() {
     // on the average, this function will do something
     // after WhirlTimer secs
 
-    if ((TNow - prevtime) < 2 * global.WhirlTimer * drand48()) {
+    if ((TNow - prevtime) < 2 * mGlobal.WhirlTimer * drand48()) {
         return TRUE;
     }
 
@@ -139,38 +139,38 @@ int do_wind() {
     if (drand48() > 0.65) // Now for some of Rick's magic:
     {
         if (drand48() > 0.4) {
-            global.Direction = 1;
+            mGlobal.Direction = 1;
         } else {
-            global.Direction = -1;
+            mGlobal.Direction = -1;
         }
-        global.Wind = 2;
-        global.WhirlTimer = 5;
+        mGlobal.Wind = 2;
+        mGlobal.WhirlTimer = 5;
         //               next time, this function will be active
         //               after on average 5 secs
     } else {
-        if (global.Wind == 2) {
-            global.Wind = 1;
-            global.WhirlTimer = 3;
+        if (mGlobal.Wind == 2) {
+            mGlobal.Wind = 1;
+            mGlobal.WhirlTimer = 3;
             //                   next time, this function will be active
             //                   after on average 3 secs
         } else {
-            global.Wind = 0;
-            global.WhirlTimer = global.WhirlTimerStart;
+            mGlobal.Wind = 0;
+            mGlobal.WhirlTimer = mGlobal.WhirlTimerStart;
             //                   next time, this function will be active
             //                   after on average WhirlTimerStart secs
         }
     }
-    P("Wind: %d %f\n", global.Wind, global.NewWind);
+    P("Wind: %d %f\n", mGlobal.Wind, mGlobal.NewWind);
     return TRUE;
     // (void) d;
 }
 
-void SetWhirl() { global.Whirl = 0.01 * Flags.WhirlFactor * WHIRL; }
+void SetWhirl() { mGlobal.Whirl = 0.01 * Flags.WhirlFactor * WHIRL; }
 
 void SetWindTimer() {
-    global.WhirlTimerStart = Flags.WhirlTimer;
-    if (global.WhirlTimerStart < 3) {
-        global.WhirlTimerStart = 3;
+    mGlobal.WhirlTimerStart = Flags.WhirlTimer;
+    if (mGlobal.WhirlTimerStart < 3) {
+        mGlobal.WhirlTimerStart = 3;
     }
-    global.WhirlTimer = global.WhirlTimerStart;
+    mGlobal.WhirlTimer = mGlobal.WhirlTimerStart;
 }

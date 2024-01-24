@@ -25,10 +25,10 @@
 #include <gtk/gtk.h>
 
 extern int do_initsnow();
-extern Snow *MakeFlake(int type);
+extern SnowFlake *MakeFlake(int type);
 extern int snow_draw(cairo_t *cr);
 extern void snow_init(void);
 extern void snow_ui(void);
-extern void fluffify(Snow *flake, float t);
-extern void printflake(Snow *flake);
+extern void fluffify(SnowFlake *flake, float t);
+extern void printflake(SnowFlake *flake);
 extern int snow_erase(int force);

@@ -24,7 +24,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int main_c(int argc, char *argv[]);
+extern int applicationStart(int argc, char *argv[]);
 #ifdef __cplusplus
 }
 #endif

@@ -64,20 +64,16 @@ class PlasmaColorDialog : public QColorDialog {
             mColor = Qt::black;
         }
 
-
-        void closeEvent(__attribute__((unused)) QCloseEvent *event) {
-            hide();
-        }
-
         void reject() {
             hide();
         }
-
         void accept() {
             setPlasmaColor(currentColor());
             hide();
         }
-
+        void closeEvent(__attribute__((unused)) QCloseEvent *event) {
+            hide();
+        }
 
         bool isAlreadyInitialized() {
             return mAlreadyInitialized;

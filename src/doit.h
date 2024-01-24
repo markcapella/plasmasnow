@@ -30,8 +30,6 @@
 // these flags are not written to the config file and
 // are no part of the ui (except BelowAll)
 #define DOITALL                                                                \
-    DOIT_I(BelowAll, 1, 1)                                                     \
-    DOIT_I(BelowAllForce, 0, 0) /* to know if the -above flag was used */      \
     DOIT_I(BelowConfirm, 0, 0)  /*not a button or parameter */                 \
     DOIT_I(Changes, 0, 0)       /* not a parameter or button */                \
     DOIT_I(CheckGtk, 1, 1)                                                     \
@@ -45,7 +43,7 @@
     DOIT_I(NoMenu, 0, 0)                                                       \
     DOIT_I(Noisy, 0, 0)                                                        \
     DOIT_I(StopAfter, -1, -1)                                                  \
-    DOIT_I(UseDouble, 1, 1)                                                    \
+    DOIT_I(useDoubleBuffers, 1, 1) \
     DOIT_I(WindNow, 0, 0)                                                      \
     DOIT_I(XWinInfoHandling, 0, 0)                                             \
     DOIT_L(WindowId, 0, 0)                                                     \

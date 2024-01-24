@@ -19,11 +19,12 @@
 #-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-# 
 */
-#include "mainstub.h"
 #include <pthread.h>
 #include <stdio.h>
 
+#include "mainstub.h"
 
+// Return results of main app & exit.
 int main(int argc, char *argv[]) {
-	return main_c(argc, argv);
+	return applicationStart(argc, argv);
 }

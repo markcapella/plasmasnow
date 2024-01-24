@@ -182,19 +182,30 @@ static void applyMainWindowCSSTheme();
 static void updateMainWindowTheme(void);
 
 static void birdscb(GtkWidget *w, void *m);
-static int handleConfirmSecondTimer();
-static void updateConfirmLabel(void);
 static void yesyes(GtkWidget *w, gpointer data);
 static void nono(GtkWidget *w, gpointer data);
 
 static void onClickedActivateXScreenSaver(GtkApplication *app);
 
 static void setTabDefaults(int tab);
-static void set_belowall_default();
+
 static void handle_screen(void);
 static void handleFileChooserPreview(
     GtkFileChooser *file_chooser, gpointer data);
 static void setLabelText(GtkLabel *label, const gchar *str);
+
+// to be used if gtk version is too low
+// returns 1: user clicked 'Run with ...'
+// returns 0: user clicked 'Quit'
+static int RC;
+
+extern Window getDragWindowOf(Window);
+//extern int getTmpLogFile();
+extern void getWinInfoList();
+extern void logAllWindowsStackedTopToBottom();
+
+extern void doRaiseWindow(char* argString);
+extern void doLowerWindow(char* argString);
 
 static gboolean handleMainWindowStateEvents(
     GtkWidget *widget, GdkEventWindowState *event, gpointer user_data);
@@ -246,17 +257,13 @@ static GtkContainer *moonbox;
 static GtkImage *preview;
 static int Nscreens;
 static int HaveXinerama;
-static bool mMainWindowIconified;
 
 #define nsbuffer 1024
 static char sbuffer[nsbuffer];
 
 static int ui_running = False;
-
 static int human_interaction = 1;
 
-static guint bct_id = 0;
-static int bct_countdown;
 
 static GtkWidget *mMainWindow;
 static GtkStyleContext *mStyleContext;
@@ -292,7 +299,7 @@ void handle_screen() {
     P("handle_screen:%d\n", Flags.Screen);
 
     if (HaveXinerama && Nscreens > 1) {
-        global.ForceRestart = 1;
+        mGlobal.ForceRestart = 1;
     }
 }
 
@@ -306,7 +313,7 @@ void handle_language(int restart) {
     }
 
     if (restart) {
-        global.ForceRestart = 1;
+        mGlobal.ForceRestart = 1;
     }
 }
 
@@ -314,17 +321,43 @@ void handle_language(int restart) {
  ** Main WindowState event handler.
  **/
 gboolean handleMainWindowStateEvents(
-    __attribute__((unused)) GtkWidget *widget,
-    GdkEventWindowState *event,
+    __attribute__((unused)) GtkWidget* widget,
+    GdkEventWindowState* event,
     __attribute__((unused)) gpointer user_data) {
-
-    // Note when user minimizes us.
-    if (event->new_window_state & GDK_WINDOW_STATE_ICONIFIED) {
-        // 01/04/24 Not used.
-        mMainWindowIconified = true;
+    {   char resultMsg[128];
+        snprintf(resultMsg, sizeof(resultMsg),
+            "ui: handleMainWindowStateEvents() event->type : %i Starts.\n",
+            event->type);
+        fprintf(stdout, "%s", resultMsg);
     }
 
-    return TRUE;
+    if (event->type == GDK_WINDOW_STATE) {
+        if (event->new_window_state & GDK_WINDOW_STATE_ICONIFIED) {
+            // const char* PLASMA_DESKTOP = "plasma";
+            //if (strncmp(mGlobal.DesktopSession,
+            //        PLASMA_DESKTOP, strlen(PLASMA_DESKTOP)) == 0) {
+            //    doLowerWindow(mGlobal.mPlasmaLayerName);
+            //    return true;
+            //}
+        }
+
+        //if (event->new_window_state & GDK_WINDOW_STATE_FOCUSED) {
+        //    doRaiseWindow("plasmasnow");
+        //    doLowerWindow(mGlobal.mPlasmaLayerName);
+        //}
+    }
+
+    // getWinInfoList();
+
+    // Else all done.
+    {   char resultMsg[128];
+        snprintf(resultMsg, sizeof(resultMsg),
+            "ui: handleMainWindowStateEvents() event->type : %i Finishes.\n\n",
+            event->type);
+        fprintf(stdout, "%s", resultMsg);
+    }
+
+    return false;
 }
 
 /** *********************************************************************
@@ -353,15 +386,15 @@ static SantaButton *santa_barray[NBUTTONS] = {SANTA_ALL};
 
 static void init_santa_buttons() {
 
-#define SANTA(x)                                                               \
-    NEWLINE SantaButtons.santa_##x.button =                                    \
+#define SANTA(x) \
+    NEWLINE SantaButtons.santa_##x.button = \
         GTK_WIDGET(gtk_builder_get_object(builder, PREFIX_SANTA #x));
 
     SANTA_ALL;
 
 #include "undefall.inc"
 
-#define SANTA(x)                                                               \
+#define SANTA(x) \
     NEWLINE gtk_widget_set_name(SantaButtons.santa_##x.button, PREFIX_SANTA #x);
 
     SANTA_ALL;
@@ -385,16 +418,18 @@ void button_santa(GtkWidget *w) {
     if (!human_interaction) {
         return;
     }
+
     if (!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) {
         return;
     }
+
     const gchar *s = gtk_widget_get_name(w) + strlen(PREFIX_SANTA);
     int santa_type = atoi(s);
     int have_rudolf = ('r' == s[strlen(s) - 1]);
-    P("button_santa: Santa %d Rudolf %d s: %s name: %s\n", santa_type,
-        have_rudolf, s, gtk_widget_get_name(w));
+
     Flags.SantaSize = santa_type;
     Flags.Rudolf = have_rudolf;
+
     SantaVisible();
 }
 
@@ -789,62 +824,6 @@ typedef struct _general_button {
         GtkWidget *button;
 } general_button;
 
-/** *********************************************************************
- **
- ** In some desktop environments putting our transparent click-through window
- ** above all other windows results in a un-clickable desktop.
- ** Therefore, we ask for confirmation by clicking on a button.
- ** If this succeeds, then there is no problem.
- ** If the user cannot click, the timer runs out and the BelowAll
- ** setting is switched to TRUE.
- **/
-
-MODULE_EXPORT
-void onClickedBelowAllWindows(GtkWidget *w) {
-    if (!human_interaction) {
-        return;
-    }
-
-    if (!Flags.BelowAllForce) {
-        if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) {
-            Flags.BelowAll = 1;
-            return;
-        }
-
-        Flags.BelowAll = 0;
-        gtk_widget_hide(Button.BelowAll);
-
-        bct_countdown = 9;
-        updateConfirmLabel();
-        gtk_widget_show(Button.BelowConfirm);
-
-        bct_id = add_to_mainloop(PRIORITY_DEFAULT,
-            CONFIRM_BELOW_ALL_WINDOWS_EVENT_TIME, handleConfirmSecondTimer);
-    }
-}
-
-MODULE_EXPORT
-void onClickedConfirmBelowAllWindows() {
-    gtk_widget_hide(Button.BelowConfirm);
-    gtk_widget_show(Button.BelowAll);
-    remove_from_mainloop(&bct_id);
-}
-
-void updateConfirmLabel() {
-    sprintf(sbuffer, "Click again: %d", bct_countdown);
-    gtk_button_set_label(GTK_BUTTON(Button.BelowConfirm), sbuffer);
-}
-
-int handleConfirmSecondTimer() {
-    bct_countdown--;
-    updateConfirmLabel();
-    if (bct_countdown > 0) {
-        return TRUE;
-    }
-
-    set_belowall_default();
-    return FALSE;
-}
 
 /** *********************************************************************
  ** Helpers.
@@ -869,36 +848,14 @@ void onSelectedLanguageButton(GtkComboBoxText *combo, gpointer data) {
 /** *********************************************************************
  ** Helpers.
  **/
-
 static void init_general_buttons() {
-    g_signal_connect(
-        Button.BelowAll, "toggled", G_CALLBACK(onClickedBelowAllWindows), NULL);
-    g_signal_connect(Button.BelowConfirm, "toggled",
-        G_CALLBACK(onClickedConfirmBelowAllWindows), NULL);
-
     setLabelText(GTK_LABEL(gtk_builder_get_object(builder, "id-version")),
         "plasmasnow-" VERSION);
-
-    gtk_widget_hide(Button.BelowConfirm);
-}
-
-void set_belowall_default() {
-    P("set_belowall_default: %d\n", bct_id);
-
-    remove_from_mainloop(&bct_id);
-    Flags.BelowAll = 1;
-
-    gtk_toggle_button_set_active(
-        GTK_TOGGLE_BUTTON(Button.BelowAll), Flags.BelowAll);
-
-    gtk_widget_hide(Button.BelowConfirm);
-    gtk_widget_show(Button.BelowAll);
 }
 
 /** *********************************************************************
  ** Helpers.
  **/
-
 typedef struct _snow_button {
         GtkWidget *button;
 } snow_button;
@@ -969,23 +926,26 @@ void setTabDefaults(int tab) {
     }
 
     switch (tab) {
-    case plasmasnow_scenery:
-        free(Flags.TreeType);
-        Flags.TreeType = strdup(DEFAULT(TreeType));
-        break;
-    case plasmasnow_snow:
-        Flags.VintageFlakes = 0;
-        break;
-    case plasmasnow_santa:
-        Flags.SantaSize = DEFAULT(SantaSize);
-        Flags.Rudolf = DEFAULT(Rudolf);
-        break;
-    case plasmasnow_settings:
-        set_belowall_default();
-        free(Flags.BackgroundFile);
-        Flags.BackgroundFile = strdup(background);
-        Flags.Screen = DEFAULT(Screen);
-        break;
+        case plasmasnow_scenery:
+            free(Flags.TreeType);
+            Flags.TreeType = strdup(DEFAULT(TreeType));
+            break;
+
+        case plasmasnow_snow:
+            Flags.VintageFlakes = 0;
+            break;
+
+        case plasmasnow_santa:
+            Flags.SantaSize = DEFAULT(SantaSize);
+            Flags.Rudolf = DEFAULT(Rudolf);
+            break;
+
+        case plasmasnow_settings:
+            free(Flags.BackgroundFile);
+
+            Flags.BackgroundFile = strdup(background);
+            Flags.Screen = DEFAULT(Screen);
+            break;
     }
 
     set_buttons();
@@ -1048,7 +1008,7 @@ void handleFileChooserPreview(GtkFileChooser *file_chooser, gpointer data) {
         return;
     }
 
-    int w = global.SnowWinWidth / 10;
+    int w = mGlobal.SnowWinWidth / 10;
 
     // pixbuf = gdk_pixbuf_new_from_file_at_size (filename, 128, 128, NULL);
     pixbuf = gdk_pixbuf_new_from_file_at_size(filename, w, w, NULL);
@@ -1083,14 +1043,31 @@ void initUIClass() {
 
     // Main application window.
     mMainWindow = GTK_WIDGET(gtk_builder_get_object(builder, "id-MainWindow"));
+
     g_signal_connect(G_OBJECT(mMainWindow), "window-state-event",
         G_CALLBACK(handleMainWindowStateEvents), NULL);
+
+    g_signal_connect(G_OBJECT(mMainWindow), "configure-event",
+        G_CALLBACK(handleMainWindowStateEvents), NULL);
+    g_signal_connect(G_OBJECT(mMainWindow), "focus-in-event",
+        G_CALLBACK(handleMainWindowStateEvents), NULL);
+    g_signal_connect(G_OBJECT(mMainWindow), "focus-out-event",
+        G_CALLBACK(handleMainWindowStateEvents), NULL);
+    g_signal_connect(G_OBJECT(mMainWindow), "map-event",
+        G_CALLBACK(handleMainWindowStateEvents), NULL);
+    g_signal_connect(G_OBJECT(mMainWindow), "unmap-event",
+        G_CALLBACK(handleMainWindowStateEvents), NULL);
+    g_signal_connect(G_OBJECT(mMainWindow), "property-notify-event",
+        G_CALLBACK(handleMainWindowStateEvents), NULL);
+    g_signal_connect(G_OBJECT(mMainWindow), "visibility-notify-event",
+        G_CALLBACK(handleMainWindowStateEvents), NULL);
+
 
     mStyleContext = gtk_widget_get_style_context(mMainWindow);
     applyMainWindowCSSTheme();
 
-    gtk_window_set_title(GTK_WINDOW(mMainWindow), "");
-
+    gtk_window_set_title(GTK_WINDOW(mMainWindow), mGlobal.mPlasmaLayerName);
+    //gtk_window_set_title(GTK_WINDOW(mMainWindow), "");
     if (getenv("plasmasnow_RESTART")) {
         gtk_window_set_position(GTK_WINDOW(mMainWindow),
             GTK_WIN_POS_CENTER_ALWAYS);
@@ -1111,7 +1088,7 @@ void initUIClass() {
         G_CALLBACK(handleFileChooserPreview), preview);
 
     XineramaScreenInfo *xininfo =
-        XineramaQueryScreens(global.display, &Nscreens);
+        XineramaQueryScreens(mGlobal.display, &Nscreens);
     if (xininfo == NULL) {
         P("No xinerama...\n");
         HaveXinerama = 0;
@@ -1294,23 +1271,6 @@ void removeBusyStyleClass() {
 }
 
 /** *********************************************************************
- ** See transparency and below
- **/
-void ui_gray_erase(int m) {
-    gtk_widget_set_sensitive(Button.BelowAll, m);
-    if (!Flags.BelowAllForce) {
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Button.BelowAll), 1);
-    }
-}
-
-/** *********************************************************************
- **
- **/
-void ui_gray_below(int m) {
-    gtk_widget_set_sensitive(Button.BelowAll, !m);
-}
-
-/** *********************************************************************
  **
  **/
 void birdscb(GtkWidget *w, void *m) {
@@ -1332,6 +1292,9 @@ void ui_gray_birds(int m) {
  ** Helpers.
  **/
 
+/** *********************************************************************
+ ** ... .
+ **/
 char *ui_gtk_version() {
     static char s[20];
     snprintf(s, 20, "%d.%d.%d", gtk_get_major_version(),
@@ -1339,6 +1302,9 @@ char *ui_gtk_version() {
     return s;
 }
 
+/** *********************************************************************
+ ** ... .
+ **/
 char *ui_gtk_required() {
     static char s[20];
     snprintf(s, 20, "%d.%d.%d", GTK_MAJOR, GTK_MINOR, GTK_MICRO);
@@ -1349,31 +1315,32 @@ char *ui_gtk_required() {
 // 0: gtk version in use too low
 // 1: gtk version in use OK
 
+/** *********************************************************************
+ ** ... .
+ **/
 int ui_checkgtk() {
-    if ((int)gtk_get_major_version() > GTK_MAJOR) {
+    if ((int) gtk_get_major_version() > GTK_MAJOR) {
         return 1;
     }
-    if ((int)gtk_get_major_version() < GTK_MAJOR) {
+    if ((int) gtk_get_major_version() < GTK_MAJOR) {
         return 0;
     }
-    if ((int)gtk_get_minor_version() > GTK_MINOR) {
+    if ((int) gtk_get_minor_version() > GTK_MINOR) {
         return 1;
     }
-    if ((int)gtk_get_minor_version() < GTK_MINOR) {
+    if ((int) gtk_get_minor_version() < GTK_MINOR) {
         return 0;
     }
-    if ((int)gtk_get_micro_version() >= GTK_MICRO) {
+    if ((int) gtk_get_micro_version() >= GTK_MICRO) {
         return 1;
     }
+
     return 0;
 }
 
-// to be used if gtk version is too low
-// returns 1: user clicked 'Run with ...'
-// returns 0: user clicked 'Quit'
-
-static int RC;
-
+/** *********************************************************************
+ ** ... .
+ **/
 int ui_run_nomenu() {
     GtkApplication *app;
 
@@ -1387,9 +1354,9 @@ int ui_run_nomenu() {
 #define XXFLAGS G_APPLICATION_FLAGS_NONE
 #endif
 
-    app = gtk_application_new("plasmasnow", XXFLAGS);
-    g_signal_connect(
-        app, "activate", G_CALLBACK(onClickedActivateXScreenSaver), NULL);
+    app = gtk_application_new("plasmasnowApp", XXFLAGS);
+    g_signal_connect(app, "activate",
+        G_CALLBACK(onClickedActivateXScreenSaver), NULL);
 
     g_application_run(G_APPLICATION(app), 0, NULL);
 
@@ -1459,16 +1426,26 @@ static void onClickedActivateXScreenSaver(GtkApplication *app) {
     gtk_widget_show_all(window);
 }
 
+/** *********************************************************************
+ ** ... .
+ **/
 void setLabelText(GtkLabel *label, const gchar *str) {
     if (ui_running) {
         gtk_label_set_text(label, str);
     }
 }
+
+/** *********************************************************************
+ ** ... .
+ **/
 void yesyes(GtkWidget *w, gpointer window) {
     RC = (w != NULL);
     gtk_widget_destroy(GTK_WIDGET(window));
 }
 
+/** *********************************************************************
+ ** ... .
+ **/
 void nono(GtkWidget *w, gpointer window) {
     RC = (w == NULL);
     gtk_widget_destroy(GTK_WIDGET(window));

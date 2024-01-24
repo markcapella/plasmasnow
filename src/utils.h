@@ -42,8 +42,8 @@
 
 #include "xdo.h"
 
-extern guint add_to_mainloop(gint prio, float time, GSourceFunc func);
-extern guint add_to_mainloop1(
+extern guint addMethodToMainloop(gint prio, float time, GSourceFunc func);
+extern guint addMethodWithArgToMainloop(
     gint prio, float time, GSourceFunc func, gpointer datap);
 
 extern void remove_from_mainloop(guint *tag);
@@ -57,7 +57,7 @@ extern Pixel AllocNamedColor(const char *colorName, Pixel dfltPix);
 extern int randint(int m);
 extern void my_cairo_paint_with_alpha(cairo_t *cr, double alpha);
 extern void rgba2color(GdkRGBA *c, char **s);
-extern void Thanks(void);
+
 extern void sanelyCheckAndClearDisplayArea(
     Display *display, Window win, int x, int y, int w, int h, int exposures);
 extern int appScalesHaveChanged(int *prev);

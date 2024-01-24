@@ -676,6 +676,8 @@ top_srcdir = @top_srcdir@
 SUBDIRS = Pixmaps
 TOCC = $(top_srcdir)/src/tocc.sh
 TOASCII = $(top_srcdir)/src/toascii.sh
+
+# /usr/local
 gamesdir = $(exec_prefix)/games
 
 # Qt Dev package
@@ -723,6 +725,8 @@ BUILT_SOURCES = ui_xml.h snow_includes.h $(tarfile_inc)
 tarfile = $(top_builddir)/$(PACKAGE)-$(VERSION).tar.gz
 EXTRA_DIST = gen_snow_includes.sh gen_ui_xml.sh tocc.sh toascii.sh xdo-copyright 
 TESTS = test1.sh
+
+# usr/local/share
 appicondir = $(datadir)/pixmaps
 appicon_DATA = Pixmaps/plasmasnow.png Pixmaps/plasmapicker.png
 man6_MANS = plasmasnow.6
@@ -1885,7 +1889,8 @@ info: info-recursive
 
 info-am:
 
-install-data-am: install-appiconDATA install-gamesPROGRAMS install-man
+install-data-am: install-appiconDATA install-data-local \
+	install-gamesPROGRAMS install-man
 
 install-dvi: install-dvi-recursive
 
@@ -1966,7 +1971,7 @@ ps: ps-recursive
 ps-am:
 
 uninstall-am: uninstall-appiconDATA uninstall-gamesPROGRAMS \
-	uninstall-man
+	uninstall-local uninstall-man
 
 uninstall-man: uninstall-man6
 
@@ -1979,16 +1984,17 @@ uninstall-man: uninstall-man6
 	cscopelist-am ctags ctags-am distclean distclean-compile \
 	distclean-generic distclean-tags distdir dvi dvi-am html \
 	html-am info info-am install install-am install-appiconDATA \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-gamesPROGRAMS \
-	install-html install-html-am install-info install-info-am \
-	install-man install-man6 install-pdf install-pdf-am install-ps \
-	install-ps-am install-strip installcheck installcheck-am \
-	installdirs installdirs-am maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic pdf pdf-am ps ps-am recheck tags tags-am \
-	uninstall uninstall-am uninstall-appiconDATA \
-	uninstall-gamesPROGRAMS uninstall-man uninstall-man6
+	install-data install-data-am install-data-local install-dvi \
+	install-dvi-am install-exec install-exec-am \
+	install-gamesPROGRAMS install-html install-html-am \
+	install-info install-info-am install-man install-man6 \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	installdirs-am maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-compile mostlyclean-generic pdf pdf-am \
+	ps ps-am recheck tags tags-am uninstall uninstall-am \
+	uninstall-appiconDATA uninstall-gamesPROGRAMS uninstall-local \
+	uninstall-man uninstall-man6
 
 .PRECIOUS: Makefile
 
@@ -2012,6 +2018,12 @@ ui_xml.h: ui.glade $(top_srcdir)/src/gen_ui_xml.sh
 snow_includes.h: Pixmaps
 	@echo ">>> Pixmaps Creating $@"
 	$(top_srcdir)/src/gen_snow_includes.sh $(top_srcdir)
+
+install-data-local:
+	cp 'Pixmaps/plasmasnow.png' /usr/share/icons/hicolor/48x48/apps/
+
+uninstall-local:
+	rm -f /usr/share/icons/hicolor/48x48/apps/plasmasnow.png
 
 changelog.inc: $(top_srcdir)/ChangeLog $(TOCC)
 	$(TOCC) < $(top_srcdir)/ChangeLog > $@

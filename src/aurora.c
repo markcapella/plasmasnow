@@ -88,7 +88,7 @@ void aurora_init() {
 
     static int firstcall = 1;
     if (!firstcall) {
-        if (!global.IsDouble) {
+        if (!mGlobal.isDoubleBuffered) {
             aurora_erase();
         }
     }
@@ -117,9 +117,9 @@ void aurora_init() {
 
     // the aurora surface can be somewhat larger than SnowWinWidth
     // and will be placed somewhat to the left
-    int f = turnfuzz * global.SnowWinWidth;
-    a.width = global.SnowWinWidth * Flags.AuroraWidth * 0.01 + f;
-    a.base = global.SnowWinHeight * Flags.AuroraBase * 0.01;
+    int f = turnfuzz * mGlobal.SnowWinWidth;
+    a.width = mGlobal.SnowWinWidth * Flags.AuroraWidth * 0.01 + f;
+    a.base = mGlobal.SnowWinHeight * Flags.AuroraBase * 0.01;
     aurora_setparms(&a);
 
     if (aurora_surface) {
@@ -188,7 +188,7 @@ void aurora_ui() {
 
 
 void aurora_draw(cairo_t *cr) {
-    P("aurora_draw %d %d\n", Flags.Aurora, global.counter++);
+    P("aurora_draw %d %d\n", Flags.Aurora, mGlobal.counter++);
     if (Flags.Aurora == 0) {
         return;
     }
@@ -208,13 +208,13 @@ void aurora_draw(cairo_t *cr) {
 
 void aurora_erase() {
     P("aurora_erase %d %d %d %d \n", a.x, a.y, a.width, a.height);
-    sanelyCheckAndClearDisplayArea(global.display, global.SnowWin, a.x, a.y, a.width, a.base,
-        global.xxposures);
+    sanelyCheckAndClearDisplayArea(mGlobal.display, mGlobal.SnowWin, a.x, a.y, a.width, a.base,
+        mGlobal.xxposures);
 }
 
 void *do_aurora(void *d) {
     // (void) d;
-    P("do_aurora %d %d\n", Flags.Aurora, global.counter++);
+    P("do_aurora %d %d\n", Flags.Aurora, mGlobal.counter++);
     while (1) {
         if (Flags.Done) {
             pthread_exit(NULL);
@@ -222,7 +222,7 @@ void *do_aurora(void *d) {
         if (!(Flags.Aurora == 0 || NOTACTIVE)) {
 
             lock_comp();
-            P("%d do_aurora\n", global.counter++);
+            P("%d do_aurora\n", mGlobal.counter++);
             lock_init();
             AuroraMap *a = (AuroraMap *)d;
             int j;
@@ -388,7 +388,7 @@ void *do_aurora(void *d) {
             cairo_restore(aurora_cr);
             // free(p);
 
-            P("%d do_aurora surface %d %d\n", global.counter++, a->width,
+            P("%d do_aurora surface %d %d\n", mGlobal.counter++, a->width,
                 a->base);
             // make available just created surface as aurora_surface
             // and create a new aurora_surface1
@@ -403,7 +403,7 @@ void *do_aurora(void *d) {
             unlock_comp();
             unlock_init();
         }
-        P("%d speed %d %f\n", global.counter++, Flags.AuroraSpeed,
+        P("%d speed %d %f\n", mGlobal.counter++, Flags.AuroraSpeed,
             1000000 * time_aurora / (0.2 * Flags.AuroraSpeed));
         usleep((useconds_t) (1.0e6 * time_aurora / (0.2 * Flags.AuroraSpeed)));
     }
@@ -427,16 +427,16 @@ double cscale(double d, int imax, float ah, double az, double h) {
 }
 
 void aurora_setparms(AuroraMap *a) {
-    int f = turnfuzz * global.SnowWinWidth + 2;
-    a->w = a->width - 2 * f; // Flags.AuroraWidth*0.01*global.SnowWinWidth;
+    int f = turnfuzz * mGlobal.SnowWinWidth + 2;
+    a->w = a->width - 2 * f; // Flags.AuroraWidth*0.01*mGlobal.SnowWinWidth;
 
     a->xoffset = f;
     if (Flags.AuroraLeft) {
         a->x = -f / 2; // a->x = f;
     } else if (Flags.AuroraMiddle) {
-        a->x = (global.SnowWinWidth - a->width) / 2; // + f;
+        a->x = (mGlobal.SnowWinWidth - a->width) / 2; // + f;
     } else {                                         // AuroraRight assumed
-        a->x = global.SnowWinWidth - a->width;       // - f;
+        a->x = mGlobal.SnowWinWidth - a->width;       // - f;
     }
 
     a->y = 0;
@@ -739,7 +739,7 @@ void aurora_computeparms(AuroraMap *a) {
         // add fuzz on turning points, second method
         // add some points with diminishing alpha
         a->nfuzz = 0;
-        int f = turnfuzz * global.SnowWinWidth;
+        int f = turnfuzz * mGlobal.SnowWinWidth;
         int d0 = a->z[1].x - a->z[0].x;
         i = 0;
         while (1) {
@@ -826,7 +826,7 @@ void aurora_computeparms(AuroraMap *a) {
                     }
                     if (j + jmin < 2 * i) {
                         P("adjust jmin:  %d %d %d %d\n", jmin, j, a->z[i].x,
-                            global.counter++);
+                            mGlobal.counter++);
                         jmin = 2 * i - j;
                     }
 

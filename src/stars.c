@@ -55,14 +55,14 @@ void stars_init() {
         surfaces[i] = NULL;
     }
     set_star_surfaces();
-    add_to_mainloop(PRIORITY_DEFAULT, time_ustar, do_ustars);
+    addMethodToMainloop(PRIORITY_DEFAULT, time_ustar, do_ustars);
 }
 
 void set_star_surfaces() {
     int i;
     for (i = 0; i < STARANIMATIONS; i++) {
         float size =
-            LocalScale * global.WindowScale * 0.01 * Flags.Scale * StarSize;
+            LocalScale * mGlobal.WindowScale * 0.01 * Flags.Scale * StarSize;
         size *= 0.2 * (1 + 4 * drand48());
         if (size < 1) {
             size = 1;
@@ -101,8 +101,8 @@ void init_stars() {
     REALLOC_CHECK(Stars);
     for (i = 0; i < NStars; i++) {
         StarCoordinate *star = &Stars[i];
-        star->x = randint(global.SnowWinWidth);
-        star->y = randint(global.SnowWinHeight / 4);
+        star->x = randint(mGlobal.SnowWinWidth);
+        star->y = randint(mGlobal.SnowWinHeight / 4);
         star->color = randint(STARANIMATIONS);
         P("stars_init %d %d %d\n", star->x, star->y, star->color);
     }
@@ -140,8 +140,8 @@ void stars_erase() {
         StarCoordinate *star = &Stars[i];
         int x = star->x;
         int y = star->y;
-        sanelyCheckAndClearDisplayArea(global.display, global.SnowWin, x, y, StarSize, StarSize,
-            global.xxposures);
+        sanelyCheckAndClearDisplayArea(mGlobal.display, mGlobal.SnowWin, x, y, StarSize, StarSize,
+            mGlobal.xxposures);
     }
 }
 

@@ -30,7 +30,7 @@
 #include "hashtable.h"
 #include "ixpm.h"
 #include "kdtree.h"
-#include "mainstub.h"
+// #include "mainstub.h"
 #include "pixmaps.h"
 #include "ui.h"
 #include "utils.h"
@@ -289,7 +289,7 @@ void *updateBirdSpeed() {
 
             lock();
 
-            P("updateBirdSpeed %d\n", global.counter++);
+            P("updateBirdSpeed %d\n", mGlobal.counter++);
 
             kd_free(kd);
             kd = kd_create(3);
@@ -482,8 +482,8 @@ int birds_draw(cairo_t *cr) {
         if (before && Flags.FollowSanta) {
             static int prevSantasize = -1;
             Santa_draw(cr);
-            attrbird.ix = global.SantaX + global.SantaWidth / 2;
-            attrbird.iz = global.SantaY + global.SantaHeight / 2;
+            attrbird.ix = mGlobal.SantaX + mGlobal.SantaWidth / 2;
+            attrbird.iz = mGlobal.SantaY + mGlobal.SantaHeight / 2;
             switch (Flags.SantaSize) {
             case 0:
                 attrbird.y = blobals.maxy * 1.5;
@@ -699,7 +699,7 @@ int birds_draw(cairo_t *cr) {
 
 int birds_erase(int force) {
     // locking by caller
-    if (global.IsDouble) {
+    if (mGlobal.isDoubleBuffered) {
         return TRUE;
     }
     if (!force) {
@@ -712,8 +712,8 @@ int birds_erase(int force) {
         BirdType *bird = &birds[i];
         if (bird->prevdrawable && bird->prevw != 0 && bird->prevh != 0) {
             P("birds_erase xclear %d\n", counter++);
-            sanelyCheckAndClearDisplayArea(global.display, global.SnowWin, bird->prevx,
-                bird->prevy, bird->prevw, bird->prevh, global.xxposures);
+            sanelyCheckAndClearDisplayArea(mGlobal.display, mGlobal.SnowWin, bird->prevx,
+                bird->prevy, bird->prevw, bird->prevh, mGlobal.xxposures);
         }
     }
     P("clearattr: %d %d %d %d\n", attrbird.prevx, attrbird.prevy,
@@ -725,7 +725,7 @@ int birds_erase(int force) {
 }
 
 int attrbird_erase(int force) {
-    if (global.IsDouble) {
+    if (mGlobal.isDoubleBuffered) {
         return TRUE;
     }
     if (!force) {
@@ -742,8 +742,8 @@ int attrbird_erase(int force) {
         px = attrbird.prevx;
         py = attrbird.prevy;
         pw = attrbird.prevw;
-        sanelyCheckAndClearDisplayArea(global.display, global.SnowWin, px, py, pw, attrbird.prevh,
-            global.xxposures);
+        sanelyCheckAndClearDisplayArea(mGlobal.display, mGlobal.SnowWin, px, py, pw, attrbird.prevh,
+            mGlobal.xxposures);
     }
     return TRUE;
 }
@@ -752,7 +752,7 @@ void init_birds(int start) {
     lock();
 
     int i;
-    if (!global.IsDouble) {
+    if (!mGlobal.isDoubleBuffered) {
         birds_erase(1);
     }
     P("nbirds: %d %d\n", start, Flags.Nbirds);
@@ -852,11 +852,11 @@ void birds_set_speed() {
 int do_main_window() {
     // (void) d;
 
-    P("do_main_window: %d %d %d %d\n", blobals.maxix, global.SnowWinWidth,
-        blobals.maxiz, global.SnowWinHeight);
+    P("do_main_window: %d %d %d %d\n", blobals.maxix, mGlobal.SnowWinWidth,
+        blobals.maxiz, mGlobal.SnowWinHeight);
 
-    if (blobals.maxix != (int)global.SnowWinWidth ||
-        blobals.maxiz != (int)global.SnowWinHeight) {
+    if (blobals.maxix != (int)mGlobal.SnowWinWidth ||
+        blobals.maxiz != (int)mGlobal.SnowWinHeight) {
         P("do_main_window\n");
         main_window();
         randomlyChangeAttractionPoint(NULL);
@@ -866,8 +866,8 @@ int do_main_window() {
 }
 
 static void main_window() {
-    blobals.maxix = global.SnowWinWidth;
-    blobals.maxiz = global.SnowWinHeight;
+    blobals.maxix = mGlobal.SnowWinWidth;
+    blobals.maxiz = mGlobal.SnowWinHeight;
     blobals.maxiy = (blobals.maxix + blobals.maxiz) / 2;
 
     P("in main_window: %d %d %d\n", blobals.maxix, blobals.maxiy,
@@ -1016,11 +1016,11 @@ void birds_init() {
         blobals.prefdweight = 1;
 
         clear_flags();
-        add_to_mainloop(
+        addMethodToMainloop(
             PRIORITY_HIGH, time_update_pos_birds, do_update_pos_birds);
-        add_to_mainloop(PRIORITY_HIGH, time_wings, do_wings);
-        add_to_mainloop(PRIORITY_DEFAULT, time_change_attr, randomlyChangeAttractionPoint);
-        add_to_mainloop(PRIORITY_DEFAULT, time_main_window, do_main_window);
+        addMethodToMainloop(PRIORITY_HIGH, time_wings, do_wings);
+        addMethodToMainloop(PRIORITY_DEFAULT, time_change_attr, randomlyChangeAttractionPoint);
+        addMethodToMainloop(PRIORITY_DEFAULT, time_main_window, do_main_window);
 
         static pthread_t thread;
         P("birds speed thread start\n");

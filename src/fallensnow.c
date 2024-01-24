@@ -56,6 +56,7 @@
 /***********************************************************
  * Module globals and consts.
  */
+GdkRGBA mFlakeColor;
 
 /** ********************************************************
  ** Semaphore & lock helper methods.
@@ -71,8 +72,8 @@ void initFallenSnowSemaphores() {
 void initFallenSnowModule() {
     initFallenSnowList();
 
-    add_to_mainloop(PRIORITY_DEFAULT, time_change_bottom, do_change_deshes);
-    add_to_mainloop(PRIORITY_DEFAULT, time_adjust_bottom, do_adjust_deshes);
+    addMethodToMainloop(PRIORITY_DEFAULT, time_change_bottom, do_change_deshes);
+    addMethodToMainloop(PRIORITY_DEFAULT, time_adjust_bottom, do_adjust_deshes);
 
     static pthread_t thread;
     pthread_create(&thread, NULL, doExecFallenSnowThread, NULL);
@@ -122,9 +123,9 @@ int softLockFallenSnowBaseSemaphore(
  **/
 void updateFallenSnowAtBottom() {
     // threads: locking by caller
-    FallenSnow *fsnow = findFallenSnowListItem(global.FsnowFirst, 0);
+    FallenSnow *fsnow = findFallenSnowListItem(mGlobal.FsnowFirst, 0);
     if (fsnow) {
-        fsnow->y = global.SnowWinHeight;
+        fsnow->y = mGlobal.SnowWinHeight;
     }
 }
 
@@ -142,11 +143,11 @@ void setMaxScreenSnowDepthWithLock() {
  **/
 void setMaxScreenSnowDepth() {
     // threads: locking by caller
-    global.MaxScrSnowDepth = Flags.MaxScrSnowDepth;
-    if (global.MaxScrSnowDepth > (int)(global.SnowWinHeight - SNOWFREE)) {
+    mGlobal.MaxScrSnowDepth = Flags.MaxScrSnowDepth;
+    if (mGlobal.MaxScrSnowDepth > (int)(mGlobal.SnowWinHeight - SNOWFREE)) {
         printf("** Maximum snow depth set to %d\n",
-            global.SnowWinHeight - SNOWFREE);
-        global.MaxScrSnowDepth = global.SnowWinHeight - SNOWFREE;
+            mGlobal.SnowWinHeight - SNOWFREE);
+        mGlobal.MaxScrSnowDepth = mGlobal.SnowWinHeight - SNOWFREE;
     }
 }
 
@@ -176,7 +177,7 @@ void* doExecFallenSnowThread() {
             (!Flags.NoKeepSnowOnWindows || !Flags.NoKeepSnowOnBottom)) {
             lockFallenSnowSemaphore();
 
-            FallenSnow *fsnow = global.FsnowFirst;
+            FallenSnow *fsnow = mGlobal.FsnowFirst;
             while (fsnow) {
                 if (canSnowCollectOnWindowOrScreenBottom(fsnow)) {
                     drawFallenSnowListItem(fsnow);
@@ -184,7 +185,7 @@ void* doExecFallenSnowThread() {
                 fsnow = fsnow->next;
             }
 
-            XFlush(global.display);
+            XFlush(mGlobal.display);
 
             swapFallenSnowListItemSurfaces();
 
@@ -204,7 +205,7 @@ void* doExecFallenSnowThread() {
 void swapFallenSnowListItemSurfaces() {
     lockFallenSnowSwapSemaphore();
 
-    FallenSnow *fsnow = global.FsnowFirst;
+    FallenSnow *fsnow = mGlobal.FsnowFirst;
     while (fsnow) {
         cairo_surface_t *s = fsnow->surface1;
         fsnow->surface1 = fsnow->surface;
@@ -218,37 +219,51 @@ void swapFallenSnowListItemSurfaces() {
 /** *********************************************************************
  ** This method ...
  **/
+// threads: locking by caller
 // insert a node at the start of the list
 void PushFallenSnow(
     FallenSnow **first, WinInfo *win, int x, int y, int w, int h) {
-    // threads: locking by caller
+    // Too narrow windows results in complications.
     if (w < 3) {
-        return; // too narrow windows results in complications with regard to
+        return;
     }
-    //                  computing splines etc.
-    FallenSnow *p = (FallenSnow *)malloc(sizeof(FallenSnow));
+
+    // Computing splines etc.
+    FallenSnow *p = (FallenSnow *) malloc(sizeof(FallenSnow));
     p->win = *win;
+
     p->x = x;
     p->y = y;
     p->w = w;
     p->h = h;
+
     p->prevx = 0;
     p->prevy = 0;
     p->prevw = 10;
     p->prevh = 10;
-    p->acth = (short int *)malloc(sizeof(*(p->acth)) * w);
-    p->desh = (short int *)malloc(sizeof(*(p->desh)) * w);
-    p->surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w, h);
-    // p->surface1   = cairo_image_surface_create(CAIRO_FORMAT_ARGB32,w,h);
-    p->surface1 = cairo_surface_create_similar(
-        p->surface, CAIRO_CONTENT_COLOR_ALPHA, w, h);
 
-    int l = 0, i;
-    for (i = 0; i < w; i++) {
-        p->acth[i] = 0; // specify l to get sawtooth effect
-        p->desh[i] = h;
-        l++;
-        if (l > h) {
+    p->snowHeight = (short int *) malloc(sizeof(*(p->snowHeight)) * w);
+    p->maxSnowHeight = (short int *) malloc(sizeof(*(p->maxSnowHeight)) * w);
+    p->color = (GdkRGBA*) malloc(sizeof(*(p->color)) * w);
+
+    p->surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w, h);
+    p->surface1 = cairo_surface_create_similar(p->surface,
+        CAIRO_CONTENT_COLOR_ALPHA, w, h);
+
+    int l = 0;
+    for (int i = 0; i < w; i++) {
+        p->snowHeight[i] = 0;
+        p->maxSnowHeight[i] = h;
+        p->color[i] = mFlakeColor;
+
+        static char cbuffer[16];
+        snprintf(cbuffer, 16, "#%02x%02x%02x", (int) (mFlakeColor.red*255),
+            (int) (mFlakeColor.green*255), (int) (mFlakeColor.blue*255));
+        cbuffer[15] = '\x00';
+        // fprintf(stdout, "fallensnow: PushFallenSnow() color code : %s\n",
+        //     cbuffer);
+
+        if (l++ > h) {
             l = 0;
         }
     }
@@ -281,13 +296,15 @@ int PopFallenSnow(FallenSnow **list) {
  ** This method ...
  **/
 void CreateDesh(FallenSnow *p) {
+    #define N 6
+
     // threads: locking by caller
     int i;
     int w = p->w;
     int h = p->h;
     int id = p->win.id;
-    short int *desh = p->desh;
-#define N 6
+    short int *maxSnowHeight = p->maxSnowHeight;
+
     double splinex[N];
     double spliney[N];
 
@@ -299,8 +316,7 @@ void CreateDesh(FallenSnow *p) {
 
     splinex[0] = 0;
     splinex[N - 1] = w - 1;
-    if (id == 0) // bottom
-    {
+    if (id == 0) { // bottom
         spliney[0] = 1.0;
         spliney[N - 1] = 1.0;
     } else {
@@ -308,27 +324,22 @@ void CreateDesh(FallenSnow *p) {
         spliney[N - 1] = 0;
     }
 
-    double *x = (double *)malloc(w * sizeof(double));
-    double *y = (double *)malloc(w * sizeof(double));
+    double *x = (double *) malloc(w * sizeof(double));
+    double *y = (double *) malloc(w * sizeof(double));
     for (i = 0; i < w; i++) {
         x[i] = i;
     }
+
     spline_interpol(splinex, N, spliney, x, w, y);
     for (i = 0; i < w; i++) {
-        desh[i] = h * y[i];
-        if (desh[i] < 2) {
-            desh[i] = 2;
+        maxSnowHeight[i] = h * y[i];
+        if (maxSnowHeight[i] < 2) {
+            maxSnowHeight[i] = 2;
         }
     }
+
     free(x);
     free(y);
-
-#if 0
-   FILE *ff = fopen("/tmp/desh","w");
-   for (i=0; i<w; i++)
-      fprintf(ff,"%d %d\n",i,desh[i]);
-   fclose(ff);
-#endif
 }
 
 /** *********************************************************************
@@ -341,7 +352,7 @@ int do_change_deshes(__attribute__((unused)) void* dummy) {
         return TRUE;
     }
 
-    FallenSnow *fsnow = global.FsnowFirst;
+    FallenSnow *fsnow = mGlobal.FsnowFirst;
     while (fsnow) {
         CreateDesh(fsnow);
         fsnow = fsnow->next;
@@ -358,16 +369,16 @@ int do_adjust_deshes(__attribute__((unused))void* dummy) {
     // threads: probably no need for lock, but to be sure:
     lockFallenSnowSemaphore();
 
-    FallenSnow *fsnow = global.FsnowFirst;
+    FallenSnow *fsnow = mGlobal.FsnowFirst;
     while (fsnow) {
         int i;
         int adjustments = 0;
         for (i = 0; i < fsnow->w; i++) {
-            int d = fsnow->acth[i] - fsnow->desh[i];
+            int d = fsnow->snowHeight[i] - fsnow->maxSnowHeight[i];
             if (d > 0) {
                 int c = 1;
                 adjustments++;
-                fsnow->acth[i] -= c;
+                fsnow->snowHeight[i] -= c;
             }
         }
         P("adjustments: %d\n", adjustments);
@@ -443,7 +454,7 @@ void fallensnow_draw(cairo_t *cr) {
 
     lockFallenSnowSwapSemaphore();
 
-    FallenSnow *fsnow = global.FsnowFirst;
+    FallenSnow *fsnow = mGlobal.FsnowFirst;
     while (fsnow) {
         if (canSnowCollectOnWindowOrScreenBottom(fsnow)) {
             cairo_set_source_surface(cr, fsnow->surface,
@@ -470,35 +481,35 @@ void drawFallenSnowListItem(FallenSnow *fsnow) {
     // threads: locking done by caller
     if (fsnow->win.id == 0 ||
         (!fsnow->win.hidden &&
-            //(fsnow->win.ws == global.CWorkSpace || fsnow->win.sticky)))
+            //(fsnow->win.ws == mGlobal.CWorkSpace || fsnow->win.sticky)))
             (isFallenSnowOnVisibleWorkspace(fsnow) || fsnow->win.sticky))) {
 
         // do not interfere with Santa
         if (!Flags.NoSanta) {
-            int in = XRectInRegion(global.SantaPlowRegion, fsnow->x,
+            int in = XRectInRegion(mGlobal.SantaPlowRegion, fsnow->x,
                 fsnow->y - fsnow->h, fsnow->w, fsnow->h);
 
             if (in == RectangleIn || in == RectanglePart) {
                 // determine front of Santa in fsnow
                 int xfront;
-                if (global.SantaDirection == 0) {
-                    xfront = global.SantaX + global.SantaWidth - fsnow->x;
+                if (mGlobal.SantaDirection == 0) {
+                    xfront = mGlobal.SantaX + mGlobal.SantaWidth - fsnow->x;
                 } else {
-                    xfront = global.SantaX - fsnow->x;
+                    xfront = mGlobal.SantaX - fsnow->x;
                 }
 
                 // determine back of Santa in fsnow, Santa can move backwards in
                 // strong wind
                 int xback;
-                if (global.SantaDirection == 0) {
-                    xback = xfront - global.SantaWidth;
+                if (mGlobal.SantaDirection == 0) {
+                    xback = xfront - mGlobal.SantaWidth;
                 } else {
-                    xback = xfront + global.SantaWidth;
+                    xback = xfront + mGlobal.SantaWidth;
                 }
 
                 // clearing determines the amount of generated ploughing snow
                 const int clearing = 10;
-                float vy = -1.5 * global.ActualSantaSpeed;
+                float vy = -1.5 * mGlobal.ActualSantaSpeed;
                 if (vy > 0) {
                     vy = -vy;
                 }
@@ -507,34 +518,36 @@ void drawFallenSnowListItem(FallenSnow *fsnow) {
                 }
 
                 // This is cool ! Santa plows window snow !!
-                if (global.ActualSantaSpeed > 0) {
-                    if (global.SantaDirection == 0) {
+                if (mGlobal.ActualSantaSpeed > 0) {
+                    if (mGlobal.SantaDirection == 0) {
                         generateFallenSnowFlakes(fsnow, xfront, clearing, vy);
                         eraseFallenSnowOnDisplay(fsnow, xback - clearing,
-                            global.SantaWidth + 2 * clearing);
+                            mGlobal.SantaWidth + 2 * clearing);
                     } else {
                         generateFallenSnowFlakes(
                             fsnow, xfront - clearing, clearing, vy);
                         eraseFallenSnowOnDisplay(fsnow, xback + clearing,
-                            global.SantaWidth + 2 * clearing);
+                            mGlobal.SantaWidth + 2 * clearing);
                     }
                 }
-                if (global.SantaDirection == 0) {
+
+                if (mGlobal.SantaDirection == 0) {
                     int i;
                     for (i = 0; i < fsnow->w; i++) {
                         if (i < xfront + clearing && i >= xback - clearing) {
-                            fsnow->acth[i] = 0;
+                            fsnow->snowHeight[i] = 0;
                         }
                     }
                 } else {
                     int i;
                     for (i = 0; i < fsnow->w; i++) {
                         if (i > xfront - clearing && i <= xback + clearing) {
-                            fsnow->acth[i] = 0;
+                            fsnow->snowHeight[i] = 0;
                         }
                     }
                 }
-                XFlush(global.display);
+
+                XFlush(mGlobal.display);
             }
         }
 
@@ -546,19 +559,19 @@ void drawFallenSnowListItem(FallenSnow *fsnow) {
  ** This method ...
  **/
 void eraseFallenSnowOnDisplay(FallenSnow *fsnow, int xstart, int w) {
-    if (global.IsDouble) {
+    if (mGlobal.isDoubleBuffered) {
         return;
     }
 
     int x = fsnow->prevx;
     int y = fsnow->prevy;
-    if (global.IsDouble) {
+    if (mGlobal.isDoubleBuffered) {
         return;
     }
 
-    sanelyCheckAndClearDisplayArea(global.display, global.SnowWin,
-        x + xstart, y, w, fsnow->h + global.MaxFlakeHeight,
-        global.xxposures);
+    sanelyCheckAndClearDisplayArea(mGlobal.display, mGlobal.SnowWin,
+        x + xstart, y, w, fsnow->h + mGlobal.MaxFlakeHeight,
+        mGlobal.xxposures);
 }
 
 /** *********************************************************************
@@ -566,7 +579,7 @@ void eraseFallenSnowOnDisplay(FallenSnow *fsnow, int xstart, int w) {
  **/
 // clean area for fallensnow with id
 void eraseFallenSnowOnWindow(Window id) {
-    FallenSnow* fsnow = global.FsnowFirst;
+    FallenSnow* fsnow = mGlobal.FsnowFirst;
     while (fsnow) {
         if (fsnow->win.id == id) {
             eraseFallenSnowOnDisplay(fsnow, 0, fsnow->w);
@@ -579,18 +592,16 @@ void eraseFallenSnowOnWindow(Window id) {
 /** *********************************************************************
  ** This method ...
  **/
+// threads: locking by caller
 void createFallenSnowDisplayArea(FallenSnow *fsnow) {
-    // threads: locking by caller
-    P("createsurface %#10lx %d %d %d %d %d %d\n",
-        fsnow->id, fsnow->x, fsnow->y, fsnow->w, fsnow->h,
-        cairo_image_surface_get_width(fsnow->surface1),
-        cairo_image_surface_get_height(fsnow->surface1));
     GdkRGBA color;
 
     cairo_t *cr = cairo_create(fsnow->surface1);
+
     int h = fsnow->h;
     int w = fsnow->w;
-    short int *acth = fsnow->acth;
+
+    short int *snowHeight = fsnow->snowHeight;
     int id = fsnow->win.id;
 
     cairo_set_antialias(cr, CAIRO_ANTIALIAS_DEFAULT);
@@ -599,14 +610,12 @@ void createFallenSnowDisplayArea(FallenSnow *fsnow) {
     gdk_rgba_parse(&color, Flags.SnowColor);
     cairo_set_source_rgb(cr, color.red, color.green, color.blue);
 
-    {
-        // clear surface1
-        cairo_save(cr);
-        cairo_set_source_rgba(cr, 0, 0, 0, 0);
-        cairo_set_operator(cr, CAIRO_OPERATOR_SOURCE);
-        cairo_paint(cr);
-        cairo_restore(cr);
-    }
+    // clear surface1
+    cairo_save(cr);
+    cairo_set_source_rgba(cr, 0, 0, 0, 0);
+    cairo_set_operator(cr, CAIRO_OPERATOR_SOURCE);
+    cairo_paint(cr);
+    cairo_restore(cr);
 
     {
         // compute averages for 10 points, draw spline through them
@@ -623,7 +632,7 @@ void createFallenSnowDisplayArea(FallenSnow *fsnow) {
             int j;
             double s = 0;
             for (j = 0; j < m; j++) {
-                s += acth[m * i + j];
+                s += snowHeight[m * i + j];
             }
             av[i + 1] = s / m;
             x[i + 1] = m * i + 0.5 * m;
@@ -640,7 +649,7 @@ void createFallenSnowDisplayArea(FallenSnow *fsnow) {
         int mk = m * k;
         double s = 0;
         for (i = mk; i < w; i++) {
-            s += acth[i];
+            s += snowHeight[i];
         }
 
         av[k + 1] = s / (w - mk);
@@ -678,7 +687,7 @@ void createFallenSnowDisplayArea(FallenSnow *fsnow) {
             // even if there has no snow fallen on certain parts, only handle
             // regions where snow has been fallen.
             enum { searching, drawing };
-            int state = searching; // searching for acth[] > 0
+            int state = searching; // searching for snowHeight[] > 0
             int i;
             int startpos;
             for (i = 0; i < w; ++i) {
@@ -729,31 +738,16 @@ void createFallenSnowDisplayArea(FallenSnow *fsnow) {
         free(av);
     }
 
-    if (0) { // for debugging
-        // draw max height of fallensnow (using fsnow->desh)
-        cairo_save(cr);
-        cairo_set_operator(cr, CAIRO_OPERATOR_OVER);
-        cairo_set_source_rgba(cr, 1, 0, 0, 1);
-
-        for (int j = 0; j < w; j++) {
-            cairo_rectangle(cr, j, h - fsnow->desh[j], 1, 1);
-        }
-
-        cairo_fill(cr);
-        cairo_fill(cr);
-        cairo_restore(cr);
-    }
-
     cairo_destroy(cr);
 }
 
 /** *********************************************************************
  ** This method ...
  **/
+// threads: locking by caller
 void freeFallenSnowDisplayArea(FallenSnow *fallen) {
-    // threads: locking by caller
-    free(fallen->acth);
-    free(fallen->desh);
+    free(fallen->snowHeight);
+    free(fallen->maxSnowHeight);
 
     cairo_surface_destroy(fallen->surface);
     cairo_surface_destroy(fallen->surface1);
@@ -790,24 +784,24 @@ void generateFallenSnowFlakes(FallenSnow *fsnow, int x, int w, float vy) {
 
     for (i = ifirst; i < ilast; i += 1) {
         int j;
-        for (j = 0; j < fsnow->acth[i]; j++) {
+        for (j = 0; j < fsnow->snowHeight[i]; j++) {
             int k, kmax = BlowOff();
             for (k = 0; k < kmax; k++) {
                 float p = 0;
                 p = drand48();
-                // In X11, (global.Trans!=1) we want not too much
+                // In X11, (mGlobal.hasTransparentWindow!=1) we want not too much
                 // generated flakes
                 // Otherwize, we go for more dramatic effects
-                // But, it appeared that, if global.Trans==1, too much snow
+                // But, it appeared that, if mGlobal.hasTransparentWindow==1, too much snow
                 // is generated, choking the x server.
                 if (p < 0.15) {
-                    Snow *flake = MakeFlake(-1);
+                    SnowFlake *flake = MakeFlake(-1);
                     flake->rx = fsnow->x + i + 16 * (drand48() - 0.5);
                     flake->ry = fsnow->y - j - 8;
                     if (Flags.NoWind) {
                         flake->vx = 0;
                     } else {
-                        flake->vx = global.NewWind / 8;
+                        flake->vx = mGlobal.NewWind / 8;
                     }
                     flake->vy = vy;
                     flake->cyclic = 0;
@@ -822,17 +816,17 @@ void generateFallenSnowFlakes(FallenSnow *fsnow, int x, int w, float vy) {
  **/
 void eraseFallenSnowAtPixel(FallenSnow *fsnow, int x) {
     // threads: locking by caller
-    if (fsnow->acth[x] <= 0) {
+    if (fsnow->snowHeight[x] <= 0) {
         return;
     }
 
-    if (!global.IsDouble) {
-        sanelyCheckAndClearDisplayArea(global.display, global.SnowWin,
-            fsnow->x + x, fsnow->y - fsnow->acth[x],
-            1, 1, global.xxposures);
+    if (!mGlobal.isDoubleBuffered) {
+        sanelyCheckAndClearDisplayArea(mGlobal.display, mGlobal.SnowWin,
+            fsnow->x + x, fsnow->y - fsnow->snowHeight[x],
+            1, 1, mGlobal.xxposures);
     }
 
-    fsnow->acth[x]--;
+    fsnow->snowHeight[x]--;
 }
 
 /** *********************************************************************
@@ -841,17 +835,17 @@ void eraseFallenSnowAtPixel(FallenSnow *fsnow, int x) {
 void initFallenSnowList() {
     // Lock, & remove all FallenSnow List Items.
     lockFallenSnowSemaphore();
-    while (global.FsnowFirst) {
-        PopFallenSnow(&global.FsnowFirst);
+    while (mGlobal.FsnowFirst) {
+        PopFallenSnow(&mGlobal.FsnowFirst);
     }
 
     // Create FallenSnow item for bottom of screen.
     WinInfo *NullWindow = (WinInfo *) malloc(sizeof(WinInfo));
     memset(NullWindow, 0, sizeof(WinInfo));
 
-    PushFallenSnow(&global.FsnowFirst, NullWindow,
-        0, global.SnowWinHeight,
-        global.SnowWinWidth, global.MaxScrSnowDepth);
+    PushFallenSnow(&mGlobal.FsnowFirst, NullWindow,
+        0, mGlobal.SnowWinHeight,
+        mGlobal.SnowWinWidth, mGlobal.MaxScrSnowDepth);
 
     // Unlock & exit.
     free(NullWindow);
@@ -868,15 +862,15 @@ void updateFallenSnowWithWind(FallenSnow *fsnow, int w, int h) {
     int i;
     int x = randint(fsnow->w - w);
     for (i = x; i < x + w; i++) {
-        if (fsnow->acth[i] > h) {
+        if (fsnow->snowHeight[i] > h) {
             // animation of blown off snow
-            if (!Flags.NoWind && global.Wind != 0 && drand48() > 0.5) {
+            if (!Flags.NoWind && mGlobal.Wind != 0 && drand48() > 0.5) {
                 int j, jmax = BlowOff();
                 for (j = 0; j < jmax; j++) {
-                    Snow *flake = MakeFlake(-1);
+                    SnowFlake *flake = MakeFlake(-1);
                     flake->rx = fsnow->x + i;
-                    flake->ry = fsnow->y - fsnow->acth[i] - drand48() * 4;
-                    flake->vx = 0.25 * fsignf(global.NewWind) * global.WindMax;
+                    flake->ry = fsnow->y - fsnow->snowHeight[i] - drand48() * 4;
+                    flake->vx = 0.25 * fsignf(mGlobal.NewWind) * mGlobal.WindMax;
                     flake->vy = -10;
                     flake->cyclic =
                         (fsnow->win.id ==
@@ -892,7 +886,7 @@ void updateFallenSnowWithWind(FallenSnow *fsnow, int w, int h) {
 /** *********************************************************************
  ** This method ...
  **/
-void updateFallenSnowPartial(FallenSnow *fsnow, int x, int w) {
+void updateFallenSnowPartial(FallenSnow* fsnow, int position, int width) {
     if (!WorkspaceActive() || Flags.NoSnowFlakes ||
         (Flags.NoKeepSnowOnWindows && Flags.NoKeepSnowOnBottom)) {
         return;
@@ -902,76 +896,80 @@ void updateFallenSnowPartial(FallenSnow *fsnow, int x, int w) {
         return;
     }
 
-    int imin = x;
+    // ****************
+    // tempHeightArray will contain the snowHeight values
+    // corresponding with position-1 .. position+width (inclusive).
+    short int* tempHeightArray;
+    tempHeightArray = (short int *) malloc(sizeof(*tempHeightArray) * (width + 2));
+
+    // ****************
+    int imin = position;
     if (imin < 0) {
         imin = 0;
     }
-
-    int imax = x + w;
+    int imax = position + width;
     if (imax > fsnow->w) {
         imax = fsnow->w;
     }
-
-    int i, k;
-    k = 0;
-    short int *old;
-    // old will contain the acth values, corresponding with x-1..x+w (including)
-    old = (short int *)malloc(sizeof(*old) * (w + 2));
-
-    for (i = imin - 1; i <= imax; i++) {
+    int k = 0;
+    for (int i = imin - 1; i <= imax; i++) {
         if (i < 0) {
-            old[k++] = fsnow->acth[0];
+            tempHeightArray[k++] = fsnow->snowHeight[0];
         } else if (i >= fsnow->w) {
-            old[k++] = fsnow->acth[fsnow->w - 1];
+            tempHeightArray[k++] = fsnow->snowHeight[fsnow->w - 1];
         } else {
-            old[k++] = fsnow->acth[i];
+            tempHeightArray[k++] = fsnow->snowHeight[i];
         }
     }
 
-    int add;
-    if (fsnow->acth[imin] < fsnow->desh[imin] / 4) {
-        add = 4;
-    } else if (fsnow->acth[imin] < fsnow->desh[imin] / 2) {
-        add = 2;
+    // ****************
+    // Raise FallenSnow values.
+    int amountToRaiseHeight;
+    if (fsnow->snowHeight[imin] < fsnow->maxSnowHeight[imin] / 4) {
+        amountToRaiseHeight = 4;
+    } else if (fsnow->snowHeight[imin] < fsnow->maxSnowHeight[imin] / 2) {
+        amountToRaiseHeight = 2;
     } else {
-        add = 1;
+        amountToRaiseHeight = 1;
     }
 
-    k = 1; // old[1] corresponds with acth[0]
-    for (i = imin; i < imax; i++) {
-        if ((fsnow->desh[i] > old[k]) &&
-            (old[k - 1] >= old[k] || old[k + 1] >= old[k])) {
-            fsnow->acth[i] = add + (old[k - 1] + old[k + 1]) / 2;
-        }
-        k++;
-    }
-
-    // old will contain the new acth values, corresponding with x-1..x+w
-    // (including)
-    k = 0;
-    for (i = imin - 1; i <= imax; i++) {
-        if (i < 0) {
-            old[k++] = fsnow->acth[0];
-        } else if (i >= fsnow->w) {
-            old[k++] = fsnow->acth[fsnow->w - 1];
-        } else {
-            old[k++] = fsnow->acth[i];
-        }
-    }
-
-    // and now some smoothing
     k = 1;
-    for (i = imin; i < imax; i++) {
-        int j;
-        int sum = 0;
-        for (j = k - 1; j <= k + 1; j++) {
-            sum += old[j];
+    for (int i = imin; i < imax; i++) {
+        if ((fsnow->maxSnowHeight[i] > tempHeightArray[k]) &&
+            (tempHeightArray[k - 1] >= tempHeightArray[k] ||
+                tempHeightArray[k + 1] >= tempHeightArray[k])) {
+            fsnow->snowHeight[i] = amountToRaiseHeight + (tempHeightArray[k - 1] + tempHeightArray[k + 1]) / 2;
         }
-        fsnow->acth[i] = sum / 3;
         k++;
     }
 
-    free(old);
+    //  ****************
+    // tempHeightArray will contain the new snowHeight values
+    // corresponding with position-1..position+width.
+    k = 0;
+    for (int i = imin - 1; i <= imax; i++) {
+        if (i < 0) {
+            tempHeightArray[k++] = fsnow->snowHeight[0];
+        } else if (i >= fsnow->w) {
+            tempHeightArray[k++] = fsnow->snowHeight[fsnow->w - 1];
+        } else {
+            tempHeightArray[k++] = fsnow->snowHeight[i];
+        }
+    }
+
+    //  ****************
+    // And now some smoothing.
+    k = 1;
+    for (int i = imin; i < imax; i++) {
+        int sum = 0;
+        for (int j = k - 1; j <= k + 1; j++) {
+            sum += tempHeightArray[j];
+        }
+        fsnow->snowHeight[i] = sum / 3;
+        k++;
+    }
+
+    free(tempHeightArray);
 }
 
 /** *********************************************************************
@@ -1000,8 +998,8 @@ int isFallenSnowOnVisibleWorkspace(FallenSnow *fsnow) {
         return false;
     }
 
-    for (int i = 0; i < global.NVisWorkSpaces; i++) {
-        if (global.VisWorkSpaces[i] == fsnow->win.ws) {
+    for (int i = 0; i < mGlobal.NVisWorkSpaces; i++) {
+        if (mGlobal.VisWorkSpaces[i] == fsnow->win.ws) {
             return true;
         }
     }
@@ -1019,7 +1017,7 @@ void logAllFallenSnowDisplayAreas(FallenSnow *list) {
         int sumact = 0;
         int i;
         for (i = 0; i < fallen->w; i++) {
-            sumact += fallen->acth[i];
+            sumact += fallen->snowHeight[i];
         }
         printf("id:%#10lx ws:%4ld x:%6d y:%6d w:%6d sty:%2d hid:%2d sum:%8d\n",
             fallen->win.id, fallen->win.ws, fallen->x, fallen->y, fallen->w,

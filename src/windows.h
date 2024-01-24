@@ -24,12 +24,11 @@
 #include <X11/Intrinsic.h>
 #include <gtk/gtk.h>
 
-extern void windows_init(void);
+extern void addWindowsModuleToMainloop(void);
 
 extern int WorkspaceActive(void);
 
 extern void InitDisplayDimensions();
-extern void setabove(GtkWindow *w);
 extern void DisplayDimensions(void);
 
 extern void updateFallenSnowRegions(void);

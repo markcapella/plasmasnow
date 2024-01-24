@@ -45,7 +45,7 @@ double mPreviousTime = 0;
  ** Add update method to mainloop.
  **/
 void addLoadMonitorToMainloop() {
-    add_to_mainloop(PRIORITY_DEFAULT, TIME_BETWEEN_LOAD_MONITOR_EVENTS, updateLoadMonitor);
+    addMethodToMainloop(PRIORITY_DEFAULT, TIME_BETWEEN_LOAD_MONITOR_EVENTS, updateLoadMonitor);
 }
 
 /** *********************************************************************

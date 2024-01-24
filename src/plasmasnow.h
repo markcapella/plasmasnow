@@ -107,14 +107,14 @@
 #define TIME_BETWWEEN_FALLENSNOW_THREADS 0.20 // time between recompute fallen snow surfaces
 
 // time between updates of snowflakes positions etc
-#define time_snowflakes    (0.02 * global.cpufactor)
+#define time_snowflakes    (0.02 * mGlobal.cpufactor)
 
 // time between updates of screen
-#define time_draw_all      (0.04 * global.cpufactor)
+#define time_draw_all      (0.04 * mGlobal.cpufactor)
 
 
 /***********************************************************
- * Snow consts.
+ * SnowFlake consts.
  */
 #define FLAKES_PER_SEC_PER_PIXEL 30
 #define INITIALSCRPAINTSNOWDEPTH  8 // Painted in advance
@@ -133,6 +133,7 @@
 typedef struct _Snow {
         float rx; // x position
         float ry; // y position
+        GdkRGBA color;
         int ix;
         int iy;                       // position after draw
         float vx;                     // speed in x-direction, pixels/second
@@ -148,7 +149,7 @@ typedef struct _Snow {
         unsigned int freeze BITS(1);  // flake does not move
         unsigned int testing BITS(2); // for testing purposes
 
-} Snow;
+} SnowFlake;
 
 typedef struct _SnowMap {
         // Pixmap pixmap;
@@ -195,7 +196,7 @@ typedef struct Treeinfo {
 
 
 /***********************************************************
- * Sky global objects.
+ * Sky objects.
  */
 typedef struct _MeteorMap {
         int x1, x2, y1, y2, active, colornum;
@@ -235,35 +236,109 @@ typedef struct _WinInfo {
  * Global Fallensnow helper objects.
  */
 typedef struct _FallenSnow {
-        WinInfo win; // WinInfo of window, win.id == 0 if snow at bottom
-        int x, y;    // Coordinates of fallen snow, y for bottom of fallen snow
-        int w, h;    // width, max height of fallen snow
-        int prevx, prevy;          // x,y of last draw
-        int prevw, prevh;          // w,h of last draw
-        short int *acth;           // actual heights
-        short int *desh;           // desired heights
-        struct _FallenSnow *next;  // pointer to next item
-        cairo_surface_t *surface;  //
-        cairo_surface_t *surface1; //
+        WinInfo win; // win.id == None at bottom.
+
+        int x, y; // y for bottom of fallen snow
+        int w, h; // width, max height of fallen snow
+
+        int prevx, prevy; // x, y of last draw
+        int prevw, prevh; // w, h of last draw
+
+        short int* snowHeight; // actual heights
+        short int* maxSnowHeight; // desired heights
+        GdkRGBA* color;
+
+        cairo_surface_t* surface;
+        cairo_surface_t* surface1;
+
+        struct _FallenSnow* next; // pointer to next item
 } FallenSnow;
 
 
 /***********************************************************
  * Global helper objects.
  */
-extern struct _global {
-        SnowMap *fluffpix;
+extern struct _mGlobal {
         int counter;
-        unsigned int xxposures BITS(1);
-        unsigned int Desktop BITS(1);
-        unsigned int Trans BITS(1);
-        unsigned int UseDouble BITS(1);
-        unsigned int IsDouble BITS(1);
+        Bool xxposures;
 
+        Bool hasDestopWindow;
+        char* DesktopSession;
+        Bool hasTransparentWindow;
+        char* mPlasmaLayerName;
+        int IsCompiz;
+        int IsWayland;
+        Bool isDoubleBuffered;
+
+        Bool useDoubleBuffers;
         int XscreensaverMode;
 
+        int WindowOffsetX;
+        int WindowOffsetY;
+
+        int WindowsChanged;
+        int ForceRestart;
+        float WindowScale;
         double cpufactor;
 
+        // Cairo defs.
+        cairo_region_t *TreeRegion;
+        cairo_region_t *gSnowOnTreesRegion;
+
+        Pixel Black;
+        Pixel White;
+
+        int HaltedByInterrupt;
+        char Message[256];
+        char *Language;
+
+        // Root window defs.
+        Window Rootwindow;
+        int Xroot;
+        int Yroot;
+        unsigned int Wroot;
+        unsigned int Hroot;
+
+        // Display defs.
+        Display *display;
+        xdo_t *xdo;
+        int Screen;
+
+        // Workspace defs.
+        long CWorkSpace;
+        long VisWorkSpaces[MAXVISWORKSPACES];
+        int NVisWorkSpaces;
+        long ChosenWorkSpace;
+
+        // Snow defs.
+        Window SnowWin;
+        int SnowWinX;
+        int SnowWinY;
+        SnowMap *fluffpix;
+
+        unsigned int MaxFlakeHeight;      /* Biggest flake */
+        unsigned int MaxFlakeWidth;       /* Biggest flake */
+
+        int FlakeCount;                  /* number of flakes */
+        int FluffCount;                  /* number of fluff flakes */
+
+        int SnowWinBorderWidth;
+        int SnowWinWidth;
+        int SnowWinHeight;
+        int SnowWinDepth;
+
+        XPoint *SnowOnTrees;
+        int OnTrees;
+        int Wind; // 0 = no, 1 = blow snow, 2 = blow snow & Santa,
+        int Direction; // 0 = no, 1 = LTR, 2 = RTL.
+
+        float Whirl;
+        double WhirlTimer;
+        double WhirlTimerStart;
+        float NewWind;
+        float WindMax;
+
+        // Santa defs.
         float ActualSantaSpeed;
         Region SantaPlowRegion;
         int SantaHeight;
@@ -272,85 +347,14 @@ extern struct _global {
         int SantaY;
         int SantaDirection; // 0: left to right, 1: right to left
 
-        float WindowScale;
-
-        unsigned int MaxFlakeHeight;      /* Biggest flake */
-        unsigned int MaxFlakeWidth;       /* Biggest flake */
-        int FlakeCount;                  /* number of flakes */
-        int FluffCount;                  /* number of fluff flakes */
-
-        Display *display;
-        xdo_t *xdo;
-        int Screen;
-        Window SnowWin;
-        int SnowWinBorderWidth;
-        int SnowWinWidth;
-        int SnowWinHeight;
-        int WindowOffsetX; // when using the root window for drawing, we need
-        //                                   these offsets to correct for the
-        //                                   position of the windows.
-        int WindowOffsetY;
-        int SnowWinDepth;
-        char *DesktopSession;
-        int IsCompiz;
-        int IsWayland;
-        long CWorkSpace; // long? Yes, in compiz we take the placement of the
-                         // desktop
-        //                                     which can easily be > 16 bits
-        long
-            VisWorkSpaces[MAXVISWORKSPACES]; // these workspaces are visible. In
-                                             // bspwm (and possibly other tiling
-        //                                 widowmanagers) when app is running
-        //                                 full-screen, the different xinerama
-        //                                 screens each cover another workspace.
-        int NVisWorkSpaces; // number of VisWorkSpaces
-        long
-            ChosenWorkSpace; // workspace that is chosen as workspace to snow in
-        Window Rootwindow;
-        int Xroot;
-        int Yroot;
-        unsigned int Wroot;
-        unsigned int Hroot;
-        int SnowWinX;
-        int SnowWinY;
-        int WindowsChanged;
-        int ForceRestart;
-
-        FallenSnow *FsnowFirst;
-        int MaxScrSnowDepth;
-        int RemoveFluff;
-
+        // Sky defs.
         double moonX;
         double moonY;
         double moonR; // radius of moon in pixels
 
-        // Region          TreeRegion;
-        cairo_region_t *TreeRegion;
-
-        cairo_region_t *gSnowOnTreesRegion;
-        XPoint *SnowOnTrees;
-        int OnTrees;
-
-        Pixel Black;
-        Pixel White;
-
-        int Wind;
-        // Wind = 0: no wind
-        // Wind = 1: wind only affecting snow
-        // Wind = 2: wind affecting snow and santa
-        // Direction =  0: no wind direction I guess
-        // Direction =  1: wind from left to right
-        // Direction = -1: wind from right to left
-        int Direction;
-        float Whirl;
-        double WhirlTimer;
-        double WhirlTimerStart;
-        float NewWind;
-        float WindMax;
-
-        int HaltedByInterrupt;
-        char Message[256];
-
-        char *Language;
-} global;
+        // Fallensnow defs.
+        FallenSnow *FsnowFirst;
+        int MaxScrSnowDepth;
+        int RemoveFluff;
+} mGlobal;
 

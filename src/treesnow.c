@@ -44,8 +44,8 @@ static int do_snow_on_trees();
 static void ConvertOnTreeToFlakes(void);
 
 void treesnow_init() {
-    global.gSnowOnTreesRegion = cairo_region_create();
-    add_to_mainloop(PRIORITY_DEFAULT, time_snow_on_trees, do_snow_on_trees);
+    mGlobal.gSnowOnTreesRegion = cairo_region_create();
+    addMethodToMainloop(PRIORITY_DEFAULT, time_snow_on_trees, do_snow_on_trees);
 }
 
 void treesnow_draw(cairo_t *cr) {
@@ -55,7 +55,7 @@ void treesnow_draw(cairo_t *cr) {
     GdkRGBA color;
     gdk_rgba_parse(&color, Flags.SnowColor);
     cairo_set_source_rgba(cr, color.red, color.green, color.blue, ALPHA);
-    gdk_cairo_region(cr, global.gSnowOnTreesRegion);
+    gdk_cairo_region(cr, mGlobal.gSnowOnTreesRegion);
     cairo_fill(cr);
 }
 
@@ -72,7 +72,7 @@ int do_snow_on_trees() {
     if (NOTACTIVE) {
         return TRUE;
     }
-    if (global.Wind == 2) {
+    if (mGlobal.Wind == 2) {
         ConvertOnTreeToFlakes();
     }
     return TRUE;
@@ -81,36 +81,36 @@ int do_snow_on_trees() {
 
 // blow snow off trees
 void ConvertOnTreeToFlakes() {
-    P("ConvertOnTreeToFlakes %d\n", global.OnTrees);
+    P("ConvertOnTreeToFlakes %d\n", mGlobal.OnTrees);
     int i;
-    for (i = 0; i < global.OnTrees; i++) {
+    for (i = 0; i < mGlobal.OnTrees; i++) {
         int j;
         for (j = 0; j < 2; j++) {
             int k, kmax = BlowOff();
             for (k = 0; k < kmax; k++) {
-                Snow *flake = MakeFlake(-1);
-                flake->rx = global.SnowOnTrees[i].x;
-                flake->ry = global.SnowOnTrees[i].y - 5 * j;
+                SnowFlake *flake = MakeFlake(-1);
+                flake->rx = mGlobal.SnowOnTrees[i].x;
+                flake->ry = mGlobal.SnowOnTrees[i].y - 5 * j;
                 flake->vy = 0;
-                flake->vx = global.NewWind / 2;
+                flake->vx = mGlobal.NewWind / 2;
                 flake->cyclic = 0;
             }
         }
     }
-    global.OnTrees = 0;
+    mGlobal.OnTrees = 0;
     reinit_treesnow_region();
 }
 
 void reinit_treesnow_region() {
-    cairo_region_destroy(global.gSnowOnTreesRegion);
-    global.gSnowOnTreesRegion = cairo_region_create();
+    cairo_region_destroy(mGlobal.gSnowOnTreesRegion);
+    mGlobal.gSnowOnTreesRegion = cairo_region_create();
 }
 
 void InitSnowOnTrees() {
     // Flags.MaxOnTrees+1: prevent allocation of zero bytes
-    global.SnowOnTrees = (XPoint *)realloc(global.SnowOnTrees,
-        sizeof(*global.SnowOnTrees) * (Flags.MaxOnTrees + 1));
-    if (global.OnTrees > Flags.MaxOnTrees) {
-        global.OnTrees = Flags.MaxOnTrees;
+    mGlobal.SnowOnTrees = (XPoint *)realloc(mGlobal.SnowOnTrees,
+        sizeof(*mGlobal.SnowOnTrees) * (Flags.MaxOnTrees + 1));
+    if (mGlobal.OnTrees > Flags.MaxOnTrees) {
+        mGlobal.OnTrees = Flags.MaxOnTrees;
     }
 }

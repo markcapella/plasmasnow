@@ -23,9 +23,17 @@
 
 #include <X11/Intrinsic.h>
 #include <gtk/gtk.h>
+#include "plasmasnow.h"
 
-extern int make_trans_window(Display *display, GtkWidget *Transwindow,
-    int Xscreen, int sticky, int below, int dock, GdkWindow **gdk_window,
+extern int createTransparentWindow(Display *display,
+    GtkWidget *transparentGTKWindow, int xscreen,
+    int sticky, int below, int dock, GdkWindow **gdk_window,
     Window *x11_window, int *wantx, int *wanty);
-extern void setbelow(GtkWindow *w);
-extern void setabove(GtkWindow *w);
+
+extern void setTransparentWindowBelow(GtkWindow* window);
+extern void setTransparentWindowAbove(GtkWindow* window);
+
+extern void logAllWindowsStackedTopToBottom();
+
+extern void doRaiseWindow(char* argString);
+extern void doLowerWindow(char* argString);

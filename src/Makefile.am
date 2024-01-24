@@ -23,6 +23,7 @@ SUBDIRS = Pixmaps
 TOCC     = $(top_srcdir)/src/tocc.sh
 TOASCII  = $(top_srcdir)/src/toascii.sh
 
+# /usr/local
 gamesdir = $(exec_prefix)/games
 games_PROGRAMS = plasmasnow
 
@@ -114,6 +115,11 @@ snow_includes.h: Pixmaps
 	@echo ">>> Pixmaps Creating $@"
 	$(top_srcdir)/src/gen_snow_includes.sh $(top_srcdir)
 
+install-data-local:
+	cp 'Pixmaps/plasmasnow.png' /usr/share/icons/hicolor/48x48/apps/
+
+uninstall-local:
+	rm -f /usr/share/icons/hicolor/48x48/apps/plasmasnow.png
 
 TESTS = test1.sh
 
@@ -124,6 +130,7 @@ plasmasnow-docs.$(OBJEXT): changelog.inc
 
 plasmasnow-selfrep.$(OBJEXT): $(tarfile_inc)
 
+# usr/local/share
 appicondir=$(datadir)/pixmaps
 appicon_DATA=Pixmaps/plasmasnow.png Pixmaps/plasmapicker.png
 
