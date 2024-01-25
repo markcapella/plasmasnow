@@ -248,35 +248,6 @@ void getFinishedWindowsList(WinInfo** winInfoList, int* numberOfWindows) {
 }
 
 /** *********************************************************************
- ** This method ...
- **/
-Bool isDesktop_Visible() {
-    Bool result = false;
-
-    Atom type;
-    int format;
-    unsigned long nitems, unusedBytes;
-    unsigned char *properties = NULL;
-
-    XGetWindowProperty(mGlobal.display, mGlobal.Rootwindow,
-        XInternAtom(mGlobal.display, "_NET_SHOWING_DESKTOP", False),
-        0, (~0L), False, AnyPropertyType, &type, &format,
-        &nitems, &unusedBytes, &properties);
-
-    if (format == 32 && nitems >= 1) {
-        if (*(long *) (void *) properties != 1) {
-            result = true;
-        }
-    }
-
-    if (properties) {
-        XFree(properties);
-    }
-
-    return result;
-}
-
-/** *********************************************************************
  ** This method determines if a window is visible on a workspace.
  **/
 long int getWindowWorkspace(Window window) {
@@ -379,20 +350,53 @@ long int getCurrentWorkspace() {
  **/
 Bool isWindow_Hidden(Window window, int windowMapState) {
     if (!isDesktop_Visible()) {
+        fprintf(stdout, "----------------   !isDesktop_Visible()\n");
         return true;
     }
     if (windowMapState != IsViewable) {
+        fprintf(stdout, "----------------   windowMapState != IsViewable\n");
         return true;
     }
 
     if (isNetWM_Hidden(window)) {
+        fprintf(stdout, "----------------   isNetWM_Hidden()\n");
         return true;
     }
     if (isWM_Hidden(window)) {
+        fprintf(stdout, "----------------   isWM_Hidden(window()\n");
         return true;
     }
 
     return false;
+}
+
+/** *********************************************************************
+ ** This method ...
+ **/
+Bool isDesktop_Visible() {
+    Bool result = true;
+
+    Atom type;
+    int format;
+    unsigned long nitems, unusedBytes;
+    unsigned char *properties = NULL;
+
+    XGetWindowProperty(mGlobal.display, mGlobal.Rootwindow,
+        XInternAtom(mGlobal.display, "_NET_SHOWING_DESKTOP", False),
+        0, (~0L), False, AnyPropertyType, &type, &format,
+        &nitems, &unusedBytes, &properties);
+
+    if (format == 32 && nitems >= 1) {
+        if (*(long *) (void *) properties == 1) {
+            result = false;
+        }
+    }
+
+    if (properties) {
+        XFree(properties);
+    }
+
+    return result;
 }
 
 /** *********************************************************************
