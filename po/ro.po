@@ -1868,3 +1868,5 @@ msgstr "aceasta"
 
 #~ msgid "Force a gust of wind immediately.\n"
 #~ msgstr "Forțați imediat o rafală de vânt.\n"
+msgid "Advanced"
+msgstr "Avansat"

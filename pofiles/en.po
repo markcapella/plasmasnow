@@ -1524,3 +1524,5 @@ msgstr ""
 #: src/ui.glade:6259
 msgid "it"
 msgstr ""
+msgid "Advanced"
+msgstr ""
