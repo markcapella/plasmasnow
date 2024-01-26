@@ -1910,3 +1910,5 @@ msgstr "it"
 
 #~ msgid "Force a gust of wind immediately.\n"
 #~ msgstr "Forçar uma rajada de vento imediatamente.\n"
+msgid "About"
+msgstr "Sobre"

@@ -1969,3 +1969,5 @@ msgstr "it"
 
 #~ msgid "Force a gust of wind immediately.\n"
 #~ msgstr "Forcer une rafale de vent immédiatement.\n"
+msgid "About"
+msgstr "À propos"

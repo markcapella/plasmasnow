@@ -1859,3 +1859,5 @@ msgstr "tai"
 
 #~ msgid "Force a gust of wind immediately.\n"
 #~ msgstr "Nedelsdami sukelkite vėjo gūsį. \n"
+msgid "About"
+msgstr "Apie"

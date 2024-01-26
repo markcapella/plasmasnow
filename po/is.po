@@ -1855,3 +1855,5 @@ msgstr "það"
 
 #~ msgid "Force a gust of wind immediately.\n"
 #~ msgstr "Þvingaðu strax vindhviðu.\n"
+msgid "About"
+msgstr "Um hugbúnaðinn"

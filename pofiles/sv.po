@@ -1856,3 +1856,5 @@ msgstr "den"
 
 #~ msgid "Force a gust of wind immediately.\n"
 #~ msgstr "Framtvinga en vindpust omedelbart.\n"
+msgid "About"
+msgstr "Om"

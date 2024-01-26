@@ -1870,3 +1870,5 @@ msgstr "to"
 
 #~ msgid "Force a gust of wind immediately.\n"
 #~ msgstr "Natychmiast wymuś podmuch wiatru.\n"
+msgid "About"
+msgstr "O programie"

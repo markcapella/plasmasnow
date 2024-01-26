@@ -1887,3 +1887,5 @@ msgstr "το"
 
 #~ msgid "Force a gust of wind immediately.\n"
 #~ msgstr "Αναγκάστε αμέσως μια ριπή ανέμου.\n"
+msgid "About"
+msgstr "Περί"

@@ -1866,3 +1866,5 @@ msgstr "het"
 
 #~ msgid "Force a gust of wind immediately.\n"
 #~ msgstr "Forceer onmiddellijk een windvlaag.\n"
+msgid "About"
+msgstr "Info"

@@ -1861,3 +1861,5 @@ msgstr "to"
 
 #~ msgid "Force a gust of wind immediately.\n"
 #~ msgstr "Nekavējoties piespiediet vēja brāzmu. \n"
+msgid "About"
+msgstr "Par"

@@ -1871,3 +1871,5 @@ msgstr "azt"
 
 #~ msgid "Force a gust of wind immediately.\n"
 #~ msgstr "Azonnal kényszeríts ki egy széllökést. \n"
+msgid "About"
+msgstr "Névjegy"

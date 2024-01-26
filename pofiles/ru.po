@@ -1857,3 +1857,5 @@ msgstr "Это"
 
 #~ msgid "Force a gust of wind immediately.\n"
 #~ msgstr "Немедленно спровоцируйте порыв ветра.\n"
+msgid "About"
+msgstr "О приложении"

@@ -1855,3 +1855,5 @@ msgstr "seda"
 
 #~ msgid "Force a gust of wind immediately.\n"
 #~ msgstr "Zi ya sesẽ aɖe dzi enumake.\n"
+msgid "About"
+msgstr "_Programmist lähemalt"

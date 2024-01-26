@@ -1864,3 +1864,5 @@ msgstr "це"
 
 #~ msgid "Force a gust of wind immediately.\n"
 #~ msgstr "Негайно посиліть порив вітру.\n"
+msgid "About"
+msgstr "Про програму"

@@ -1862,3 +1862,5 @@ msgstr "it"
 
 #~ msgid "Force a gust of wind immediately.\n"
 #~ msgstr "Pakota tuulenpuuska välittömästi.\n"
+msgid "About"
+msgstr "Tietoja"

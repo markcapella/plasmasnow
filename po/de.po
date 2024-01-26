@@ -1878,3 +1878,5 @@ msgstr "es"
 
 #~ msgid "Force a gust of wind immediately.\n"
 #~ msgstr "Erzwingen Sie sofort einen Windstoß. \n"
+msgid "About"
+msgstr "Info"

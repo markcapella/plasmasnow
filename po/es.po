@@ -1965,3 +1965,5 @@ msgstr "."
 
 #~ msgid "Force a gust of wind immediately.\n"
 #~ msgstr "Forzar una ráfaga de viento inmediatamente.\n"
+msgid "About"
+msgstr "Acerca de"
