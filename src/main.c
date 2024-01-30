@@ -231,7 +231,7 @@ int applicationStart(int argc, char *argv[]) {
     birds_sem_init();
 
     // Titlebar string, but not one.
-    mGlobal.mPlasmaLayerName = "  plasmaSnow";
+    mGlobal.mPlasmaWindowTitle = "plasmaSnow";
 
     mGlobal.counter = 0;
     mGlobal.cpufactor = 1.0;
@@ -1502,6 +1502,6 @@ void mybindtestdomain() {
  **               and our actual app Snow Window.
  **/
 void setAppBelowAllWindows() {
-    doLowerWindow(mGlobal.mPlasmaLayerName);
+    doLowerWindow(mGlobal.mPlasmaWindowTitle);
     logAllWindowsStackedTopToBottom();
 }

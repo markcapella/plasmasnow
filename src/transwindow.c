@@ -302,7 +302,7 @@ void setTransparentWindowBelow(__attribute__((unused)) GtkWindow *window) {
         fprintf(stdout, "%s", logMsg);
     }
 
-    //doLowerWindow(mGlobal.mPlasmaLayerName);
+    //doLowerWindow(mGlobal.mPlasmaWindowTitle);
 
     {   const char* logMsg =
             "transparentwindow: setTransparentWindowBelow() Finishes.\n";
@@ -335,7 +335,7 @@ void setTransparentWindowAbove(__attribute__((unused)) GtkWindow *window) {
         fprintf(stdout, "%s", logMsg);
     }
 
-    doRaiseWindow(mGlobal.mPlasmaLayerName);
+    doRaiseWindow(mGlobal.mPlasmaWindowTitle);
 
     {   const char* logMsg =
             "transparentwindow: setTransparentWindowAbove() "

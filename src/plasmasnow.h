@@ -265,7 +265,7 @@ extern struct _mGlobal {
         Bool hasDestopWindow;
         char* DesktopSession;
         Bool hasTransparentWindow;
-        char* mPlasmaLayerName;
+        char* mPlasmaWindowTitle;
         int IsCompiz;
         int IsWayland;
         Bool isDoubleBuffered;

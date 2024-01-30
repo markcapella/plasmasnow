@@ -336,14 +336,14 @@ gboolean handleMainWindowStateEvents(
             // const char* PLASMA_DESKTOP = "plasma";
             //if (strncmp(mGlobal.DesktopSession,
             //        PLASMA_DESKTOP, strlen(PLASMA_DESKTOP)) == 0) {
-            //    doLowerWindow(mGlobal.mPlasmaLayerName);
+            //    doLowerWindow(mGlobal.mPlasmaWindowTitle);
             //    return true;
             //}
         }
 
         //if (event->new_window_state & GDK_WINDOW_STATE_FOCUSED) {
         //    doRaiseWindow("plasmasnow");
-        //    doLowerWindow(mGlobal.mPlasmaLayerName);
+        //    doLowerWindow(mGlobal.mPlasmaWindowTitle);
         //}
     }
 
@@ -1066,7 +1066,7 @@ void initUIClass() {
     mStyleContext = gtk_widget_get_style_context(mMainWindow);
     applyMainWindowCSSTheme();
 
-    gtk_window_set_title(GTK_WINDOW(mMainWindow), mGlobal.mPlasmaLayerName);
+    gtk_window_set_title(GTK_WINDOW(mMainWindow), mGlobal.mPlasmaWindowTitle);
     //gtk_window_set_title(GTK_WINDOW(mMainWindow), "");
     if (getenv("plasmasnow_RESTART")) {
         gtk_window_set_position(GTK_WINDOW(mMainWindow),
