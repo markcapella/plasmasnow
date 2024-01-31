@@ -322,40 +322,14 @@ void handle_language(int restart) {
  **/
 gboolean handleMainWindowStateEvents(
     __attribute__((unused)) GtkWidget* widget,
-    GdkEventWindowState* event,
+    __attribute__((unused)) GdkEventWindowState* event,
     __attribute__((unused)) gpointer user_data) {
-    {   char resultMsg[128];
-        snprintf(resultMsg, sizeof(resultMsg),
-            "ui: handleMainWindowStateEvents() event->type : %i Starts.\n",
-            event->type);
-        fprintf(stdout, "%s", resultMsg);
-    }
 
-    if (event->type == GDK_WINDOW_STATE) {
-        if (event->new_window_state & GDK_WINDOW_STATE_ICONIFIED) {
-            // const char* PLASMA_DESKTOP = "plasma";
-            //if (strncmp(mGlobal.DesktopSession,
-            //        PLASMA_DESKTOP, strlen(PLASMA_DESKTOP)) == 0) {
-            //    doLowerWindow(mGlobal.mPlasmaWindowTitle);
-            //    return true;
-            //}
-        }
-
-        //if (event->new_window_state & GDK_WINDOW_STATE_FOCUSED) {
-        //    doRaiseWindow("plasmasnow");
-        //    doLowerWindow(mGlobal.mPlasmaWindowTitle);
-        //}
-    }
-
-    // getWinInfoList();
-
-    // Else all done.
-    {   char resultMsg[128];
-        snprintf(resultMsg, sizeof(resultMsg),
-            "ui: handleMainWindowStateEvents() event->type : %i Finishes.\n\n",
-            event->type);
-        fprintf(stdout, "%s", resultMsg);
-    }
+    // Convenient App level Event hook.
+    //if (event->type == GDK_WINDOW_STATE) {
+    //    if (event->new_window_state & GDK_WINDOW_STATE_ICONIFIED) {
+    //    }
+    //}
 
     return false;
 }

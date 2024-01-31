@@ -187,8 +187,8 @@ static int mIsSticky = 0;
 static int wantx = 0;
 static int wanty = 0;
 
-static int PrevW = 0;
-static int PrevH = 0;
+static int mPrevSnowWinWidth = 0;
+static int mPrevSnowWinHeight = 0;
 
 static const char *BlackColor = "black";
 static Pixel BlackPix;
@@ -499,6 +499,7 @@ int applicationStart(int argc, char *argv[]) {
     addMethodToMainloop(PRIORITY_DEFAULT, CONFIGURE_WINDOW_EVENT_TIME,
         handlePendingX11Events);
     addMethodToMainloop(PRIORITY_DEFAULT, time_testing, do_testing);
+
     addMethodToMainloop(PRIORITY_DEFAULT, time_display_dimensions,
         handleDisplayConfigurationChange);
 
@@ -763,7 +764,7 @@ int StartWindow() {
 
     xdo_wait_for_window_map_state(mGlobal.xdo, mGlobal.SnowWin, IsViewable);
 
-    InitDisplayDimensions();
+    initDisplayDimensions();
 
     mGlobal.SnowWinX = wantx;
     mGlobal.SnowWinY = wanty;
@@ -771,8 +772,8 @@ int StartWindow() {
         mGlobal.SnowWinX, mGlobal.SnowWinY, mGlobal.SnowWinWidth,
         mGlobal.SnowWinHeight);
 
-    PrevW = mGlobal.SnowWinWidth;
-    PrevH = mGlobal.SnowWinHeight;
+    mPrevSnowWinWidth = mGlobal.SnowWinWidth;
+    mPrevSnowWinHeight = mGlobal.SnowWinHeight;
     printf(_("mGlobal.WindowOffsetX, mGlobal.WindowOffsetY: %d %d\n"),
         mGlobal.WindowOffsetX, mGlobal.WindowOffsetY);
 
@@ -824,22 +825,10 @@ void handleX11CairoDisplayChange() {
 #endif
 
     if (!dodouble) {
-        printf(_("NOT using double buffering:"));
-
         Visual *visual = DefaultVisual(mGlobal.display,
             DefaultScreen(mGlobal.display));
         mCairoSurface = cairo_xlib_surface_create(
             mGlobal.display, mGlobal.SnowWin, visual, w, h);
-
-        if (Flags.useDoubleBuffers) {
-            printf(_(" because double buffering is not available "
-                     "on this system.\n"));
-        } else {
-            printf(_(" on your request.\n"));
-        }
-
-        printf(_("NOTE: expect some flicker.\n"));
-        fflush(stdout);
     }
 
     {   // Destroy & create new Cairo Window.
@@ -852,6 +841,7 @@ void handleX11CairoDisplayChange() {
 
     mGlobal.SnowWinWidth = w;
     mGlobal.SnowWinHeight = h;
+
     if (Flags.Screen >= 0 && mGlobal.hasDestopWindow) {
         int winx, winy, winw, winh;
         if (xinerama(mGlobal.display, Flags.Screen,
@@ -862,8 +852,6 @@ void handleX11CairoDisplayChange() {
             mGlobal.SnowWinHeight = winh;
         }
 
-        P("clipsnow %d %d %d %d\n", mGlobal.SnowWinX, mGlobal.SnowWinY,
-            mGlobal.SnowWinWidth, mGlobal.SnowWinHeight);
         cairo_rectangle(mCairoWindow, mGlobal.SnowWinX, mGlobal.SnowWinY,
             mGlobal.SnowWinWidth, mGlobal.SnowWinHeight);
         cairo_clip(mCairoWindow);
@@ -939,7 +927,7 @@ int doAllUISettingsUpdates() {
     UIDO(CpuLoad, HandleCpuFactor(););
     UIDO(Transparency, );
     UIDO(Scale, );
-    UIDO(OffsetS, DisplayDimensions(););
+    UIDO(OffsetS, updateDisplayDimensions(););
     UIDO(OffsetY, updateFallenSnowRegionsWithLock(););
     UIDO(NoFluffy, ClearScreen(););
     UIDO(AllWorkspaces, DoAllWorkspaces(););
@@ -1009,21 +997,10 @@ int handlePendingX11Events() {
     while (XPending(mGlobal.display)) {
         XEvent event;
         XNextEvent(mGlobal.display, &event);
-        char resultMsg[128];
-        snprintf(resultMsg, sizeof(resultMsg),
-            "main: handlePendingX11Events() event.type : %i Starts.\n",
-            event.type);
-        fprintf(stdout, "%s", resultMsg);
 
         switch (event.type) {
             case ConfigureNotify:
                 if (!isWindowDraggingActive()) {
-                    char resultMsg[128];
-                    snprintf(resultMsg, sizeof(resultMsg),
-                        "main: handlePendingX11Events() event.type : %i.\n",
-                        event.type);
-                    fprintf(stdout, "%s", resultMsg);
-
                     mGlobal.WindowsChanged++;
                     if (event.xconfigure.window == mGlobal.SnowWin) {
                         mMainWindowNeedsReconfiguration = true;
@@ -1049,14 +1026,6 @@ int handlePendingX11Events() {
                 onWindowDestroyed(event.xdestroywindow.window);
                 break;
         }
-
-        {
-            char resultMsg[128];
-            snprintf(resultMsg, sizeof(resultMsg),
-                "main: handlePendingX11Events() event.type : %i Finishes.\n",
-                event.type);
-            fprintf(stdout, "%s", resultMsg);
-        }
     }
 
     return TRUE;
@@ -1066,10 +1035,8 @@ int handlePendingX11Events() {
  ** This method ...
  **/
 void RestartDisplay() {
-    P("Restartdisplay: %d W: %d H: %d\n", mGlobal.counter++, mGlobal.SnowWinWidth,
-        mGlobal.SnowWinHeight);
-
     fflush(stdout);
+
     initFallenSnowList();
     init_stars();
     EraseTrees();
@@ -1291,17 +1258,16 @@ int handleDisplayConfigurationChange() {
     }
     mMainWindowNeedsReconfiguration = false;
 
-    DisplayDimensions();
-
     if (!mGlobal.hasTransparentWindow) {
         handleX11CairoDisplayChange();
     }
 
-    if (PrevW != mGlobal.SnowWinWidth || PrevH != mGlobal.SnowWinHeight) {
+    if (mPrevSnowWinWidth != mGlobal.SnowWinWidth ||
+        mPrevSnowWinHeight != mGlobal.SnowWinHeight) {
+        updateDisplayDimensions();
         RestartDisplay();
-
-        PrevW = mGlobal.SnowWinWidth;
-        PrevH = mGlobal.SnowWinHeight;
+        mPrevSnowWinWidth = mGlobal.SnowWinWidth;
+        mPrevSnowWinHeight = mGlobal.SnowWinHeight;
         SetWindowScale();
     }
 

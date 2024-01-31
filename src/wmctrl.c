@@ -350,20 +350,16 @@ long int getCurrentWorkspace() {
  **/
 Bool isWindow_Hidden(Window window, int windowMapState) {
     if (!isDesktop_Visible()) {
-        fprintf(stdout, "----------------   !isDesktop_Visible()\n");
         return true;
     }
     if (windowMapState != IsViewable) {
-        fprintf(stdout, "----------------   windowMapState != IsViewable\n");
         return true;
     }
 
     if (isNetWM_Hidden(window)) {
-        fprintf(stdout, "----------------   isNetWM_Hidden()\n");
         return true;
     }
     if (isWM_Hidden(window)) {
-        fprintf(stdout, "----------------   isWM_Hidden(window()\n");
         return true;
     }
 
@@ -600,14 +596,14 @@ void logAllWinInfoStructs(Display *dpy, WinInfo *winInfoList, int nWindows) {
 void doRaiseWindow(char* argString) {
     Window window = getWindowMatchName(argString);
     if (!window) {
-        fprintf(stdout, "\nwmctrl: doRaiseWindow() Cannot "
-            "find a Window by that name.\n");
+        //fprintf(stdout, "\nwmctrl: doRaiseWindow() Cannot "
+        //    "find a Window by that name.\n");
         return;
     }
 
     if(!XRaiseWindow(mGlobal.display, window)) {
-        fprintf(stdout, "wmctrl: doRaiseWindow() Error "
-                "trying to lower the Window.\n");
+        //fprintf(stdout, "wmctrl: doRaiseWindow() Error "
+        //        "trying to lower the Window.\n");
         return;
     }
 }
@@ -618,8 +614,8 @@ void doRaiseWindow(char* argString) {
 void doLowerWindow(char* argString) {
     Window window = getWindowMatchName(argString);
     if (!window) {
-        fprintf(stdout, "\nwmctrl: doLowerWindow() Cannot "
-            "find a Window by that name.\n");
+        //fprintf(stdout, "\nwmctrl: doLowerWindow() Cannot "
+        //    "find a Window by that name.\n");
         return;
     }
 
@@ -633,8 +629,8 @@ void doLowerWindow(char* argString) {
             continue;
         }
         if (!XRaiseWindow(mGlobal.display, stackedWins[i])) {
-            fprintf(stdout, "wmctrl: doLowerWindow() Error "
-                "trying to lower the Window.\n");
+            //fprintf(stdout, "wmctrl: doLowerWindow() Error "
+            //    "trying to lower the Window.\n");
             return;
         }
     }
@@ -652,14 +648,14 @@ Window getWindowMatchName(char* name) {
         XGetWMName(mGlobal.display, stackedWins[i], &titleBarName);
 
         char* titleBarString = (char*) titleBarName.value;
-        char* nameString = name;
+        //fprintf(stdout, "FOUND titlebar    [%s]\n", titleBarString);
 
-        fprintf(stdout, "FOUND titlebar    [%s]\n", titleBarString);
-        fprintf(stdout, "FOUND nameString  [%s]\n", nameString);
+        //char* nameString = name;
+        //fprintf(stdout, "FOUND nameString  [%s]\n", nameString);
 
         // Exact match includes empty nameString.
         if (strcmp(name, titleBarString) == 0) {
-            fprintf(stdout, "FOUND WINDOW !\n");
+            //fprintf(stdout, "FOUND WINDOW !\n");
             XFree(titleBarName.value);
             return stackedWins[i];
         }

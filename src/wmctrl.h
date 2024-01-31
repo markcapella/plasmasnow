@@ -46,8 +46,6 @@ extern void getX11WindowsList(WinInfo** winInfolist, int *listCount);
 void getRawWindowsList(WinInfo** winInfolist, int *listCount);
 void getFinishedWindowsList(WinInfo** winInfolist, int *listCount);
 
-extern void logAllWindowsStackedTopToBottom();
-
 Bool isWindow_Hidden(Window window, int windowMapState);
 Bool isNetWM_Hidden(Window window);
 Bool isWM_Hidden(Window window);

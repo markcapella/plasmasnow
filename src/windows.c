@@ -431,13 +431,13 @@ int xinerama(Display *display, int xscreen, int *x, int *y, int *w, int *h) {
 /** *********************************************************************
  ** This method ...
  **/
-void InitDisplayDimensions() {
+void initDisplayDimensions() {
     unsigned int w, h;
     int x, y;
     xdo_get_window_location(mGlobal.xdo, mGlobal.Rootwindow, &x, &y, NULL);
     xdo_get_window_size(mGlobal.xdo, mGlobal.Rootwindow, &w, &h);
 
-    P("InitDisplayDimensions root: %p %d %d %d %d\n", (void *)mGlobal.Rootwindow,
+    P("initDisplayDimensions root: %p %d %d %d %d\n", (void *)mGlobal.Rootwindow,
         x, y, w, h);
 
     mGlobal.Xroot = x;
@@ -445,13 +445,25 @@ void InitDisplayDimensions() {
     mGlobal.Wroot = w;
     mGlobal.Hroot = h;
 
-    DisplayDimensions();
+    {
+        char resultMsg[128];
+        snprintf(resultMsg, sizeof(resultMsg),
+            "windows: initDisplayDimensions() -> updateDisplayDimensions() before.\n");
+        fprintf(stdout, "%s", resultMsg);
+    }
+    updateDisplayDimensions();
+    {
+        char resultMsg[128];
+        snprintf(resultMsg, sizeof(resultMsg),
+            "windows: initDisplayDimensions() -> updateDisplayDimensions() after.\n");
+        fprintf(stdout, "%s", resultMsg);
+    }
 }
 
 /** *********************************************************************
  ** This method ...
  **/
-void DisplayDimensions() {
+void updateDisplayDimensions() {
     P("Displaydimensions\n");
     lockFallenSnowSemaphore();
 
@@ -477,14 +489,27 @@ void DisplayDimensions() {
     mGlobal.SnowWinWidth = w;
     mGlobal.SnowWinHeight = h + Flags.OffsetS;
 
-    P("DisplayDimensions: SnowWinX: %d Y:%d W:%d H:%d\n", mGlobal.SnowWinX,
+    P("updateDisplayDimensions: SnowWinX: %d Y:%d W:%d H:%d\n", mGlobal.SnowWinX,
         mGlobal.SnowWinY, mGlobal.SnowWinWidth, mGlobal.SnowWinHeight);
 
     mGlobal.SnowWinBorderWidth = b;
     mGlobal.SnowWinDepth = d;
 
     updateFallenSnowAtBottom();
+
+    {
+        char resultMsg[128];
+        snprintf(resultMsg, sizeof(resultMsg),
+            "windows: updateDisplayDimensions() Redraws trees before.\n");
+        fprintf(stdout, "%s", resultMsg);
+    }
     RedrawTrees();
+    {
+        char resultMsg[128];
+        snprintf(resultMsg, sizeof(resultMsg),
+            "windows: updateDisplayDimensions() Redraws trees after.\n");
+        fprintf(stdout, "%s", resultMsg);
+    }
 
     setMaxScreenSnowDepth();
     if (!mGlobal.isDoubleBuffered) {
@@ -616,7 +641,7 @@ int updateWindowsList() {
     if (currentWorkSpace < 0) {
         Flags.Done = 1;
         unlockFallenSnowSemaphore();
-        {   const char* logMsg = "windows: updateWindowsList() Finishes. 5\n";
+        {   const char* logMsg = "windows: updateWindowsList() Finishes.\n";
             fprintf(stdout, "%s", logMsg);
         }
         return TRUE;
@@ -631,14 +656,14 @@ int updateWindowsList() {
 
     // Special hack too keep mGlobal.SnowWin below (needed for example in
     // FVWM/xcompmgr, where mGlobal.SnowWin is not click-through)
-    logAllWindowsStackedTopToBottom();
+    // logAllWindowsStackedTopToBottom();
 
     //XWindowChanges changes;
     //changes.stack_mode = Below;
     //XConfigureWindow(mGlobal.display, mGlobal.SnowWin,
     //    CWStackMode, &changes);
 
-    logAllWindowsStackedTopToBottom();
+    // logAllWindowsStackedTopToBottom();
 
     if (isWindowDraggingActive()) {
         updateFallenSnowRegions();
@@ -696,18 +721,18 @@ void getWinInfoList() {
  ** (Rough life-cycle order.)
  **/
 void onWindowCreated(__attribute__((unused)) Window window) {
-    {   const char* logMsg =
-            "windows: onWindowCreated() Starts.\n";
-        fprintf(stdout, "%s", logMsg);
-    }
+    //{   const char* logMsg =
+    //        "windows: onWindowCreated() Starts.\n";
+    //    fprintf(stdout, "%s", logMsg);
+    //}
 
     // Update our list to include the new one.
     getWinInfoList();
 
-    {   const char* logMsg =
-            "windows: onWindowCreated() Finishes.\n";
-        fprintf(stdout, "%s", logMsg);
-    }
+    //{   const char* logMsg =
+    //        "windows: onWindowCreated() Finishes.\n";
+    //    fprintf(stdout, "%s", logMsg);
+    //}
 }
 
 /** *********************************************************************
@@ -717,9 +742,9 @@ void onWindowCreated(__attribute__((unused)) Window window) {
  ** and to immediately clear it's fallensnow.
  **/
 void onWindowMapped(__attribute__((unused)) Window window) {
-    {   const char* logMsg = "windows: onWindowMapped() Starts.\n";
-        fprintf(stdout, "%s", logMsg);
-    }
+    //{   const char* logMsg = "windows: onWindowMapped() Starts.\n";
+    //    fprintf(stdout, "%s", logMsg);
+    //}
 
     // Determine window drag state.
     setWindowDragState();
@@ -739,9 +764,9 @@ void onWindowMapped(__attribute__((unused)) Window window) {
         }
     }
 
-    {   const char* logMsg = "windows: onWindowMapped() Finishes.\n";
-        fprintf(stdout, "%s", logMsg);
-    }
+    //{   const char* logMsg = "windows: onWindowMapped() Finishes.\n";
+    //    fprintf(stdout, "%s", logMsg);
+    //}
 }
 
 /** *********************************************************************
@@ -750,18 +775,18 @@ void onWindowMapped(__attribute__((unused)) Window window) {
  ** Our main job is to clear window drag state.
  **/
 void onWindowUnmapped(__attribute__((unused)) Window window) {
-    {   const char* logMsg =
-            "windows: onWindowUnmapped() Starts.\n";
-            fprintf(stdout, "%s", logMsg);
-    }
+    //{   const char* logMsg =
+    //        "windows: onWindowUnmapped() Starts.\n";
+    //        fprintf(stdout, "%s", logMsg);
+    //}
 
     // Clear window drag state.
     clearWindowDragState();
 
-    {   const char* logMsg =
-            "windows: onWindowUnmapped() Finishes.\n";
-        fprintf(stdout, "%s", logMsg);
-    }
+    //{   const char* logMsg =
+    //        "windows: onWindowUnmapped() Finishes.\n";
+    //    fprintf(stdout, "%s", logMsg);
+    //}
 }
 
 /** *********************************************************************
@@ -770,18 +795,18 @@ void onWindowUnmapped(__attribute__((unused)) Window window) {
  ** (Rough life-cycle order.)
  **/
 void onWindowDestroyed(__attribute__((unused)) Window window) {
-    {   const char* logMsg =
-            "windows: onWindowDestroyed() Starts.\n";
-        fprintf(stdout, "%s", logMsg);
-    }
+    //{   const char* logMsg =
+    //        "windows: onWindowDestroyed() Starts.\n";
+    //    fprintf(stdout, "%s", logMsg);
+    //}
 
     // Update our list to reflect the destroyed one.
     getWinInfoList();
 
-    {   const char* logMsg =
-            "windows: onWindowDestroyed() Finishes.\n";
-        fprintf(stdout, "%s", logMsg);
-    }
+    //{   const char* logMsg =
+    //        "windows: onWindowDestroyed() Finishes.\n";
+    //    fprintf(stdout, "%s", logMsg);
+    //}
 }
 
 /** *********************************************************************

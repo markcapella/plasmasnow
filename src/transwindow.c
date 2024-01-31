@@ -67,10 +67,10 @@ int createTransparentWindow(Display *display,
     int sticky, int below, int dock, GdkWindow **gdk_window,
     Window *x11_window, int *wantx, int *wanty) {
 
-    {   const char* logMsg =
-            "transparentwindow: createTransparentWindow() Starts.\n";
-        fprintf(stdout, "%s", logMsg);
-    }
+    //{   const char* logMsg =
+    //        "transparentwindow: createTransparentWindow() Starts.\n";
+    //    fprintf(stdout, "%s", logMsg);
+    //}
 
     if (gdk_window) {
         *gdk_window = NULL;
@@ -115,10 +115,10 @@ int createTransparentWindow(Display *display,
     GdkScreen *screen = gtk_widget_get_screen(transparentGTKWindow);
     if (!gdk_screen_is_composited(screen)) {
         gtk_window_close(GTK_WINDOW(transparentGTKWindow));
-        {   const char* logMsg =
-                "transparentwindow: createTransparentWindow() Finishes - ERROR.\n";
-            fprintf(stdout, "%s", logMsg);
-        }
+        //{   const char* logMsg =
+        //        "transparentwindow: createTransparentWindow() Finishes - ERROR.\n";
+        //    fprintf(stdout, "%s", logMsg);
+        //}
         return FALSE;
     }
 
@@ -160,10 +160,10 @@ int createTransparentWindow(Display *display,
     if (x11_window) {
         *x11_window = gdk_x11_window_get_xid(gdkwin);
 
-        char resultMsg[1024];
-        snprintf(resultMsg, sizeof(resultMsg), "transparentwindow: createTransparentWindow()"
-            "The X11 id of mTransparentWindow is : 0x%08lx\n", *x11_window);
-        fprintf(stdout, "%s", resultMsg);
+        //char resultMsg[1024];
+        //snprintf(resultMsg, sizeof(resultMsg), "transparentwindow: createTransparentWindow()"
+        //    "The X11 id of mTransparentWindow is : 0x%08lx\n", *x11_window);
+        //fprintf(stdout, "%s", resultMsg);
 
         XResizeWindow(display, *x11_window, winw, winh);
         XFlush(display);
@@ -189,10 +189,10 @@ int createTransparentWindow(Display *display,
     resetVolatileTransparentWindowAttributes(transparentGTKWindow);
     g_object_steal_data(G_OBJECT(transparentGTKWindow), "trans_done");
 
-    {   const char* logMsg =
-            "transparentwindow: createTransparentWindow() Finishes.\n";
-        fprintf(stdout, "%s", logMsg);
-    }
+    //{   const char* logMsg =
+    //        "transparentwindow: createTransparentWindow() Finishes.\n";
+    //    fprintf(stdout, "%s", logMsg);
+    //}
 
     return TRUE;
 }
@@ -281,65 +281,65 @@ int resetVolatileTransparentWindowAttributes(GtkWidget *widget) {
  ** 
  **/
 void setTransparentWindowBelow(__attribute__((unused)) GtkWindow *window) {
-    {   const char* logMsg =
-            "transparentwindow: setTransparentWindowBelow() Starts.\n";
-        fprintf(stdout, "%s", logMsg);
-    }
+    //{   const char* logMsg =
+    //        "transparentwindow: setTransparentWindowBelow() Starts.\n";
+    //    fprintf(stdout, "%s", logMsg);
+    //}
 
     gtk_window_set_keep_above(GTK_WINDOW(window), false);
 
-    {   const char* logMsg =
-            "transparentwindow: setTransparentWindowBelow() "
-            "keep_above FALSE finished.\n";
-        fprintf(stdout, "%s", logMsg);
-    }
+    //{   const char* logMsg =
+    //        "transparentwindow: setTransparentWindowBelow() "
+    //        "keep_above FALSE finished.\n";
+    //    fprintf(stdout, "%s", logMsg);
+    //}
 
     gtk_window_set_keep_below(GTK_WINDOW(window), true);
 
-    {   const char* logMsg =
-            "transparentwindow: setTransparentWindowBelow() "
-            "keep_below TRUE finished.\n";
-        fprintf(stdout, "%s", logMsg);
-    }
+    //{   const char* logMsg =
+    //        "transparentwindow: setTransparentWindowBelow() "
+    //        "keep_below TRUE finished.\n";
+    //    fprintf(stdout, "%s", logMsg);
+    //}
 
     //doLowerWindow(mGlobal.mPlasmaWindowTitle);
 
-    {   const char* logMsg =
-            "transparentwindow: setTransparentWindowBelow() Finishes.\n";
-        fprintf(stdout, "%s", logMsg);
-    }
+    //{   const char* logMsg =
+    //        "transparentwindow: setTransparentWindowBelow() Finishes.\n";
+    //    fprintf(stdout, "%s", logMsg);
+    //}
 }
 
 /** *********************************************************************
  ** 
  **/
 void setTransparentWindowAbove(__attribute__((unused)) GtkWindow *window) {
-    {   const char* logMsg =
-            "transparentwindow: setTransparentWindowAbove() Starts,\n";
-        fprintf(stdout, "%s", logMsg);
-    }
+    //{   const char* logMsg =
+    //        "transparentwindow: setTransparentWindowAbove() Starts,\n";
+    //    fprintf(stdout, "%s", logMsg);
+    //}
 
     gtk_window_set_keep_below(GTK_WINDOW(window), false);
 
-    {   const char* logMsg =
-            "transparentwindow: setTransparentWindowAbove() "
-            "keep_below FALSE finished.\n";
-        fprintf(stdout, "%s", logMsg);
-    }
+    //{   const char* logMsg =
+    //        "transparentwindow: setTransparentWindowAbove() "
+    //        "keep_below FALSE finished.\n";
+    //    fprintf(stdout, "%s", logMsg);
+    //}
 
     gtk_window_set_keep_above(GTK_WINDOW(window), true);
 
-    {   const char* logMsg =
-            "transparentwindow: setTransparentWindowAbove() "
-            "keep_above TRUE finished.\n";
-        fprintf(stdout, "%s", logMsg);
-    }
+    //{   const char* logMsg =
+    //        "transparentwindow: setTransparentWindowAbove() "
+    //        "keep_above TRUE finished.\n";
+    //    fprintf(stdout, "%s", logMsg);
+    //}
 
     doRaiseWindow(mGlobal.mPlasmaWindowTitle);
 
-    {   const char* logMsg =
-            "transparentwindow: setTransparentWindowAbove() "
-            "Finishes.\n";
-        fprintf(stdout, "%s", logMsg);
-    }
+    //{   const char* logMsg =
+    //        "transparentwindow: setTransparentWindowAbove() "
+    //        "Finishes.\n";
+    //    fprintf(stdout, "%s", logMsg);
+    //}
 }

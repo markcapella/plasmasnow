@@ -28,8 +28,8 @@ extern void addWindowsModuleToMainloop(void);
 
 extern int WorkspaceActive(void);
 
-extern void InitDisplayDimensions();
-extern void DisplayDimensions(void);
+extern void initDisplayDimensions();
+extern void updateDisplayDimensions(void);
 
 extern void updateFallenSnowRegions(void);
 extern void updateFallenSnowRegionsWithLock(void);
