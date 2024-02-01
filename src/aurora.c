@@ -42,6 +42,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
+/***********************************************************
+ * Module Method stubs.
+ */
 #define NOTACTIVE (!WorkspaceActive())
 
 static void *do_aurora(void *);
@@ -54,6 +58,7 @@ static void create_aurora_base(const double *y, int n, double *slant,
     int nslant, double theta, int nw, int np, aurora_t **z, int *nz);
 static double cscale(double d, int imax, float ah, double az, double h);
 
+// This is used by erand48() in the compute thread.
 static GdkRGBA color;
 static const char *AuroraColor = "green";
 static AuroraMap a;
@@ -68,20 +73,30 @@ static cairo_surface_t *aurora_surface = NULL;
 static cairo_surface_t *aurora_surface1 = NULL;
 static cairo_t *aurora_cr = NULL;
 
-static sem_t copy_sem;
-static sem_t comp_sem;
-static sem_t init_sem;
+static unsigned short xsubi[3];
 
+
+// Locks used by Aurora.
+static sem_t comp_sem;
 static int lock_comp(void);
 static int unlock_comp(void);
+
+static sem_t init_sem;
 static int lock_init(void);
 static int unlock_init(void);
+
+static sem_t copy_sem;
 static int lock_copy(void);
 static int unlock_copy(void);
 
-static unsigned short
-    xsubi[3]; // this is used by erand48() in the compute thread
+/** *********************************************************************
+ ** Module globals and consts.
+ **/
 
+
+/** *********************************************************************
+ ** This method ...
+ **/
 void aurora_init() {
     // lock everything
     lock_init();
@@ -119,9 +134,14 @@ void aurora_init() {
     // and will be placed somewhat to the left
     int f = turnfuzz * mGlobal.SnowWinWidth;
     a.width = mGlobal.SnowWinWidth * Flags.AuroraWidth * 0.01 + f;
-    a.base = mGlobal.SnowWinHeight * Flags.AuroraBase * 0.01;
+
+    // Base from 10 .. 95 --> 95 .. 10.
+    const int invertedLift = (10 + 95) - Flags.AuroraBase;
+    a.base = mGlobal.SnowWinHeight * invertedLift * 0.01;
+
     aurora_setparms(&a);
 
+    // Remove existing surfaces.
     if (aurora_surface) {
         cairo_surface_destroy(aurora_surface);
     }
@@ -132,6 +152,7 @@ void aurora_init() {
         cairo_destroy(aurora_cr);
     }
 
+    // Create new ones.
     aurora_surface =
         cairo_image_surface_create(CAIRO_FORMAT_ARGB32, a.width, a.base);
     aurora_surface1 =
@@ -156,21 +177,30 @@ void aurora_init() {
     unlock_init();
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 void aurora_sem_init() {
     sem_init(&comp_sem, 0, 1);
     sem_init(&init_sem, 0, 1);
     sem_init(&copy_sem, 0, 1);
 }
 
-
+/** *********************************************************************
+ ** This method ...
+ **/
 int lock_comp() { return sem_wait(&comp_sem); }
 int unlock_comp() { return sem_post(&comp_sem); }
+
 int lock_init() { return sem_wait(&init_sem); }
 int unlock_init() { return sem_post(&init_sem); }
+
 int lock_copy() { return sem_wait(&copy_sem); }
 int unlock_copy() { return sem_post(&copy_sem); }
 
-
+/** *********************************************************************
+ ** This method ...
+ **/
 void aurora_ui() {
     UIDO(Aurora, );
 
@@ -186,7 +216,9 @@ void aurora_ui() {
     UIDO(AuroraRight, aurora_init(););
 }
 
-
+/** *********************************************************************
+ ** This method ...
+ **/
 void aurora_draw(cairo_t *cr) {
     P("aurora_draw %d %d\n", Flags.Aurora, mGlobal.counter++);
     if (Flags.Aurora == 0) {
@@ -206,12 +238,18 @@ void aurora_draw(cairo_t *cr) {
     unlock_copy();
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 void aurora_erase() {
     P("aurora_erase %d %d %d %d \n", a.x, a.y, a.width, a.height);
     sanelyCheckAndClearDisplayArea(mGlobal.display, mGlobal.SnowWin, a.x, a.y, a.width, a.base,
         mGlobal.xxposures);
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 void *do_aurora(void *d) {
     // (void) d;
     P("do_aurora %d %d\n", Flags.Aurora, mGlobal.counter++);

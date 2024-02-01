@@ -50,24 +50,34 @@ typedef struct _AuroraMap {
         float fuzzleft, fuzzright; // left and right fading
         double alpha, dalpha;      // transparency and transparency change
         double theta, dtheta;      // rotation and rotation change
-        double points[AURORA_POINTS],
-            dpoints[AURORA_POINTS]; // points used for drawing spline for bottom
-                                    // of aurora dpoints: change in points
+
+        double points[AURORA_POINTS]; // Points used for drawing spline bottom.
+        double dpoints[AURORA_POINTS]; // Aurora delta (change) points.
+
         double h[AURORA_H], dh[AURORA_H]; // spline points for height of aurora
         double a[AURORA_A], da[AURORA_A]; // spline points for alpha of aurora
-        double aa[AURORA_AA],
-            daa[AURORA_AA]; // spline points for high freqency alpha of aurora
-        double slant[AURORA_S],
-            dslant[AURORA_S]; // spline points for slant factor of aurora
+
+        double aa[AURORA_AA];
+        double daa[AURORA_AA]; // spline points for high freqency alpha of aurora
+
+        double slant[AURORA_S];
+        double dslant[AURORA_S]; // spline points for slant factor of aurora
+
         double slantmax;
+
         int nz;      // number of points defining aurora
+
         double *zh;  // computed values from 'h' (nz of them)
         double *za;  // computed values from 'a' (nz of them)
         double *zaa; // computed values from 'aa' (nz of them)
+
         aurora_t *z; // values computed from 'points'
+
         int step;    // step size in pixels computing aurora
+
         fuzz_t *fuzz;
         int lfuzz, nfuzz;
+
 } AuroraMap;
 
 extern void aurora_init(void);
