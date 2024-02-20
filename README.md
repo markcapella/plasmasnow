@@ -6,11 +6,18 @@
 
 ## Description
 
-    A fast re-take on a cool app, with graphics and UI upgrade, including
-    QT screen color picker that works on Plasma, and dual snow colors !
+       Ultimate fork of XSNOW, with graphics and UI upgrade,
+    including a QT screen color picker that works on Plasma,
+    dual snow colors, & HUGE bug fixes for modern desktops !
 
-    plasmasnow is derived from Willem Vermin's : xSnow 3.7.5.
-    xSnow 3.7.5 is derived from Rick Jansen's xsnow-1.42.
+    Desktop Sessions supported: Plasma, Xfce, Ubuntu, Gnome.
+
+
+    Mark Capella derived plasmasnow from
+        Willem Vermin's xSnow 3.7.5.
+
+    xSnow 3.7.5 is derived from
+        Rick Jansen's xsnow-1.42.
 
 
 ## Installation
@@ -38,6 +45,8 @@
 
     plasmasnow
 
+
+## Acknowledgements
 
 ### markcapella@twcny.rr.com Rocks !
 
