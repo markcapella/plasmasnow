@@ -188,10 +188,7 @@ void docs_usage(int man) {
     manout("-theme <n>",
         "1: use plasmasnow theme for menu; 0: use system theme (default: %d)",
         F(mAppTheme));
-    manout("-checkgtk <n>",
-        "0: Do not check gtk version before starting the user interface.");
-    manout(" ", "1: Check gtk version before starting the user interface.");
-    manout(" ", "(default: %d).", F(CheckGtk));
+
     manout("-id <n>, -window-id <n>",
         "Snow in window with id (for example from xwininfo).");
     manout("--window-id <n>", "see -id.");

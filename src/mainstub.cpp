@@ -26,5 +26,5 @@
 
 // Return results of main app & exit.
 int main(int argc, char *argv[]) {
-	return applicationStart(argc, argv);
+	return startApplication(argc, argv);
 }

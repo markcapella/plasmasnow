@@ -33,11 +33,14 @@
 using namespace std;
 
 #include <QtCore/QString>
+#include <QtCore/QStandardPaths>
+
+#include <QtGui/QIcon>
+
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QColorDialog>
+#include <QtWidgets/QDesktopWidget>
 #include <QtWidgets/QWidget>
-#include <QtGui/QIcon>
-#include <QtCore/QStandardPaths>
 
 
 /** *********************************************************************

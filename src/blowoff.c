@@ -32,7 +32,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define NOTACTIVE (!WorkspaceActive())
 
 static int do_blowoff();
 
@@ -60,7 +59,7 @@ int do_blowoff() {
     if (Flags.Done) {
         return FALSE;
     }
-    if (NOTACTIVE || !Flags.BlowSnow) {
+    if (!WorkspaceActive() || !Flags.BlowSnow) {
         return TRUE;
     }
     static int lockcounter = 0;
@@ -71,11 +70,11 @@ int do_blowoff() {
     while (fsnow) {
         P("blowoff ...\n");
         if (canSnowCollectOnWindowOrScreenBottom(fsnow) && !Flags.NoSnowFlakes) {
-            if (fsnow->win.id == 0 ||
-                (!fsnow->win.hidden &&
-                    //(fsnow->win.ws == mGlobal.CWorkSpace ||
-                    //fsnow->win.sticky)))
-                    (isFallenSnowOnVisibleWorkspace(fsnow) || fsnow->win.sticky))) {
+            if (fsnow->winInfo.window == 0 ||
+                (!fsnow->winInfo.hidden &&
+                    //(fsnow->winInfo.ws == mGlobal.CWorkSpace ||
+                    //fsnow->winInfo.sticky)))
+                    (isFallenSnowOnVisibleWorkspace(fsnow) || fsnow->winInfo.sticky))) {
                 updateFallenSnowWithWind(fsnow, fsnow->w / 4, fsnow->h / 4);
             }
         }

@@ -19,11 +19,9 @@
 #-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-# 
 */
-
 #include <stdio.h>
 #include <ctype.h>
 #include <stdbool.h>
-
 #include <pthread.h>
 
 #include <X11/Intrinsic.h>
@@ -50,43 +48,105 @@
 #include "plasmasnow.h"
 #include "scenery.h"
 
+/***********************************************************
+ * Externally provided to this Module Method stubs.
+ */
+bool is_NET_WM_STATE_Hidden(Window window);
+bool is_WM_STATE_Hidden(Window window);
+
+void uninitQPickerDialog();
+void endApplication(void);
 
 
 /***********************************************************
  * Module Method stubs.
  */
+//**
 // Workspace.
 static void DetermineVisualWorkspaces();
 static int do_sendevent();
 extern int updateWindowsList();
 
- // Windows.
-extern void onWindowCreated(Window);
-extern void onWindowDestroyed(Window);
-extern void onWindowMapped(Window);
-extern void onWindowUnmapped(Window);
+//**
+// Active & Focused X11 Window Helper methods.
+extern Window getActiveX11Window();
+Window getFocusedX11Window();
+int getFocusedX11XPos();
+int getFocusedX11YPos();
 
+//**
+// ActiveApp member helper methods.
+Window mActiveAppWindow = None;
+void clearAllActiveAppFields();
+
+extern Window getActiveAppWindow();
+void setActiveAppWindow(Window);
+Window getParentOfActiveAppWindow();
+
+const int mINVALID_POSITION = -1;
+int mActiveAppXPos = mINVALID_POSITION;
+int getActiveAppXPos();
+void setActiveAppXPos(int);
+
+int mActiveAppYPos = mINVALID_POSITION;
+int getActiveAppYPos();
+void setActiveAppYPos(int);
+
+//**
+// Windows life-cycle methods.
+extern void onCursorChange(XEvent*);
+extern void onAppWindowChange(Window);
+
+extern void onWindowCreated(XEvent*);
+extern void onWindowReparent(XEvent*);
+extern void onWindowChanged(XEvent*);
+
+extern void onWindowMapped(XEvent*);
+extern void onWindowFocused(XEvent*);
+extern void onWindowBlurred(XEvent*);
+extern void onWindowUnmapped(XEvent*);
+
+extern void onWindowDestroyed(XEvent*);
+
+//**
+// Windows life-cycle helper methods.
+bool isMouseClickedAndHeldDown();
+
+//**
 // Window dragging methods.
-void clearWindowDragState();
-void setWindowDragState();
+bool mIsWindowBeingDragged;
+void clearAllDragFields();
 
-// Window dragging helpers.
-extern Window getDragWindowOf(Window);
-
-bool mWindowDragging = false;
-extern bool isWindowDraggingActive();
-void setWindowDraggingActive();
-void setWindowDraggingInactive();
+extern bool isWindowBeingDragged();
+void setIsWindowBeingDragged(bool);
 
 Window mWindowBeingDragged = None;
 Window getWindowBeingDragged();
 void setWindowBeingDragged(Window);
 
-// ColorPicker methods.
-void uninitQPickerDialog();
-extern void applicationFinish(void);
+Window mActiveAppDragWindowCandidate = None;
+Window getActiveAppDragWindowCandidate();
+void setActiveAppDragWindowCandidate(Window);
 
-//extern int getTmpLogFile();
+//**
+// Helper methods for FallenSnow module.
+void removeAllFallenSnowWindows();
+void removeFallenSnowFromWindow(Window);
+
+//**
+// Debug methods.
+void logCurrentTimestamp();
+void logWindowAndAllParents(Window window);
+
+//**
+// Main WinInfo (Windows) list & helpers.
+static int mWinInfoListLength = 0;
+static WinInfo* mWinInfoList = NULL;
+
+void getWinInfoList();
+void ensureWinInfoList();
+WinInfo* findWinInfoByWindowId(Window);
+
 
 /** *********************************************************************
  ** Module globals and consts.
@@ -94,27 +154,6 @@ extern void applicationFinish(void);
 
 // Workspace on which transparent window is placed.
 static long TransWorkSpace = -SOMENUMBER;
-
-// Main WinInfo (Windows) List.
-static int mWinInfoListLength = 0;
-static WinInfo* mWinInfoList = NULL;
-
-extern void getWinInfoList();
-
-/** *********************************************************************
- ** This method scans all WinInfos for a requested ID.
- **/
-WinInfo* findWinInfoByWindowId(Window reqID) {
-    WinInfo* winInfoItem = mWinInfoList;
-    for (int i = 0; i < mWinInfoListLength; i++) {
-        if (winInfoItem->id == reqID) {
-            return winInfoItem;
-        }
-        winInfoItem++;
-    }
-
-    return NULL;
-}
 
 /** *********************************************************************
  ** This method ...
@@ -172,8 +211,6 @@ int do_sendevent() {
  ** This method ...
  **/
 void DetermineVisualWorkspaces() {
-    P("%d Entering DetermineVisualWorkspaces\n", mGlobal.counter++);
-
     static XClassHint class_hints;
     static XSetWindowAttributes attr;
     static long valuemask;
@@ -281,11 +318,11 @@ void updateFallenSnowRegions() {
     // add fallensnow regions:
     WinInfo* addWin = mWinInfoList;
     for (int i = 0; i < mWinInfoListLength; i++) {
-        fsnow = findFallenSnowListItem(mGlobal.FsnowFirst, addWin->id);
+        fsnow = findFallenSnowListItem(mGlobal.FsnowFirst, addWin->window);
         if (fsnow) {
-            fsnow->win = *addWin;
-            if ((!fsnow->win.sticky) &&
-                fsnow->win.ws != mGlobal.CWorkSpace) {
+            fsnow->winInfo = *addWin;
+            if ((!fsnow->winInfo.sticky) &&
+                fsnow->winInfo.ws != mGlobal.CWorkSpace) {
                 eraseFallenSnowOnDisplay(fsnow, 0, fsnow->w);
             }
         }
@@ -295,22 +332,18 @@ void updateFallenSnowRegions() {
         // (Desktop for example) and also not if this window has y <= 0
         // and also not if this window is a "dock"
         if (!fsnow) {
-            if (addWin->id != mGlobal.SnowWin &&
+            if (addWin->window != mGlobal.SnowWin &&
                 addWin->y > 0 && !(addWin->dock)) {
                 if ((int) (addWin->w) == mGlobal.SnowWinWidth &&
                     addWin->x == 0 && addWin->y < 100) {
                     continue;
                 }
 
-                if (isWindowDraggingActive() &&
-                    addWin->id == getWindowBeingDragged()) {
-                    // fprintf(stdout, "windows.c: updateFallenSnowRegions()" 
-                    //     "Window being dragged.\n");
+                // Avoid adding new regions as windows drag realtime.
+                if (isWindowBeingDragged()) {
                     continue;
                 }
 
-                // fprintf(stdout, "windows.c: updateFallenSnowRegions() "
-                //     "adding a FallenSnow (%lu)\n", addWin->id);
                 PushFallenSnow(&mGlobal.FsnowFirst, addWin,
                     addWin->x + Flags.OffsetX, addWin->y + Flags.OffsetY,
                     addWin->w + Flags.OffsetW, Flags.MaxWinSnowDepth);
@@ -334,23 +367,23 @@ void updateFallenSnowRegions() {
 
     fsnow = mGlobal.FsnowFirst;
     while (fsnow) {
-        if (fsnow->win.id != 0) {
-            WinInfo* removeWin = findWinInfoByWindowId(fsnow->win.id);
+        if (fsnow->winInfo.window != 0) {
+            WinInfo* removeWin = findWinInfoByWindowId(fsnow->winInfo.window);
             if (!removeWin ||
                 (removeWin->w > 0.8 * mGlobal.SnowWinWidth && removeWin->ya < Flags.IgnoreTop) ||
                 (removeWin->w > 0.8 * mGlobal.SnowWinWidth &&
                     (int)mGlobal.SnowWinHeight - removeWin->ya < Flags.IgnoreBottom)) {
                 generateFallenSnowFlakes(fsnow, 0, fsnow->w, -10.0);
-                toremove[ntoremove++] = fsnow->win.id;
+                toremove[ntoremove++] = fsnow->winInfo.window;
             }
 
-            // test if fsnow->win.id is hidden. If so: clear the area and notify
+            // test if fsnow->winInfo.window is hidden. If so: clear the area and notify
             // in fsnow we have to test that here, because the hidden status of
             // the window can change
-            if (fsnow->win.hidden) {
+            if (fsnow->winInfo.hidden) {
                 eraseFallenSnowOnDisplay(fsnow, 0, fsnow->w);
                 generateFallenSnowFlakes(fsnow, 0, fsnow->w, -10.0);
-                toremove[ntoremove++] = fsnow->win.id;
+                toremove[ntoremove++] = fsnow->winInfo.window;
             }
         }
 
@@ -360,17 +393,17 @@ void updateFallenSnowRegions() {
     // Test if window has been moved or resized.
     WinInfo* movedWin = mWinInfoList;
     for (int i = 0; i < mWinInfoListLength; i++) {
-        fsnow = findFallenSnowListItem(mGlobal.FsnowFirst, movedWin->id);
+        fsnow = findFallenSnowListItem(mGlobal.FsnowFirst, movedWin->window);
         if (fsnow) {
             if (fsnow->x != movedWin->x + Flags.OffsetX ||
                 fsnow->y != movedWin->y + Flags.OffsetY ||
                 (unsigned int) fsnow->w != movedWin->w + Flags.OffsetW) {
                 // fprintf(stdout, "windows.c: updateFallenSnowRegions() Updating due "
-                //     "to MOVED window : %li\n", movedWin->id);
+                //     "to MOVED window : %li\n", movedWin->window);
 
                 eraseFallenSnowOnDisplay(fsnow, 0, fsnow->w);
                 generateFallenSnowFlakes(fsnow, 0, fsnow->w, -10.0);
-                toremove[ntoremove++] = fsnow->win.id;
+                toremove[ntoremove++] = fsnow->winInfo.window;
 
                 fsnow->x = movedWin->x + Flags.OffsetX;
                 fsnow->y = movedWin->y + Flags.OffsetY;
@@ -389,129 +422,103 @@ void updateFallenSnowRegions() {
 }
 
 /** *********************************************************************
- ** This method gets the location and size of xinerama screen xscreen.
+ ** This method gets the location and size of xinerama screen.
  **/
-int xinerama(Display *display, int xscreen, int *x, int *y, int *w, int *h) {
-    int screenInfoArrayLength;
-    XineramaScreenInfo *screenInfoArray = XineramaQueryScreens(display, &screenInfoArrayLength);
-    if (screenInfoArray == NULL) {
+int getXineramaScreenInfo(Display *display, int requestScreen,
+    int *resultScreenPosX, int *resultScreenPosY,
+    int *resultScreenWidth, int *resultScreenHeigth) {
+
+    // Get Xinerama Screen Info, if none, exit.
+    int infoArrayLength;
+    XineramaScreenInfo* infoArray = XineramaQueryScreens(
+        display, &infoArrayLength);
+    if (infoArray == NULL) {
         return FALSE;
     }
 
-    // If screen found, use it's x/y, h/w.
-    int boundedXscreen = (xscreen > screenInfoArrayLength - 1) ?
-        screenInfoArrayLength - 1 : xscreen;
-    if (boundedXscreen >= 0) {
-        *w = screenInfoArray[boundedXscreen].width;
-        *h = screenInfoArray[boundedXscreen].height;
+    // Bound the requested screen to the array, and return
+    // it's info if found.
+    const int boundedRequestScreeen =
+        (requestScreen <= infoArrayLength) ?
+            requestScreen : infoArrayLength;
 
-        *x = screenInfoArray[boundedXscreen].x_org;
-        *y = screenInfoArray[boundedXscreen].y_org;
-
-        XFree(screenInfoArray);
-        return screenInfoArrayLength;
+    if (boundedRequestScreeen >= 0) {
+        *resultScreenWidth = infoArray[boundedRequestScreeen].width;
+        *resultScreenHeigth = infoArray[boundedRequestScreeen].height;
+        *resultScreenPosX = infoArray[boundedRequestScreeen].x_org;
+        *resultScreenPosY = infoArray[boundedRequestScreeen].y_org;
+        XFree(infoArray);
+        return infoArrayLength;
     }
 
-    // If not found, try to determine w/h.
-    *w = 0; *h = 0;
-    for (int i = 0; i < screenInfoArrayLength; i++) {
-        if (screenInfoArray[i].width > *w) {
-            *w = screenInfoArray[i].width;
+    // If bounded requested screen item not found in xinerama
+    // array, assume screen position = 0/0, then assume
+    // largest accomodativescreen  width/heigth.
+    *resultScreenPosX = 0; *resultScreenPosY = 0;
+
+    *resultScreenWidth = 0; *resultScreenHeigth = 0;
+    for (int i = 0; i < infoArrayLength; i++) {
+        if (infoArray[i].width > *resultScreenWidth) {
+            *resultScreenWidth = infoArray[i].width;
         }
-        if (screenInfoArray[i].height > *h) {
-            *h = screenInfoArray[i].height;
+        if (infoArray[i].height > *resultScreenHeigth) {
+            *resultScreenHeigth = infoArray[i].height;
         }
     }
-    *x = 0; *y = 0;
 
-    XFree(screenInfoArray);
-    return screenInfoArrayLength;
+    XFree(infoArray);
+    return infoArrayLength;
 }
 
 /** *********************************************************************
  ** This method ...
  **/
 void initDisplayDimensions() {
-    unsigned int w, h;
     int x, y;
-    xdo_get_window_location(mGlobal.xdo, mGlobal.Rootwindow, &x, &y, NULL);
-    xdo_get_window_size(mGlobal.xdo, mGlobal.Rootwindow, &w, &h);
-
-    P("initDisplayDimensions root: %p %d %d %d %d\n", (void *)mGlobal.Rootwindow,
-        x, y, w, h);
-
+    xdo_get_window_location(mGlobal.xdo, mGlobal.Rootwindow,
+        &x, &y, NULL);
     mGlobal.Xroot = x;
     mGlobal.Yroot = y;
+
+    unsigned int w, h;
+    xdo_get_window_size(mGlobal.xdo, mGlobal.Rootwindow,
+        &w, &h);
     mGlobal.Wroot = w;
     mGlobal.Hroot = h;
 
-    {
-        char resultMsg[128];
-        snprintf(resultMsg, sizeof(resultMsg),
-            "windows: initDisplayDimensions() -> updateDisplayDimensions() before.\n");
-        fprintf(stdout, "%s", resultMsg);
-    }
     updateDisplayDimensions();
-    {
-        char resultMsg[128];
-        snprintf(resultMsg, sizeof(resultMsg),
-            "windows: initDisplayDimensions() -> updateDisplayDimensions() after.\n");
-        fprintf(stdout, "%s", resultMsg);
-    }
 }
 
 /** *********************************************************************
  ** This method ...
  **/
 void updateDisplayDimensions() {
-    P("Displaydimensions\n");
     lockFallenSnowSemaphore();
 
-    //
-    xdo_wait_for_window_map_state(mGlobal.xdo, mGlobal.SnowWin, IsViewable);
+    xdo_wait_for_window_map_state(mGlobal.xdo,
+        mGlobal.SnowWin, IsViewable);
 
     Window root;
     int x, y;
     unsigned int w, h, b, d;
-    int rc = XGetGeometry(
-        mGlobal.display, mGlobal.SnowWin, &root, &x, &y, &w, &h, &b, &d);
+    int rc = XGetGeometry(mGlobal.display, mGlobal.SnowWin,
+        &root, &x, &y, &w, &h, &b, &d);
     if (rc == 0) {
-        P("Oeps\n");
-        I("\nSnow window %#lx has disappeared, it seems. I quit.\n",
-            mGlobal.SnowWin);
         uninitQPickerDialog();
-        applicationFinish();
+        endApplication();
         exit(1);
         return;
     }
 
-    //
     mGlobal.SnowWinWidth = w;
     mGlobal.SnowWinHeight = h + Flags.OffsetS;
-
-    P("updateDisplayDimensions: SnowWinX: %d Y:%d W:%d H:%d\n", mGlobal.SnowWinX,
-        mGlobal.SnowWinY, mGlobal.SnowWinWidth, mGlobal.SnowWinHeight);
-
     mGlobal.SnowWinBorderWidth = b;
     mGlobal.SnowWinDepth = d;
-
     updateFallenSnowAtBottom();
 
-    {
-        char resultMsg[128];
-        snprintf(resultMsg, sizeof(resultMsg),
-            "windows: updateDisplayDimensions() Redraws trees before.\n");
-        fprintf(stdout, "%s", resultMsg);
-    }
     RedrawTrees();
-    {
-        char resultMsg[128];
-        snprintf(resultMsg, sizeof(resultMsg),
-            "windows: updateDisplayDimensions() Redraws trees after.\n");
-        fprintf(stdout, "%s", resultMsg);
-    }
-
     setMaxScreenSnowDepth();
+
     if (!mGlobal.isDoubleBuffered) {
         ClearScreen();
     }
@@ -528,29 +535,24 @@ void SetBackground() {
         return;
     }
 
-    printf(_("Setting background from %s\n"), f);
-
-    int w = mGlobal.SnowWinWidth;
-    int h = mGlobal.SnowWinHeight;
     Display *display = mGlobal.display;
     Window window = mGlobal.SnowWin;
     int screen_num = DefaultScreen(display);
     int depth = DefaultDepth(display, screen_num);
 
-    GdkPixbuf *pixbuf;
-    pixbuf = gdk_pixbuf_new_from_file_at_scale(f, w, h, FALSE, NULL);
+    int w = mGlobal.SnowWinWidth;
+    int h = mGlobal.SnowWinHeight;
+    GdkPixbuf* pixbuf = gdk_pixbuf_new_from_file_at_scale(
+        f, w, h, FALSE, NULL);
     if (!pixbuf) {
         return;
     }
+
+    // pixels1 is freed by XDestroyImage.
     int n_channels = gdk_pixbuf_get_n_channels(pixbuf);
-
-    guchar *pixels = gdk_pixbuf_get_pixels(pixbuf);
-    P("pad: %d %d\n", XBitmapPad(display), depth);
-
-    unsigned char *pixels1 =
-        (unsigned char *)malloc(w * h * 4 * sizeof(unsigned char));
-    // https://gnome.pages.gitlab.gnome.org/gdk-pixbuf/gdk-pixbuf/class.Pixbuf.html
-    //
+    guchar* pixels = gdk_pixbuf_get_pixels(pixbuf);
+    unsigned char* pixels1 = (unsigned char *)
+        malloc(w * h * 4 * sizeof(unsigned char));
 
     int rowstride = gdk_pixbuf_get_rowstride(pixbuf);
     P("rowstride: %d\n", rowstride);
@@ -580,25 +582,22 @@ void SetBackground() {
         }
     }
 
-    XImage *ximage;
-    ximage = XCreateImage(display, DefaultVisual(display, screen_num), depth,
-        ZPixmap, 0, (char *)pixels1, w, h, XBitmapPad(display), 0);
+    XImage* ximage = XCreateImage(display,
+        DefaultVisual(display, screen_num),
+        depth, ZPixmap, 0, (char *) pixels1, w, h,
+        XBitmapPad(display), 0);
     XInitImage(ximage);
-    Pixmap pixmap;
-    pixmap =
-        XCreatePixmap(display, window, w, h, DefaultDepth(display, screen_num));
 
-    GC gc;
-    gc = XCreateGC(display, pixmap, 0, 0);
-    XPutImage(display, pixmap, gc, ximage, 0, 0, 0, 0, w, h);
-
-    P("setwindowbackground\n");
+    Pixmap pixmap = XCreatePixmap(display, window,
+        w, h, DefaultDepth(display, screen_num));
+    XPutImage(display, pixmap, XCreateGC(display, pixmap, 0, 0),
+        ximage, 0, 0, 0, 0, w, h);
     XSetWindowBackgroundPixmap(display, window, pixmap);
+
     g_object_unref(pixbuf);
     XFreePixmap(display, pixmap);
     XDestroyImage(ximage);
 
-    // free(pixels1);  //This is already freed by XDestroyImage
     return;
 }
 
@@ -654,18 +653,7 @@ int updateWindowsList() {
         DetermineVisualWorkspaces();
     }
 
-    // Special hack too keep mGlobal.SnowWin below (needed for example in
-    // FVWM/xcompmgr, where mGlobal.SnowWin is not click-through)
-    // logAllWindowsStackedTopToBottom();
-
-    //XWindowChanges changes;
-    //changes.stack_mode = Below;
-    //XConfigureWindow(mGlobal.display, mGlobal.SnowWin,
-    //    CWStackMode, &changes);
-
-    // logAllWindowsStackedTopToBottom();
-
-    if (isWindowDraggingActive()) {
+    if (isWindowBeingDragged()) {
         updateFallenSnowRegions();
         unlockFallenSnowSemaphore();
         return true;
@@ -694,18 +682,430 @@ int updateWindowsList() {
     }
 
     updateFallenSnowRegions();
-
     unlockFallenSnowSemaphore();
-    /*
-    {   const char* logMsg = "windows: updateWindowsList() Finishes.\n";
-        write(getTmpLogFile(), logMsg, strlen(logMsg));
-    }
-    */
+
     return TRUE;
 }
 
 /** *********************************************************************
- ** This method ...
+ ** This method returns the Active window.
+ **/
+Window getActiveX11Window() {
+    Window activeWindow = None;
+
+    xdo_get_active_window(xdo_new_with_opened_display(
+        mGlobal.display, (char*) NULL, 0), &activeWindow);
+
+    return activeWindow;
+}
+
+/** *********************************************************************
+ ** This method returns the Focused window.
+ **/
+Window getFocusedX11Window() {
+    Window focusedWindow = None;
+    int focusedWindowState = 0;
+
+    XGetInputFocus(mGlobal.display,
+        &focusedWindow, &focusedWindowState);
+
+    return focusedWindow;
+}
+
+/** *********************************************************************
+ ** These are helper methods for FocusedApp member values.
+ **/
+int getFocusedX11XPos() {
+    const WinInfo* focusedWinInfo =
+        findWinInfoByWindowId(getFocusedX11Window());
+    return focusedWinInfo ?
+        focusedWinInfo->x : mINVALID_POSITION;
+}
+
+int getFocusedX11YPos() {
+    const WinInfo* focusedWinInfo =
+        findWinInfoByWindowId(getFocusedX11Window());
+    return focusedWinInfo ?
+        focusedWinInfo->y : mINVALID_POSITION;
+}
+
+/** *********************************************************************
+ ** These are helper methods for ActiveApp member values.
+ **/
+void clearAllActiveAppFields() {
+    setActiveAppWindow(None);
+    setActiveAppXPos(mINVALID_POSITION);
+    setActiveAppYPos(mINVALID_POSITION);
+
+    clearAllDragFields();
+}
+
+// Active App Window value.
+Window getActiveAppWindow() {
+    return mActiveAppWindow;
+}
+void setActiveAppWindow(Window window) {
+    mActiveAppWindow = window;
+}
+
+// Active App Window parent.
+Window getParentOfActiveAppWindow() {
+    Window rootWindow = None;
+    Window parentWindow = None;
+    Window* childrenWindow = NULL;
+    unsigned int windowChildCount = 0;
+
+    XQueryTree(mGlobal.display, getActiveAppWindow(),
+        &rootWindow, &parentWindow,
+        &childrenWindow, &windowChildCount);
+
+    if (childrenWindow) {
+        XFree((char *) childrenWindow);
+    }
+
+    return parentWindow;
+}
+
+// Active App Window x/y value.
+int getActiveAppXPos() {
+    return mActiveAppXPos;
+}
+void setActiveAppXPos(int xPos) {
+    mActiveAppXPos = xPos;
+}
+
+int getActiveAppYPos() {
+    return mActiveAppYPos;
+}
+void setActiveAppYPos(int yPos) {
+    mActiveAppYPos = yPos;
+}
+
+
+/** *********************************************************************
+ ** This method handles XFixes XFixesCursorNotify Cursor change events.
+ **/
+void onCursorChange(__attribute__((unused)) XEvent* event) {
+    // XFixesCursorNotifyEvent* cursorEvent =
+    //     (XFixesCursorNotifyEvent*) event;
+}
+
+/** *********************************************************************
+ ** This method handles X11 Window focus (activation status) change.
+ **/
+void onAppWindowChange(Window window) {
+    // Set default ActivateApp window values & Drag values.
+    clearAllActiveAppFields();
+
+    // Save actual Activated window values.
+    setActiveAppWindow(window);
+
+    const WinInfo* activeAppWinInfo =
+        findWinInfoByWindowId(getActiveAppWindow());
+    if (activeAppWinInfo) {
+        setActiveAppXPos(activeAppWinInfo->x);
+        setActiveAppYPos(activeAppWinInfo->y);
+    }
+}
+
+/** *********************************************************************
+ ** This method handles X11 Windows being created.
+ **/
+void onWindowCreated(XEvent* event) {
+    // Update our list to include the created one.
+    getWinInfoList();
+
+    // Is this a signature of a transient Plasma DRAG Window
+    // being created? If not, early exit.
+    //     Event:  se? 0  w [0x01886367]  pw [0x00000764]
+    //             pos (0,0) @ (1920,1080) w(0)  r? 0.
+    if (event->xcreatewindow.send_event != 0) {
+        return;
+    }
+    if (event->xcreatewindow.parent != mGlobal.Rootwindow) {
+        return;
+    }
+    if (event->xcreatewindow.x != 0) {
+        return;
+    }
+    if (event->xcreatewindow.y != 0) {
+        return;
+    }
+    if (event->xcreatewindow.width != mGlobal.SnowWinWidth) {
+        return;
+    }
+    if (event->xcreatewindow.height != mGlobal.SnowWinHeight) {
+        return;
+    }
+    if (event->xcreatewindow.border_width != 0) {
+        return;
+    }
+    if (event->xcreatewindow.override_redirect != 0) {
+        return;
+    }
+
+    setActiveAppDragWindowCandidate(event->xcreatewindow.window);
+}
+
+/** *********************************************************************
+ ** This method handles X11 Windows being reparented.
+ **/
+void onWindowReparent(__attribute__((unused)) XEvent* event) {
+}
+
+/** *********************************************************************
+ ** This method handles X11 Windows being moved, sized, changed.
+ **
+ ** Determine if OS is dragging a window, and clear it's fallensnow.
+ **/
+void onWindowChanged(__attribute__((unused)) XEvent* event) {
+}
+
+/** *********************************************************************
+ ** This method handles X11 Windows being made visible to view.
+ **
+ ** Determine if user is dragging a window, and clear it's fallensnow.
+ **/
+void onWindowMapped(__attribute__((unused)) XEvent* event) {
+    // Update our list for visibility change.
+    getWinInfoList();
+
+    // Determine window drag state, Xfce & Gnome - original method.
+    if (!isWindowBeingDragged()) {
+        setIsWindowBeingDragged(isMouseClickedAndHeldDown());
+        setWindowBeingDragged(isMouseClickedAndHeldDown() ?
+            getActiveAppWindow() : None);
+        if (isWindowBeingDragged()) {
+            // We just started dragging - original method.
+            // Clear snow from window that just started dragging.
+            removeFallenSnowFromWindow(getWindowBeingDragged());
+            return;
+        }
+    }
+
+    // Determine window drag state, KDE Plasma.
+    // Is this a signature of a transient Plasma DRAG Window
+    // being mapped? If not, early exit.
+    //     Event:  se? 0  ew [0x00000764]  w [0x018a1b21]  r? 0.
+    bool isActiveAppMoving = true;
+    if (event->xmap.send_event != 0) {
+        isActiveAppMoving = false;
+    }
+    if (event->xmap.window != getActiveAppDragWindowCandidate()) {
+        isActiveAppMoving = false;
+    }
+    if (event->xmap.event != mGlobal.Rootwindow) {
+        isActiveAppMoving = false;
+    }
+    if (event->xmap.override_redirect != 0) {
+        isActiveAppMoving = false;
+    }
+
+    // Can we set drag state - New Plasma "keyboard" method?
+    if (isActiveAppMoving) {
+        setIsWindowBeingDragged(getActiveAppWindow() != None);
+        setWindowBeingDragged(getActiveAppWindow());
+        if (isWindowBeingDragged()) {
+            // New Plasma "keyboard" DRAG method, we can't determine which
+            // visible window (window neither focused nor active),
+            // so we shake all free to avoid magically hanging snow.
+            removeAllFallenSnowWindows();
+        }
+    }
+}
+
+/** *********************************************************************
+ ** This method handles X11 Windows being focused In.
+ **/
+void onWindowFocused(__attribute__((unused)) XEvent* event) {
+}
+
+/** *********************************************************************
+ ** This method handles X11 Windows being focused In.
+ **/
+void onWindowBlurred(__attribute__((unused)) XEvent* event) {
+}
+
+/** *********************************************************************
+ ** This method handles X11 Windows being Hidden from view.
+ **
+ ** Our main job is to clear window drag state.
+ **/
+void onWindowUnmapped(__attribute__((unused)) XEvent* event) {
+    // Update our list for visibility change.
+    getWinInfoList();
+
+    // Clear window drag state.
+    if (isWindowBeingDragged()) {
+        clearAllDragFields();
+    }
+}
+
+/** *********************************************************************
+ ** This method handles X11 Windows being destroyed.
+ **/
+void onWindowDestroyed(__attribute__((unused)) XEvent* event) {
+    // Update our list to reflect the destroyed one.
+    getWinInfoList();
+
+    // Clear window drag state.
+    if (isWindowBeingDragged()) {
+        clearAllDragFields();
+    }
+}
+
+/** *********************************************************************
+ ** This method decides if the user ia dragging a window via a mouse
+ ** click-and-hold on the titlebar.
+ **/
+bool isMouseClickedAndHeldDown() {
+    const unsigned int POINTER_CLICKDOWN = 256;
+
+    //  Find the focused window pointer click state.
+    Window root_return, child_return;
+    int root_x_return, root_y_return;
+    int win_x_return, win_y_return;
+    unsigned int pointerState;
+
+    bool foundPointerState = XQueryPointer(
+        mGlobal.display, getFocusedX11Window(),
+        &root_return, &child_return,
+        &root_x_return, &root_y_return,
+        &win_x_return, &win_y_return,
+        &pointerState);
+
+    // If click-state isn't clicked-down, or we can't find a dragging
+    // window, we're not dragging.
+    return foundPointerState &&
+        (pointerState == POINTER_CLICKDOWN);
+}
+
+/** *********************************************************************
+ ** These methods are window drag-state helpers.
+ **/
+void clearAllDragFields() {
+    setIsWindowBeingDragged(false);
+    setWindowBeingDragged(None);
+    setActiveAppDragWindowCandidate(None);
+}
+
+bool isWindowBeingDragged() {
+    return mIsWindowBeingDragged;
+}
+void setIsWindowBeingDragged(bool isWindowBeingDragged) {
+    mIsWindowBeingDragged = isWindowBeingDragged;
+}
+
+Window getWindowBeingDragged() {
+    return mWindowBeingDragged;
+}
+void setWindowBeingDragged(Window window) {
+    mWindowBeingDragged = window;
+}
+
+// Active App Drag window candidate value.
+Window getActiveAppDragWindowCandidate() {
+    return mActiveAppDragWindowCandidate;
+}
+void setActiveAppDragWindowCandidate(Window candidate) {
+    mActiveAppDragWindowCandidate = candidate;
+}
+
+/** *********************************************************************
+ ** This method removes all FallenSnow after a window moves out from
+ ** under it but we don't know which one it was.
+ **/
+void removeAllFallenSnowWindows() {
+    WinInfo* winInfoListItem = mWinInfoList;
+    for (int i = 0; i < mWinInfoListLength; i++) {
+        removeFallenSnowFromWindow(winInfoListItem[i].window);
+    }
+}
+
+/** *********************************************************************
+ ** This method removes FallenSnow after a window moves out from
+ ** under it.
+ **/
+void removeFallenSnowFromWindow(Window window) {
+    FallenSnow* fallenListItem = findFallenSnowListItem(
+        mGlobal.FsnowFirst, window);
+    if (!fallenListItem) {
+        return;
+    }
+
+    lockFallenSnowSemaphore();
+    eraseFallenSnowOnDisplay(fallenListItem, 0,
+        fallenListItem->w);
+    generateFallenSnowFlakes(fallenListItem, 0,
+        fallenListItem->w, -10.0);
+    eraseFallenSnowOnWindow(fallenListItem->winInfo.window);
+    removeFallenSnowListItem(&mGlobal.FsnowFirst,
+        fallenListItem->winInfo.window);
+    unlockFallenSnowSemaphore();
+}
+
+/** *********************************************************************
+ ** This method logs a timestamp in seconds & milliseconds.
+ **/
+void logCurrentTimestamp() {
+    // Get long date.
+    time_t dateNow = time(NULL);
+    char* dateStringWithEOL = ctime(&dateNow);
+
+    // Get Milliseconds.
+    struct timespec timeNow;
+    clock_gettime(CLOCK_REALTIME, &timeNow);
+
+    // Parse date. In: |Mon Feb 19 11:59:09 2024\n|
+    //            Out: |Mon Feb 19 11:59:09|
+    int lenDateStringWithoutEOL =
+        strlen(dateStringWithEOL) - 6;
+
+    // Parse seconds and milliseconds.
+    time_t seconds  = timeNow.tv_sec;
+    long milliseconds = round(timeNow.tv_nsec / 1.0e6);
+    if (milliseconds > 999) {
+        milliseconds = 0;
+        seconds++;
+    }
+
+    // Log parseed date. Out: |Mon Feb 19 11:59:09 2024.### : |
+    printf("%.*s.", lenDateStringWithoutEOL, dateStringWithEOL);
+    printf("%03ld : ", (intmax_t) milliseconds);
+}
+
+/** *********************************************************************
+ ** This method returns the Active window.
+ **/
+void logWindowAndAllParents(Window window) {
+    logCurrentTimestamp();
+    fprintf(stdout, "  win: 0x%08lx  ", window);
+
+    Window windowItem = window;
+    while (windowItem != None) {
+        Window rootWindow = None;
+        Window parentWindow = None;
+        Window* childrenWindow = NULL;
+        unsigned int windowChildCount = 0;
+
+        XQueryTree(mGlobal.display, windowItem,
+            &rootWindow, &parentWindow, &childrenWindow,
+            &windowChildCount);
+        fprintf(stdout, "  par: 0x%08lx", parentWindow);
+
+        if (childrenWindow) {
+            XFree((char *) childrenWindow);
+        }
+
+        windowItem = parentWindow;
+    }
+
+    // Terminate the log line.
+    fprintf(stdout, "\n");
+}
+
+/** *********************************************************************
+ ** This method frees existing list, and refreshes it.
  **/
 void getWinInfoList() {
     if (mWinInfoList) {
@@ -716,199 +1116,25 @@ void getWinInfoList() {
 }
 
 /** *********************************************************************
- ** This method handles X11 Windows being created.
- **
- ** (Rough life-cycle order.)
+ ** This method frees existing list, and refreshes it.
  **/
-void onWindowCreated(__attribute__((unused)) Window window) {
-    //{   const char* logMsg =
-    //        "windows: onWindowCreated() Starts.\n";
-    //    fprintf(stdout, "%s", logMsg);
-    //}
-
-    // Update our list to include the new one.
-    getWinInfoList();
-
-    //{   const char* logMsg =
-    //        "windows: onWindowCreated() Finishes.\n";
-    //    fprintf(stdout, "%s", logMsg);
-    //}
+void ensureWinInfoList() {
+    if (!mWinInfoList) {
+        getX11WindowsList(&mWinInfoList, &mWinInfoListLength);
+    }
 }
 
 /** *********************************************************************
- ** This method handles X11 Windows being made visible to view.
- **
- ** Our main job is to determine if user is dragging a window,
- ** and to immediately clear it's fallensnow.
+ ** This method scans all WinInfos for a requested ID.
  **/
-void onWindowMapped(__attribute__((unused)) Window window) {
-    //{   const char* logMsg = "windows: onWindowMapped() Starts.\n";
-    //    fprintf(stdout, "%s", logMsg);
-    //}
-
-    // Determine window drag state.
-    setWindowDragState();
-
-    // Clear snow from window that just started dragging.
-    if (isWindowDraggingActive()) {
-        FallenSnow* fsnow = findFallenSnowListItem(mGlobal.FsnowFirst,
-            getWindowBeingDragged());
-        if (fsnow) {
-            lockFallenSnowSemaphore();
-            eraseFallenSnowOnDisplay(fsnow, 0, fsnow->w);
-
-            generateFallenSnowFlakes(fsnow, 0, fsnow->w, -10.0);
-            eraseFallenSnowOnWindow(fsnow->win.id);
-            removeFallenSnowListItem(&mGlobal.FsnowFirst, fsnow->win.id);
-            unlockFallenSnowSemaphore();
+WinInfo* findWinInfoByWindowId(Window window) {
+    WinInfo* winInfoItem = mWinInfoList;
+    for (int i = 0; i < mWinInfoListLength; i++) {
+        if (winInfoItem->window == window) {
+            return winInfoItem;
         }
+        winInfoItem++;
     }
 
-    //{   const char* logMsg = "windows: onWindowMapped() Finishes.\n";
-    //    fprintf(stdout, "%s", logMsg);
-    //}
-}
-
-/** *********************************************************************
- ** This method handles X11 Windows being Hidden from view.
- **
- ** Our main job is to clear window drag state.
- **/
-void onWindowUnmapped(__attribute__((unused)) Window window) {
-    //{   const char* logMsg =
-    //        "windows: onWindowUnmapped() Starts.\n";
-    //        fprintf(stdout, "%s", logMsg);
-    //}
-
-    // Clear window drag state.
-    clearWindowDragState();
-
-    //{   const char* logMsg =
-    //        "windows: onWindowUnmapped() Finishes.\n";
-    //    fprintf(stdout, "%s", logMsg);
-    //}
-}
-
-/** *********************************************************************
- ** This method handles X11 Windows being destroyed.
- **
- ** (Rough life-cycle order.)
- **/
-void onWindowDestroyed(__attribute__((unused)) Window window) {
-    //{   const char* logMsg =
-    //        "windows: onWindowDestroyed() Starts.\n";
-    //    fprintf(stdout, "%s", logMsg);
-    //}
-
-    // Update our list to reflect the destroyed one.
-    getWinInfoList();
-
-    //{   const char* logMsg =
-    //        "windows: onWindowDestroyed() Finishes.\n";
-    //    fprintf(stdout, "%s", logMsg);
-    //}
-}
-
-/** *********************************************************************
- ** This method clears window drag state.
- **/
-void clearWindowDragState() {
-
-    // We're not dragging.
-    setWindowDraggingInactive();
-    setWindowBeingDragged(None);
-}
-
-/** *********************************************************************
- ** This method determines window drag state.
- **/
-void setWindowDragState() {
-    // Find the focused window.
-    Window focusedWindow;
-    int focusedWindowState;
-    XGetInputFocus(mGlobal.display, &focusedWindow, &focusedWindowState);
-
-    //  Find the focused window pointer click state.
-    Window root_return, child_return;
-    int root_x_return, root_y_return, win_x_return, win_y_return;
-    unsigned int pointerState;
-    if (!XQueryPointer(mGlobal.display, focusedWindow, &root_return, &child_return,
-        &root_x_return, &root_y_return, &win_x_return, &win_y_return,
-        &pointerState)) {
-        return;
-    }
-
-    // If click-state isn't clicked-down, or we can't find a dragging
-    // window, we're not dragging. 
-    const unsigned int POINTER_CLICKDOWN = 256;
-    if (pointerState != POINTER_CLICKDOWN) {
-        return;
-    }
-    Window dragWindow = getDragWindowOf(focusedWindow);
-    if (dragWindow == None) {
-        return;
-    }
-
-    // We're dragging.
-    setWindowBeingDragged(dragWindow);
-    setWindowDraggingActive();
-}
-
-/** *********************************************************************
- ** This method determines which window is being dragged, by
- ** returning the supplied window or the first parent window in
- ** its ancestor chain that is in mWinInfoList.
- **
- **/
-Window getDragWindowOf(Window window) {
-    Window windowNode = window;
-
-    while (TRUE) {
-        // Check current node in windows list.
-        WinInfo* windowListItem = mWinInfoList;
-        for (int i = 0; i < mWinInfoListLength; i++) {
-            if (windowNode == windowListItem->id) {
-                return windowNode;
-            }
-            windowListItem++;
-        }
-
-        // Current window node not in list. Move up it's parent
-        // ancestor chain and re-test.
-        Window root, parent;
-        Window* children = NULL;
-        unsigned int windowChildCount;
-        if (!(XQueryTree(mGlobal.display, windowNode,
-                &root, &parent, &children, &windowChildCount))) {
-            return None;
-        }
-        if (children) {
-            XFree((char *) children);
-        }
-        windowNode = parent;
-    }
-}
-
-/** *********************************************************************
- ** These methods are window drag-state helpers.
- **
- **/
-bool isWindowDraggingActive() {
-    return mWindowDragging;
-}
-
-void setWindowDraggingActive() {
-    mWindowDragging = true;
-}
-
-void setWindowDraggingInactive() {
-    mWindowDragging = false;
-}
-
-extern Window getWindowBeingDragged() {
-    return mWindowBeingDragged;
-}
-
-void setWindowBeingDragged(Window window) {
-    mWindowBeingDragged = window;
+    return NULL;
 }

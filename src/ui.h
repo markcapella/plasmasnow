@@ -40,7 +40,7 @@ extern void removeBusyStyleClass();
 extern void ui_gray_ww(const int m);
 extern void ui_gray_below(const int m);
 extern void ui_gray_birds(int m);
-extern int ui_checkgtk(void);
+extern int isGtkVersionValid(void);
 extern char *ui_gtk_version(void);
 extern char *ui_gtk_required(void);
 extern int ui_run_nomenu(void);

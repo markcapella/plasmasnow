@@ -68,8 +68,7 @@ void moon_init(void) {
 
 int moon_draw(cairo_t *cr) {
     LEAVE_IF_INACTIVE;
-    P("moon_draw %d %d %d\n", mGlobal.counter++, (int)mGlobal.moonX,
-        (int)mGlobal.moonY);
+
     cairo_set_source_surface(cr, moon_surface, mGlobal.moonX, mGlobal.moonY);
     my_cairo_paint_with_alpha(cr, ALPHA);
     OldmoonX = mGlobal.moonX;
@@ -107,7 +106,6 @@ void moon_ui() {
 
     static int prev;
     if (appScalesHaveChanged(&prev)) {
-        P("%d moonscale\n", mGlobal.counter);
         moonScale = 0.01 * mGlobal.WindowScale * Flags.Scale;
         init_moon_surface();
         if (prevw > 0 && prevh > 0) {

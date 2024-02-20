@@ -37,8 +37,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define NOTACTIVE                                                              \
-    (!WorkspaceActive() || Flags.NoSnowFlakes || Flags.NoKeepSnowOnTrees || Flags.NoTrees)
 
 static int do_snow_on_trees();
 static void ConvertOnTreeToFlakes(void);
@@ -49,7 +47,8 @@ void treesnow_init() {
 }
 
 void treesnow_draw(cairo_t *cr) {
-    if (NOTACTIVE) {
+    if (!WorkspaceActive() || Flags.NoSnowFlakes ||
+        Flags.NoKeepSnowOnTrees || Flags.NoTrees) {
         return;
     }
     GdkRGBA color;
@@ -65,18 +64,18 @@ void treesnow_ui() {
 }
 
 int do_snow_on_trees() {
-    P("do_snow_on_trees %d\n", counter++);
     if (Flags.Done) {
         return FALSE;
     }
-    if (NOTACTIVE) {
+    if ((!WorkspaceActive() || Flags.NoSnowFlakes ||
+        Flags.NoKeepSnowOnTrees || Flags.NoTrees)) {
         return TRUE;
     }
     if (mGlobal.Wind == 2) {
         ConvertOnTreeToFlakes();
     }
+
     return TRUE;
-    // (void) d;
 }
 
 // blow snow off trees

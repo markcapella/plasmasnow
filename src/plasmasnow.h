@@ -133,22 +133,26 @@
 typedef struct _Snow {
         float rx; // x position
         float ry; // y position
+
         GdkRGBA color;
+
         int ix;
         int iy;                       // position after draw
+
         float vx;                     // speed in x-direction, pixels/second
         float vy;                     // speed in y-direction, pixels/second
+
         float m;                      // mass of flake
         float ivy;                    // initial speed in y direction
         float wsens;                  // wind dependency factor
         float flufftimer;             // fluff timeout timer
         float flufftime;              // fluff timeout
+
         unsigned int whatFlake;       // snowflake index
         unsigned int cyclic BITS(1);  // flake is cyclic
         unsigned int fluff BITS(1);   // flake is in fluff state
         unsigned int freeze BITS(1);  // flake does not move
         unsigned int testing BITS(2); // for testing purposes
-
 } SnowFlake;
 
 typedef struct _SnowMap {
@@ -186,8 +190,10 @@ typedef struct _SnowMap {
 typedef struct Treeinfo {
         int x; // x position
         int y; // y position
+
         int w; // width
         int h; // height
+
         cairo_surface_t *surface;
         float scale;
         unsigned int type BITS(8); // type (TreeType, -treetype)
@@ -199,12 +205,18 @@ typedef struct Treeinfo {
  * Sky objects.
  */
 typedef struct _MeteorMap {
-        int x1, x2, y1, y2, active, colornum;
+        int x1, x2;
+        int y1, y2;
+
+        int active;
+        int colornum;
 } MeteorMap;
 
 typedef struct _StarMap {
         unsigned char *starBits;
+
         Pixmap pixmap;
+
         int width;
         int height;
 } StarMap;
@@ -212,6 +224,7 @@ typedef struct _StarMap {
 typedef struct _StarCoordinate {
         int x;
         int y;
+
         int color;
 } StarCoordinate;
 
@@ -220,11 +233,12 @@ typedef struct _StarCoordinate {
  * App Window helper objects.
  */
 typedef struct _WinInfo {
-        Window id;
+        Window window;
+        long ws;           // workspace
+
         int x, y;          // x,y coordinates
         int xa, ya;        // x,y coordinates absolute
         unsigned int w, h; // width, height
-        long ws;           // workspace
 
         unsigned int sticky BITS(1); // is visible on all workspaces
         unsigned int dock BITS(1);   // is a "dock" (panel)
@@ -236,18 +250,18 @@ typedef struct _WinInfo {
  * Global Fallensnow helper objects.
  */
 typedef struct _FallenSnow {
-        WinInfo win; // win.id == None at bottom.
+        WinInfo winInfo; // winInfo.window == None @ bottom.
 
-        int x, y; // y for bottom of fallen snow
-        int w, h; // width, max height of fallen snow
+        int x, y;                 // x, y bottom.
+        int w, h;                 // width, max height.
 
-        int prevx, prevy; // x, y of last draw
-        int prevw, prevh; // w, h of last draw
+        int prevx, prevy;         // x, y of last draw.
+        int prevw, prevh;         // w, h of last draw.
 
-        short int* snowHeight; // actual heights
-        short int* maxSnowHeight; // desired heights
+        short int* snowHeight;    // actual heights.
+        short int* maxSnowHeight; // desired heights.
+
         GdkRGBA* color;
-
         cairo_surface_t* surface;
         cairo_surface_t* surface1;
 
@@ -259,38 +273,44 @@ typedef struct _FallenSnow {
  * Global helper objects.
  */
 extern struct _mGlobal {
-        int counter;
-        Bool xxposures;
+
+        char *Language;
+
+        int IsCompiz;
+        int IsWayland;
+
+        Bool isDoubleBuffered;
+        Bool useDoubleBuffers;
 
         Bool hasDestopWindow;
         char* DesktopSession;
+
         Bool hasTransparentWindow;
         char* mPlasmaWindowTitle;
-        int IsCompiz;
-        int IsWayland;
-        Bool isDoubleBuffered;
 
-        Bool useDoubleBuffers;
-        int XscreensaverMode;
 
         int WindowOffsetX;
         int WindowOffsetY;
+        float WindowScale;
 
         int WindowsChanged;
+
+        Bool xxposures;
+        int XscreensaverMode;
         int ForceRestart;
-        float WindowScale;
         double cpufactor;
 
         // Cairo defs.
         cairo_region_t *TreeRegion;
         cairo_region_t *gSnowOnTreesRegion;
 
-        Pixel Black;
-        Pixel White;
-
         int HaltedByInterrupt;
         char Message[256];
-        char *Language;
+
+        // Display defs.
+        Display *display;
+        xdo_t *xdo;
+        int Screen;
 
         // Root window defs.
         Window Rootwindow;
@@ -298,11 +318,6 @@ extern struct _mGlobal {
         int Yroot;
         unsigned int Wroot;
         unsigned int Hroot;
-
-        // Display defs.
-        Display *display;
-        xdo_t *xdo;
-        int Screen;
 
         // Workspace defs.
         long CWorkSpace;

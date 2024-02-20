@@ -141,7 +141,8 @@ int createTransparentWindow(Display *display,
         winw = attr.width;
         winh = attr.height;
     } else {
-        wantxin = xinerama(display, xscreen, &winx, &winy, &winw, &winh);
+        wantxin = getXineramaScreenInfo(display, xscreen,
+            &winx, &winy, &winw, &winh);
         if (wantxin) {
             gtk_widget_set_size_request(GTK_WIDGET(transparentGTKWindow), winw, winh);
         }

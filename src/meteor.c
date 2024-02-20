@@ -35,16 +35,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define NOTACTIVE (!WorkspaceActive())
+/***********************************************************
+ * Externally provided to this Module Method stubs.
+ */
 
-static int do_emeteor(gpointer data);
-static int do_meteor();
+/** *********************************************************************
+ ** Module globals and consts.
+ **/
 
 #define NUMCOLORS 5
 static GdkRGBA colors[NUMCOLORS];
+
 static MeteorMap meteor;
 
-void meteor_init() {
+/** *********************************************************************
+ ** This method initializes the Meteor moduile.
+ **/
+void initMeteorModuleSettings() {
     meteor.x1 = 0;
     meteor.x2 = 0;
     meteor.y1 = 0;
@@ -58,78 +65,27 @@ void meteor_init() {
     gdk_rgba_parse(&colors[3], "#f0d0a0");
     gdk_rgba_parse(&colors[4], "#f0d040");
 
-    addMethodWithArgToMainloop(PRIORITY_DEFAULT, time_emeteor, do_emeteor, NULL);
-    addMethodToMainloop(PRIORITY_DEFAULT, 0.1, do_meteor);
+    addMethodToMainloop(PRIORITY_DEFAULT, time_emeteor, eraseMeteorFrame);
+    addMethodToMainloop(PRIORITY_DEFAULT, 0.1, updateMeteorFrame);
 }
 
-void meteor_ui() {
+/** *********************************************************************
+ ** This method updates the Meteor moduile on user setting changes.
+ **/
+void updateMeteorUserSettings() {
     UIDO(NoMeteors, );
     UIDO(MeteorFrequency, );
 }
 
-void meteor_draw(cairo_t *cr) {
-    P("meteor_draw %d %d\n", counter++, meteor.active);
-    if (!meteor.active) {
-        return;
-    }
-    cairo_save(cr);
-
-    int c = meteor.colornum;
-    cairo_set_source_rgba(
-        cr, colors[c].red, colors[c].green, colors[c].blue, ALPHA);
-    cairo_set_line_width(cr, 2);
-    cairo_set_antialias(cr, CAIRO_ANTIALIAS_DEFAULT);
-    cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
-    cairo_move_to(cr, meteor.x1, meteor.y1);
-    cairo_line_to(cr, meteor.x2, meteor.y2);
-    cairo_stroke(cr);
-
-    cairo_restore(cr);
-}
-
-void meteor_erase() { do_emeteor(NULL); }
-
-int do_emeteor(gpointer data) {
-    (void)data;
-    P("do_emeteor %d\n", mGlobal.counter++);
-    if (Flags.Done) {
-        return FALSE;
-    }
-    if (!meteor.active || NOTACTIVE) {
-        return TRUE;
-    }
-    if (!mGlobal.isDoubleBuffered) {
-        int x = meteor.x1;
-        int y = meteor.y1;
-        int w = meteor.x2 - x;
-        int h = meteor.y2 - y;
-        if (w < 0) {
-            x += w;
-            w = -w;
-        }
-        if (h < 0) {
-            y += h;
-            h = -h;
-        }
-        x -= 1;
-        y -= 1;
-        w += 2;
-        h += 2;
-        sanelyCheckAndClearDisplayArea(
-            mGlobal.display, mGlobal.SnowWin, x, y, w, h, mGlobal.xxposures);
-    }
-    meteor.active = 0;
-    return TRUE;
-}
-
-int do_meteor() {
-    // (void) d;
-    P("do_meteor %d\n", mGlobal.counter++);
+/** *********************************************************************
+ ** This method ...
+ **/
+int updateMeteorFrame() {
     if (Flags.Done) {
         return FALSE;
     }
 
-    if (!(NOTACTIVE || meteor.active || Flags.NoMeteors)) {
+    if (!(!WorkspaceActive() || meteor.active || Flags.NoMeteors)) {
         meteor.x1 = randint(mGlobal.SnowWinWidth);
         meteor.y1 = randint(mGlobal.SnowWinHeight / 4);
         meteor.x2 = meteor.x1 + mGlobal.SnowWinWidth / 10 -
@@ -149,9 +105,73 @@ int do_meteor() {
     if (Flags.MeteorFrequency < 0 || Flags.MeteorFrequency > 100) {
         Flags.MeteorFrequency = DefaultFlags.MeteorFrequency;
     }
-    float t = (0.5 + drand48()) *
-              (Flags.MeteorFrequency * (0.1 - time_meteor) / 100 + time_meteor);
-    P("do_meteor %f\n", t);
-    addMethodToMainloop(PRIORITY_DEFAULT, t, do_meteor);
+
+    float t = (0.5 + drand48()) * (Flags.MeteorFrequency *
+        (0.1 - time_meteor) / 100 + time_meteor);
+    addMethodToMainloop(PRIORITY_DEFAULT, t, updateMeteorFrame);
+
     return FALSE;
+}
+
+/** *********************************************************************
+ ** This method ...
+ **/
+void drawMeteorFrame(cairo_t *cr) {
+    if (!meteor.active) {
+        return;
+    }
+
+    cairo_save(cr);
+
+    const int c = meteor.colornum;
+    cairo_set_source_rgba(cr, colors[c].red,
+        colors[c].green, colors[c].blue, ALPHA);
+
+    cairo_set_line_width(cr, 2);
+    cairo_set_antialias(cr, CAIRO_ANTIALIAS_DEFAULT);
+    cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
+
+    cairo_move_to(cr, meteor.x1, meteor.y1);
+    cairo_line_to(cr, meteor.x2, meteor.y2);
+    cairo_stroke(cr);
+
+    cairo_restore(cr);
+}
+
+/** *********************************************************************
+ ** This method ...
+ **/
+int eraseMeteorFrame() {
+    if (Flags.Done) {
+        return FALSE;
+    }
+
+    if (!meteor.active || !WorkspaceActive()) {
+        return TRUE;
+    }
+
+    if (!mGlobal.isDoubleBuffered) {
+        int x = meteor.x1;
+        int y = meteor.y1;
+        int w = meteor.x2 - x;
+        int h = meteor.y2 - y;
+        if (w < 0) {
+            x += w;
+            w = -w;
+        }
+        if (h < 0) {
+            y += h;
+            h = -h;
+        }
+        x -= 1;
+        y -= 1;
+        w += 2;
+        h += 2;
+
+        sanelyCheckAndClearDisplayArea( mGlobal.display,
+            mGlobal.SnowWin, x, y, w, h, mGlobal.xxposures);
+    }
+
+    meteor.active = 0;
+    return TRUE;
 }

@@ -288,9 +288,6 @@ void *updateBirdSpeed() {
         if (!(Flags.Done || INACTIVE)) {
 
             lock();
-
-            P("updateBirdSpeed %d\n", mGlobal.counter++);
-
             kd_free(kd);
             kd = kd_create(3);
 

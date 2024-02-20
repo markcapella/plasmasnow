@@ -182,10 +182,6 @@ static void applyMainWindowCSSTheme();
 static void updateMainWindowTheme(void);
 
 static void birdscb(GtkWidget *w, void *m);
-static void yesyes(GtkWidget *w, gpointer data);
-static void nono(GtkWidget *w, gpointer data);
-
-static void onClickedActivateXScreenSaver(GtkApplication *app);
 
 static void setTabDefaults(int tab);
 
@@ -194,13 +190,6 @@ static void handleFileChooserPreview(
     GtkFileChooser *file_chooser, gpointer data);
 static void setLabelText(GtkLabel *label, const gchar *str);
 
-// to be used if gtk version is too low
-// returns 1: user clicked 'Run with ...'
-// returns 0: user clicked 'Quit'
-static int RC;
-
-extern Window getDragWindowOf(Window);
-//extern int getTmpLogFile();
 extern void getWinInfoList();
 extern void logAllWindowsStackedTopToBottom();
 
@@ -1292,7 +1281,7 @@ char *ui_gtk_required() {
 /** *********************************************************************
  ** ... .
  **/
-int ui_checkgtk() {
+int isGtkVersionValid() {
     if ((int) gtk_get_major_version() > GTK_MAJOR) {
         return 1;
     }
@@ -1315,114 +1304,10 @@ int ui_checkgtk() {
 /** *********************************************************************
  ** ... .
  **/
-int ui_run_nomenu() {
-    GtkApplication *app;
-
-#define MY_GLIB_VERSION                                                        \
-    (100000000 * GLIB_MAJOR_VERSION + 10000 * GLIB_MINOR_VERSION +             \
-        GLIB_MICRO_VERSION)
-
-#if MY_GLIB_VERSION >= 200730003
-#define XXFLAGS G_APPLICATION_DEFAULT_FLAGS
-#else
-#define XXFLAGS G_APPLICATION_FLAGS_NONE
-#endif
-
-    app = gtk_application_new("plasmasnowApp", XXFLAGS);
-    g_signal_connect(app, "activate",
-        G_CALLBACK(onClickedActivateXScreenSaver), NULL);
-
-    g_application_run(G_APPLICATION(app), 0, NULL);
-
-    g_object_unref(app);
-    return RC;
-}
-
-/** *********************************************************************
- ** ... .
- **/
-static void onClickedActivateXScreenSaver(GtkApplication *app) {
-    GtkWidget *window;
-    GtkWidget *grid;
-    GtkWidget *button;
-    GtkWidget *label;
-
-    /* create a new window, and set its title */
-    window = gtk_application_window_new(app);
-
-    gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
-    gtk_window_set_title(GTK_WINDOW(window), "plasmaSnow");
-    gtk_window_set_decorated(GTK_WINDOW(window), FALSE);
-    gtk_window_set_keep_above(GTK_WINDOW(window), TRUE);
-    gtk_container_set_border_width(GTK_CONTAINER(window), 10);
-
-    /* Here we construct the container that is going pack our buttons */
-    grid = gtk_grid_new();
-
-    /* Pack the container in the window */
-    gtk_container_add(GTK_CONTAINER(window), grid);
-
-    snprintf(sbuffer, nsbuffer,
-        "You are using GTK-%s, but you need at least GTK-%s to view\n"
-        "the user interface.\n"
-        "Use the option '-nomenu' to disable the user interface.\n"
-        "If you want to try the user interface anyway, use the flag '-checkgtk "
-        "0'.\n\n"
-        "See 'man plasmasnow' or 'plasmasnow -h' to see the command line options.\n"
-        "Alternatively, you could edit ~/.plasmasnowrc to set options.\n",
-        ui_gtk_version(), ui_gtk_required());
-    label = gtk_label_new(sbuffer);
-
-    /* Place the label in cell (0,0) and make it fill 2 cells horizontally */
-    gtk_grid_attach(GTK_GRID(grid), label, 0, 0, 2, 1);
-
-    button = gtk_button_new_with_label("Run without user interface");
-    g_signal_connect(button, "clicked", G_CALLBACK(yesyes), window);
-
-    /* Place the first button in the grid cell (0, 1), and make it fill
-     * just 1 cell horizontally and vertically (ie no spanning)
-     */
-    gtk_grid_attach(GTK_GRID(grid), button, 0, 1, 1, 1);
-
-    button = gtk_button_new_with_label("Quit");
-    g_signal_connect(button, "clicked", G_CALLBACK(nono), window);
-
-    /* Place the second button in the grid cell (1, 1), and make it fill
-     * just 1 cell horizontally and vertically (ie no spanning)
-     */
-    gtk_grid_attach(GTK_GRID(grid), button, 1, 1, 1, 1);
-
-    /* Now that we are done packing our widgets, we show them all
-     * in one go, by calling gtk_widget_show_all() on the window.
-     * This call recursively calls gtk_widget_show() on all widgets
-     * that are contained in the window, directly or indirectly.
-     */
-    gtk_widget_show_all(window);
-}
-
-/** *********************************************************************
- ** ... .
- **/
 void setLabelText(GtkLabel *label, const gchar *str) {
     if (ui_running) {
         gtk_label_set_text(label, str);
     }
-}
-
-/** *********************************************************************
- ** ... .
- **/
-void yesyes(GtkWidget *w, gpointer window) {
-    RC = (w != NULL);
-    gtk_widget_destroy(GTK_WIDGET(window));
-}
-
-/** *********************************************************************
- ** ... .
- **/
-void nono(GtkWidget *w, gpointer window) {
-    RC = (w == NULL);
-    gtk_widget_destroy(GTK_WIDGET(window));
 }
 
 /** *********************************************************************

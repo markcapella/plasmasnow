@@ -23,7 +23,13 @@
 
 #include <gtk/gtk.h>
 
-extern void meteor_init(void);
-extern void meteor_ui(void);
-extern void meteor_draw(cairo_t *cr);
-extern void meteor_erase(void);
+/***********************************************************
+ * Module Method stubs.
+ */
+
+void initMeteorModuleSettings();
+void updateMeteorUserSettings();
+
+int updateMeteorFrame();
+int eraseMeteorFrame();
+void drawMeteorFrame(cairo_t*);

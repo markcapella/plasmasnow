@@ -32,7 +32,6 @@
 #include "windows.h"
 #include "plasmasnow.h"
 
-#define NOTACTIVE (!WorkspaceActive())
 
 static void SetWhirl(void);
 static void SetWindTimer(void);
@@ -66,7 +65,7 @@ int do_newwind() {
     if (Flags.Done) {
         return FALSE;
     }
-    if (NOTACTIVE) {
+    if (!WorkspaceActive()) {
         return TRUE;
     }
     //
@@ -111,7 +110,7 @@ int do_wind() {
     if (Flags.Done) {
         return FALSE;
     }
-    if (NOTACTIVE) {
+    if (!WorkspaceActive()) {
         return TRUE;
     }
     if (Flags.NoWind) {

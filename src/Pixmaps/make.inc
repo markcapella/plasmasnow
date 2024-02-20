@@ -80,7 +80,6 @@ flake5.xpm \
 flake6.xpm \
 garland.xpm \
 greenTree.xpm \
-huis41.xpm \
 huis4.xpm \
 MediumSanta1.xpm \
 MediumSanta2.xpm \

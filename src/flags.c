@@ -226,7 +226,6 @@ int HandleFlags(int argc, char *argv[]) {
             handle_ia(-aurorabase, AuroraBase);
 
             handle_ia(-blowofffactor, BlowOffFactor);
-            handle_ia(-checkgtk, CheckGtk);
             handle_ia(-cpuload, CpuLoad);
             handle_ia(-doublebuffer, useDoubleBuffers);
             handle_ia(-flakecountmax, FlakeCountMax);

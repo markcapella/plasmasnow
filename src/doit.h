@@ -32,7 +32,6 @@
 #define DOITALL                                                                \
     DOIT_I(BelowConfirm, 0, 0)  /*not a button or parameter */                 \
     DOIT_I(Changes, 0, 0)       /* not a parameter or button */                \
-    DOIT_I(CheckGtk, 1, 1)                                                     \
     DOIT_I(Defaults, 0, 0)                                                     \
     DOIT_I(Desktop, 0, 0)                                                      \
     DOIT_I(Done, 0, 0)                                                         \

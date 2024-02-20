@@ -36,5 +36,5 @@ extern void updateFallenSnowRegionsWithLock(void);
 
 extern void SetBackground(void);
 
-extern int xinerama(Display *display, int xscreen,
-    int *x, int *y, int *w, int *h);
+extern int getXineramaScreenInfo(Display *display,
+    int xscreen, int *x, int *y, int *w, int *h);

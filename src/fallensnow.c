@@ -230,7 +230,7 @@ void PushFallenSnow(
 
     // Computing splines etc.
     FallenSnow *p = (FallenSnow *) malloc(sizeof(FallenSnow));
-    p->win = *win;
+    p->winInfo = *win;
 
     p->x = x;
     p->y = y;
@@ -302,7 +302,7 @@ void CreateDesh(FallenSnow *p) {
     int i;
     int w = p->w;
     int h = p->h;
-    int id = p->win.id;
+    int id = p->winInfo.window;
     short int *maxSnowHeight = p->maxSnowHeight;
 
     double splinex[N];
@@ -400,7 +400,7 @@ int removeFallenSnowListItem(FallenSnow **list, Window id) {
 
     // Do we hit on first item in List?
     FallenSnow *fallen = *list;
-    if (fallen->win.id == id) {
+    if (fallen->winInfo.window == id) {
         fallen = fallen->next;
         freeFallenSnowDisplayArea(*list);
         *list = fallen; // ?
@@ -415,7 +415,7 @@ int removeFallenSnowListItem(FallenSnow **list, Window id) {
         }
 
         scratch = fallen->next;
-        if (scratch->win.id == id) {
+        if (scratch->winInfo.window == id) {
             break;
         }
 
@@ -435,7 +435,7 @@ FallenSnow *findFallenSnowListItem(FallenSnow *first, Window id) {
     // threads: locking by caller
     FallenSnow *fsnow = first;
     while (fsnow) {
-        if (fsnow->win.id == id) {
+        if (fsnow->winInfo.window == id) {
             return fsnow;
         }
         fsnow = fsnow->next;
@@ -479,10 +479,10 @@ void fallensnow_draw(cairo_t *cr) {
  **/
 void drawFallenSnowListItem(FallenSnow *fsnow) {
     // threads: locking done by caller
-    if (fsnow->win.id == 0 ||
-        (!fsnow->win.hidden &&
-            //(fsnow->win.ws == mGlobal.CWorkSpace || fsnow->win.sticky)))
-            (isFallenSnowOnVisibleWorkspace(fsnow) || fsnow->win.sticky))) {
+    if (fsnow->winInfo.window == 0 ||
+        (!fsnow->winInfo.hidden &&
+            //(fsnow->winInfo.ws == mGlobal.CWorkSpace || fsnow->winInfo.sticky)))
+            (isFallenSnowOnVisibleWorkspace(fsnow) || fsnow->winInfo.sticky))) {
 
         // do not interfere with Santa
         if (!Flags.NoSanta) {
@@ -581,7 +581,7 @@ void eraseFallenSnowOnDisplay(FallenSnow *fsnow, int xstart, int w) {
 void eraseFallenSnowOnWindow(Window id) {
     FallenSnow* fsnow = mGlobal.FsnowFirst;
     while (fsnow) {
-        if (fsnow->win.id == id) {
+        if (fsnow->winInfo.window == id) {
             eraseFallenSnowOnDisplay(fsnow, 0, fsnow->w);
             break;
         }
@@ -602,7 +602,7 @@ void createFallenSnowDisplayArea(FallenSnow *fsnow) {
     int w = fsnow->w;
 
     short int *snowHeight = fsnow->snowHeight;
-    int id = fsnow->win.id;
+    int id = fsnow->winInfo.window;
 
     cairo_set_antialias(cr, CAIRO_ANTIALIAS_DEFAULT);
     cairo_set_operator(cr, CAIRO_OPERATOR_SOURCE);
@@ -873,7 +873,7 @@ void updateFallenSnowWithWind(FallenSnow *fsnow, int w, int h) {
                     flake->vx = 0.25 * fsignf(mGlobal.NewWind) * mGlobal.WindMax;
                     flake->vy = -10;
                     flake->cyclic =
-                        (fsnow->win.id ==
+                        (fsnow->winInfo.window ==
                             0); // not cyclic for Windows, cyclic for bottom
                     P("%d:\n", counter++);
                 }
@@ -978,12 +978,16 @@ void updateFallenSnowPartial(FallenSnow* fsnow, int position, int width) {
 // If no window, result depends on screen bottom option.
 // If window hidden, don't handle.
 int canSnowCollectOnWindowOrScreenBottom(FallenSnow *fsnow) {
-    if (fsnow->win.id == None) {
+    if (fsnow->winInfo.window == None) {
         return !Flags.NoKeepSnowOnBottom;
     }
 
-    if (fsnow->win.hidden ||
-        (!fsnow->win.sticky && !isFallenSnowOnVisibleWorkspace(fsnow))) {
+    if (fsnow->winInfo.hidden) {
+        return false;
+    }
+
+    if (!fsnow->winInfo.sticky &&
+        !isFallenSnowOnVisibleWorkspace(fsnow)) {
         return false;
     }
 
@@ -994,15 +998,14 @@ int canSnowCollectOnWindowOrScreenBottom(FallenSnow *fsnow) {
  ** This method ...
  **/
 int isFallenSnowOnVisibleWorkspace(FallenSnow *fsnow) {
-    if (!fsnow) {
-        return false;
-    }
-
-    for (int i = 0; i < mGlobal.NVisWorkSpaces; i++) {
-        if (mGlobal.VisWorkSpaces[i] == fsnow->win.ws) {
-            return true;
+    if (fsnow) {
+        for (int i = 0; i < mGlobal.NVisWorkSpaces; i++) {
+            if (mGlobal.VisWorkSpaces[i] == fsnow->winInfo.ws) {
+                return true;
+            }
         }
     }
+
     return false;
 }
 
@@ -1020,9 +1023,8 @@ void logAllFallenSnowDisplayAreas(FallenSnow *list) {
             sumact += fallen->snowHeight[i];
         }
         printf("id:%#10lx ws:%4ld x:%6d y:%6d w:%6d sty:%2d hid:%2d sum:%8d\n",
-            fallen->win.id, fallen->win.ws, fallen->x, fallen->y, fallen->w,
-            fallen->win.sticky, fallen->win.hidden, sumact);
+            fallen->winInfo.window, fallen->winInfo.ws, fallen->x, fallen->y, fallen->w,
+            fallen->winInfo.sticky, fallen->winInfo.hidden, sumact);
         fallen = fallen->next;
     }
 }
-

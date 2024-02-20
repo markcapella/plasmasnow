@@ -388,13 +388,13 @@ void checkIfFlakeCollectsInFallenSnow(SnowFlake* flake,
 
     FallenSnow *fsnow = mGlobal.FsnowFirst;
     while (fsnow) {
-        if (fsnow->win.hidden) {
+        if (fsnow->winInfo.hidden) {
             fsnow = fsnow->next;
             continue;
         }
-        if (fsnow->win.id != 0 &&
+        if (fsnow->winInfo.window != 0 &&
             !isFallenSnowOnVisibleWorkspace(fsnow) &&
-            !fsnow->win.sticky) {
+            !fsnow->winInfo.sticky) {
             fsnow = fsnow->next;
             continue;
         }
@@ -420,7 +420,8 @@ void checkIfFlakeCollectsInFallenSnow(SnowFlake* flake,
         for (int i = istart; i < imax; i++) {
             if (yPosition > fsnow->y - fsnow->snowHeight[i] - 1) {
                 if (fsnow->snowHeight[i] < fsnow->maxSnowHeight[i]) {
-                    updateFallenSnowPartial(fsnow, xPosition - fsnow->x, flakeWidth);
+                    updateFallenSnowPartial(fsnow,
+                        xPosition - fsnow->x, flakeWidth);
                 }
                 if (canSnowCollectOnWindowOrScreenBottom(fsnow)) {
                     if (!Flags.NoFluffy) {

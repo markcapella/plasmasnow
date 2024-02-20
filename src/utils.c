@@ -84,7 +84,7 @@ void ClearScreen() {
 
     // Yes this is hairy: also remove meteor.
     // It could be that a meteor region is still hanging around
-    meteor_erase();
+    eraseMeteorFrame();
 
     XFlush(mGlobal.display);
 }
@@ -213,7 +213,6 @@ void my_cairo_paint_with_alpha(cairo_t *cr, double alpha) {
     } else {
         cairo_paint_with_alpha(cr, alpha);
     }
-    P("%d alpha %f\n", mGlobal.counter++, alpha);
 }
 
 void PrintVersion() {

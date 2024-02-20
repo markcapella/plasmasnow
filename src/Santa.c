@@ -38,7 +38,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define NOTACTIVE (!WorkspaceActive())
 static int do_usanta();
 static void init_Santa_surfaces(void);
 static Region RegionCreateRectangle(int x, int y, int w, int h);
@@ -80,7 +79,6 @@ void Santa_ui() {
 
     static int prev = 100;
     if (appScalesHaveChanged(&prev)) {
-        P("%d Santa_scale \n", mGlobal.counter);
         init_Santa_surfaces();
         SetSantaSizeSpeed();
     }
@@ -90,8 +88,7 @@ int Santa_draw(cairo_t *cr) {
     if (Flags.NoSanta) {
         return TRUE;
     }
-    P("Santa_draw %d %d %d\n", mGlobal.counter++, mGlobal.SantaX,
-        Flags.SantaSize);
+
     cairo_surface_t *surface;
     surface = Santa_surfaces[Flags.SantaSize][Flags.Rudolf]
                             [mGlobal.SantaDirection][CurrentSanta];
@@ -152,8 +149,7 @@ void init_Santa_surfaces() {
                      0.01 * Flags.SantaScale;
                 h *= 0.01 * Flags.Scale * LocalScale * mGlobal.WindowScale *
                      0.01 * Flags.SantaScale;
-                P("%d init_Santa_surfaces %d %d %d %d %d\n", mGlobal.counter++,
-                    i, j, k, w, h);
+
                 pixbuf = gdk_pixbuf_new_from_xpm_data(
                     (const char **)Santas[i][j][k]);
                 if (w < 1) {
@@ -290,7 +286,7 @@ int do_usanta() {
     do {                                                                       \
         return TRUE;                                                           \
     } while (0)
-    if (NOTACTIVE) {
+    if (!WorkspaceActive()) {
         RETURN;
     }
     if (Flags.NoSanta && !Flags.FollowSanta) {

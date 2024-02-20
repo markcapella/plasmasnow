@@ -36,6 +36,8 @@
 #include <X11/Intrinsic.h>
 #include <X11/extensions/Xdbe.h>
 #include <X11/extensions/Xinerama.h>
+#include <X11/extensions/Xfixes.h>
+#include <X11/cursorfont.h>
 
 #include <cairo-xlib.h>
 
@@ -50,7 +52,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
-
 
 #include "xdo.h"
 #include "vroot.h"
@@ -68,7 +69,6 @@
 #include "mainstub.h"
 #include "windows.h"
 #include "wmctrl.h"
-
 #include "transwindow.h"
 
 #include "safe_malloc.h"
@@ -91,6 +91,35 @@
 #include "meteor.h"
 #include "moon.h"
 #include "aurora.h"
+
+
+/***********************************************************
+ * Externally provided to this Module Method stubs.
+ */
+void setAppBelowAllWindows();
+void setAppAboveAllWindows();
+
+// Windows:
+Window getActiveX11Window();
+Window getActiveAppWindow();
+
+
+void onCursorChange(XEvent*);
+void onAppWindowChange(Window);
+
+void onWindowCreated(XEvent*);
+void onWindowReparent(XEvent*);
+void onWindowChanged(XEvent*);
+
+void onWindowMapped(XEvent*);
+void onWindowFocused(XEvent*);
+void onWindowBlurred(XEvent*);
+void onWindowUnmapped(XEvent*);
+
+void onWindowDestroyed(XEvent*);
+
+bool isWindowBeingDragged();
+
 
 
 /***********************************************************
@@ -121,7 +150,7 @@ static int onTimerEventDisplayChanged();
 static void mybindtestdomain();
 extern void setAppAboveOrBelowAllWindows();
 
-static void getDesktopSessionFromEnvironmantString();
+static void setmGlobalDesktopSession();
 static void DoAllWorkspaces();
 extern void setTransparentWindowAbove(GtkWindow* window);
 extern int updateWindowsList();
@@ -132,23 +161,26 @@ extern void doLowerWindow(char* argString);
 static int doAllUISettingsUpdates();
 static int do_stopafter();
 static int handleDisplayConfigurationChange();
-static int do_testing();
 
 extern void getWinInfoList();
 
-// Windows.
-void setAppBelowAllWindows();
-void setAppAboveAllWindows();
-
-void onWindowCreated(Window);
-void onWindowDestroyed(Window);
-void onWindowMapped(Window);
-void onWindowUnmapped(Window);
-
-bool isWindowDraggingActive();
-
 // ColorPicker methods.
 void uninitQPickerDialog();
+
+
+/** *********************************************************************
+ ** Module globals and consts.
+ **/
+
+#define reinterpret_cast(TO, VAR) \
+({                                \
+    union                         \
+    {                             \
+        __typeof__((VAR)) source; \
+        TO dest;                  \
+    } u = { .source = (VAR) };    \
+    (TO)u.dest;                   \
+})
 
 #ifdef DEBUG
 #undef DEBUG
@@ -157,7 +189,6 @@ void uninitQPickerDialog();
 #define BMETHOD XdbeBackground
 
 struct _mGlobal mGlobal;
-
 
 char Copyright[] =
     "\nplasmasnow\nCopyright 2023 Mark Capella and "
@@ -182,6 +213,8 @@ static bool mX11CairoEnabled = false;
 cairo_t *mCairoWindow = NULL;
 cairo_surface_t *mCairoSurface = NULL;
 
+int xfixes_event_base_ = -1;
+
 static int mIsSticky = 0;
 
 static int wantx = 0;
@@ -190,42 +223,28 @@ static int wanty = 0;
 static int mPrevSnowWinWidth = 0;
 static int mPrevSnowWinHeight = 0;
 
-static const char *BlackColor = "black";
-static Pixel BlackPix;
-
 static int mX11Error_Count = 0;
 const int mX11Error_maxBeforeTermination = 1000;
 
-//int mTmpLogFile;
-//extern int getTmpLogFile() {
-//    return mTmpLogFile;
-//}
-
-extern void applicationFinish(void);
+extern void endApplication();
 
 /** *********************************************************************
  ** main.c: 
  **/
-int applicationStart(int argc, char *argv[]) {
-    // Temp log file.
-//    mkdir("/tmp/plasmasnow", 0777);
-//    mTmpLogFile = open("/tmp/plasmasnow/output.log",
-//        O_CREAT | O_WRONLY, 0644);
-    const char* logMsg = "main: applicationStart() Starts.\n\n";
-//    write(mTmpLogFile, logMsg, strlen(logMsg));
-    fprintf(stdout, "%s", logMsg);
+int startApplication(int argc, char *argv[]) {
+    fprintf(stdout, "main: startApplication() Starts.\n\n");
 
     signal(SIGINT, SigHandler);
     signal(SIGTERM, SigHandler);
     signal(SIGHUP, SigHandler);
 
+    // Set up random,
     srand48((int) (fmod(wallcl() * 1.0e6, 1.0e8)));
 
     // Cleaar space for app Global struct.
     memset(&mGlobal, 0, sizeof(mGlobal));
 
     XInitThreads();
-
     initFallenSnowSemaphores();
     aurora_sem_init();
     birds_sem_init();
@@ -233,7 +252,6 @@ int applicationStart(int argc, char *argv[]) {
     // Titlebar string, but not one.
     mGlobal.mPlasmaWindowTitle = "plasmaSnow";
 
-    mGlobal.counter = 0;
     mGlobal.cpufactor = 1.0;
     mGlobal.WindowScale = 1.0;
 
@@ -319,7 +337,7 @@ int applicationStart(int argc, char *argv[]) {
     switch (rc) {
         case -1: // wrong flag
             uninitQPickerDialog();
-            applicationFinish();
+            endApplication();
             return 1;
             break;
 
@@ -337,7 +355,7 @@ int applicationStart(int argc, char *argv[]) {
     // Make a copy of all flags, before gtk_init() removes some.
     // We need this at app refresh. remove: -screen n -lang c.
 
-    Argv = (char **)malloc((argc + 1) * sizeof(char **));
+    Argv = (char **) malloc((argc + 1) * sizeof(char **));
     Argc = 0;
     for (int i = 0; i < argc; i++) {
         if ((strcmp("-screen", argv[i]) == 0) ||
@@ -349,48 +367,38 @@ int applicationStart(int argc, char *argv[]) {
     }
     Argv[Argc] = NULL;
 
-    getDesktopSessionFromEnvironmantString();
-    if (!strncasecmp(mGlobal.DesktopSession, "bspwm", 5)) {
-        printf(_("For optimal resuts, add to your %s:\n"), "bspwmrc");
-        printf("   bspc rule -a plasmasnow state=floating border=off\n");
-    }
+    setmGlobalDesktopSession();
+    //if (!strncasecmp(mGlobal.DesktopSession, "bspwm", 5)) {
+    //    fprintf(stdout, "For optimal resuts, add to your %s:\n", "bspwmrc");
+    //    fprintf(stdout, "   bspc rule -a plasmasnow state=floating border=off\n");
+    //}
 
     printf("GTK version: %s\n", ui_gtk_version());
-    printf("GSL version: ");
-#ifdef GSL_VERSION
-    printf("%s\n", GSL_VERSION);
-#else
-    printf(_("unknown\n"));
-#endif
+    #ifdef GSL_VERSION
+        fprintf(stdout, "GSL version: %s\n", GSL_VERSION);
+    #else
+        fprintf(stdout, "GSL version: UNKNOWN\n");
+    #endif
 
-    // Circumvent wayland problems:before starting gtk: make sure that the
-    // gdk-x11 backend is used.
-
+    // Circumvent wayland problems. Before starting gtk,
+    // ensure that the gdk-x11 backend is used.
     setenv("GDK_BACKEND", "x11", 1);
-    if (getenv("WAYLAND_DISPLAY") && getenv("WAYLAND_DISPLAY")[0]) {
-        printf(_("Detected Wayland desktop\n"));
-        mGlobal.IsWayland = 1;
-    } else {
-        mGlobal.IsWayland = 0;
-    }
+    mGlobal.IsWayland = getenv("WAYLAND_DISPLAY") &&
+        getenv("WAYLAND_DISPLAY")[0];
+    fprintf(stdout, "Wayland desktop %s detected.\n",
+        mGlobal.IsWayland ? "was" : "was not");
 
+    // Init GTK and ensure valid version.
     gtk_init(&argc, &argv);
     if (!Flags.NoConfig) {
         WriteFlags();
     }
-
-    if (Flags.CheckGtk && !ui_checkgtk() && !Flags.NoMenu) {
+    if (!isGtkVersionValid()) {
         printf(_("plasmasnow needs gtk version >= %s, found version %s \n"),
             ui_gtk_required(), ui_gtk_version());
-
-        if (!ui_run_nomenu()) {
-            uninitQPickerDialog();
-            applicationFinish();
-            return 0;
-        }
-
-        Flags.NoMenu = 1;
-        printf("%s %s", _("Continuing with flag"), "'-nomenu'\n");
+        uninitQPickerDialog();
+        endApplication();
+        return 0;
     }
 
     mGlobal.display = XOpenDisplay(Flags.DisplayName);
@@ -405,60 +413,58 @@ int applicationStart(int argc, char *argv[]) {
 
     XSetErrorHandler(handleX11ErrorEvent);
 
-    int screen = DefaultScreen(mGlobal.display);
-    mGlobal.Screen = screen;
-    mGlobal.Black = BlackPixel(mGlobal.display, screen);
-    mGlobal.White = WhitePixel(mGlobal.display, screen);
+    mGlobal.Screen = DefaultScreen(mGlobal.display);
 
-    { // if somebody messed up colors in .plasmasnowrc:
-        if (!ValidColor(Flags.SnowColor)) {
-            Flags.SnowColor = strdup(DefaultFlags.SnowColor);
-        }
-        if (!ValidColor(Flags.SnowColor2)) {
-            Flags.SnowColor2 = strdup(DefaultFlags.SnowColor2);
-        }
-        if (!ValidColor(Flags.BirdsColor)) {
-            Flags.BirdsColor = strdup(DefaultFlags.BirdsColor);
-        }
-        if (!ValidColor(Flags.TreeColor)) {
-            Flags.TreeColor = strdup(DefaultFlags.TreeColor);
-        }
+    // Default any snow colors,
+    // a user may have set in .plasmasnowrc.
+    int wasThereAnInvalidColor = false;
+    if (!ValidColor(Flags.SnowColor)) {
+        Flags.SnowColor = strdup(DefaultFlags.SnowColor);
+        wasThereAnInvalidColor = true;
+    }
+    if (!ValidColor(Flags.SnowColor2)) {
+        Flags.SnowColor2 = strdup(DefaultFlags.SnowColor2);
+        wasThereAnInvalidColor = true;
+    }
+    if (!ValidColor(Flags.BirdsColor)) {
+        Flags.BirdsColor = strdup(DefaultFlags.BirdsColor);
+        wasThereAnInvalidColor = true;
+    }
+    if (!ValidColor(Flags.TreeColor)) {
+        Flags.TreeColor = strdup(DefaultFlags.TreeColor);
+        wasThereAnInvalidColor = true;
+    }
+    if (wasThereAnInvalidColor) {
         WriteFlags();
     }
 
-    InitSnowOnTrees();
-
     if (mGlobal.display == NULL) {
-        if (Flags.DisplayName == NULL) {
-            Flags.DisplayName = getenv("DISPLAY");
-        }
-        fprintf(stderr, _("%s: cannot connect to X server %s\n"), argv[0],
-            Flags.DisplayName ? Flags.DisplayName : _("(default)"));
+        fprintf(stdout, "plasmasnow: cannot connect to X server.\n"),
         exit(1);
     }
 
     // Start Main GUI Window.
+    InitSnowOnTrees();
     if (!StartWindow()) {
         return 1;
     }
 
-#define DOIT_I(x, d, v) OldFlags.x = Flags.x;
-#define DOIT_L(x, d, v) DOIT_I(x, d, v);
-#define DOIT_S(x, d, v) OldFlags.x = strdup(Flags.x);
-    DOITALL;
-#include "undefall.inc"
-
+    // Init all GLobal Flags.
+    #define DOIT_I(x, d, v) OldFlags.x = Flags.x;
+    #define DOIT_L(x, d, v) DOIT_I(x, d, v);
+    #define DOIT_S(x, d, v) OldFlags.x = strdup(Flags.x);
+        DOITALL;
+    #include "undefall.inc"
     OldFlags.FullScreen = !Flags.FullScreen;
 
-    BlackPix = AllocNamedColor(BlackColor, mGlobal.Black);
-
-    if (mGlobal.hasDestopWindow) {
-        XSelectInput(mGlobal.display, mGlobal.Rootwindow,
-            StructureNotifyMask | SubstructureNotifyMask);
-    } else {
-        XSelectInput(mGlobal.display, mGlobal.SnowWin,
-            StructureNotifyMask | SubstructureNotifyMask);
-    }
+    // Request all interesting X11 events.
+    const Window eventWindow = (mGlobal.hasDestopWindow) ?
+        mGlobal.Rootwindow : mGlobal.SnowWin;
+    XSelectInput(mGlobal.display, eventWindow,
+        StructureNotifyMask | SubstructureNotifyMask |
+        FocusChangeMask);
+    XFixesSelectCursorInput(mGlobal.display, eventWindow,
+        XFixesDisplayCursorNotifyMask);
 
     ClearScreen();
 
@@ -488,7 +494,7 @@ int applicationStart(int argc, char *argv[]) {
     birds_init();
 
     stars_init();
-    meteor_init();
+    initMeteorModuleSettings();
     aurora_init();
     moon_init();
 
@@ -498,7 +504,7 @@ int applicationStart(int argc, char *argv[]) {
         onTimerEventDisplayChanged);
     addMethodToMainloop(PRIORITY_DEFAULT, CONFIGURE_WINDOW_EVENT_TIME,
         handlePendingX11Events);
-    addMethodToMainloop(PRIORITY_DEFAULT, time_testing, do_testing);
+    // addMethodToMainloop(PRIORITY_DEFAULT, time_testing, logWindowAndWorkspaces);
 
     addMethodToMainloop(PRIORITY_DEFAULT, time_display_dimensions,
         handleDisplayConfigurationChange);
@@ -512,23 +518,23 @@ int applicationStart(int argc, char *argv[]) {
     }
 
     HandleCpuFactor();
-
     fflush(stdout);
 
-    DoAllWorkspaces(); // to set mGlobal.ChosenWorkSpace
+    // Set mGlobal.ChosenWorkSpace
+    DoAllWorkspaces();
 
     //***************************************************
     // main loop
     //***************************************************
-    const char* logMsgStart = "main: applicationStart() gtk_main() Starts.\n\n";
-    fprintf(stdout, "%s", logMsgStart);
+    fprintf(stdout, "%s", "\nmain: startApplication() "
+        "gtk_main() Starts.\n\n");
 
     gtk_main();
 
     //****************
     // Uninit and maybe restart.
-    const char* logMsgEnd = "main: applicationStart() gtk_main() Finishes.\n";
-    fprintf(stdout, "%s", logMsgEnd);
+    fprintf(stdout, "main: startApplication() gtk_main() "
+        "Finishes.\n");
 
     // Clear vars, close window.
     if (mSnowWindowTitlebarName) {
@@ -560,9 +566,9 @@ int applicationStart(int argc, char *argv[]) {
         return 0;
     }
 
-    applicationFinish();
+    endApplication();
 
-    const char* endMsg = "main: applicationStart() Finishes.\n\n";
+    const char* endMsg = "main: startApplication() Finishes.\n\n";
     fprintf(stdout, "%s", endMsg);
 
     return 0;
@@ -571,18 +577,17 @@ int applicationStart(int argc, char *argv[]) {
 /** *********************************************************************
  ** This method ...
  **/
-void applicationFinish(void) {
+void endApplication(void) {
     if (mGlobal.HaltedByInterrupt) {
-        printf(_("\nplasmasnow: Caught signal %d\n"), mGlobal.HaltedByInterrupt);
-        const char* logMsgRestart = "\nplasmasnow: Caught signal.\n";
-        fprintf(stdout, "%s", logMsgRestart);
+        fprintf(stdout, "\nplasmasnow: Caught signal %d\n",
+            mGlobal.HaltedByInterrupt);
     }
 
     if (strlen(mGlobal.Message)) {
-        printf("\n%s\n", mGlobal.Message);
+        fprintf(stdout, "\n%s\n", mGlobal.Message);
     }
 
-    printf(_("\nThanks for using plasmasnow\n"));
+    fprintf(stdout, "\nThanks for using plasmasnow\n");
     fflush(stdout);
 }
 
@@ -609,7 +614,8 @@ void getX11Window(Window *resultWin) {
             return;
         }
 
-        fprintf(stderr, "plasmasnow: getX11Window() Window detection failed.\n");
+        fprintf(stderr, "plasmasnow: getX11Window() "
+            "Window detection failed.\n");
         exit(1);
     }
 
@@ -621,24 +627,27 @@ void getX11Window(Window *resultWin) {
 /** *********************************************************************
  ** 
  **/
-void getDesktopSessionFromEnvironmantString() {
-    if (mGlobal.DesktopSession == NULL) {
-        char* desktopsession = NULL;
-
-        const char *desktops[] = {"DESKTOP_SESSION", "XDG_SESSION_DESKTOP",
-            "XDG_CURRENT_DESKTOP", "GDMSESSION", NULL};
-        for (int i = 0; desktops[i]; i++) {
-            desktopsession = getenv(desktops[i]);
-            if (desktopsession) {
-                break;
-            }
-        }
-
-        if (desktopsession) {
-            desktopsession = (char *) "unknown_desktop_session";
-        }
-        mGlobal.DesktopSession = strdup(desktopsession);
+void setmGlobalDesktopSession() {
+    // Early out if already set.
+    if (mGlobal.DesktopSession != NULL) {
+        return;
     }
+
+    const char *DESKTOPS[] = {"DESKTOP_SESSION",
+        "XDG_SESSION_DESKTOP", "XDG_CURRENT_DESKTOP",
+        "GDMSESSION", NULL};
+
+    for (int i = 0; DESKTOPS[i]; i++) {
+        char* desktopsession = NULL;
+        desktopsession = getenv(DESKTOPS[i]);
+        if (desktopsession) {
+            mGlobal.DesktopSession = strdup(desktopsession);
+            return;
+        }
+    }
+
+    mGlobal.DesktopSession =
+        (char *) "unknown_desktop_session";
 }
 
 /** *********************************************************************
@@ -648,9 +657,11 @@ int StartWindow() {
     mGlobal.Rootwindow = DefaultRootWindow(mGlobal.display);
 
     mGlobal.hasDestopWindow = false;
+    mGlobal.hasTransparentWindow = false;
+
     mGlobal.useDoubleBuffers = false;
     mGlobal.isDoubleBuffered = false;
-    mGlobal.hasTransparentWindow = false;
+
     mGlobal.xxposures = false;
     mGlobal.XscreensaverMode = false;
 
@@ -685,53 +696,41 @@ int StartWindow() {
         gtk_window_set_type_hint(GTK_WINDOW(newGTKWindow),
             GDK_WINDOW_TYPE_HINT_POPUP_MENU);
 
-        // If we get our transparent window ...
+        // xwin might be our transparent window ...
         if (createTransparentWindow(mGlobal.display, newGTKWindow,
             Flags.Screen, Flags.AllWorkspaces, true,
             true, NULL, &xwin, &wantx, &wanty)) {
             mTransparentWindow = newGTKWindow;
 
+            mGlobal.SnowWin = xwin;
             mGlobal.hasTransparentWindow = true;
             mGlobal.hasDestopWindow = true;
+
             mGlobal.isDoubleBuffered = true;
 
             GtkWidget *drawing_area = gtk_drawing_area_new();
             gtk_container_add(GTK_CONTAINER(mTransparentWindow), drawing_area);
+
             g_signal_connect(mTransparentWindow, "draw",
                 G_CALLBACK(handleTransparentWindowDrawEvents), NULL);
 
-            // Initial StartWindow();
-            // setAppAboveOrBelowAllWindows();
-            mGlobal.SnowWin = xwin;
-
-            printf(_("\nUsing transparent window\n"));
-            P("wantx, wanty: %d %d\n", wantx, wanty);
-            if (!strncasecmp(mGlobal.DesktopSession, "fvwm", 4) ||
-                !strncasecmp(mGlobal.DesktopSession, "lxqt", 4)) {
-                printf(_("The transparent snow-window is probably not "
-                         "click-through, alas..\n"));
-            }
-
-        // If we can't get our transparent window ...
-        // use rootwindow, pcmanfm or Desktop:
+        // xwin might be our rootwindow, pcmanfm or Desktop:
         } else {
             mGlobal.hasDestopWindow = true;
             mX11CairoEnabled = true;
 
             if (!strncmp(mGlobal.DesktopSession, "LXDE", 4) &&
                 (xwin = largest_window_with_name(mGlobal.xdo, "^pcmanfm$"))) {
-                // printf(_("LXDE session found, using window 'pcmanfm'.\n"));
             } else if ((xwin = largest_window_with_name(mGlobal.xdo, "^Desktop$"))) {
-                // printf(_("Using window 'Desktop'.\n"));
             } else {
-                // printf(_("Using root window\n"));
                 xwin = mGlobal.Rootwindow;
             }
 
             mGlobal.SnowWin = xwin;
             int winw, winh;
+
             if (Flags.Screen >= 0 && mGlobal.hasDestopWindow) {
-                xinerama(mGlobal.display, Flags.Screen,
+                getXineramaScreenInfo(mGlobal.display, Flags.Screen,
                     &wantx, &wanty, &winw, &winh);
             }
         }
@@ -740,7 +739,8 @@ int StartWindow() {
     // Start window Cairo specific.
     if (mX11CairoEnabled) {
         handleX11CairoDisplayChange();
-        mCairoWindowGUID = addMethodWithArgToMainloop(PRIORITY_HIGH, time_draw_all, drawCairoWindow, mCairoWindow);
+        mCairoWindowGUID = addMethodWithArgToMainloop(
+            PRIORITY_HIGH, time_draw_all, drawCairoWindow, mCairoWindow);
         mGlobal.WindowOffsetX = 0;
         mGlobal.WindowOffsetY = 0;
     } else {
@@ -753,7 +753,7 @@ int StartWindow() {
 
     mSnowWindowTitlebarName = strdup("no name");
     XTextProperty titleBarName;
-    if (XGetWMName(mGlobal.display, xwin, &titleBarName)) {
+    if (XGetWMName(mGlobal.display, mGlobal.SnowWin, &titleBarName)) {
         mSnowWindowTitlebarName = strdup((char *) titleBarName.value);
     }
     XFree(titleBarName.value);
@@ -763,9 +763,9 @@ int StartWindow() {
     }
 
     xdo_wait_for_window_map_state(mGlobal.xdo, mGlobal.SnowWin, IsViewable);
-
     initDisplayDimensions();
 
+    // Report log.
     mGlobal.SnowWinX = wantx;
     mGlobal.SnowWinY = wanty;
     printf(_("\nSnowing in %#lx: %s %d+%d %dx%d\n"), mGlobal.SnowWin, mSnowWindowTitlebarName,
@@ -778,9 +778,7 @@ int StartWindow() {
         mGlobal.WindowOffsetX, mGlobal.WindowOffsetY);
 
     fflush(stdout);
-
     SetWindowScale();
-
     if (mGlobal.XscreensaverMode && !Flags.BlackBackground) {
         SetBackground();
     }
@@ -789,7 +787,7 @@ int StartWindow() {
 }
 
 /** *********************************************************************
- ** Cairo specific. handleDisplayConfigurationChange() applicationStart->StartWindow()
+ ** Cairo specific. handleDisplayConfigurationChange() startApplication->StartWindow()
  **/
 void handleX11CairoDisplayChange() {
 #ifdef XDBE_AVAILABLE
@@ -844,7 +842,7 @@ void handleX11CairoDisplayChange() {
 
     if (Flags.Screen >= 0 && mGlobal.hasDestopWindow) {
         int winx, winy, winw, winh;
-        if (xinerama(mGlobal.display, Flags.Screen,
+        if (getXineramaScreenInfo(mGlobal.display, Flags.Screen,
             &winx, &winy, &winw, &winh)) {
             mGlobal.SnowWinX = winx;
             mGlobal.SnowWinY = winy;
@@ -914,7 +912,7 @@ int doAllUISettingsUpdates() {
 
     snow_ui();
 
-    meteor_ui();
+    updateMeteorUserSettings();
     wind_ui();
     stars_ui();
     doFallenSnowUISettingsUpdates();
@@ -998,9 +996,25 @@ int handlePendingX11Events() {
         XEvent event;
         XNextEvent(mGlobal.display, &event);
 
+        // Check for Active window change through loop.
+        const Window activeX11Window = getActiveX11Window();
+        if (getActiveAppWindow() != activeX11Window) {
+            onAppWindowChange(activeX11Window);
+        }
+
+        // Perform X11 event action.
         switch (event.type) {
+            case CreateNotify:
+                onWindowCreated(&event);
+                break;
+
+            case ReparentNotify:
+                onWindowReparent(&event);
+                break;
+
             case ConfigureNotify:
-                if (!isWindowDraggingActive()) {
+                onWindowChanged(&event);
+                if (!isWindowBeingDragged()) {
                     mGlobal.WindowsChanged++;
                     if (event.xconfigure.window == mGlobal.SnowWin) {
                         mMainWindowNeedsReconfiguration = true;
@@ -1008,22 +1022,40 @@ int handlePendingX11Events() {
                 }
                 break;
 
-            case CreateNotify:
-                onWindowCreated(event.xcreatewindow.window);
-                break;
-
             case MapNotify:
                 mGlobal.WindowsChanged++;
-                onWindowMapped(event.xmap.window);
+                onWindowMapped(&event);
+                break;
+
+            case FocusIn:
+                onWindowFocused(&event);
+                break;
+
+            case FocusOut:
+                onWindowBlurred(&event);
                 break;
 
             case UnmapNotify:
                 mGlobal.WindowsChanged++;
-                onWindowUnmapped(event.xunmap.window);
+                onWindowUnmapped(&event);
                 break;
 
             case DestroyNotify:
-                onWindowDestroyed(event.xdestroywindow.window);
+                onWindowDestroyed(&event);
+                break;
+
+            default:
+                // Perform XFixes action.
+                int xfixes_event_base;
+                int xfixes_error_base;
+                if (XFixesQueryExtension(mGlobal.display,
+                    &xfixes_event_base, &xfixes_error_base)) {
+                    switch (event.type - xfixes_event_base) {
+                        case XFixesCursorNotify:
+                            onCursorChange(&event);
+                            break;
+                    }
+                }
                 break;
         }
     }
@@ -1058,43 +1090,6 @@ void RestartDisplay() {
 /** *********************************************************************
  ** This method ...
  **/
-int do_testing() {
-    if (Flags.Done) {
-        return FALSE;
-    }
-    return TRUE;
-
-    int xret, yret;
-    unsigned int wret, hret;
-
-    xdo_get_window_location(mGlobal.xdo, mGlobal.SnowWin, &xret, &yret, NULL);
-    xdo_get_window_size(mGlobal.xdo, mGlobal.SnowWin, &wret, &hret);
-
-    P("%d wxh %d %d %d %d    %d %d %d %d \n", mGlobal.counter++, mGlobal.SnowWinX,
-        mGlobal.SnowWinY, mGlobal.SnowWinWidth, mGlobal.SnowWinHeight, xret, yret,
-        wret, hret);
-    P("WorkspaceActive, chosen: %d %ld\n", WorkspaceActive(),
-        mGlobal.ChosenWorkSpace);
-    P("vis:");
-
-    for (int i = 0; i < mGlobal.NVisWorkSpaces; i++) {
-        printf(" %ld", mGlobal.VisWorkSpaces[i]);
-    }
-    printf("\n");
-
-    printf("offsets: %d %d\n", mGlobal.WindowOffsetX, mGlobal.WindowOffsetY);
-    mGlobal.counter++;
-    for (int i = 0; i < mGlobal.NVisWorkSpaces; i++) {
-        printf("%d: visible: %d %ld\n", mGlobal.counter, i, mGlobal.VisWorkSpaces[i]);
-    }
-
-    P("current workspace: %ld\n", mGlobal.CWorkSpace);
-    return TRUE;
-}
-
-/** *********************************************************************
- ** This method ...
- **/
 void SigHandler(int signum) {
     mGlobal.HaltedByInterrupt = signum;
     Flags.Done = 1;
@@ -1124,11 +1119,12 @@ int handleX11ErrorEvent(Display *dpy, XErrorEvent *err) {
 }
 
 /** *********************************************************************
- ** This method ...
+ ** This method id the draw callback.
  **/
-// the draw callback
-gboolean handleTransparentWindowDrawEvents(__attribute__((unused)) GtkWidget *widget,
-    cairo_t *cr, __attribute__((unused)) gpointer user_data) {
+gboolean handleTransparentWindowDrawEvents(
+    __attribute__((unused)) GtkWidget *widget, cairo_t *cr,
+    __attribute__((unused)) gpointer user_data) {
+
     drawCairoWindowInternal(cr);
     return FALSE;
 }
@@ -1142,31 +1138,28 @@ int drawCairoWindow(void *cr) {
 }
 
 /** *********************************************************************
- ** This method ...
+ ** Due to instabilities at the start of app, stars is
+ ** repeated a few times. This is not harmful. We do not draw
+ ** anything the first few times this function is called.
  **/
-    // Due to instabilities at the start of app: spurious detection of
-    //   user intervention; resizing of screen; etc.
-    //   placement of scenery, stars etc is repeated a few times at the
-    //   start of app.
-    // This is not harmful, but a bit annoying, so we do not draw anything
-    //   the first few times this function is called.
 void drawCairoWindowInternal(cairo_t *cr) {
+    // Instabilities (?).
     static int counter = 0;
-    P("drawCairoWindowInternal %d %p\n", mGlobal.counter++, (void *)cr);
     if (counter * time_draw_all < 1.5) {
         counter++;
         return;
     }
-
     if (Flags.Done) {
         return;
     }
 
+    // Do all module clears.
     if (mGlobal.useDoubleBuffers) {
         XdbeSwapInfo swapInfo;
         swapInfo.swap_window = mGlobal.SnowWin;
         swapInfo.swap_action = BMETHOD;
         XdbeSwapBuffers(mGlobal.display, &swapInfo, 1);
+
     } else if (!mGlobal.isDoubleBuffered) {
         XFlush(mGlobal.display);
         moon_erase(0);
@@ -1178,6 +1171,7 @@ void drawCairoWindowInternal(cairo_t *cr) {
         XFlush(mGlobal.display);
     }
 
+    // Do cairo.
     cairo_save(cr);
 
     int tx = 0;
@@ -1188,43 +1182,30 @@ void drawCairoWindowInternal(cairo_t *cr) {
     }
     cairo_translate(cr, tx, ty);
 
-    int skipit = !WorkspaceActive();
-    if (!skipit) {
+    // Do all module draws.
+    if (WorkspaceActive()) {
         stars_draw(cr);
-
-        P("moon\n");
         moon_draw(cr);
         aurora_draw(cr);
-        meteor_draw(cr);
+        drawMeteorFrame(cr);
         scenery_draw(cr);
+        birds_draw(cr);
+        fallensnow_draw(cr);
+        if (!Flags.ShowBirds || !Flags.FollowSanta) {
+            // If Flags.FollowSanta, drawing of Santa
+            // is done in Birds module.
+            Santa_draw(cr);
+        }
+        treesnow_draw(cr);
+        snow_draw(cr);
     }
 
-    P("birds %d\n", counter++);
-    birds_draw(cr);
-
-    if (skipit) {
-        goto end;
-    };
-
-    fallensnow_draw(cr);
-
-    if (!Flags.FollowSanta ||
-        !Flags.ShowBirds) { // if Flags.FollowSanta: drawing of Santa is done in
-                            // birds_draw()
-        Santa_draw(cr);
-    }
-
-    treesnow_draw(cr);
-
-    snow_draw(cr);
-
-end:
+    // Draw app window outline.
     if (Flags.Outline) {
         rectangle_draw(cr);
     }
 
     cairo_restore(cr);
-
     XFlush(mGlobal.display);
 }
 
@@ -1365,22 +1346,16 @@ void mybindtestdomain() {
     // translation for a text that is known to exist in the ui and should be
     // translated to something different.
 
-    char *startlocale;
-    (void)startlocale;
+    char* startlocale;
+    (void) startlocale;
 
-    char *r = setlocale(LC_ALL, "");
-    if (r) {
-        startlocale = strdup(r);
-    } else {
-        startlocale = NULL;
-    }
+    char* resultLocale = setlocale(LC_ALL, "");
+    startlocale = strdup(resultLocale ? resultLocale : NULL);
 
-    // if (startlocale == NULL)
-    //   startlocale = strdup("en_US.UTF-8");
     textdomain(TEXTDOMAIN);
     bindtextdomain(TEXTDOMAIN, LOCALEDIR);
 
-    char *locpath = getenv("LOCPATH");
+    char* locpath = getenv("LOCPATH");
     if (locpath) {
         char *initial_textdomain = strdup(bindtextdomain(TEXTDOMAIN, NULL));
         char *mylocpath = strdup(locpath);
@@ -1471,3 +1446,4 @@ void setAppBelowAllWindows() {
     doLowerWindow(mGlobal.mPlasmaWindowTitle);
     logAllWindowsStackedTopToBottom();
 }
+

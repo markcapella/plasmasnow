@@ -32,11 +32,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define NOTACTIVE (!WorkspaceActive())
 
-static int
-    NStars; // is copied from Flags.NStars in init_stars. We cannot have that
-//                               // NStars is changed outside init_stars
+// is copied from Flags.NStars in init_stars. We cannot have that
+// NStars is changed outside init_stars
+static int NStars;
+
 static StarCoordinate *Stars = NULL;
 static char *StarColor[STARANIMATIONS] = {
     (char *)"gold", (char *)"gold1", (char *)"gold4", (char *)"orange"};
@@ -162,7 +162,7 @@ int do_ustars() {
     if (Flags.Done) {
         return FALSE;
     }
-    if (NOTACTIVE) {
+    if (!WorkspaceActive()) {
         return TRUE;
     }
     int i;

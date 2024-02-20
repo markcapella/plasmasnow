@@ -72,7 +72,6 @@ void endQPickerDialog();
  * Module consts.
  */
 #define DEFAULTTREETYPE 2
-#define NOTACTIVE (!WorkspaceActive())
 
 static int NTrees = 0;
 static int TreeRead = 0;

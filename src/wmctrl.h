@@ -21,9 +21,15 @@
 */
 #pragma once
 
-#include "plasmasnow.h"
+#include <stdbool.h>
+
 #include <X11/Xlib.h>
 
+#include "plasmasnow.h"
+
+/***********************************************************
+ * Module Method stubs.
+ */
 extern long int getCurrentWorkspace();
 long int getWindowWorkspace(Window window);
 
@@ -37,8 +43,9 @@ extern void doLowerWindow(char* argString);
 Window getWindowMatchName(char* name);
 unsigned long getX11StackedWindowsList(Window** wins);
 
+extern void logWindow(Window);
 extern void logAllWindowsStackedTopToBottom();
-extern void getWinInfoList();
+extern void ensureWinInfoList();
 
 unsigned long getRootWindowProperty(Atom prop, Window **wins);
 extern void getX11WindowsList(WinInfo** winInfolist, int *listCount);
@@ -46,10 +53,11 @@ extern void getX11WindowsList(WinInfo** winInfolist, int *listCount);
 void getRawWindowsList(WinInfo** winInfolist, int *listCount);
 void getFinishedWindowsList(WinInfo** winInfolist, int *listCount);
 
-Bool isWindow_Hidden(Window window, int windowMapState);
-Bool isNetWM_Hidden(Window window);
-Bool isWM_Hidden(Window window);
+bool isWindow_Hidden(Window window, int windowMapState);
+extern bool is_NET_WM_STATE_Hidden(Window window);
+extern bool is_WM_STATE_Hidden(Window window);
 
-Bool isDesktop_Visible();
-Bool isWindow_Sticky(long workSpace, WinInfo*);
-Bool isWindow_Dock(WinInfo*);
+bool isDesktop_Visible();
+
+bool isWindow_Sticky(long workSpace, WinInfo*);
+bool isWindow_Dock(WinInfo*);
