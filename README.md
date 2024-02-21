@@ -1,53 +1,61 @@
 
-# plasmasnow
+# plasmaSnow
 
 !['plasmasnow'](https://github.com/markcapella/plasmasnow/blob/main/assets/images/screenshot.png)
 
+&nbsp;
 
-## Description
+## Description.
 
-       Ultimate fork of XSNOW, with graphics and UI upgrade,
-    including a QT screen color picker that works on Plasma,
-    dual snow colors, & HUGE bug fixes for modern desktops !
+Ultimate fork of XSNOW, with graphics and UI upgrade, including
+a QT screen color picker that works on Plasma, dual snow colors,
+& HUGE bug fixes for modern desktops !
 
-    Desktop Sessions supported: Plasma, Xfce, Ubuntu, Gnome.
+* Desktop Sessions supported: Plasma, Xfce, Ubuntu, Gnome.
 
+* Mark Capella derived plasmasnow from
+     Willem Vermin's xSnow 3.7.5.
 
-    Mark Capella derived plasmasnow from
-        Willem Vermin's xSnow 3.7.5.
+* xSnow 3.7.5 is derived from
+     Rick Jansen's xsnow-1.42.
+  
+&nbsp;
 
-    xSnow 3.7.5 is derived from
-        Rick Jansen's xsnow-1.42.
+## Installation.
 
+### Clone plasmasnow working source folder.
 
-## Installation
+    git clone https://github.com/markcapella/plasmasnow
 
-###     CD into source repo.
+### Change into working source folder.
 
-    ./configure
-    make
+    cd plasmasnow
+&nbsp;
 
-    sudo make install
-    sudo make uninstall
+## Basic development.
+* ./configure
+* make
+* sudo make install
+* sudo make uninstall
+* make clean
+&nbsp;
 
-    make clean
+### Tl;Dr
+       ./configure && make && sudo make install
 
+&nbsp;
 
-## Usage
+## Usage.
 
-###     GUI Desktop:
+### GUI Desktop.
+* Click the plasmasnow desktop icon that's added to your systems menu under "Games".
 
-    Click the plasmasnow desktop icon that's added to your systems menu
-    under "Games".
+### Command Line.
+       plasmasnow
+&nbsp;
 
-
-###     Command Line provides:
-
-    plasmasnow
-
-
-## Acknowledgements
+## Acknowledgements.
 
 ### markcapella@twcny.rr.com Rocks !
 
-    Yeah I do.
+#### Yeah I do.
