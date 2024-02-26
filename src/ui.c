@@ -190,7 +190,6 @@ static void handleFileChooserPreview(
     GtkFileChooser *file_chooser, gpointer data);
 static void setLabelText(GtkLabel *label, const gchar *str);
 
-extern void getWinInfoList();
 extern void logAllWindowsStackedTopToBottom();
 
 extern void doRaiseWindow(char* argString);

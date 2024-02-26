@@ -18,29 +18,33 @@
 #-# You should have received a copy of the GNU General Public License
 #-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-# 
- *
- */
+*/
 #pragma once
 
-#include "plasmasnow.h"
-#include <X11/Intrinsic.h>
-#include <X11/Xlib.h>
-#include <gtk/gtk.h>
 #include <pthread.h>
 #include <semaphore.h>
 #include <stdlib.h>
+
+#include <X11/Intrinsic.h>
+#include <X11/Xlib.h>
+
+#include <gtk/gtk.h>
+
+#include "plasmasnow.h"
 
 
 // Semaphore helpers.
 extern void initFallenSnowSemaphores();
 
+// Swap semaphores.
 int lockFallenSnowSwapSemaphore();
 int unlockFallenSnowSwapSemaphore();
 
+// Base semaphores.
 extern int lockFallenSnowBaseSemaphore();
-extern int unlockFallenSnowBaseSemaphore();
 extern int softLockFallenSnowBaseSemaphore(
     int maxSoftTries, int* tryCount);
+extern int unlockFallenSnowBaseSemaphore();
 
 #ifndef __GNUC__
     #define lockFallenSnowSemaphore() \
@@ -51,62 +55,71 @@ extern int softLockFallenSnowBaseSemaphore(
         softLockFallenSnowBaseSemaphore(maxSoftTries,tryCount)
 #else
     #define lockFallenSnowSemaphore() __extension__({ \
-            int retval = lockFallenSnowBaseSemaphore(); \
-            retval; })
+        int retval = lockFallenSnowBaseSemaphore(); \
+        retval; })
     #define unlockFallenSnowSemaphore() __extension__({ \
-            int retval = unlockFallenSnowBaseSemaphore(); \
-            retval; })
+        int retval = unlockFallenSnowBaseSemaphore(); \
+        retval; })
     #define softLockFallenSnowSemaphore( \
-                maxSoftTries,tryCount) __extension__({ \
-            int retval = softLockFallenSnowBaseSemaphore( \
-                maxSoftTries,tryCount); \
-            retval; })
+        maxSoftTries,tryCount) __extension__({ \
+        int retval = softLockFallenSnowBaseSemaphore( \
+            maxSoftTries,tryCount); \
+        retval; })
 #endif
 
-
-void *doExecFallenSnowThread();
-
+//
 extern void initFallenSnowModule();
-extern void doFallenSnowUISettingsUpdates();
-extern void initFallenSnowList();
 
+void* execFallenSnowThread();
+void updateAllFallenSnowOnThread();
+
+extern void doFallenSnowUserSettingUpdates();
 extern void setMaxScreenSnowDepth();
 extern void setMaxScreenSnowDepthWithLock();
-extern int isFallenSnowOnVisibleWorkspace(FallenSnow *fsnow);
 
-extern void eraseFallenSnowOnWindow(Window id);
-extern void eraseFallenSnowOnDisplay(FallenSnow *fsnow,
-    int x, int w);
-void eraseFallenSnowAtPixel(FallenSnow *fsnow, int x);
+extern int canSnowCollectOnWindowOrScreenBottom(FallenSnow*);
+extern int isFallenSnowOnVisibleWorkspace(FallenSnow*);
 
-extern FallenSnow *findFallenSnowListItem(
-    FallenSnow *first, Window id);
-
-extern void fallensnow_draw(cairo_t *cr);
-extern void drawFallenSnowListItem(FallenSnow *fsnow);
-void swapFallenSnowListItemSurfaces();
-
-extern int canSnowCollectOnWindowOrScreenBottom(
-    FallenSnow *fsnow);
-
-extern void updateFallenSnowWithWind(FallenSnow *fsnow,
-    int w, int h);
+extern void updateFallenSnowWithWind(FallenSnow*, int w, int h);
+extern void updateFallenSnowPartial(FallenSnow*, int x, int w);
 extern void updateFallenSnowAtBottom();
-extern void updateFallenSnowPartial(FallenSnow *fsnow,
-    int x, int w);
 
-extern void generateFallenSnowFlakes(FallenSnow *fsnow,
+extern void generateFallenSnowFlakes(FallenSnow*,
     int x, int w, float vy);
 
-int PopFallenSnow(FallenSnow **list);
-extern void PushFallenSnow(FallenSnow **first, WinInfo *win,
+// Desh method helpers.
+void CreateDesh(FallenSnow*);
+int do_change_deshes();
+int do_adjust_deshes();
+
+//
+void createFallenSnowDisplayArea(FallenSnow*);
+extern void cairoDrawAllFallenSnowItems(cairo_t*);
+void eraseFallenSnowAtPixel(FallenSnow*, int x);
+
+extern void eraseFallenSnowOnDisplay(FallenSnow*, int x, int w);
+extern void freeFallenSnowItemMemory(FallenSnow*);
+
+// FallenSnow Stack Helpers.
+extern void initFallenSnowListWithDesktop();
+
+extern void pushFallenSnowItem(FallenSnow**, WinInfo*,
     int x, int y, int w, int h);
+void popFallenSnowItem(FallenSnow**);
 
-void CreateDesh(FallenSnow *p);
-int do_change_deshes(void *dummy);
-int do_adjust_deshes(void *dummy);
+extern FallenSnow* findFallenSnowItemByWindow(FallenSnow*, Window);
+extern void drawFallenSnowItem(FallenSnow*);
 
-void createFallenSnowDisplayArea(FallenSnow *fsnow);
-extern void freeFallenSnowDisplayArea(FallenSnow *fallen);
-extern int removeFallenSnowListItem(FallenSnow **list, Window id);
-extern void logAllFallenSnowDisplayAreas(FallenSnow *list);
+void swapFallenSnowListItemSurfaces();
+
+extern void eraseFallenSnowListItem(Window);
+extern int removeFallenSnowListItem(FallenSnow**, Window);
+
+void removeAllFallenSnowWindows();
+void removeFallenSnowFromWindow(Window);
+
+extern void updateFallenSnowRegionsWithLock(void);
+extern void updateFallenSnowRegions(void);
+
+// Debug support.
+extern void logAllFallenSnowDisplayAreas(FallenSnow*);

@@ -48,10 +48,10 @@ void blowoff_draw() {
     // nothing to draw here
 }
 
-int BlowOff() {
-    int r = 0.04 * Flags.BlowOffFactor * drand48();
-    P("Blowoff: %d\n", r);
-    return r;
+// Get a random number up to blowOff factor
+// for each blowoff event.
+int getNumberOfFlakesToBlowoff() {
+    return 0.04 * Flags.BlowOffFactor * drand48();
 }
 
 // determine if fallensnow should be handled for fsnow

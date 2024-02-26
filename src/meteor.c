@@ -36,7 +36,7 @@
 #include <stdlib.h>
 
 /***********************************************************
- * Externally provided to this Module Method stubs.
+ * Externally provided to this Module.
  */
 
 /** *********************************************************************

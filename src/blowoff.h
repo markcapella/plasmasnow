@@ -24,4 +24,5 @@
 extern void blowoff_init(void);
 extern void blowoff_draw(void);
 extern void blowoff_ui(void);
-extern int BlowOff(void);
+
+extern int getNumberOfFlakesToBlowoff(void);

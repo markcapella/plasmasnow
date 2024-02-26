@@ -18,91 +18,79 @@
 #-# You should have received a copy of the GNU General Public License
 #-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-# 
- *
- */
-
-// Change to 1 for better analysis
-#define dosync 0 // synchronise X-server.
-
-#include <pthread.h>
-
-
+*/
 #ifdef HAVE_CONFIG_H
-#include <config.h>
+    #include <config.h>
 #endif
 
-#include "mygettext.h"
-
-#include <X11/Intrinsic.h>
-#include <X11/extensions/Xdbe.h>
-#include <X11/extensions/Xinerama.h>
-#include <X11/extensions/Xfixes.h>
-#include <X11/cursorfont.h>
-
-#include <cairo-xlib.h>
-
-#include <gsl/gsl_version.h>
-#include <gtk/gtk.h>
-
+// Std C Lib headers.
 #include <ctype.h>
-#include <math.h>
 #include <fcntl.h>
+#include <math.h>
+#include <pthread.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 
-#include "xdo.h"
-#include "vroot.h"
-#include "selfrep.h"
+// X11 headers.
+#include <X11/Intrinsic.h>
+#include <X11/extensions/Xdbe.h>
+#include <X11/extensions/Xinerama.h>
+#include <X11/extensions/Xfixes.h>
+#include <X11/cursorfont.h>
 
+// Other library headers.
+#include <gtk/gtk.h>
+#include <gsl/gsl_version.h>
+#include <cairo-xlib.h>
+
+// Plasmasnow headers.
 #include "plasmasnow.h"
-#include "version.h"
+
+#include "aurora.h"
+#include "birds.h"
+#include "blowoff.h"
+#include "clocks.h"
 #include "debug.h"
 #include "docs.h"
-
-#include "ui.h"
-#include "flags.h"
-
-#include "utils.h"
-#include "mainstub.h"
-#include "windows.h"
-#include "wmctrl.h"
-#include "transwindow.h"
-
-#include "safe_malloc.h"
-#include "loadmeasure.h"
 #include "dsimple.h"
-
-#include "clocks.h"
-
-#include "snow.h"
-#include "wind.h"
-#include "blowoff.h"
 #include "fallensnow.h"
-#include "treesnow.h"
-
-#include "Santa.h"
-#include "scenery.h"
-#include "birds.h"
-
-#include "stars.h"
+#include "flags.h"
+#include "loadmeasure.h"
+#include "mainstub.h"
 #include "meteor.h"
 #include "moon.h"
-#include "aurora.h"
+#include "mygettext.h"
+#include "safe_malloc.h"
+#include "Santa.h"
+#include "scenery.h"
+#include "selfrep.h"
+#include "snow.h"
+#include "stars.h"
+#include "transwindow.h"
+#include "treesnow.h"
+#include "wmctrl.h"
+#include "version.h"
+#include "wind.h"
+#include "windows.h"
+#include "ui.h"
+#include "utils.h"
+#include "vroot.h"
+#include "xdo.h"
 
 
 /***********************************************************
- * Externally provided to this Module Method stubs.
+ * Externally provided to this Module.
  */
+
+// Windows:
 void setAppBelowAllWindows();
 void setAppAboveAllWindows();
 
-// Windows:
 Window getActiveX11Window();
 Window getActiveAppWindow();
-
 
 void onCursorChange(XEvent*);
 void onAppWindowChange(Window);
@@ -120,6 +108,10 @@ void onWindowDestroyed(XEvent*);
 
 bool isWindowBeingDragged();
 
+// Snow:
+// Flake color helper methods.
+void setGlobalFlakeColor(GdkRGBA);
+GdkRGBA getRGBFromString(char* colorString);
 
 
 /***********************************************************
@@ -172,30 +164,10 @@ void uninitQPickerDialog();
  ** Module globals and consts.
  **/
 
-#define reinterpret_cast(TO, VAR) \
-({                                \
-    union                         \
-    {                             \
-        __typeof__((VAR)) source; \
-        TO dest;                  \
-    } u = { .source = (VAR) };    \
-    (TO)u.dest;                   \
-})
-
-#ifdef DEBUG
-#undef DEBUG
-#endif
-
-#define BMETHOD XdbeBackground
+// Change to 1 for better analysis.
+#define DO_SYNCH_DEBUG 0
 
 struct _mGlobal mGlobal;
-
-char Copyright[] =
-    "\nplasmasnow\nCopyright 2023 Mark Capella and "
-    "1984,1988,1990,1993-1995,2000-2001 by Rick Jansen, all "
-    "rights reserved, 2019,2020 also by Willem Vermin\n";
-
-
 static char **Argv;
 static int Argc;
 
@@ -402,6 +374,7 @@ int startApplication(int argc, char *argv[]) {
     }
 
     mGlobal.display = XOpenDisplay(Flags.DisplayName);
+
     mGlobal.xdo = xdo_new_with_opened_display(mGlobal.display, NULL, 0);
     if (mGlobal.xdo == NULL) {
         I("xdo problems\n");
@@ -409,8 +382,7 @@ int startApplication(int argc, char *argv[]) {
     }
     mGlobal.xdo->debug = 0;
 
-    XSynchronize(mGlobal.display, dosync);
-
+    XSynchronize(mGlobal.display, DO_SYNCH_DEBUG);
     XSetErrorHandler(handleX11ErrorEvent);
 
     mGlobal.Screen = DefaultScreen(mGlobal.display);
@@ -418,6 +390,7 @@ int startApplication(int argc, char *argv[]) {
     // Default any snow colors,
     // a user may have set in .plasmasnowrc.
     int wasThereAnInvalidColor = false;
+
     if (!ValidColor(Flags.SnowColor)) {
         Flags.SnowColor = strdup(DefaultFlags.SnowColor);
         wasThereAnInvalidColor = true;
@@ -438,6 +411,8 @@ int startApplication(int argc, char *argv[]) {
         WriteFlags();
     }
 
+    setGlobalFlakeColor(getRGBFromString(Flags.SnowColor));
+
     if (mGlobal.display == NULL) {
         fprintf(stdout, "plasmasnow: cannot connect to X server.\n"),
         exit(1);
@@ -449,17 +424,20 @@ int startApplication(int argc, char *argv[]) {
         return 1;
     }
 
-    // Init all GLobal Flags.
+    // Init all Global Flags.
     #define DOIT_I(x, d, v) OldFlags.x = Flags.x;
     #define DOIT_L(x, d, v) DOIT_I(x, d, v);
     #define DOIT_S(x, d, v) OldFlags.x = strdup(Flags.x);
+
         DOITALL;
     #include "undefall.inc"
+
     OldFlags.FullScreen = !Flags.FullScreen;
 
     // Request all interesting X11 events.
     const Window eventWindow = (mGlobal.hasDestopWindow) ?
         mGlobal.Rootwindow : mGlobal.SnowWin;
+
     XSelectInput(mGlobal.display, eventWindow,
         StructureNotifyMask | SubstructureNotifyMask |
         FocusChangeMask);
@@ -504,17 +482,13 @@ int startApplication(int argc, char *argv[]) {
         onTimerEventDisplayChanged);
     addMethodToMainloop(PRIORITY_DEFAULT, CONFIGURE_WINDOW_EVENT_TIME,
         handlePendingX11Events);
-    // addMethodToMainloop(PRIORITY_DEFAULT, time_testing, logWindowAndWorkspaces);
-
     addMethodToMainloop(PRIORITY_DEFAULT, time_display_dimensions,
         handleDisplayConfigurationChange);
-
-    addMethodToMainloop(PRIORITY_HIGH,
-        TIME_BETWEEEN_UI_SETTINGS_UPDATES, doAllUISettingsUpdates);
-
+    addMethodToMainloop(PRIORITY_HIGH, TIME_BETWEEEN_UI_SETTINGS_UPDATES,
+        doAllUISettingsUpdates);
     if (Flags.StopAfter > 0) {
-        addMethodToMainloop(PRIORITY_DEFAULT,
-            Flags.StopAfter, do_stopafter);
+        addMethodToMainloop(PRIORITY_DEFAULT, Flags.StopAfter,
+            do_stopafter);
     }
 
     HandleCpuFactor();
@@ -806,7 +780,7 @@ void handleX11CairoDisplayChange() {
             XdbeDeallocateBackBufferName(mGlobal.display, backBuf);
         }
         backBuf = XdbeAllocateBackBufferName(mGlobal.display,
-            mGlobal.SnowWin, BMETHOD);
+            mGlobal.SnowWin, XdbeBackground);
 
         if (mCairoSurface) {
             cairo_surface_destroy(mCairoSurface);
@@ -873,21 +847,19 @@ void setTransparentWindowStickyState(int isSticky) {
 }
 
 /** *********************************************************************
- **
+ ** TODO:
  **/
 void DoAllWorkspaces() {
     if (Flags.AllWorkspaces) {
-        P("stick\n");
         setTransparentWindowStickyState(1);
     } else {
-        P("unstick\n");
         setTransparentWindowStickyState(0);
-        if (Flags.Screen >= 0) {
-            mGlobal.ChosenWorkSpace = mGlobal.VisWorkSpaces[Flags.Screen];
-        } else {
-            mGlobal.ChosenWorkSpace = mGlobal.VisWorkSpaces[0];
-        }
+
+        mGlobal.ChosenWorkSpace = (Flags.Screen >= 0) ?
+            mGlobal.VisWorkSpaces[Flags.Screen] :
+            mGlobal.VisWorkSpaces[0];
     }
+
     ui_set_sticky(Flags.AllWorkspaces);
 }
 
@@ -915,7 +887,7 @@ int doAllUISettingsUpdates() {
     updateMeteorUserSettings();
     wind_ui();
     stars_ui();
-    doFallenSnowUISettingsUpdates();
+    doFallenSnowUserSettingUpdates();
     blowoff_ui();
     treesnow_ui();
     moon_ui();
@@ -1069,7 +1041,7 @@ int handlePendingX11Events() {
 void RestartDisplay() {
     fflush(stdout);
 
-    initFallenSnowList();
+    initFallenSnowListWithDesktop();
     init_stars();
     EraseTrees();
 
@@ -1157,7 +1129,7 @@ void drawCairoWindowInternal(cairo_t *cr) {
     if (mGlobal.useDoubleBuffers) {
         XdbeSwapInfo swapInfo;
         swapInfo.swap_window = mGlobal.SnowWin;
-        swapInfo.swap_action = BMETHOD;
+        swapInfo.swap_action = XdbeBackground;
         XdbeSwapBuffers(mGlobal.display, &swapInfo, 1);
 
     } else if (!mGlobal.isDoubleBuffered) {
@@ -1190,7 +1162,7 @@ void drawCairoWindowInternal(cairo_t *cr) {
         drawMeteorFrame(cr);
         scenery_draw(cr);
         birds_draw(cr);
-        fallensnow_draw(cr);
+        cairoDrawAllFallenSnowItems(cr);
         if (!Flags.ShowBirds || !Flags.FollowSanta) {
             // If Flags.FollowSanta, drawing of Santa
             // is done in Birds module.

@@ -32,3 +32,8 @@ extern void snow_ui(void);
 extern void fluffify(SnowFlake *flake, float t);
 extern void printflake(SnowFlake *flake);
 extern int snow_erase(int force);
+
+void setGlobalFlakeColor(GdkRGBA);
+char* getNextFlakeColorAsString();
+extern GdkRGBA getNextFlakeColorAsRGB();
+extern GdkRGBA getRGBFromString(char* colorString);

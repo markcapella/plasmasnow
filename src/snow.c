@@ -19,7 +19,18 @@
 #-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-# 
 */
-#include "snow.h"
+
+#include <assert.h>
+#include <math.h>
+#include <pthread.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <gtk/gtk.h>
+
+#include "plasmasnow.h"
+
 #include "blowoff.h"
 #include "clocks.h"
 #include "debug.h"
@@ -30,58 +41,19 @@
 #include "pixmaps.h"
 #include "safe_malloc.h"
 #include "scenery.h"
+#include "snow.h"
 #include "treesnow.h"
 #include "ui.h"
 #include "utils.h"
 #include "wind.h"
 #include "windows.h"
-#include "plasmasnow.h"
-#include <assert.h>
-#include <gtk/gtk.h>
-#include <math.h>
-#include <pthread.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
 
-#define NOTACTIVE (!WorkspaceActive() || Flags.NoSnowFlakes)
 
-#define EXTRA_FLAKES 300
+/***********************************************************
+ * Externally provided to this Module.
+ */
 
-static float FlakesPerSecond;
-static int KillFlakes =
-    0; // 1: signal to flakes to kill themselves, and do not generate flakes
-static float SnowSpeedFactor;
-
-static SnowMap *snowPix;
-static char ***plasmasnow_xpm = NULL;
-static int NFlakeTypesVintage;
-static int MaxFlakeTypes;
-
-static int do_genflakes();
-
-static void InitFlake(SnowFlake *flake);
-static void InitFlakesPerSecond(void);
-static void InitSnowColor(void);
-static void InitSnowSpeedFactor(void);
-
-static void init_snow_pix(void);
-static void EraseSnowFlake1(SnowFlake *flake);
-static void DelFlake(SnowFlake *flake);
-static void genxpmflake(char ***xpm, int w, int h);
-static void add_random_flakes(int n);
-static void SetSnowSize(void);
-static int do_SwitchFlakes();
-
-void checkIfFlakeCollectsInFallenSnow(SnowFlake* flake,
-    int xPosition, int yPosition, int flakeWidth);
-static int do_UpdateSnowFlake(SnowFlake* flake);
-
-static const float LocalScale = 0.8;
-
-static int mFlakeColorToggle = 0;
-extern GdkRGBA mFlakeColor;
-
+// Color Picker methods.
 bool isQPickerActive();
 char* getQPickerCallerName();
 bool isQPickerVisible();
@@ -92,6 +64,64 @@ int getQPickerBlue();
 int getQPickerGreen();
 
 void endQPickerDialog();
+
+
+/***********************************************************
+ * Module Method stubs.
+ */
+
+static int do_genflakes();
+
+static void InitFlake(SnowFlake *flake);
+static void InitFlakesPerSecond(void);
+static void InitSnowColor(void);
+static void InitSnowSpeedFactor(void);
+
+static void init_snow_pix(void);
+
+static void genxpmflake(char ***xpm, int w, int h);
+static void add_random_flakes(int n);
+static int  do_SwitchFlakes();
+
+static void DelFlake(SnowFlake *flake);
+static void EraseSnowFlake1(SnowFlake *flake);
+
+static void SetSnowSize(void);
+
+static void checkIfFlakeCollectsInFallenSnow(SnowFlake* flake,
+    int xPosition, int yPosition, int flakeWidth);
+
+static int do_UpdateSnowFlake(SnowFlake* flake);
+
+
+/** *********************************************************************
+ ** Module globals and consts.
+ **/
+
+#define NOTACTIVE (!WorkspaceActive() || Flags.NoSnowFlakes)
+#define EXTRA_FLAKES 300
+
+static const float LocalScale = 0.8;
+
+static float FlakesPerSecond;
+
+// 1: signal to flakes to kill themselves,
+// & do not generate flakes.
+static int KillFlakes = 0;
+
+static float SnowSpeedFactor;
+
+static SnowMap *snowPix;
+
+static char ***plasmasnow_xpm = NULL;
+
+static int NFlakeTypesVintage;
+static int MaxFlakeTypes;
+
+// Flake color helper methods.
+GdkRGBA mFlakeColor;
+int mFlakeColorToggle = 0;
+
 
 /** *********************************************************************
  ** Init.
@@ -213,22 +243,17 @@ void init_snow_pix() {
         rp->height = h;
 
         // Set color, and switch for next.
-        char **x;
+        char** data;
         int lines;
-        if (mFlakeColorToggle == 1) {
-            gdk_rgba_parse(&mFlakeColor, Flags.SnowColor);
-            xpm_set_color(plasmasnow_xpm[flake], &x, &lines, Flags.SnowColor);
-        } else {
-            gdk_rgba_parse(&mFlakeColor, Flags.SnowColor2);
-            xpm_set_color(plasmasnow_xpm[flake], &x, &lines, Flags.SnowColor2);
-        }
-        mFlakeColorToggle++;
-        if (mFlakeColorToggle == 2) {
-            mFlakeColorToggle = 0;
-        }
+        xpm_set_color(plasmasnow_xpm[flake],
+            &data, &lines, getNextFlakeColorAsString());
 
-        GdkPixbuf *pixbuf = gdk_pixbuf_new_from_xpm_data((const char **) x);
+        // Create pixbuf.
+        GdkPixbuf *pixbuf = gdk_pixbuf_new_from_xpm_data(
+            (const char**) data);
+        xpm_destroy(data);
 
+        // Guard W & H, then create.
         if (w < 1) {
             w = 1;
         }
@@ -239,23 +264,68 @@ void init_snow_pix() {
             h = 2;
         }
 
-        GdkPixbuf *pixbufscaled =
-            gdk_pixbuf_scale_simple(pixbuf, w, h, GDK_INTERP_HYPER);
-
-        xpm_destroy(x);
-
+        // Destroy & recreate surface.
+        GdkPixbuf *pixbufscaled = gdk_pixbuf_scale_simple(
+            pixbuf, w, h, GDK_INTERP_HYPER);
         if (rp->surface) {
             cairo_surface_destroy(rp->surface);
         }
-
         rp->surface = gdk_cairo_surface_create_from_pixbuf(
             pixbufscaled, 0, NULL);
-
-        g_clear_object(&pixbuf);
         g_clear_object(&pixbufscaled);
+
+        // Clear pixbuf.
+        g_clear_object(&pixbuf);
     }
 
     mGlobal.fluffpix = &snowPix[MaxFlakeTypes - 1];
+}
+
+/** *********************************************************************
+ ** This method is a helper for FlakeColor.
+ **/
+void setGlobalFlakeColor(GdkRGBA flakeColor) {
+    mFlakeColor = flakeColor;
+}
+
+GdkRGBA getNextFlakeColorAsRGB() {
+    // Toggle color switch.
+    mFlakeColorToggle = (mFlakeColorToggle == 0) ? 1 : 0;
+
+    // Update color.
+    GdkRGBA nextColor;
+    if (mFlakeColorToggle == 0) {
+        gdk_rgba_parse(&nextColor, Flags.SnowColor);
+    } else {
+        gdk_rgba_parse(&nextColor, Flags.SnowColor2);
+    }
+    setGlobalFlakeColor(nextColor);
+
+    return nextColor;
+}
+
+extern GdkRGBA getRGBFromString(char* colorString) {
+    GdkRGBA result;
+    gdk_rgba_parse(&result, colorString);
+    return result;
+}
+
+char* getNextFlakeColorAsString() {
+    // Toggle color switch.
+    mFlakeColorToggle = (mFlakeColorToggle == 0) ? 1 : 0;
+
+    // Update color.
+    GdkRGBA nextColor;
+    if (mFlakeColorToggle == 0) {
+        gdk_rgba_parse(&nextColor, Flags.SnowColor);
+    } else {
+        gdk_rgba_parse(&nextColor, Flags.SnowColor2);
+    }
+    setGlobalFlakeColor(nextColor);
+
+    // Return result as string.
+    return (mFlakeColorToggle == 0) ?
+        Flags.SnowColor : Flags.SnowColor2;
 }
 
 /** *********************************************************************

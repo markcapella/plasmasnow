@@ -22,6 +22,7 @@
 #pragma once
 
 #include <gtk/gtk.h>
+
 #define AURORA_POINTS 8                // shape
 #define AURORA_H 6                     // height
 #define AURORA_A 5                     // alpha

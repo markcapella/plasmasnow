@@ -81,12 +81,10 @@ int do_snow_on_trees() {
 // blow snow off trees
 void ConvertOnTreeToFlakes() {
     P("ConvertOnTreeToFlakes %d\n", mGlobal.OnTrees);
-    int i;
-    for (i = 0; i < mGlobal.OnTrees; i++) {
-        int j;
-        for (j = 0; j < 2; j++) {
-            int k, kmax = BlowOff();
-            for (k = 0; k < kmax; k++) {
+    for (int i = 0; i < mGlobal.OnTrees; i++) {
+        for (int j = 0; j < 2; j++) {
+            int numberOfFlakesToMake = getNumberOfFlakesToBlowoff();
+            for (int k = 0; k < numberOfFlakesToMake; k++) {
                 SnowFlake *flake = MakeFlake(-1);
                 flake->rx = mGlobal.SnowOnTrees[i].x;
                 flake->ry = mGlobal.SnowOnTrees[i].y - 5 * j;
@@ -96,6 +94,7 @@ void ConvertOnTreeToFlakes() {
             }
         }
     }
+
     mGlobal.OnTrees = 0;
     reinit_treesnow_region();
 }

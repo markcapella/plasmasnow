@@ -99,12 +99,13 @@
 #define time_usanta 0.04   // time between update of santa position
 #define time_ustar 2.00    // time between updating stars
 #define time_wind 0.10     // time between starting or ending wind
-#define time_wupdate 0.20  // time between getting windows information
+#define time_wupdate 0.02  // time between getting windows information
 #define time_change_bottom 300.0 // time between changing desired heights
 
 // time between adjusting height of bottom snow
 #define time_adjust_bottom (time_change_bottom / 20)
-#define TIME_BETWWEEN_FALLENSNOW_THREADS 0.20 // time between recompute fallen snow surfaces
+// time between recompute fallen snow surfaces
+#define TIME_BETWWEEN_FALLENSNOW_THREADS 0.20
 
 // time between updates of snowflakes positions etc
 #define time_snowflakes    (0.02 * mGlobal.cpufactor)
@@ -157,7 +158,7 @@ typedef struct _Snow {
 
 typedef struct _SnowMap {
         // Pixmap pixmap;
-        cairo_surface_t *surface;
+        cairo_surface_t* surface;
         unsigned int width BITS(16);
         unsigned int height BITS(16);
 } SnowMap;
@@ -194,7 +195,7 @@ typedef struct Treeinfo {
         int w; // width
         int h; // height
 
-        cairo_surface_t *surface;
+        cairo_surface_t* surface;
         float scale;
         unsigned int type BITS(8); // type (TreeType, -treetype)
         unsigned int rev BITS(1);  // reversed
@@ -250,22 +251,22 @@ typedef struct _WinInfo {
  * Global Fallensnow helper objects.
  */
 typedef struct _FallenSnow {
-        WinInfo winInfo; // winInfo.window == None @ bottom.
+        WinInfo winInfo;          // winInfo None == bottom.
+        struct _FallenSnow* next; // pointer to next item.
 
-        int x, y;                 // x, y bottom.
-        int w, h;                 // width, max height.
+        cairo_surface_t* surface;
+        cairo_surface_t* surface1;
+
+        short int x, y;           // X, Y array.
+        short int w, h;           // W, H array.
 
         int prevx, prevy;         // x, y of last draw.
         int prevw, prevh;         // w, h of last draw.
 
+        GdkRGBA* columnColor;     // Color array.
         short int* snowHeight;    // actual heights.
         short int* maxSnowHeight; // desired heights.
 
-        GdkRGBA* color;
-        cairo_surface_t* surface;
-        cairo_surface_t* surface1;
-
-        struct _FallenSnow* next; // pointer to next item
 } FallenSnow;
 
 

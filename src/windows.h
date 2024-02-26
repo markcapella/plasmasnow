@@ -31,9 +31,6 @@ extern int WorkspaceActive(void);
 extern void initDisplayDimensions();
 extern void updateDisplayDimensions(void);
 
-extern void updateFallenSnowRegions(void);
-extern void updateFallenSnowRegionsWithLock(void);
-
 extern void SetBackground(void);
 
 extern int getXineramaScreenInfo(Display *display,
