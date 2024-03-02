@@ -19,65 +19,105 @@
 #-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-# 
 */
-#include "stars.h"
-#include "debug.h"
-#include "flags.h"
-#include "pixmaps.h"
-#include "safe_malloc.h"
-#include "utils.h"
-#include "windows.h"
-#include <X11/Intrinsic.h>
-#include <gtk/gtk.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <X11/Intrinsic.h>
+#include <gtk/gtk.h>
 
-// is copied from Flags.NStars in init_stars. We cannot have that
-// NStars is changed outside init_stars
-static int NStars;
+#include "debug.h"
+#include "flags.h"
+#include "pixmaps.h"
+#include "safe_malloc.h"
+#include "stars.h"
+#include "utils.h"
+#include "windows.h"
 
-static StarCoordinate *Stars = NULL;
-static char *StarColor[STARANIMATIONS] = {
-    (char *)"gold", (char *)"gold1", (char *)"gold4", (char *)"orange"};
-static int do_ustars();
-static void set_star_surfaces(void);
 
-static const int StarSize = 9;
-static const float LocalScale = 0.8;
+/** *********************************************************************
+ ** Module globals and consts.
+ **/
 
-static cairo_surface_t *surfaces[STARANIMATIONS];
+#define STARANIMATIONS 4
 
-void stars_init() {
-    int i;
-    init_stars();
-    for (i = 0; i < STARANIMATIONS; i++) {
-        surfaces[i] = NULL;
+static const int STAR_SIZE = 9;
+static const float LOCAL_SCALE = 0.8;
+
+static int mNumberOfStars;
+
+static StarCoordinate* mStarCoordinates = NULL;
+
+static char* mStarColorArray[STARANIMATIONS] =
+    { (char*) "gold", (char*) "gold1",
+      (char*) "gold4", (char*) "orange"};
+
+static cairo_surface_t* starScreenSurfaces[STARANIMATIONS];
+
+
+/** *********************************************************************
+ ** This method initializes the Stars module.
+ **/
+void initStarsModule() {
+    initStarsModuleArrays();
+
+    // Clear and set starScreenSurfaces.
+    for (int i = 0; i < STARANIMATIONS; i++) {
+        starScreenSurfaces[i] = NULL;
     }
-    set_star_surfaces();
-    addMethodToMainloop(PRIORITY_DEFAULT, time_ustar, do_ustars);
+    initStarsModuleSurfaces();
+
+    addMethodToMainloop(PRIORITY_DEFAULT, time_ustar, updateStarsFrame);
 }
 
-void set_star_surfaces() {
-    int i;
-    for (i = 0; i < STARANIMATIONS; i++) {
-        float size =
-            LocalScale * mGlobal.WindowScale * 0.01 * Flags.Scale * StarSize;
+/** *********************************************************************
+ ** This method updates Stars module settings between
+ ** Erase and Draw cycles.
+ **/
+void initStarsModuleArrays() {
+    mNumberOfStars = Flags.NStars;
+
+    mStarCoordinates = (StarCoordinate*) realloc(mStarCoordinates,
+        (mNumberOfStars + 1) * sizeof(StarCoordinate));
+    REALLOC_CHECK(mStarCoordinates);
+
+    for (int i = 0; i < mNumberOfStars; i++) {
+        StarCoordinate *star = &mStarCoordinates[i];
+        star->x = randint(mGlobal.SnowWinWidth);
+        star->y = randint(mGlobal.SnowWinHeight / 4);
+        star->color = randint(STARANIMATIONS);
+    }
+}
+
+/** *********************************************************************
+ ** This method inits cairo surfaces.
+ **/
+void initStarsModuleSurfaces() {
+    for (int i = 0; i < STARANIMATIONS; i++) {
+        float size = LOCAL_SCALE * mGlobal.WindowScale *
+            0.01 * Flags.Scale * STAR_SIZE;
+
         size *= 0.2 * (1 + 4 * drand48());
         if (size < 1) {
             size = 1;
         }
-        if (surfaces[i]) {
-            cairo_surface_destroy(surfaces[i]);
+
+        // Release and recreate surfaces.
+        if (starScreenSurfaces[i]) {
+            cairo_surface_destroy(starScreenSurfaces[i]);
         }
-        surfaces[i] =
-            cairo_image_surface_create(CAIRO_FORMAT_ARGB32, size, size);
-        cairo_t *cr = cairo_create(surfaces[i]);
-        cairo_set_line_width(cr, 1.0 * size / StarSize);
+        starScreenSurfaces[i] = cairo_image_surface_create(
+            CAIRO_FORMAT_ARGB32, size, size);
+
+        cairo_t *cr = cairo_create(starScreenSurfaces[i]);
+        cairo_set_line_width(cr, 1.0 * size / STAR_SIZE);
+
         GdkRGBA color;
-        gdk_rgba_parse(&color, StarColor[i]);
-        cairo_set_source_rgba(
-            cr, color.red, color.green, color.blue, color.alpha);
+        gdk_rgba_parse(&color, mStarColorArray[i]);
+
+        cairo_set_source_rgba(cr, color.red,
+            color.green, color.blue, color.alpha);
+
         cairo_move_to(cr, 0, 0);
         cairo_line_to(cr, size, size);
         cairo_move_to(cr, 0, size);
@@ -92,85 +132,86 @@ void set_star_surfaces() {
     }
 }
 
-void init_stars() {
-    int i;
-    NStars = Flags.NStars;
-    P("initstars %d\n", NStars);
-    // Nstars+1: we do not allocate 0 bytes
-    Stars = (StarCoordinate *)realloc(Stars, (NStars + 1) * sizeof(StarCoordinate));
-    REALLOC_CHECK(Stars);
-    for (i = 0; i < NStars; i++) {
-        StarCoordinate *star = &Stars[i];
-        star->x = randint(mGlobal.SnowWinWidth);
-        star->y = randint(mGlobal.SnowWinHeight / 4);
-        star->color = randint(STARANIMATIONS);
-        P("stars_init %d %d %d\n", star->x, star->y, star->color);
-    }
-    // set_star_surfaces();
-}
-
-void stars_draw(cairo_t *cr) {
+/** *********************************************************************
+ ** This method erases a single Stars
+ ** frame from drawCairoWindowInternal().
+ **/
+void eraseStarsFrame() {
     if (!Flags.Stars) {
         return;
     }
-    int i;
-    cairo_save(cr);
-    cairo_set_line_width(cr, 1);
-    cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
-    for (i = 0; i < NStars; i++) {
-        P("stars_draw i: %d %d %d\n", i, NStars, counter++);
-        StarCoordinate *star = &Stars[i];
+
+    for (int i = 0; i < mNumberOfStars; i++) {
+        StarCoordinate *star = &mStarCoordinates[i];
         int x = star->x;
         int y = star->y;
-        int color = star->color;
-        cairo_set_source_surface(cr, surfaces[color], x, y);
-        my_cairo_paint_with_alpha(cr, ALPHA);
-    }
 
-    cairo_restore(cr);
-}
-
-void stars_erase() {
-    if (!Flags.Stars) {
-        return;
-    }
-    int i;
-    for (i = 0; i < NStars; i++) {
-        P("stars_erase i: %d %d %d\n", i, NStars, counter++);
-        StarCoordinate *star = &Stars[i];
-        int x = star->x;
-        int y = star->y;
-        sanelyCheckAndClearDisplayArea(mGlobal.display, mGlobal.SnowWin, x, y, StarSize, StarSize,
+        sanelyCheckAndClearDisplayArea(mGlobal.display,
+            mGlobal.SnowWin, x, y, STAR_SIZE, STAR_SIZE,
             mGlobal.xxposures);
     }
 }
 
-void stars_ui() {
-    UIDO(NStars, init_stars(); ClearScreen(););
-    UIDO(Stars, ClearScreen(););
-
-    static int prev = 100;
-    P("stars_ui %d\n", prev);
-    if (appScalesHaveChanged(&prev)) {
-        set_star_surfaces();
-        init_stars();
-        P("stars_ui changed\n");
-    }
-}
-
-int do_ustars() {
+/** *********************************************************************
+ ** This method updates Stars module between
+ ** Erase and Draw cycles.
+ **/
+int updateStarsFrame() {
     if (Flags.Done) {
         return FALSE;
     }
     if (!WorkspaceActive()) {
         return TRUE;
     }
-    int i;
-    for (i = 0; i < NStars; i++) {
+
+    for (int i = 0; i < mNumberOfStars; i++) {
         if (drand48() > 0.8) {
-            Stars[i].color = randint(STARANIMATIONS);
+            mStarCoordinates[i].color = randint(STARANIMATIONS);
         }
     }
+
     return TRUE;
-    // (void) d;
+}
+
+/** *********************************************************************
+ ** This method draws a single Stars
+ ** frame from drawCairoWindowInternal().
+ **/
+void drawStarsFrame(cairo_t *cr) {
+    if (!Flags.Stars) {
+        return;
+    }
+
+    cairo_save(cr);
+    cairo_set_line_width(cr, 1);
+    cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
+
+    for (int i = 0; i < mNumberOfStars; i++) {
+        StarCoordinate *star = &mStarCoordinates[i];
+
+        int x = star->x;
+        int y = star->y;
+        int color = star->color;
+        cairo_set_source_surface(cr,
+            starScreenSurfaces[color], x, y);
+
+        my_cairo_paint_with_alpha(cr, ALPHA);
+    }
+
+    cairo_restore(cr);
+}
+
+/** *********************************************************************
+ ** This method updates the Stars module with
+ ** refreshed user settings.
+ **/
+void updateStarsUserSettings() {
+    UIDO(NStars, initStarsModuleArrays(); ClearScreen(););
+    UIDO(Stars, ClearScreen(););
+
+    static int prev = 100;
+    if (appScalesHaveChanged(&prev)) {
+        initStarsModuleSurfaces();
+        initStarsModuleArrays();
+    }
 }

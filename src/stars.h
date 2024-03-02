@@ -23,10 +23,17 @@
 
 #include <gtk/gtk.h>
 
-#define STARANIMATIONS 4
 
-extern void init_stars(void);
-extern void stars_draw(cairo_t *cr);
-extern void stars_erase(void);
-extern void stars_init(void);
-extern void stars_ui(void);
+/***********************************************************
+ * Module Method stubs.
+ */
+
+void initStarsModule();
+void initStarsModuleArrays();
+void initStarsModuleSurfaces();
+
+int updateStarsFrame();
+void eraseStarsFrame();
+void drawStarsFrame(cairo_t *cr);
+
+void updateStarsUserSettings();

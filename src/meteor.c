@@ -19,31 +19,30 @@
 #-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-# 
 */
-
-#include "meteor.h"
-#include "clocks.h"
-#include "debug.h"
-#include "flags.h"
-#include "snow.h"
-#include "ui.h"
-#include "utils.h"
-#include "windows.h"
-#include "plasmasnow.h"
-#include <X11/Intrinsic.h>
-#include <gtk/gtk.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-/***********************************************************
- * Externally provided to this Module.
- */
+#include <X11/Intrinsic.h>
+#include <gtk/gtk.h>
+
+#include "clocks.h"
+#include "debug.h"
+#include "flags.h"
+#include "meteor.h"
+#include "plasmasnow.h"
+#include "snow.h"
+#include "ui.h"
+#include "utils.h"
+#include "windows.h"
+
 
 /** *********************************************************************
  ** Module globals and consts.
  **/
 
 #define NUMCOLORS 5
+
 static GdkRGBA colors[NUMCOLORS];
 
 static MeteorMap meteor;
@@ -51,7 +50,7 @@ static MeteorMap meteor;
 /** *********************************************************************
  ** This method initializes the Meteor moduile.
  **/
-void initMeteorModuleSettings() {
+void initMeteorModule() {
     meteor.x1 = 0;
     meteor.x2 = 0;
     meteor.y1 = 0;
@@ -70,15 +69,47 @@ void initMeteorModuleSettings() {
 }
 
 /** *********************************************************************
- ** This method updates the Meteor moduile on user setting changes.
+ ** This method erases a single Meteor
+ ** frame from Utils.ClearScreen().
  **/
-void updateMeteorUserSettings() {
-    UIDO(NoMeteors, );
-    UIDO(MeteorFrequency, );
+int eraseMeteorFrame() {
+    if (Flags.Done) {
+        return FALSE;
+    }
+
+    if (!meteor.active || !WorkspaceActive()) {
+        return TRUE;
+    }
+
+    if (!mGlobal.isDoubleBuffered) {
+        int x = meteor.x1;
+        int y = meteor.y1;
+        int w = meteor.x2 - x;
+        int h = meteor.y2 - y;
+        if (w < 0) {
+            x += w;
+            w = -w;
+        }
+        if (h < 0) {
+            y += h;
+            h = -h;
+        }
+        x -= 1;
+        y -= 1;
+        w += 2;
+        h += 2;
+
+        sanelyCheckAndClearDisplayArea(mGlobal.display,
+            mGlobal.SnowWin, x, y, w, h, mGlobal.xxposures);
+    }
+
+    meteor.active = 0;
+    return TRUE;
 }
 
 /** *********************************************************************
- ** This method ...
+ ** This method updates Meteor module between
+ ** Erase and Draw cycles.
  **/
 int updateMeteorFrame() {
     if (Flags.Done) {
@@ -114,7 +145,8 @@ int updateMeteorFrame() {
 }
 
 /** *********************************************************************
- ** This method ...
+ ** This method draws a single Meteor
+ ** frame from drawCairoWindowInternal().
  **/
 void drawMeteorFrame(cairo_t *cr) {
     if (!meteor.active) {
@@ -139,39 +171,10 @@ void drawMeteorFrame(cairo_t *cr) {
 }
 
 /** *********************************************************************
- ** This method ...
+ ** This method updates the Meteor module with
+ ** refreshed user settings.
  **/
-int eraseMeteorFrame() {
-    if (Flags.Done) {
-        return FALSE;
-    }
-
-    if (!meteor.active || !WorkspaceActive()) {
-        return TRUE;
-    }
-
-    if (!mGlobal.isDoubleBuffered) {
-        int x = meteor.x1;
-        int y = meteor.y1;
-        int w = meteor.x2 - x;
-        int h = meteor.y2 - y;
-        if (w < 0) {
-            x += w;
-            w = -w;
-        }
-        if (h < 0) {
-            y += h;
-            h = -h;
-        }
-        x -= 1;
-        y -= 1;
-        w += 2;
-        h += 2;
-
-        sanelyCheckAndClearDisplayArea( mGlobal.display,
-            mGlobal.SnowWin, x, y, w, h, mGlobal.xxposures);
-    }
-
-    meteor.active = 0;
-    return TRUE;
+void updateMeteorUserSettings() {
+    UIDO(NoMeteors, );
+    UIDO(MeteorFrequency, );
 }

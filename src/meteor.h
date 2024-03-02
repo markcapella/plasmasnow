@@ -23,13 +23,15 @@
 
 #include <gtk/gtk.h>
 
+
 /***********************************************************
  * Module Method stubs.
  */
 
-void initMeteorModuleSettings();
-void updateMeteorUserSettings();
+void initMeteorModule();
 
-int updateMeteorFrame();
 int eraseMeteorFrame();
+int updateMeteorFrame();
 void drawMeteorFrame(cairo_t*);
+
+void updateMeteorUserSettings();

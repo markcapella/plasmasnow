@@ -471,8 +471,8 @@ int startApplication(int argc, char *argv[]) {
 
     birds_init();
 
-    stars_init();
-    initMeteorModuleSettings();
+    initStarsModule();
+    initMeteorModule();
     aurora_init();
     moon_init();
 
@@ -886,7 +886,7 @@ int doAllUISettingsUpdates() {
 
     updateMeteorUserSettings();
     wind_ui();
-    stars_ui();
+    updateStarsUserSettings();
     doFallenSnowUserSettingUpdates();
     blowoff_ui();
     treesnow_ui();
@@ -1042,7 +1042,7 @@ void RestartDisplay() {
     fflush(stdout);
 
     initFallenSnowListWithDesktop();
-    init_stars();
+    initStarsModuleArrays();
     EraseTrees();
 
     if (!Flags.NoKeepSnowOnTrees && !Flags.NoTrees) {
@@ -1136,7 +1136,7 @@ void drawCairoWindowInternal(cairo_t *cr) {
         XFlush(mGlobal.display);
         moon_erase(0);
         Santa_erase(cr);
-        stars_erase(); // not really necessary
+        eraseStarsFrame();
         birds_erase(0);
         snow_erase(1);
         aurora_erase();
@@ -1156,7 +1156,7 @@ void drawCairoWindowInternal(cairo_t *cr) {
 
     // Do all module draws.
     if (WorkspaceActive()) {
-        stars_draw(cr);
+        drawStarsFrame(cr);
         moon_draw(cr);
         aurora_draw(cr);
         drawMeteorFrame(cr);
