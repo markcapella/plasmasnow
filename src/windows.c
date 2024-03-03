@@ -125,6 +125,8 @@ Window mActiveAppDragWindowCandidate = None;
 Window getActiveAppDragWindowCandidate();
 void setActiveAppDragWindowCandidate(Window);
 
+Window getDragWindowOf(Window);
+
 //**
 // Debug methods.
 void logCurrentTimestamp();
@@ -736,18 +738,18 @@ void onWindowChanged(__attribute__((unused)) XEvent* event) {
  **
  ** Determine if user is dragging a window, and clear it's fallensnow.
  **/
-void onWindowMapped(__attribute__((unused)) XEvent* event) {
+void onWindowMapped(XEvent* event) {
     // Update our list for visibility change.
     getWinInfoList();
 
-    // Determine window drag state, Xfce & Gnome - original method.
+    // Determine window drag state.
     if (!isWindowBeingDragged()) {
-        setIsWindowBeingDragged(isMouseClickedAndHeldDown());
-        setWindowBeingDragged(isMouseClickedAndHeldDown() ?
-            getActiveAppWindow() : None);
-        if (isWindowBeingDragged()) {
-            // We just started dragging - original method.
+        // Did we just start dragging window via mouse?
+        if (isMouseClickedAndHeldDown(event->xmap.window)) {
             // Clear snow from window that just started dragging.
+            setIsWindowBeingDragged(true);
+            setWindowBeingDragged(getDragWindowOf(
+                getFocusedX11Window()));
             removeFallenSnowFromWindow(getWindowBeingDragged());
             return;
         }
@@ -828,9 +830,7 @@ void onWindowDestroyed(__attribute__((unused)) XEvent* event) {
  ** This method decides if the user ia dragging a window via a mouse
  ** click-and-hold on the titlebar.
  **/
-bool isMouseClickedAndHeldDown() {
-    const unsigned int POINTER_CLICKDOWN = 256;
-
+bool isMouseClickedAndHeldDown(Window window) {
     //  Find the focused window pointer click state.
     Window root_return, child_return;
     int root_x_return, root_y_return;
@@ -838,16 +838,15 @@ bool isMouseClickedAndHeldDown() {
     unsigned int pointerState;
 
     bool foundPointerState = XQueryPointer(
-        mGlobal.display, getFocusedX11Window(),
+        mGlobal.display, window,
         &root_return, &child_return,
         &root_x_return, &root_y_return,
         &win_x_return, &win_y_return,
         &pointerState);
 
-    // If click-state isn't clicked-down, or we can't find a dragging
-    // window, we're not dragging.
-    return foundPointerState &&
-        (pointerState == POINTER_CLICKDOWN);
+    // If click-state is clicked-down, we're dragging.
+    const unsigned int POINTER_CLICKDOWN = 256;
+    return foundPointerState && (pointerState & POINTER_CLICKDOWN);
 }
 
 /** *********************************************************************
@@ -881,6 +880,39 @@ void setActiveAppDragWindowCandidate(Window candidate) {
     mActiveAppDragWindowCandidate = candidate;
 }
 
+/** *********************************************************************
+ ** This method determines which window is being dragged on user
+ ** click and hold window. Returns self or ancestor whose Window
+ ** is in mWinInfoList (visible window on screen).
+ **/
+Window getDragWindowOf(Window window) {
+    Window windowNode = window;
+
+    while (true) {
+        // Is current node in windows list?
+        WinInfo* windowListItem = mWinInfoList;
+        for (int i = 0; i < mWinInfoListLength; i++) {
+            if (windowNode == windowListItem->window) {
+                return windowNode;
+            }
+            windowListItem++;
+        }
+
+        // If not in list, move up to parent and loop.
+        Window root, parent;
+        Window* children = NULL;
+        unsigned int windowChildCount;
+        if (!(XQueryTree(mGlobal.display, windowNode,
+                &root, &parent, &children, &windowChildCount))) {
+            return None;
+        }
+        if (children) {
+            XFree((char *) children);
+        }
+
+        windowNode = parent;
+    }
+}
 /** *********************************************************************
  ** This method logs a timestamp in seconds & milliseconds.
  **/
