@@ -281,8 +281,6 @@ int HandleFlags(int argc, char *argv[]) {
             handle_iv(-blowsnow, BlowSnow, 1);
             handle_iv(-noconfig, NoConfig, 1);
             handle_iv(-hidemenu, HideMenu, 1);
-            handle_iv(-fluffy, NoFluffy, 0);
-            handle_iv(-nofluffy, NoFluffy, 1);
             handle_iv(-noisy, Noisy, 1);
             handle_iv(-nokeepsnowonscreen, NoKeepSnowOnBottom, 1);
             handle_iv(-keepsnowonscreen, NoKeepSnowOnBottom, 0);

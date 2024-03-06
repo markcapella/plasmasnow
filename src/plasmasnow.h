@@ -188,7 +188,7 @@ typedef struct _SnowMap {
 #define NUM_EXTRA_SCENE_ITEMS 1
 #define NUM_ALL_SCENE_TYPES   NUM_BASE_SCENE_TYPES + NUM_EXTRA_SCENE_ITEMS
 
-typedef struct Treeinfo {
+typedef struct SceneryInfo {
         int x; // x position
         int y; // y position
 
@@ -199,7 +199,7 @@ typedef struct Treeinfo {
         float scale;
         unsigned int type BITS(8); // type (TreeType, -treetype)
         unsigned int rev BITS(1);  // reversed
-} Treeinfo;
+} SceneryInfo;
 
 
 /***********************************************************
@@ -343,10 +343,14 @@ extern struct _mGlobal {
         int SnowWinHeight;
         int SnowWinDepth;
 
-        XPoint *SnowOnTrees;
+        XPoint* SnowOnTrees;
         int OnTrees;
-        int Wind; // 0 = no, 1 = blow snow, 2 = blow snow & Santa,
-        int Direction; // 0 = no, 1 = LTR, 2 = RTL.
+
+        // 0 = None, 1 = blowSnow, 2 = blowSnow & blowSanta. :-)
+        int Wind;
+
+        // 0 = no, 1 = LTR, 2 = RTL.
+        int Direction;
 
         float Whirl;
         double WhirlTimer;

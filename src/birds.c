@@ -148,7 +148,7 @@ void birds_ui() {
 
     UIDOS(BirdsColor,
         birds_init_color();
-        ClearScreen();
+        clearGlobalSnowWindow();
     );
 
     if (isQPickerActive() && !strcmp(getQPickerCallerName(), "BirdsColorTAG") &&

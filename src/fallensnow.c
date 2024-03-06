@@ -200,13 +200,13 @@ void updateAllFallenSnowOnThread() {
  **/
 void doFallenSnowUserSettingUpdates() {
     UIDO(MaxWinSnowDepth,
-        initFallenSnowListWithDesktop(); ClearScreen(););
+        initFallenSnowListWithDesktop(); clearGlobalSnowWindow(););
     UIDO(MaxScrSnowDepth, setMaxScreenSnowDepthWithLock();
-        initFallenSnowListWithDesktop(); ClearScreen(););
+        initFallenSnowListWithDesktop(); clearGlobalSnowWindow(););
     UIDO(NoKeepSnowOnBottom,
-        initFallenSnowListWithDesktop(); ClearScreen(););
+        initFallenSnowListWithDesktop(); clearGlobalSnowWindow(););
     UIDO(NoKeepSnowOnWindows,
-        initFallenSnowListWithDesktop(); ClearScreen(););
+        initFallenSnowListWithDesktop(); clearGlobalSnowWindow(););
 
     UIDO(IgnoreTop, );
     UIDO(IgnoreBottom, );

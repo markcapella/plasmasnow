@@ -390,11 +390,11 @@ void updateDisplayDimensions() {
     mGlobal.SnowWinDepth = d;
     updateFallenSnowAtBottom();
 
-    RedrawTrees();
+    clearAndRedrawScenery();
     setMaxScreenSnowDepth();
 
     if (!mGlobal.isDoubleBuffered) {
-        ClearScreen();
+        clearGlobalSnowWindow();
     }
 
     unlockFallenSnowSemaphore();

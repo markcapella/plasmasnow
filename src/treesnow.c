@@ -20,22 +20,25 @@
 #-# 
 */
 
-#include "treesnow.h"
-#include "blowoff.h"
-#include "debug.h"
-#include "flags.h"
-#include "safe_malloc.h"
-#include "scenery.h"
-#include "snow.h"
-#include "utils.h"
-#include "wind.h"
-#include "windows.h"
-#include "plasmasnow.h"
-#include <X11/Intrinsic.h>
-#include <gtk/gtk.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#include <X11/Intrinsic.h>
+
+#include <gtk/gtk.h>
+
+#include "blowoff.h"
+#include "debug.h"
+#include "flags.h"
+#include "plasmasnow.h"
+#include "safe_malloc.h"
+#include "scenery.h"
+#include "snow.h"
+#include "treesnow.h"
+#include "utils.h"
+#include "wind.h"
+#include "windows.h"
 
 
 static int do_snow_on_trees();
@@ -59,8 +62,8 @@ void treesnow_draw(cairo_t *cr) {
 }
 
 void treesnow_ui() {
-    UIDO(MaxOnTrees, ClearScreen(););
-    UIDO(NoKeepSnowOnTrees, ClearScreen(););
+    UIDO(MaxOnTrees, clearGlobalSnowWindow(););
+    UIDO(NoKeepSnowOnTrees, clearGlobalSnowWindow(););
 }
 
 int do_snow_on_trees() {
@@ -78,9 +81,10 @@ int do_snow_on_trees() {
     return TRUE;
 }
 
-// blow snow off trees
+/***********************************************************
+ * This method blows snow off trees.
+ */
 void ConvertOnTreeToFlakes() {
-    P("ConvertOnTreeToFlakes %d\n", mGlobal.OnTrees);
     for (int i = 0; i < mGlobal.OnTrees; i++) {
         for (int j = 0; j < 2; j++) {
             int numberOfFlakesToMake = getNumberOfFlakesToBlowoff();
@@ -105,9 +109,12 @@ void reinit_treesnow_region() {
 }
 
 void InitSnowOnTrees() {
-    // Flags.MaxOnTrees+1: prevent allocation of zero bytes
-    mGlobal.SnowOnTrees = (XPoint *)realloc(mGlobal.SnowOnTrees,
+    // TODO: Huh?
+    // Flags.MaxOnTrees+1: Avoid allocating zero bytes.
+
+    mGlobal.SnowOnTrees = (XPoint*) realloc(mGlobal.SnowOnTrees,
         sizeof(*mGlobal.SnowOnTrees) * (Flags.MaxOnTrees + 1));
+
     if (mGlobal.OnTrees > Flags.MaxOnTrees) {
         mGlobal.OnTrees = Flags.MaxOnTrees;
     }

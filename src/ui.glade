@@ -2241,31 +2241,13 @@ Flag: -santaspeedfactor</property>
                 <property name="tooltip-text" translatable="yes">To allow overlap or not when placing scenery.
 Flags: -treeoverlap, -notreeoverlap</property>
                 <property name="double-buffered">False</property>
-                <property name="halign">end</property>
+                <property name="halign">center</property>
                 <property name="valign">start</property>
                 <property name="margin-top">10</property>
               </object>
               <packing>
                 <property name="left-attach">1</property>
-                <property name="top-attach">6</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToggleButton" id="id-NoFluffy">
-                <property name="label" translatable="yes">Show Fluff</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">If set, try to show fluff on fallen snow and trees if possible.
-Flags: -fluffy, -nofluffy</property>
-                <property name="double-buffered">False</property>
-                <property name="halign">end</property>
-                <property name="valign">end</property>
-                <property name="margin-bottom">10</property>
-              </object>
-              <packing>
-                <property name="left-attach">1</property>
-                <property name="top-attach">6</property>
+                <property name="top-attach">3</property>
               </packing>
             </child>
             <child>

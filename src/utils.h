@@ -47,7 +47,7 @@ extern guint addMethodWithArgToMainloop(
     gint prio, float time, GSourceFunc func, gpointer datap);
 
 extern void remove_from_mainloop(guint *tag);
-extern void ClearScreen(void);
+extern void clearGlobalSnowWindow(void);
 extern float fsignf(float x);
 extern FILE *HomeOpen(const char *file, const char *mode, char **path);
 extern float sq2(float x, float y);

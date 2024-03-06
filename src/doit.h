@@ -84,11 +84,10 @@
     DOIT_I(MoonSpeed, 120, 120)                                                \
     DOIT_I(MoonSize, 100, 100)                                                 \
     DOIT_I(MoonColor, 0, 0)                                                    \
-    DOIT_I(NoFluffy, 0, 0)                                                     \
-    DOIT_I(NoKeepSnowOnBottom, 0, 0)                                                   \
+    DOIT_I(NoKeepSnowOnBottom, 0, 0)                                           \
     DOIT_I(NoKeepSnow, 0, 0)                                                   \
     DOIT_I(NoKeepSnowOnTrees, 0, 1)                                            \
-    DOIT_I(NoKeepSnowOnWindows, 0, 0)                                                   \
+    DOIT_I(NoKeepSnowOnWindows, 0, 0)                                          \
     DOIT_I(NoMeteors, 0, 1)                                                    \
     DOIT_I(NoSanta, 0, 0)                                                      \
     DOIT_I(NoSnowFlakes, 0, 0)                                                 \
@@ -108,7 +107,7 @@
     DOIT_I(SnowSize, 8, 8)                                                     \
     DOIT_I(SnowSpeedFactor, 100, 100)                                          \
     DOIT_I(Stars, 1, 0)                                                        \
-    DOIT_I(mAppTheme, 1, 1)                                                   \
+    DOIT_I(mAppTheme, 1, 1)                                                    \
     DOIT_I(Outline, 0, 0)                                                      \
     DOIT_I(TreeFill, 30, 30)                                                   \
     DOIT_I(TreeScale, 100, 100)                                                \

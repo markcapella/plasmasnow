@@ -162,7 +162,7 @@ static void init_moon_surface() {
     init_halo_surface();
 
     if (!mGlobal.isDoubleBuffered) {
-        ClearScreen();
+        clearGlobalSnowWindow();
     }
 }
 

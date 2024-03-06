@@ -444,7 +444,7 @@ int startApplication(int argc, char *argv[]) {
     XFixesSelectCursorInput(mGlobal.display, eventWindow,
         XFixesDisplayCursorNotifyMask);
 
-    ClearScreen();
+    clearGlobalSnowWindow();
 
     if (!Flags.NoMenu && !mGlobal.XscreensaverMode) {
         initUIClass();
@@ -466,7 +466,7 @@ int startApplication(int argc, char *argv[]) {
 
     Santa_init();
 
-    scenery_init();
+    initSceneryModule();
     treesnow_init();
 
     birds_init();
@@ -879,7 +879,7 @@ int doAllUISettingsUpdates() {
     }
 
     Santa_ui();
-    scenery_ui();
+    updateSceneryUserSettings();
     birds_ui();
 
     snow_ui();
@@ -899,7 +899,6 @@ int doAllUISettingsUpdates() {
     UIDO(Scale, );
     UIDO(OffsetS, updateDisplayDimensions(););
     UIDO(OffsetY, updateFallenSnowRegionsWithLock(););
-    UIDO(NoFluffy, ClearScreen(););
     UIDO(AllWorkspaces, DoAllWorkspaces(););
 
     UIDOS(BackgroundFile, );
@@ -1043,7 +1042,7 @@ void RestartDisplay() {
 
     initFallenSnowListWithDesktop();
     initStarsModuleArrays();
-    EraseTrees();
+    clearAndRedrawScenery();
 
     if (!Flags.NoKeepSnowOnTrees && !Flags.NoTrees) {
         reinit_treesnow_region();
@@ -1055,7 +1054,7 @@ void RestartDisplay() {
     }
 
     if (!mGlobal.isDoubleBuffered) {
-        ClearScreen();
+        clearGlobalSnowWindow();
     }
 }
 
@@ -1160,7 +1159,7 @@ void drawCairoWindowInternal(cairo_t *cr) {
         moon_draw(cr);
         aurora_draw(cr);
         drawMeteorFrame(cr);
-        scenery_draw(cr);
+        drawSceneryFrame(cr);
         birds_draw(cr);
         cairoDrawAllFallenSnowItems(cr);
         if (!Flags.ShowBirds || !Flags.FollowSanta) {

@@ -206,8 +206,8 @@ void drawStarsFrame(cairo_t *cr) {
  ** refreshed user settings.
  **/
 void updateStarsUserSettings() {
-    UIDO(NStars, initStarsModuleArrays(); ClearScreen(););
-    UIDO(Stars, ClearScreen(););
+    UIDO(NStars, initStarsModuleArrays(); clearGlobalSnowWindow(););
+    UIDO(Stars, clearGlobalSnowWindow(););
 
     static int prev = 100;
     if (appScalesHaveChanged(&prev)) {

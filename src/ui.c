@@ -124,7 +124,7 @@
  *     - C-code to execute if the value of the flag has been changed.
  *
  *     In main.c the flags in the 'settings' tab are handled, and calls are
- *     made to for example scenery_ui() which is supposed to handle flags
+ *     made to for example updateSceneryUserSettings() which is supposed to handle flags
  *     related with the 'scenery' tab. If Flags.Changes > 0, the flags are
  * written to .plasmasnowrc.
  *
@@ -266,7 +266,7 @@ static int nlang;
 void updateMainWindowUI() {
     UIDO(mAppTheme, updateMainWindowTheme(););
     UIDO(Screen, handle_screen(););
-    UIDO(Outline, ClearScreen(););
+    UIDO(Outline, clearGlobalSnowWindow(););
     UIDOS(Language, handle_language(1););
 }
 

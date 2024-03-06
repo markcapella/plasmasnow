@@ -23,12 +23,19 @@
 
 #include <gtk/gtk.h>
 
-extern void scenery_init(void);
+extern void initSceneryModule();
+void setSceneryScale();
+void initSceneryPixmaps();
 
-extern void scenery_ui(void);
+void initSceneryModuleSurfaces();
+cairo_surface_t* getNewScenerySurface(
+    int, const char**, float);
 
-extern int scenery_draw(cairo_t *cr);
+int updateSceneryFrame();
+int compareTrees(const void*, const void*);
+void updateColorTree();
 
-extern void EraseTrees(void);
+extern int drawSceneryFrame(cairo_t *cr);
 
-extern void RedrawTrees(void);
+extern void updateSceneryUserSettings();
+extern void clearAndRedrawScenery();

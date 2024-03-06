@@ -174,7 +174,7 @@ void SetSnowSize() {
     // init_snow_surfaces();
     init_snow_pix();
     if (!mGlobal.isDoubleBuffered) {
-        ClearScreen();
+        clearGlobalSnowWindow();
     }
 }
 
@@ -183,11 +183,11 @@ void SetSnowSize() {
  **/
 void snow_ui() {
     UIDO(
-        NoSnowFlakes, if (Flags.NoSnowFlakes) { ClearScreen(); });
+        NoSnowFlakes, if (Flags.NoSnowFlakes) { clearGlobalSnowWindow(); });
 
     UIDO(SnowFlakesFactor, InitFlakesPerSecond(););
 
-    UIDOS(SnowColor, InitSnowColor(); ClearScreen(););
+    UIDOS(SnowColor, InitSnowColor(); clearGlobalSnowWindow(););
     if (isQPickerActive() && !strcmp(getQPickerCallerName(), "SnowColorTAG") &&
         !isQPickerVisible()) {
         static char cbuffer[16];
@@ -202,7 +202,7 @@ void snow_ui() {
         endQPickerDialog();
     }
 
-    UIDOS(SnowColor2, InitSnowColor(); ClearScreen(););
+    UIDOS(SnowColor2, InitSnowColor(); clearGlobalSnowWindow(););
     if (isQPickerActive() && !strcmp(getQPickerCallerName(), "SnowColor2TAG") &&
         !isQPickerVisible()) {
         static char cbuffer[16];
@@ -452,17 +452,14 @@ int do_genflakes() {
 
 void checkIfFlakeCollectsInFallenSnow(SnowFlake* flake,
     int xPosition, int yPosition, int flakeWidth) {
-    if (flake->fluff) {
-        return;
-    }
 
-    FallenSnow *fsnow = mGlobal.FsnowFirst;
+    FallenSnow* fsnow = mGlobal.FsnowFirst;
     while (fsnow) {
         if (fsnow->winInfo.hidden) {
             fsnow = fsnow->next;
             continue;
         }
-        if (fsnow->winInfo.window != 0 &&
+        if (fsnow->winInfo.window != None &&
             !isFallenSnowOnVisibleWorkspace(fsnow) &&
             !fsnow->winInfo.sticky) {
             fsnow = fsnow->next;
@@ -493,10 +490,9 @@ void checkIfFlakeCollectsInFallenSnow(SnowFlake* flake,
                     updateFallenSnowPartial(fsnow,
                         xPosition - fsnow->x, flakeWidth);
                 }
+
                 if (canSnowCollectOnWindowOrScreenBottom(fsnow)) {
-                    if (!Flags.NoFluffy) {
-                        fluffify(flake, .9);
-                    }
+                    fluffify(flake, .9);
                     if (!flake->fluff) {
                         DelFlake(flake);
                     }
@@ -627,9 +623,11 @@ int do_UpdateSnowFlake(SnowFlake* flake) {
     int ny = lrintf(NewY);
 
     // Determine if non-fluffy-flake touches the fallen snow.
-    lockFallenSnowSemaphore();
-    checkIfFlakeCollectsInFallenSnow(flake, nx, ny, flakew);
-    unlockFallenSnowSemaphore();
+    if (!flake->fluff) {
+        lockFallenSnowSemaphore();
+        checkIfFlakeCollectsInFallenSnow(flake, nx, ny, flakew);
+        unlockFallenSnowSemaphore();
+    }
 
     // longRound fromFloats.
     int x = lrintf(flake->rx);
@@ -644,15 +642,9 @@ int do_UpdateSnowFlake(SnowFlake* flake) {
             cairo_region_contains_rectangle(mGlobal.gSnowOnTreesRegion, &grec);
 
         if (in == CAIRO_REGION_OVERLAP_PART || in == CAIRO_REGION_OVERLAP_IN) {
-            P("part or in\n");
-            if (Flags.NoFluffy) {
-                DelFlake(flake);
-                return FALSE;
-            } else {
-                fluffify(flake, 0.4);
-                flake->freeze = 1;
-                return TRUE;
-            }
+            fluffify(flake, 0.4);
+            flake->freeze = 1;
+            return TRUE;
         }
 
         // check if flake is touching TreeRegion. If so: add snow to
@@ -667,26 +659,30 @@ int do_UpdateSnowFlake(SnowFlake* flake) {
             //     move upwards until pixel is not in TreeRegion
             //     That pixel will be designated as snow-on-tree
             // Only one snow-on-tree pixel has to be found.
-            int i;
+
             int found = 0;
             int xfound, yfound;
-            for (i = 0; i < flakew; i++) {
+            for (int i = 0; i < flakew; i++) {
                 if (found) {
                     break;
                 }
+
                 int ybot = y + flakeh;
                 int xbot = x + i;
                 cairo_rectangle_int_t grect = {xbot, ybot, 1, 1};
+
                 cairo_region_overlap_t in =
                     cairo_region_contains_rectangle(mGlobal.TreeRegion, &grect);
-                if (in != CAIRO_REGION_OVERLAP_IN) { // if bottom pixel not in
-                                                     // TreeRegion, skip
+
+                // If bottom pixel not in TreeRegion, skip.
+                if (in != CAIRO_REGION_OVERLAP_IN) {
                     continue;
                 }
+
                 // move upwards, until pixel is not in TreeRegion
-                int j;
-                for (j = ybot - 1; j >= y; j--) {
+                for (int j = ybot - 1; j >= y; j--) {
                     cairo_rectangle_int_t grect = {xbot, j, 1, 1};
+
                     cairo_region_overlap_t in = cairo_region_contains_rectangle(
                         mGlobal.TreeRegion, &grect);
                     if (in != CAIRO_REGION_OVERLAP_IN) {
@@ -698,23 +694,25 @@ int do_UpdateSnowFlake(SnowFlake* flake) {
                         grec.y = j - p + 1;
                         grec.width = p;
                         grec.height = p;
-                        cairo_region_union_rectangle(
-                            mGlobal.gSnowOnTreesRegion, &grec);
+                        cairo_region_union_rectangle(mGlobal.gSnowOnTreesRegion,
+                            &grec);
 
-                        if (Flags.BlowSnow &&
-                            mGlobal.OnTrees < Flags.MaxOnTrees) {
+                        if (Flags.BlowSnow && mGlobal.OnTrees < Flags.MaxOnTrees) {
                             mGlobal.SnowOnTrees[mGlobal.OnTrees].x = grec.x;
                             mGlobal.SnowOnTrees[mGlobal.OnTrees].y = grec.y;
                             mGlobal.OnTrees++;
-                            // P("%d %d %d\n",mGlobal.OnTrees,rec.x,rec.y);
                         }
+
                         xfound = grec.x;
                         yfound = grec.y;
                         break;
                     }
                 }
             }
-            // do not erase: this gives bad effects in fvwm-like desktops
+
+            // TODO: Huh? who?
+            // Do not erase: this gives bad effects
+            // in fvwm-like desktops.
             if (found) {
                 flake->freeze = 1;
                 fluffify(flake, 0.6);
@@ -725,6 +723,7 @@ int do_UpdateSnowFlake(SnowFlake* flake) {
                 } else {
                     newflake = MakeFlake(-1);
                 }
+
                 newflake->freeze = 1;
                 newflake->rx = xfound;
                 newflake->ry = yfound - snowPix[1].height * 0.3f;

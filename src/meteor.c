@@ -70,7 +70,7 @@ void initMeteorModule() {
 
 /** *********************************************************************
  ** This method erases a single Meteor
- ** frame from Utils.ClearScreen().
+ ** frame from Utils.clearGlobalSnowWindow().
  **/
 int eraseMeteorFrame() {
     if (Flags.Done) {

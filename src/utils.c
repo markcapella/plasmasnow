@@ -19,26 +19,30 @@
 #-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-# 
 */
-#include "utils.h"
-#include "debug.h"
-#include "flags.h"
-#include "meteor.h"
-#include "mygettext.h"
-#include "safe_malloc.h"
-#include "version.h"
-#include "windows.h"
-#include "xdo.h"
-#include "plasmasnow.h"
-#include <X11/Intrinsic.h>
 #include <gsl/gsl_sort.h>
-#include <gtk/gtk.h>
 #include <math.h>
 #include <pthread.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
+#include <X11/Intrinsic.h>
+
+#include <gtk/gtk.h>
+
+#include "debug.h"
+#include "flags.h"
+#include "meteor.h"
+#include "mygettext.h"
+#include "plasmasnow.h"
+#include "safe_malloc.h"
+#include "utils.h"
+#include "version.h"
+#include "windows.h"
+#include "xdo.h"
 
 void traceback()
 #ifdef TRACEBACK_AVAILALBLE
@@ -78,7 +82,7 @@ FILE *HomeOpen(const char *file, const char *mode, char **path) {
     return f;
 }
 
-void ClearScreen() {
+void clearGlobalSnowWindow() {
     // remove all our snow-related drawings
     XClearArea(mGlobal.display, mGlobal.SnowWin, 0, 0, 0, 0, True);
 
@@ -243,15 +247,15 @@ void rgba2color(GdkRGBA *c, char **s) {
 /** *********************************************************************
  ** This method ...
  **/
-int appScalesHaveChanged(int *prevscale) {
-    const int newscale =
-        (const int) (Flags.Scale * mGlobal.WindowScale);
+int appScalesHaveChanged(int* prevscale) {
+    const int newscale = (const int)
+        (Flags.Scale * mGlobal.WindowScale);
 
-    if (*prevscale != (newscale )) {
+    if (*prevscale != (newscale)) {
         *prevscale = newscale;
-        return TRUE;
+        return true;
     }
-    return FALSE;
+    return false;
 }
 
 // create sorted n random numbers in interval [0.0, 1.0) such that
