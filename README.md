@@ -59,3 +59,27 @@ a QT screen color picker that works on Plasma, dual snow colors,
 ### markcapella@twcny.rr.com Rocks !
 
 #### Yeah I do.
+&nbsp;
+
+# Screenshots Gallery
+
+!['plasmasnowAbout'](https://github.com/markcapella/plasmasnow/blob/main/assets/images/plasmasnowAbout.png)
+&nbsp;
+
+!['plasmasnowSnow'](https://github.com/markcapella/plasmasnow/blob/main/assets/images/plasmasnowSnow.png)
+&nbsp;
+
+!['plasmasnowSanta'](https://github.com/markcapella/plasmasnow/blob/main/assets/images/plasmasnowSanta.png)
+&nbsp;
+
+!['plasmasnowScenery'](https://github.com/markcapella/plasmasnow/blob/main/assets/images/plasmasnowScenery.png)
+&nbsp;
+
+!['plasmasnowBirds'](https://github.com/markcapella/plasmasnow/blob/main/assets/images/plasmasnowBirds.png)
+&nbsp;
+
+!['plasmasnowSky'](https://github.com/markcapella/plasmasnow/blob/main/assets/images/plasmasnowSky.png)
+&nbsp;
+
+!['plasmasnowAdvanced'](https://github.com/markcapella/plasmasnow/blob/main/assets/images/plasmasnowAdvanced.png)
+&nbsp;
