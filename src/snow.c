@@ -35,7 +35,7 @@
 #include "clocks.h"
 #include "debug.h"
 #include "fallensnow.h"
-#include "flags.h"
+#include "Flags.h"
 #include "hashtable.h"
 #include "ixpm.h"
 #include "pixmaps.h"
@@ -44,7 +44,7 @@
 #include "snow.h"
 #include "treesnow.h"
 #include "ui.h"
-#include "utils.h"
+#include "Utils.h"
 #include "wind.h"
 #include "windows.h"
 
@@ -385,7 +385,7 @@ int snow_erase(int force) {
  ** This method ...
  **/
 int do_genflakes() {
-    if (Flags.Done) {
+    if (Flags.shutdownRequested) {
         return FALSE;
     }
 
@@ -867,7 +867,7 @@ void InitSnowSpeedFactor() {
  **/
 int do_initsnow() {
     P("initsnow %d %d\n", mGlobal.FlakeCount, counter++);
-    if (Flags.Done) {
+    if (Flags.shutdownRequested) {
         return FALSE;
     }
     // first, kill all snowflakes

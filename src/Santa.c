@@ -22,12 +22,12 @@
 
 #include "Santa.h"
 #include "debug.h"
-#include "flags.h"
+#include "Flags.h"
 #include "ixpm.h"
 #include "moon.h"
 #include "pixmaps.h"
 #include "safe_malloc.h"
-#include "utils.h"
+#include "Utils.h"
 #include "wind.h"
 #include "windows.h"
 #include <X11/Intrinsic.h>
@@ -279,7 +279,7 @@ void SetSantaSizeSpeed() {
 int do_usanta() {
     P("do_usanta %d\n", counter++);
 
-    if (Flags.Done) {
+    if (Flags.shutdownRequested) {
         return FALSE;
     }
 #define RETURN                                                                 \

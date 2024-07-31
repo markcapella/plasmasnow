@@ -75,6 +75,6 @@ extern double gaussian(
     double mean, double standard_deviation, double min, double max);
 
 extern int is_little_endian(void);
-extern void PrintVersion(void);
+extern void logAppVersion(void);
 
 extern void randomuniqarray(double *a, int n, double d, unsigned short *seed);

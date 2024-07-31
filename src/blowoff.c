@@ -23,8 +23,8 @@
 #include "blowoff.h"
 #include "debug.h"
 #include "fallensnow.h"
-#include "flags.h"
-#include "utils.h"
+#include "Flags.h"
+#include "Utils.h"
 #include "windows.h"
 #include "plasmasnow.h"
 #include <gtk/gtk.h>
@@ -56,7 +56,7 @@ int getNumberOfFlakesToBlowoff() {
 
 // determine if fallensnow should be handled for fsnow
 int do_blowoff() {
-    if (Flags.Done) {
+    if (Flags.shutdownRequested) {
         return FALSE;
     }
     if (!WorkspaceActive() || !Flags.BlowSnow) {

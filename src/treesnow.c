@@ -30,13 +30,13 @@
 
 #include "blowoff.h"
 #include "debug.h"
-#include "flags.h"
+#include "Flags.h"
 #include "plasmasnow.h"
 #include "safe_malloc.h"
 #include "scenery.h"
 #include "snow.h"
 #include "treesnow.h"
-#include "utils.h"
+#include "Utils.h"
 #include "wind.h"
 #include "windows.h"
 
@@ -67,7 +67,7 @@ void treesnow_ui() {
 }
 
 int do_snow_on_trees() {
-    if (Flags.Done) {
+    if (Flags.shutdownRequested) {
         return FALSE;
     }
     if ((!WorkspaceActive() || Flags.NoSnowFlakes ||

@@ -43,12 +43,12 @@
 #include "blowoff.h"
 #include "debug.h"
 #include "fallensnow.h"
-#include "flags.h"
+#include "Flags.h"
 #include "safe_malloc.h"
 #include "Santa.h"
 #include "snow.h"
 #include "spline_interpol.h"
-#include "utils.h"
+#include "Utils.h"
 #include "wind.h"
 #include "windows.h"
 
@@ -149,7 +149,7 @@ void initFallenSnowListWithDesktop() {
 void* execFallenSnowThread() {
     // Loop until cancelled.
     while (1) {
-        if (Flags.Done) {
+        if (Flags.shutdownRequested) {
             pthread_exit(NULL);
         }
 

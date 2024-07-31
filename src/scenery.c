@@ -35,13 +35,13 @@
 #include "csvpos.h"
 #include "debug.h"
 #include "fallensnow.h"
-#include "flags.h"
+#include "Flags.h"
 #include "ixpm.h"
 #include "pixmaps.h"
 #include "safe_malloc.h"
 #include "scenery.h"
 #include "treesnow.h"
-#include "utils.h"
+#include "Utils.h"
 #include "windows.h"
 
 
@@ -230,7 +230,7 @@ cairo_surface_t* getNewScenerySurface(int flip,
  * tree coordinates and so are recalculated here.
  */
 int updateSceneryFrame() {
-    if (Flags.Done) {
+    if (Flags.shutdownRequested) {
         return FALSE;
     }
 

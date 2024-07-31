@@ -22,7 +22,7 @@
 #include <pthread.h>
 #include "debug.h"
 #include "windows.h"
-#include "transwindow.h"
+#include "StormWindow.h"
 #include <stdbool.h>
 
 #include <X11/Intrinsic.h>
@@ -45,33 +45,20 @@ static int resetVolatileTransparentWindowAttributes(
  * sticky:      (input)  visible on all workspaces or not
  * below:       (input)  1: below all other windows 2: above all other windows
  *                       0: no action
- * dock:        (input)  make it a 'dock' window: no decoration and
- *                       not interfering with app.
  *
  * gdk_window:  (output) GdkWindow created
  * x11_window:  (output) Window X11 created: (output)
  *
- * xpenguins NOTE: with dock=1, gtk ignores the value of below:
- * window is above all other windows
- *
  * NOTE: with decorations set to TRUE (see gtk_window_set_decorated()),
  * the window is not click-through in Gnome.
- *
- * So: dock = 1 is good for Gnome, or call gtk_window_set_decorated(w,FALSE)
- * before this function.
- *
  */
 
-int createTransparentWindow(Display *display,
-    GtkWidget *transparentGTKWindow, int xscreen,
-    int sticky, int below, int dock, GdkWindow **gdk_window,
-    Window *x11_window, int *wantx, int *wanty) {
+int createTransparentWindow(Display* display,
+    GtkWidget* transparentGTKWindow, int xscreen,
+    int sticky, int below, GdkWindow** gdk_window,
+    Window* x11_window, int* wantx, int* wanty) {
 
-    //{   const char* logMsg =
-    //        "transparentwindow: createTransparentWindow() Starts.\n";
-    //    fprintf(stdout, "%s", logMsg);
-    //}
-
+    // Guard the outputs.
     if (gdk_window) {
         *gdk_window = NULL;
     }
@@ -79,47 +66,42 @@ int createTransparentWindow(Display *display,
         *x11_window = None;
     }
 
+    // Implement window.
     gtk_widget_set_app_paintable(transparentGTKWindow, TRUE);
-
-    // essential in Gnome:
     gtk_window_set_decorated(GTK_WINDOW(transparentGTKWindow), FALSE);
-
-    // essential everywhere:
     gtk_window_set_accept_focus(GTK_WINDOW(transparentGTKWindow), FALSE);
 
-    // take care that 'below' and 'sticky' are taken care of in gtk_main loop:
     g_signal_connect(transparentGTKWindow, "draw",
         G_CALLBACK(resetVolatileTransparentWindowAttributes), NULL);
 
-    // remove our things from transparentGTKWindow:
+    // Remove our things from inputStormWindow:
     g_object_steal_data(G_OBJECT(transparentGTKWindow), "trans_sticky");
     g_object_steal_data(G_OBJECT(transparentGTKWindow), "trans_below");
     g_object_steal_data(G_OBJECT(transparentGTKWindow), "trans_nobelow");
     g_object_steal_data(G_OBJECT(transparentGTKWindow), "trans_done");
 
+    // Reset our things.  :-/
     static char somechar;
     if (sticky) {
-        g_object_set_data(G_OBJECT(transparentGTKWindow), "trans_sticky", &somechar);
+        g_object_set_data(G_OBJECT(transparentGTKWindow),
+            "trans_sticky", &somechar);
     }
-
     switch (below) {
         case 0:
-            g_object_set_data(G_OBJECT(transparentGTKWindow), "trans_nobelow", &somechar);
+            g_object_set_data(G_OBJECT(transparentGTKWindow),
+                "trans_nobelow", &somechar);
             break;
         case 1:
-            g_object_set_data(G_OBJECT(transparentGTKWindow), "trans_below", &somechar);
+            g_object_set_data(G_OBJECT(transparentGTKWindow),
+                "trans_below", &somechar);
             break;
     }
 
     /* To check if the display supports alpha channels, get the visual */
-    GdkScreen *screen = gtk_widget_get_screen(transparentGTKWindow);
+    GdkScreen* screen = gtk_widget_get_screen(transparentGTKWindow);
     if (!gdk_screen_is_composited(screen)) {
         gtk_window_close(GTK_WINDOW(transparentGTKWindow));
-        //{   const char* logMsg =
-        //        "transparentwindow: createTransparentWindow() Finishes - ERROR.\n";
-        //    fprintf(stdout, "%s", logMsg);
-        //}
-        return FALSE;
+        return false;
     }
 
     // Ensure the widget (the window, actually) can take RGBA
@@ -149,34 +131,27 @@ int createTransparentWindow(Display *display,
     }
 
     gtk_widget_show_all(transparentGTKWindow);
+    GdkWindow* gdkwin = gtk_widget_get_window(
+        GTK_WIDGET(transparentGTKWindow));
 
-    // so that apps like this will ignore this window:
-    GdkWindow *gdkwin = gtk_widget_get_window(GTK_WIDGET(transparentGTKWindow));
-    if (dock) {
-        gdk_window_set_type_hint(gdkwin, GDK_WINDOW_TYPE_HINT_DOCK);
-    }
-
-    gdk_window_show(gdkwin);
-
+    // Set return values.
     if (x11_window) {
         *x11_window = gdk_x11_window_get_xid(gdkwin);
+    }
+    if (gdk_window) {
+        *gdk_window = gdkwin;
+    }
+    *wantx = winx;
+    *wanty = winy;
 
-        //char resultMsg[1024];
-        //snprintf(resultMsg, sizeof(resultMsg), "transparentwindow: createTransparentWindow()"
-        //    "The X11 id of mTransparentWindow is : 0x%08lx\n", *x11_window);
-        //fprintf(stdout, "%s", resultMsg);
-
+    // Resize & new values for winw / winh.
+    if (x11_window) {
         XResizeWindow(display, *x11_window, winw, winh);
         XFlush(display);
     }
 
-    if (gdk_window) {
-        *gdk_window = gdkwin;
-    }
-
-    *wantx = winx;
-    *wanty = winy;
-    usleep(200000); // seems sometimes to be necessary with nvidia
+    // Seems sometimes to be necessary with nvidia.
+    usleep(200000);
 
     gtk_widget_hide(transparentGTKWindow);
     gtk_widget_show_all(transparentGTKWindow);
@@ -189,11 +164,6 @@ int createTransparentWindow(Display *display,
 
     resetVolatileTransparentWindowAttributes(transparentGTKWindow);
     g_object_steal_data(G_OBJECT(transparentGTKWindow), "trans_done");
-
-    //{   const char* logMsg =
-    //        "transparentwindow: createTransparentWindow() Finishes.\n";
-    //    fprintf(stdout, "%s", logMsg);
-    //}
 
     return TRUE;
 }

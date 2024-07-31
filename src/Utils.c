@@ -34,12 +34,12 @@
 #include <gtk/gtk.h>
 
 #include "debug.h"
-#include "flags.h"
+#include "Flags.h"
 #include "meteor.h"
 #include "mygettext.h"
 #include "plasmasnow.h"
 #include "safe_malloc.h"
-#include "utils.h"
+#include "Utils.h"
 #include "version.h"
 #include "windows.h"
 #include "xdo.h"
@@ -219,7 +219,7 @@ void my_cairo_paint_with_alpha(cairo_t *cr, double alpha) {
     }
 }
 
-void PrintVersion() {
+void logAppVersion() {
     int l = 4 + strlen(PACKAGE_STRING);
     int i;
     printf("   ");

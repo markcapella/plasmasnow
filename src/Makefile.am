@@ -54,30 +54,23 @@ endif
 noinst_LIBRARIES = libxdo.a
 libxdo_a_SOURCES = xdo.c xdo_search.c xdo.h xdo_util.h xdo_version.h
 
-plasmasnow_SOURCES = clocks.c ixpm.c main.c fallensnow.c wmctrl.c docs.c \
-		clocks.h ixpm.h docs.h fallensnow.h pixmaps.h \
-		pixmaps.c version.h wmctrl.h plasmasnow.h windows.c windows.h\
-		flags.c flags.h csvpos.c csvpos.h \
-		dsimple.c dsimple.h clientwin.c clientwin.h \
-		test1.sh \
-		doit.h ui.c ui.h ui.glade \
-		debug.h \
-		mainstub.cpp mainstub.h \
-		birds.c kdtree.c birds.h kdtree.h birdglobals.h doitb.h \
-		hashtable.cpp hashtable.h \
-		Santa.c Santa.h utils.c utils.h \
-		scenery.c scenery.h snow.c snow.h \
-		colorPicker.cpp \
-		meteor.c meteor.h wind.c wind.h \
-		stars.c stars.h blowoff.c blowoff.h \
-		treesnow.c treesnow.h loadmeasure.c loadmeasure.h \
-		snow_includes.h vroot.h \
-		moon.c moon.h buttons.h undefall.inc \
-		transwindow.c transwindow.h \
-		selfrep.c selfrep.h \
-		aurora.c aurora.h \
-		spline_interpol.c spline_interpol.h \
-		safe_malloc.c safe_malloc.h mygettext.h gettext.h 
+plasmasnow_SOURCES = \
+		Application.c aurora.c \
+		birds.c blowoff.c \
+		clientwin.c clocks.c colorPicker.cpp csvpos.c \
+		docs.c dsimple.c \
+		fallensnow.c Flags.c \
+		hashtable.cpp \
+		ixpm.c \
+		kdtree.c \
+		loadmeasure.c \
+		mainstub.cpp meteor.c moon.c \
+		pixmaps.c \
+		safe_malloc.c Santa.c scenery.c selfrep.c snow.c \
+		spline_interpol.c Stars.c StormWindow.c \
+		treesnow.c \
+		ui.glade ui.c Utils.c \
+		wind.c windows.c wmctrl.c
 
 nodist_plasmasnow_SOURCES = ui_xml.h snow_includes.h
 

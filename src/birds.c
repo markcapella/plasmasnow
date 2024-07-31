@@ -26,14 +26,14 @@
 #include "clocks.h"
 #include "debug.h"
 #include "doitb.h"
-#include "flags.h"
+#include "Flags.h"
 #include "hashtable.h"
 #include "ixpm.h"
 #include "kdtree.h"
 // #include "mainstub.h"
 #include "pixmaps.h"
 #include "ui.h"
-#include "utils.h"
+#include "Utils.h"
 #include "windows.h"
 #include <assert.h>
 #include <gtk/gtk.h>
@@ -285,7 +285,7 @@ void birds_set_scale() { createAttractionPointSurface(); }
 
 void *updateBirdSpeed() {
     while (1) {
-        if (!(Flags.Done || INACTIVE)) {
+        if (!(Flags.shutdownRequested || INACTIVE)) {
 
             lock();
             kd_free(kd);
@@ -437,7 +437,7 @@ void *updateBirdSpeed() {
 }
 
 int do_update_pos_birds() {
-    if (Flags.Done) {
+    if (Flags.shutdownRequested) {
         return FALSE;
     }
     LEAVE_IF_INACTIVE;
@@ -803,7 +803,7 @@ void init_birds(int start) {
 }
 
 static int do_wings() {
-    if (Flags.Done) {
+    if (Flags.shutdownRequested) {
         return FALSE;
     }
     LEAVE_IF_INACTIVE;
@@ -965,7 +965,7 @@ void show_attr() {
     // fractional coordinates
 
 int randomlyChangeAttractionPoint() {
-    if (Flags.Done) {
+    if (Flags.shutdownRequested) {
         return FALSE;
     }
     if (Flags.FollowSanta) {

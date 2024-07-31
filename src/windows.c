@@ -33,13 +33,13 @@
 #include "debug.h"
 #include "dsimple.h"
 #include "fallensnow.h"
-#include "flags.h"
+#include "Flags.h"
 #include "mygettext.h"
 #include "plasmasnow.h"
 #include "safe_malloc.h"
 #include "scenery.h"
-#include "transwindow.h"
-#include "utils.h"
+#include "StormWindow.h"
+#include "Utils.h"
 #include "windows.h"
 #include "wmctrl.h"
 #include "xdo.h"
@@ -52,7 +52,6 @@ bool is_NET_WM_STATE_Hidden(Window window);
 bool is_WM_STATE_Hidden(Window window);
 
 void uninitQPickerDialog();
-void endApplication(void);
 
 
 /***********************************************************
@@ -379,7 +378,6 @@ void updateDisplayDimensions() {
         &root, &x, &y, &w, &h, &b, &d);
     if (rc == 0) {
         uninitQPickerDialog();
-        endApplication();
         exit(1);
         return;
     }
@@ -484,7 +482,7 @@ void SetBackground() {
  **/
 int updateWindowsList() {
     static long PrevWorkSpace = -123;
-    if (Flags.Done) {
+    if (Flags.shutdownRequested) {
         return FALSE;
     }
     if (Flags.NoKeepSnowOnWindows) {
@@ -512,7 +510,7 @@ int updateWindowsList() {
     // Get current workspace.
     long currentWorkSpace = getCurrentWorkspace();
     if (currentWorkSpace < 0) {
-        Flags.Done = 1;
+        Flags.shutdownRequested = 1;
         unlockFallenSnowSemaphore();
         {   const char* logMsg = "windows: updateWindowsList() Finishes.\n";
             fprintf(stdout, "%s", logMsg);
@@ -551,7 +549,7 @@ int updateWindowsList() {
 
     if (mGlobal.SnowWin != mGlobal.Rootwindow) {
         if (!mGlobal.hasTransparentWindow && !winInfo) {
-            Flags.Done = 1;
+            Flags.shutdownRequested = 1;
         }
     }
 

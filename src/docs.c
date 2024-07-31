@@ -20,9 +20,9 @@
 #-# 
 */
 #include "docs.h"
-#include "flags.h"
+#include "Flags.h"
 #include "safe_malloc.h"
-#include "utils.h"
+#include "Utils.h"
 #include "version.h"
 #include "plasmasnow.h"
 #include <pthread.h>

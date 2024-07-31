@@ -22,9 +22,9 @@
 #include "loadmeasure.h"
 #include "clocks.h"
 #include "debug.h"
-#include "flags.h"
+#include "Flags.h"
 #include "ui.h"
-#include "utils.h"
+#include "Utils.h"
 #include "plasmasnow.h"
 #include <gtk/gtk.h>
 #include <pthread.h>

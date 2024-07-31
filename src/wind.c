@@ -26,8 +26,8 @@
 
 #include "clocks.h"
 #include "debug.h"
-#include "flags.h"
-#include "utils.h"
+#include "Flags.h"
+#include "Utils.h"
 #include "wind.h"
 #include "windows.h"
 #include "plasmasnow.h"
@@ -62,7 +62,7 @@ void draw_wind() {
 
 int do_newwind() {
     P("newwind\n");
-    if (Flags.Done) {
+    if (Flags.shutdownRequested) {
         return FALSE;
     }
     if (!WorkspaceActive()) {
@@ -107,7 +107,7 @@ int do_newwind() {
 
 int do_wind() {
     P("wind\n");
-    if (Flags.Done) {
+    if (Flags.shutdownRequested) {
         return FALSE;
     }
     if (!WorkspaceActive()) {

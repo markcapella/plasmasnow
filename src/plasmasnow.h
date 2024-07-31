@@ -305,7 +305,6 @@ extern struct _mGlobal {
         cairo_region_t *TreeRegion;
         cairo_region_t *gSnowOnTreesRegion;
 
-        int HaltedByInterrupt;
         char Message[256];
 
         // Display defs.

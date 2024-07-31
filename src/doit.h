@@ -34,7 +34,7 @@
     DOIT_I(Changes, 0, 0)       /* not a parameter or button */                \
     DOIT_I(Defaults, 0, 0)                                                     \
     DOIT_I(Desktop, 0, 0)                                                      \
-    DOIT_I(Done, 0, 0)                                                         \
+    DOIT_I(shutdownRequested, 0, 0)                                                         \
     DOIT_I(ForceRoot, 0, 0)                                                    \
     DOIT_I(FullScreen, 0, 0)                                                   \
     DOIT_I(HideMenu, 0, 0)                                                     \

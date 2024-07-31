@@ -21,7 +21,7 @@
 */
 #include "selfrep.h"
 #include "mygettext.h"
-#include "utils.h"
+#include "Utils.h"
 #include <pthread.h>
 #include <stdio.h>
 

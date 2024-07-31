@@ -19,13 +19,13 @@
 #-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-# 
 */
-#include "flags.h"
+#include "Flags.h"
 #include "birds.h"
 #include "docs.h"
 #include "doit.h"
 #include "safe_malloc.h"
 #include "selfrep.h"
-#include "utils.h"
+#include "Utils.h"
 #include "windows.h"
 #include "plasmasnow.h"
 #include <pthread.h>
@@ -161,7 +161,7 @@ int HandleFlags(int argc, char *argv[]) {
                 docs_usage(1);
                 return 1;
             } else if (!strcmp(arg, "-v") || !strcmp(arg, "-version")) {
-                PrintVersion();
+                logAppVersion();
                 return 1;
             } else if (!strcmp(arg, "-changelog")) {
                 displayPlasmaSnowDocumentation();

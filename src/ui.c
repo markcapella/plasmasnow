@@ -148,14 +148,14 @@
 #include "birds.h"
 #include "clocks.h"
 #include "csvpos.h"
-#include "flags.h"
+#include "Flags.h"
 #include "mygettext.h"
 #include "pixmaps.h"
 #include "safe_malloc.h"
 #include "snow.h"
 #include "ui.h"
 #include "ui_xml.h"
-#include "utils.h"
+#include "Utils.h"
 #include "version.h"
 #include "windows.h"
 #include "plasmasnow.h"
@@ -1373,7 +1373,7 @@ void onClickedTreeButton(GtkWidget *w) {
 
 MODULE_EXPORT
 void onClickedQuitApplication() {
-    Flags.Done = 1;
+    Flags.shutdownRequested = 1;
 }
 
 MODULE_EXPORT

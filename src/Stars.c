@@ -26,12 +26,11 @@
 #include <X11/Intrinsic.h>
 #include <gtk/gtk.h>
 
-#include "debug.h"
-#include "flags.h"
+#include "Flags.h"
 #include "pixmaps.h"
 #include "safe_malloc.h"
-#include "stars.h"
-#include "utils.h"
+#include "Stars.h"
+#include "Utils.h"
 #include "windows.h"
 
 
@@ -52,7 +51,7 @@ static char* mStarColorArray[STARANIMATIONS] =
     { (char*) "gold", (char*) "gold1",
       (char*) "gold4", (char*) "orange"};
 
-static cairo_surface_t* starScreenSurfaces[STARANIMATIONS];
+static cairo_surface_t* mStarSurfaceArray[STARANIMATIONS];
 
 
 /** *********************************************************************
@@ -61,9 +60,9 @@ static cairo_surface_t* starScreenSurfaces[STARANIMATIONS];
 void initStarsModule() {
     initStarsModuleArrays();
 
-    // Clear and set starScreenSurfaces.
+    // Clear and set mStarSurfaceArray.
     for (int i = 0; i < STARANIMATIONS; i++) {
-        starScreenSurfaces[i] = NULL;
+        mStarSurfaceArray[i] = NULL;
     }
     initStarsModuleSurfaces();
 
@@ -103,13 +102,13 @@ void initStarsModuleSurfaces() {
         }
 
         // Release and recreate surfaces.
-        if (starScreenSurfaces[i]) {
-            cairo_surface_destroy(starScreenSurfaces[i]);
+        if (mStarSurfaceArray[i]) {
+            cairo_surface_destroy(mStarSurfaceArray[i]);
         }
-        starScreenSurfaces[i] = cairo_image_surface_create(
+        mStarSurfaceArray[i] = cairo_image_surface_create(
             CAIRO_FORMAT_ARGB32, size, size);
 
-        cairo_t *cr = cairo_create(starScreenSurfaces[i]);
+        cairo_t *cr = cairo_create(mStarSurfaceArray[i]);
         cairo_set_line_width(cr, 1.0 * size / STAR_SIZE);
 
         GdkRGBA color;
@@ -157,7 +156,7 @@ void eraseStarsFrame() {
  ** Erase and Draw cycles.
  **/
 int updateStarsFrame() {
-    if (Flags.Done) {
+    if (Flags.shutdownRequested) {
         return FALSE;
     }
     if (!WorkspaceActive()) {
@@ -183,19 +182,18 @@ void drawStarsFrame(cairo_t *cr) {
     }
 
     cairo_save(cr);
+
     cairo_set_line_width(cr, 1);
     cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
 
     for (int i = 0; i < mNumberOfStars; i++) {
-        StarCoordinate *star = &mStarCoordinates[i];
+        const StarCoordinate* star = &mStarCoordinates[i];
 
-        int x = star->x;
-        int y = star->y;
-        int color = star->color;
         cairo_set_source_surface(cr,
-            starScreenSurfaces[color], x, y);
+            mStarSurfaceArray[star->color], star->x, star->y);
 
-        my_cairo_paint_with_alpha(cr, ALPHA);
+        my_cairo_paint_with_alpha(cr,
+            (0.01 * (100 - Flags.Transparency)));
     }
 
     cairo_restore(cr);

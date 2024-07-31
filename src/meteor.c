@@ -28,12 +28,12 @@
 
 #include "clocks.h"
 #include "debug.h"
-#include "flags.h"
+#include "Flags.h"
 #include "meteor.h"
 #include "plasmasnow.h"
 #include "snow.h"
 #include "ui.h"
-#include "utils.h"
+#include "Utils.h"
 #include "windows.h"
 
 
@@ -73,7 +73,7 @@ void initMeteorModule() {
  ** frame from Utils.clearGlobalSnowWindow().
  **/
 int eraseMeteorFrame() {
-    if (Flags.Done) {
+    if (Flags.shutdownRequested) {
         return FALSE;
     }
 
@@ -112,7 +112,7 @@ int eraseMeteorFrame() {
  ** Erase and Draw cycles.
  **/
 int updateMeteorFrame() {
-    if (Flags.Done) {
+    if (Flags.shutdownRequested) {
         return FALSE;
     }
 

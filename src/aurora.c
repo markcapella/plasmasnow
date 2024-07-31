@@ -23,11 +23,11 @@
 #include "aurora.h"
 #include "clocks.h"
 #include "debug.h"
-#include "flags.h"
+#include "Flags.h"
 #include "safe_malloc.h"
 #include "snow.h"
 #include "spline_interpol.h"
-#include "utils.h"
+#include "Utils.h"
 #include "windows.h"
 #include "plasmasnow.h"
 #include <X11/Intrinsic.h>
@@ -248,7 +248,7 @@ void aurora_erase() {
  **/
 void *do_aurora(void *d) {
     while (1) {
-        if (Flags.Done) {
+        if (Flags.shutdownRequested) {
             pthread_exit(NULL);
         }
         if (!(Flags.Aurora == 0 || !WorkspaceActive())) {

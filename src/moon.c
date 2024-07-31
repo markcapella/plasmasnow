@@ -22,9 +22,9 @@
 
 #include "moon.h"
 #include "debug.h"
-#include "flags.h"
+#include "Flags.h"
 #include "pixmaps.h"
-#include "utils.h"
+#include "Utils.h"
 #include "windows.h"
 #include <gtk/gtk.h>
 #include <math.h>
@@ -170,7 +170,7 @@ int do_umoon() {
     // (void) d;
     static int xdirection = 1;
     static int ydirection = 1;
-    if (Flags.Done) {
+    if (Flags.shutdownRequested) {
         return FALSE;
     }
     LEAVE_IF_INACTIVE;

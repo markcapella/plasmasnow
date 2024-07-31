@@ -53,11 +53,12 @@
 #include "birds.h"
 #include "blowoff.h"
 #include "clocks.h"
+#include "ColorCodes.h"
 #include "debug.h"
 #include "docs.h"
 #include "dsimple.h"
 #include "fallensnow.h"
-#include "flags.h"
+#include "Flags.h"
 #include "loadmeasure.h"
 #include "mainstub.h"
 #include "meteor.h"
@@ -68,15 +69,15 @@
 #include "scenery.h"
 #include "selfrep.h"
 #include "snow.h"
-#include "stars.h"
-#include "transwindow.h"
+#include "Stars.h"
+#include "StormWindow.h"
 #include "treesnow.h"
 #include "wmctrl.h"
 #include "version.h"
 #include "wind.h"
 #include "windows.h"
 #include "ui.h"
-#include "utils.h"
+#include "Utils.h"
 #include "vroot.h"
 #include "xdo.h"
 
@@ -119,7 +120,7 @@ GdkRGBA getRGBFromString(char* colorString);
  */
 static void HandleCpuFactor();
 static void RestartDisplay();
-static void SigHandler(int);
+static void appShutdownHook(int);
 
 static int handleX11ErrorEvent(Display*, XErrorEvent*);
 static void getX11Window(Window*);
@@ -142,7 +143,7 @@ static int onTimerEventDisplayChanged();
 static void mybindtestdomain();
 extern void setAppAboveOrBelowAllWindows();
 
-static void setmGlobalDesktopSession();
+char* getDesktopSession();
 static void DoAllWorkspaces();
 extern void setTransparentWindowAbove(GtkWindow* window);
 extern int updateWindowsList();
@@ -195,20 +196,18 @@ static int wanty = 0;
 static int mPrevSnowWinWidth = 0;
 static int mPrevSnowWinHeight = 0;
 
-static int mX11Error_Count = 0;
-const int mX11Error_maxBeforeTermination = 1000;
+const int mX11MaxErrorCount = 500;
+static int mX11ErrorCount = 0;
 
-extern void endApplication();
+int mX11LastErrorCode = 0;
 
 /** *********************************************************************
  ** main.c: 
  **/
 int startApplication(int argc, char *argv[]) {
-    fprintf(stdout, "main: startApplication() Starts.\n\n");
-
-    signal(SIGINT, SigHandler);
-    signal(SIGTERM, SigHandler);
-    signal(SIGHUP, SigHandler);
+    signal(SIGINT, appShutdownHook);
+    signal(SIGTERM, appShutdownHook);
+    signal(SIGHUP, appShutdownHook);
 
     // Set up random,
     srand48((int) (fmod(wallcl() * 1.0e6, 1.0e8)));
@@ -237,7 +236,6 @@ int startApplication(int argc, char *argv[]) {
     mGlobal.WindowOffsetX = 0;
     mGlobal.WindowOffsetY = 0;
 
-    mGlobal.DesktopSession = NULL;
     mGlobal.CWorkSpace = 0;
     mGlobal.ChosenWorkSpace = 0;
     mGlobal.NVisWorkSpaces = 1;
@@ -260,7 +258,6 @@ int startApplication(int argc, char *argv[]) {
     mGlobal.WindMax = 500.0;
     mGlobal.NewWind = 100.0;
 
-    mGlobal.HaltedByInterrupt = 0;
     mGlobal.Message[0] = 0;
 
     mGlobal.SantaPlowRegion = 0;
@@ -284,7 +281,7 @@ int startApplication(int argc, char *argv[]) {
         }
 
         if (!strcmp(arg, "-v") || !strcmp(arg, "-version")) {
-            PrintVersion();
+            logAppVersion();
             return 0;
 
         } else if (!strcmp(arg, "-changelog")) {
@@ -309,7 +306,6 @@ int startApplication(int argc, char *argv[]) {
     switch (rc) {
         case -1: // wrong flag
             uninitQPickerDialog();
-            endApplication();
             return 1;
             break;
 
@@ -321,12 +317,14 @@ int startApplication(int argc, char *argv[]) {
             break;
     }
 
-    PrintVersion();
-    printf(_("Available languages are: %s\n"), LANGUAGES);
+    // Log info, version checks.
+    logAppVersion();
+
+    printf("Available languages are:\n%s.\n\n",
+        LANGUAGES);
 
     // Make a copy of all flags, before gtk_init() removes some.
     // We need this at app refresh. remove: -screen n -lang c.
-
     Argv = (char **) malloc((argc + 1) * sizeof(char **));
     Argc = 0;
     for (int i = 0; i < argc; i++) {
@@ -339,43 +337,50 @@ int startApplication(int argc, char *argv[]) {
     }
     Argv[Argc] = NULL;
 
-    setmGlobalDesktopSession();
-    //if (!strncasecmp(mGlobal.DesktopSession, "bspwm", 5)) {
-    //    fprintf(stdout, "For optimal resuts, add to your %s:\n", "bspwmrc");
-    //    fprintf(stdout, "   bspc rule -a plasmasnow state=floating border=off\n");
-    //}
-
     printf("GTK version: %s\n", ui_gtk_version());
     #ifdef GSL_VERSION
-        fprintf(stdout, "GSL version: %s\n", GSL_VERSION);
+        fprintf(stdout, "GSL version: %s\n\n", GSL_VERSION);
     #else
-        fprintf(stdout, "GSL version: UNKNOWN\n");
+        fprintf(stdout, "GSL version: UNKNOWN\n\n");
     #endif
 
-    // Circumvent wayland problems. Before starting gtk,
-    // ensure that the gdk-x11 backend is used.
+    if (!isGtkVersionValid()) {
+        printf("%splasmasnow: needs gtk version >= %s, "
+            "found version %s.%s\n", COLOR_RED,
+            ui_gtk_required(), ui_gtk_version(), COLOR_NORMAL);
+        uninitQPickerDialog();
+        return 0;
+    }
+
+    printf("%splasmasnow: Desktop %s detected.%s\n\n",
+        COLOR_BLUE, getDesktopSession() ? getDesktopSession() :
+        "was not", COLOR_NORMAL);
+
+    // Log Wayland info.
+    const bool isWaylandPresent = getenv("WAYLAND_DISPLAY") &&
+        getenv("WAYLAND_DISPLAY") [0];
+    if (isWaylandPresent) {
+        printf("%splasmasnow: Wayland display was detected.%s\n\n",
+            COLOR_YELLOW, COLOR_NORMAL);
+    } else {
+        printf("%splasmasnow: Wayland display was not detected.%s\n\n",
+            COLOR_BLUE, COLOR_NORMAL);
+    }
+
+    // Before starting GTK, ensure x11 backend is used.
     setenv("GDK_BACKEND", "x11", 1);
-    mGlobal.IsWayland = getenv("WAYLAND_DISPLAY") &&
-        getenv("WAYLAND_DISPLAY")[0];
-    fprintf(stdout, "Wayland desktop %s detected.\n",
-        mGlobal.IsWayland ? "was" : "was not");
 
     // Init GTK and ensure valid version.
     gtk_init(&argc, &argv);
+
     if (!Flags.NoConfig) {
         WriteFlags();
-    }
-    if (!isGtkVersionValid()) {
-        printf(_("plasmasnow needs gtk version >= %s, found version %s \n"),
-            ui_gtk_required(), ui_gtk_version());
-        uninitQPickerDialog();
-        endApplication();
-        return 0;
     }
 
     mGlobal.display = XOpenDisplay(Flags.DisplayName);
 
-    mGlobal.xdo = xdo_new_with_opened_display(mGlobal.display, NULL, 0);
+    mGlobal.xdo = xdo_new_with_opened_display(
+        mGlobal.display, NULL, 0);
     if (mGlobal.xdo == NULL) {
         I("xdo problems\n");
         exit(1);
@@ -451,7 +456,7 @@ int startApplication(int argc, char *argv[]) {
         ui_set_sticky(Flags.AllWorkspaces);
     }
 
-    Flags.Done = 0;
+    Flags.shutdownRequested = 0;
 
     updateWindowsList();
     getWinInfoList();
@@ -486,6 +491,7 @@ int startApplication(int argc, char *argv[]) {
         handleDisplayConfigurationChange);
     addMethodToMainloop(PRIORITY_HIGH, TIME_BETWEEEN_UI_SETTINGS_UPDATES,
         doAllUISettingsUpdates);
+
     if (Flags.StopAfter > 0) {
         addMethodToMainloop(PRIORITY_DEFAULT, Flags.StopAfter,
             do_stopafter);
@@ -498,71 +504,40 @@ int startApplication(int argc, char *argv[]) {
     DoAllWorkspaces();
 
     //***************************************************
-    // main loop
+    // Bring it all up !
     //***************************************************
-    fprintf(stdout, "%s", "\nmain: startApplication() "
-        "gtk_main() Starts.\n\n");
+
+    printf("\n%splasmasnow: gtk_main() Starts.%s\n",
+        COLOR_BLUE, COLOR_NORMAL);
 
     gtk_main();
 
-    //****************
-    // Uninit and maybe restart.
-    fprintf(stdout, "main: startApplication() gtk_main() "
-        "Finishes.\n");
+    printf("\n%splasmasnow: gtk_main() Finishes.%s\n",
+        COLOR_BLUE, COLOR_NORMAL);
 
-    // Clear vars, close window.
+    // Display termination messages to MessageBox or STDOUT.
+     printf("%s\nThanks for using plasmastorm, you rock !%s\n",
+         COLOR_GREEN, COLOR_NORMAL);
+
+    // More terminates.
     if (mSnowWindowTitlebarName) {
         free(mSnowWindowTitlebarName);
     }
+
     XClearWindow(mGlobal.display, mGlobal.SnowWin);
     XFlush(mGlobal.display);
-    XCloseDisplay(mGlobal.display);
 
-    //****************
-    // Normal app shutdown.
+    XCloseDisplay(mGlobal.display);
     uninitQPickerDialog();
 
     // If Restarting due to display change.
     if (mDoRestartDueToDisplayChange) {
-        printf("\nplasmasnow Restarting Starts.\n");
-
         sleep(0);
-        for (int i = 0; Argv[i]; i++) {
-            printf("%s ", Argv[i]);
-        }
-        printf("\n");
-
-        fflush(NULL);
         setenv("plasmasnow_RESTART", "yes", 1);
         execvp(Argv[0], Argv);
-
-        printf("plasmasnow Restarting Finishes.\n");
-        return 0;
     }
-
-    endApplication();
-
-    const char* endMsg = "main: startApplication() Finishes.\n\n";
-    fprintf(stdout, "%s", endMsg);
 
     return 0;
-}
-
-/** *********************************************************************
- ** This method ...
- **/
-void endApplication(void) {
-    if (mGlobal.HaltedByInterrupt) {
-        fprintf(stdout, "\nplasmasnow: Caught signal %d\n",
-            mGlobal.HaltedByInterrupt);
-    }
-
-    if (strlen(mGlobal.Message)) {
-        fprintf(stdout, "\n%s\n", mGlobal.Message);
-    }
-
-    fprintf(stdout, "\nThanks for using plasmasnow\n");
-    fflush(stdout);
 }
 
 /** *********************************************************************
@@ -599,29 +574,22 @@ void getX11Window(Window *resultWin) {
 }
 
 /** *********************************************************************
- ** 
+ ** This method gets the desktop session type from env vars.
  **/
-void setmGlobalDesktopSession() {
-    // Early out if already set.
-    if (mGlobal.DesktopSession != NULL) {
-        return;
-    }
+char* getDesktopSession() {
+    const char* DESKTOPS[] = {
+        "DESKTOP_SESSION", "XDG_SESSION_DESKTOP",
+        "XDG_CURRENT_DESKTOP", "GDMSESSION", NULL};
 
-    const char *DESKTOPS[] = {"DESKTOP_SESSION",
-        "XDG_SESSION_DESKTOP", "XDG_CURRENT_DESKTOP",
-        "GDMSESSION", NULL};
-
+    char* desktopsession;
     for (int i = 0; DESKTOPS[i]; i++) {
-        char* desktopsession = NULL;
         desktopsession = getenv(DESKTOPS[i]);
         if (desktopsession) {
-            mGlobal.DesktopSession = strdup(desktopsession);
-            return;
+            break;
         }
     }
 
-    mGlobal.DesktopSession =
-        (char *) "unknown_desktop_session";
+    return desktopsession;
 }
 
 /** *********************************************************************
@@ -672,8 +640,8 @@ int StartWindow() {
 
         // xwin might be our transparent window ...
         if (createTransparentWindow(mGlobal.display, newGTKWindow,
-            Flags.Screen, Flags.AllWorkspaces, true,
-            true, NULL, &xwin, &wantx, &wanty)) {
+            Flags.Screen, Flags.AllWorkspaces, true, NULL, &xwin,
+            &wantx, &wanty)) {
             mTransparentWindow = newGTKWindow;
 
             mGlobal.SnowWin = xwin;
@@ -683,7 +651,8 @@ int StartWindow() {
             mGlobal.isDoubleBuffered = true;
 
             GtkWidget *drawing_area = gtk_drawing_area_new();
-            gtk_container_add(GTK_CONTAINER(mTransparentWindow), drawing_area);
+            gtk_container_add(GTK_CONTAINER(mTransparentWindow),
+                drawing_area);
 
             g_signal_connect(mTransparentWindow, "draw",
                 G_CALLBACK(handleTransparentWindowDrawEvents), NULL);
@@ -693,7 +662,7 @@ int StartWindow() {
             mGlobal.hasDestopWindow = true;
             mX11CairoEnabled = true;
 
-            if (!strncmp(mGlobal.DesktopSession, "LXDE", 4) &&
+            if (!strncmp(getDesktopSession(), "LXDE", 4) &&
                 (xwin = largest_window_with_name(mGlobal.xdo, "^pcmanfm$"))) {
             } else if ((xwin = largest_window_with_name(mGlobal.xdo, "^Desktop$"))) {
             } else {
@@ -870,7 +839,7 @@ void DoAllWorkspaces() {
  * Note: if changes != 0, the settings will be written to .plasmasnowrc
  **/
 int doAllUISettingsUpdates() {
-    if (Flags.Done) {
+    if (Flags.shutdownRequested) {
         gtk_main_quit();
     }
 
@@ -920,7 +889,7 @@ int doAllUISettingsUpdates() {
  * If the size has been changed, we refresh the app.
  **/
 int onTimerEventDisplayChanged() {
-    if (Flags.Done) {
+    if (Flags.shutdownRequested) {
         return -1;
     }
 
@@ -931,7 +900,7 @@ int onTimerEventDisplayChanged() {
     // I(_("Refresh due to change of screen or language settings ...\n"));
     if (mGlobal.ForceRestart) {
         mDoRestartDueToDisplayChange = 1;
-        Flags.Done = 1;
+        Flags.shutdownRequested = 1;
         return -1;
     }
 
@@ -944,7 +913,7 @@ int onTimerEventDisplayChanged() {
     unsigned int h = HeightOfScreen(screen);
     if (mGlobal.Wroot != w || mGlobal.Hroot != h) {
         mDoRestartDueToDisplayChange = 1;
-        Flags.Done = 1;
+        Flags.shutdownRequested = 1;
     }
 
     XCloseDisplay(display);
@@ -958,7 +927,7 @@ int onTimerEventDisplayChanged() {
  ** https://www.x.org/releases/current/doc/libX11/libX11/libX11.html#Events
  **/
 int handlePendingX11Events() {
-    if (Flags.Done) {
+    if (Flags.shutdownRequested) {
         return FALSE;
     }
 
@@ -1059,11 +1028,13 @@ void RestartDisplay() {
 }
 
 /** *********************************************************************
- ** This method ...
+ ** This method logs signal event shutdowns as fyi.
  **/
-void SigHandler(int signum) {
-    mGlobal.HaltedByInterrupt = signum;
-    Flags.Done = 1;
+void appShutdownHook(int signalNumber) {
+    printf("%splasmasnow: Shutdown by Signal Handler : %i.%s\n",
+        COLOR_YELLOW, signalNumber, COLOR_NORMAL);
+
+    Flags.shutdownRequested = 1;
 }
 
 /** *********************************************************************
@@ -1071,19 +1042,25 @@ void SigHandler(int signum) {
  **
  ** Primarily, we close the app if the system doesn't seem sane.
  **/
-int handleX11ErrorEvent(Display *dpy, XErrorEvent *err) {
-    const int MAX_MESSAGE_BUFFER_LENGTH = 1024;
-    char msg[MAX_MESSAGE_BUFFER_LENGTH];
-    XGetErrorText(dpy, err->error_code, msg, sizeof(msg));
-    msg[MAX_MESSAGE_BUFFER_LENGTH - 1] = '\x0'; // EOString
+int handleX11ErrorEvent(Display* dpy, XErrorEvent* event) {
+    // Save error & quit early if simply BadWindow.
+    mX11LastErrorCode = event->error_code;
+    if (mX11LastErrorCode == BadWindow) {
+        return 0;
+    }
 
-    // If we notice too many X11 errors, print any mGlobal.Message
-    // and set app termination flag.
-    msg[60] = '\x0'; fprintf(stdout, "%s", msg);
-    if (++mX11Error_Count > mX11Error_maxBeforeTermination) {
-        snprintf(mGlobal.Message, sizeof(mGlobal.Message),
-            _("More than %d errors, I quit!"), mX11Error_maxBeforeTermination);
-        Flags.Done = 1;
+    // Print the error message of the event.
+    const int MAX_MESSAGE_BUFFER_LENGTH = 60;
+    char msg[MAX_MESSAGE_BUFFER_LENGTH];
+    XGetErrorText(dpy, event->error_code, msg, sizeof(msg));
+    printf("%splasmasnow::Application handleX11ErrorEvent() %s.%s\n",
+        COLOR_RED, msg, COLOR_NORMAL);
+
+    // Halt after too many errors.
+    if (mX11ErrorCount++ > mX11MaxErrorCount) {
+        printf("\n%splasmasnow: Shutting down due to excessive "
+            "X11 errors.%s\n", COLOR_RED, COLOR_NORMAL);
+        Flags.shutdownRequested = true;
     }
 
     return 0;
@@ -1120,7 +1097,7 @@ void drawCairoWindowInternal(cairo_t *cr) {
         counter++;
         return;
     }
-    if (Flags.Done) {
+    if (Flags.shutdownRequested) {
         return;
     }
 
@@ -1201,7 +1178,7 @@ void SetWindowScale() {
  ** This method ...
  **/
 int handleDisplayConfigurationChange() {
-    if (Flags.Done) {
+    if (Flags.shutdownRequested) {
         return FALSE;
     }
 
@@ -1231,7 +1208,7 @@ int handleDisplayConfigurationChange() {
  ** This method ...
  **/
 int drawTransparentWindow(gpointer widget) {
-    if (Flags.Done) {
+    if (Flags.shutdownRequested) {
         return FALSE;
     }
 
@@ -1298,7 +1275,7 @@ void rectangle_draw(cairo_t *cr) {
  ** This method ...
  **/
 int do_stopafter() {
-    Flags.Done = 1;
+    Flags.shutdownRequested = 1;
     printf(_("Halting because of flag %s\n"), "-stopafter");
 
     return FALSE;

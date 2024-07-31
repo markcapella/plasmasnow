@@ -22,7 +22,7 @@
 #include "ixpm.h"
 #include "debug.h"
 #include "safe_malloc.h"
-#include "utils.h"
+#include "Utils.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>

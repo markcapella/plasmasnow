@@ -25,10 +25,10 @@
 #include <gtk/gtk.h>
 #include "plasmasnow.h"
 
-extern int createTransparentWindow(Display *display,
-    GtkWidget *transparentGTKWindow, int xscreen,
-    int sticky, int below, int dock, GdkWindow **gdk_window,
-    Window *x11_window, int *wantx, int *wanty);
+extern int createTransparentWindow(Display* display,
+    GtkWidget* transparentGTKWindow, int xscreen,
+    int sticky, int below, GdkWindow** gdk_window,
+    Window* x11_window, int* wantx, int* wanty);
 
 extern void setTransparentWindowBelow(GtkWindow* window);
 extern void setTransparentWindowAbove(GtkWindow* window);
