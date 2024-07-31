@@ -360,11 +360,9 @@ int startApplication(int argc, char *argv[]) {
     const bool isWaylandPresent = getenv("WAYLAND_DISPLAY") &&
         getenv("WAYLAND_DISPLAY") [0];
     if (isWaylandPresent) {
-        printf("%splasmasnow: Wayland display was detected.%s\n\n",
-            COLOR_YELLOW, COLOR_NORMAL);
-    } else {
-        printf("%splasmasnow: Wayland display was not detected.%s\n\n",
-            COLOR_BLUE, COLOR_NORMAL);
+        printf("%splasmasnow: Wayland display was "
+            "detected - FATAL.%s\n\n", COLOR_RED, COLOR_NORMAL);
+        exit(1);
     }
 
     // Before starting GTK, ensure x11 backend is used.

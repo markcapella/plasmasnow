@@ -24,7 +24,7 @@
 #-# 
 
 AC_PREREQ([2.69])
-AC_INIT([plasmasnow], [2024.07.30], [markcapella@twcny.rr.com])
+AC_INIT([plasmasnow], [2024.07.31], [markcapella@twcny.rr.com])
 AC_CONFIG_SRCDIR([src/plasmasnow.h])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE
