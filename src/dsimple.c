@@ -93,7 +93,7 @@ static void usage() {
  */
 
 /* This stuff is defined in the calling program by just_display.h */
-const char *program_name = "plasmasnow";
+const char* program_name = "plasmasnow";
 
 /*
  * Get_Display_Name (argc, argv) Look for -display, -d, or host:dpy (obselete)

@@ -227,8 +227,8 @@ void DetermineVisualWorkspaces() {
         attr.border_pixel = WhitePixel(mGlobal.display, mGlobal.Screen);
         attr.event_mask = ButtonPressMask;
         valuemask = CWBackPixel | CWBorderPixel | CWEventMask;
-        class_hints.res_name = (char *) "plasmasnow";
-        class_hints.res_class = (char *) "plasmasnow";
+        class_hints.res_name = (char*) "plasmasnow";
+        class_hints.res_class = (char*) "plasmasnow";
         motif_hints = XInternAtom(mGlobal.display, "_MOTIF_WM_HINTS", False);
         wmsize.flags = USPosition | USSize;
     }

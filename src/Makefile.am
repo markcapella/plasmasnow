@@ -55,22 +55,14 @@ noinst_LIBRARIES = libxdo.a
 libxdo_a_SOURCES = xdo.c xdo_search.c xdo.h xdo_util.h xdo_version.h
 
 plasmasnow_SOURCES = \
-		Application.c aurora.c \
-		birds.c blowoff.c \
-		clientwin.c clocks.c colorPicker.cpp csvpos.c \
-		docs.c dsimple.c \
-		fallensnow.c Flags.c \
-		hashtable.cpp \
-		ixpm.c \
-		kdtree.c \
-		loadmeasure.c \
-		mainstub.cpp meteor.c moon.c \
-		pixmaps.c \
-		safe_malloc.c Santa.c scenery.c selfrep.c snow.c \
-		spline_interpol.c Stars.c StormWindow.c \
-		treesnow.c \
-		ui.glade ui.c Utils.c \
-		wind.c windows.c wmctrl.c
+		Application.c aurora.c birds.c blowoff.c clientwin.c \
+		clocks.c colorPicker.cpp csvpos.c docs.c dsimple.c \
+		fallensnow.c Flags.c hashtable.cpp ixpm.c kdtree.c \
+		loadmeasure.c mainstub.cpp meteor.c MsgBox.cpp moon.c \
+		pixmaps.c safe_malloc.c Santa.c scenery.c selfrep.c \
+		snow.c spline_interpol.c Stars.c StormWindow.c \
+		treesnow.c ui.glade ui.c Utils.c wind.c windows.c \
+		wmctrl.c
 
 nodist_plasmasnow_SOURCES = ui_xml.h snow_includes.h
 
@@ -110,9 +102,13 @@ snow_includes.h: Pixmaps
 
 install-data-local:
 	cp 'Pixmaps/plasmasnow.png' /usr/share/icons/hicolor/48x48/apps/
+	cp 'Pixmaps/plasmasnowbox.png' /usr/share/icons/hicolor/48x48/apps/
+	cp 'Pixmaps/plasmasnowbox.png' /usr/local/share/pixmaps/
 
 uninstall-local:
 	rm -f /usr/share/icons/hicolor/48x48/apps/plasmasnow.png
+	rm -f /usr/share/icons/hicolor/48x48/apps/plasmasnowbox.png
+	rm -f /usr/local/share/pixmaps/plasmasnowbox.png
 
 TESTS = test1.sh
 
@@ -125,12 +121,13 @@ plasmasnow-selfrep.$(OBJEXT): $(tarfile_inc)
 
 # usr/local/share
 appicondir=$(datadir)/pixmaps
-appicon_DATA=Pixmaps/plasmasnow.png Pixmaps/plasmapicker.png
+appicon_DATA=Pixmaps/plasmasnow.png \
+	Pixmaps/plasmasnowpicker.png
 
 man6_MANS = plasmasnow.6
 plasmasnow.6: plasmasnow
 	./plasmasnow -manpage > $@
 
-CLEANFILES = plasmasnow.6 ui_xml.h snow_includes.h plasmasnow_out_2 plasmasnow_out_3 \
-	     changelog.inc tarfile.inc toascii toascii.c
-
+CLEANFILES = plasmasnow.6 ui_xml.h snow_includes.h \
+	plasmasnow_out_2 plasmasnow_out_3 \
+	changelog.inc tarfile.inc toascii toascii.c

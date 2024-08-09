@@ -63,6 +63,7 @@
 #include "mainstub.h"
 #include "meteor.h"
 #include "moon.h"
+#include "MsgBox.h"
 #include "mygettext.h"
 #include "safe_malloc.h"
 #include "Santa.h"
@@ -221,7 +222,7 @@ int startApplication(int argc, char *argv[]) {
     birds_sem_init();
 
     // Titlebar string, but not one.
-    mGlobal.mPlasmaWindowTitle = "plasmaSnow";
+    mGlobal.mPlasmaWindowTitle = "";
 
     mGlobal.cpufactor = 1.0;
     mGlobal.WindowScale = 1.0;
@@ -262,11 +263,11 @@ int startApplication(int argc, char *argv[]) {
 
     mGlobal.SantaPlowRegion = 0;
 
-    InitFlags();
-
     // we search for flags that only produce output to stdout,
     // to enable to run in a non-X environment, in which case
     // gtk_init() would fail.
+    InitFlags();
+
     for (int i = 0; i < argc; i++) {
         char *arg = argv[i];
 
@@ -289,13 +290,13 @@ int startApplication(int argc, char *argv[]) {
             return 0;
 
         }
-#ifdef SELFREP
+        #ifdef SELFREP
         else if (!strcmp(arg, "-selfrep")) {
             selfrep();
             return 0;
 
         }
-#endif
+        #endif
     }
 
     int rc = HandleFlags(argc, argv);
@@ -317,12 +318,6 @@ int startApplication(int argc, char *argv[]) {
             break;
     }
 
-    // Log info, version checks.
-    logAppVersion();
-
-    printf("Available languages are:\n%s.\n\n",
-        LANGUAGES);
-
     // Make a copy of all flags, before gtk_init() removes some.
     // We need this at app refresh. remove: -screen n -lang c.
     Argv = (char **) malloc((argc + 1) * sizeof(char **));
@@ -337,19 +332,21 @@ int startApplication(int argc, char *argv[]) {
     }
     Argv[Argc] = NULL;
 
-    printf("GTK version: %s\n", ui_gtk_version());
-    #ifdef GSL_VERSION
-        fprintf(stdout, "GSL version: %s\n\n", GSL_VERSION);
-    #else
-        fprintf(stdout, "GSL version: UNKNOWN\n\n");
-    #endif
+    // Log info, version checks.
+    logAppVersion();
+
+    printf("Available languages are:\n%s.\n\n",
+        LANGUAGES);
+
+    printf("GTK version : %s\n", ui_gtk_version());
+    printf("GTK required: %s\n\n", ui_gtk_required());
 
     if (!isGtkVersionValid()) {
-        printf("%splasmasnow: needs gtk version >= %s, "
-            "found version %s.%s\n", COLOR_RED,
-            ui_gtk_required(), ui_gtk_version(), COLOR_NORMAL);
-        uninitQPickerDialog();
-        return 0;
+        printf("%splasmasnow: GTK Version is insufficient - FATAL.%s\n",
+            COLOR_RED, COLOR_NORMAL);
+        displayMessageBox(100, 200, 300, 66, "plasmasnow",
+            "GTK Version is insufficient - FATAL.");
+        return 1;
     }
 
     printf("%splasmasnow: Desktop %s detected.%s\n\n",
@@ -361,8 +358,11 @@ int startApplication(int argc, char *argv[]) {
         getenv("WAYLAND_DISPLAY") [0];
     if (isWaylandPresent) {
         printf("%splasmasnow: Wayland display was "
-            "detected - FATAL.%s\n\n", COLOR_RED, COLOR_NORMAL);
-        exit(1);
+            "detected - FATAL.%s\n", COLOR_RED, COLOR_NORMAL);
+        displayMessageBox(100, 200, 600, 66, "plasmasnow",
+            "Oh noes! plasmasnow is an x11 app, & can\'t "
+            "be run on a Wayland desktop.");
+        return 1;
     }
 
     // Before starting GTK, ensure x11 backend is used.
@@ -376,13 +376,24 @@ int startApplication(int argc, char *argv[]) {
     }
 
     mGlobal.display = XOpenDisplay(Flags.DisplayName);
+    if (mGlobal.display == NULL) {
+        printf("plasmasnow: X11 Does not seem to be "
+            "available - FATAL.\n");
+        displayMessageBox(100, 200, 360, 66, "plasmasnow",
+            "X11 Does not seem to be available - FATAL.");
+        return 1;
+    }
 
     mGlobal.xdo = xdo_new_with_opened_display(
         mGlobal.display, NULL, 0);
     if (mGlobal.xdo == NULL) {
-        I("xdo problems\n");
-        exit(1);
+        printf("plasmasnow: XDO reports no displays - FATAL.\n");
+        displayMessageBox(100, 200, 284, 66, "plasmasnow",
+            "XDO reports no displays - FATAL.");
+        XCloseDisplay(mGlobal.display);
+        return 1;
     }
+
     mGlobal.xdo->debug = 0;
 
     XSynchronize(mGlobal.display, DO_SYNCH_DEBUG);
@@ -415,11 +426,6 @@ int startApplication(int argc, char *argv[]) {
     }
 
     setGlobalFlakeColor(getRGBFromString(Flags.SnowColor));
-
-    if (mGlobal.display == NULL) {
-        fprintf(stdout, "plasmasnow: cannot connect to X server.\n"),
-        exit(1);
-    }
 
     // Start Main GUI Window.
     InitSnowOnTrees();
@@ -514,7 +520,7 @@ int startApplication(int argc, char *argv[]) {
         COLOR_BLUE, COLOR_NORMAL);
 
     // Display termination messages to MessageBox or STDOUT.
-     printf("%s\nThanks for using plasmastorm, you rock !%s\n",
+     printf("%s\nThanks for using plasmasnow, you rock !%s\n",
          COLOR_GREEN, COLOR_NORMAL);
 
     // More terminates.

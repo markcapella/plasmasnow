@@ -1,5 +1,5 @@
 
-# plasmaSnow
+# plasmasnow
 
 !['plasmasnow'](https://github.com/markcapella/plasmasnow/blob/main/assets/images/screenshot.png)
 
