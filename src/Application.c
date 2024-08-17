@@ -636,14 +636,17 @@ int StartWindow() {
     // Normal Startup.
     } else {
         // Try to create a transparent clickthrough window.
-        GtkWidget* newGTKWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+        GtkWidget* newGTKWindow = gtk_message_dialog_new(NULL,
+            GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_OTHER,
+            GTK_BUTTONS_NONE, "unused");
+
         gtk_widget_set_can_focus(newGTKWindow, TRUE);
         gtk_window_set_decorated(GTK_WINDOW(newGTKWindow), FALSE);
         gtk_window_set_type_hint(GTK_WINDOW(newGTKWindow),
             GDK_WINDOW_TYPE_HINT_POPUP_MENU);
 
         // xwin might be our transparent window ...
-        if (createTransparentWindow(mGlobal.display, newGTKWindow,
+        if (createStormWindow(mGlobal.display, newGTKWindow,
             Flags.Screen, Flags.AllWorkspaces, true, NULL, &xwin,
             &wantx, &wanty)) {
             mTransparentWindow = newGTKWindow;

@@ -25,15 +25,15 @@
 #include <gtk/gtk.h>
 #include "plasmasnow.h"
 
-extern int createTransparentWindow(Display* display,
+int createStormWindow(Display* display,
     GtkWidget* transparentGTKWindow, int xscreen,
     int sticky, int below, GdkWindow** gdk_window,
     Window* x11_window, int* wantx, int* wanty);
 
-extern void setTransparentWindowBelow(GtkWindow* window);
-extern void setTransparentWindowAbove(GtkWindow* window);
+void setTransparentWindowBelow(GtkWindow* window);
+void setTransparentWindowAbove(GtkWindow* window);
 
-extern void logAllWindowsStackedTopToBottom();
+void logAllWindowsStackedTopToBottom();
 
-extern void doRaiseWindow(char* argString);
-extern void doLowerWindow(char* argString);
+void doRaiseWindow(char* argString);
+void doLowerWindow(char* argString);

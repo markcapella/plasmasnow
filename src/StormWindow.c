@@ -20,9 +20,6 @@
 #-# 
 */
 #include <pthread.h>
-#include "debug.h"
-#include "windows.h"
-#include "StormWindow.h"
 #include <stdbool.h>
 
 #include <X11/Intrinsic.h>
@@ -31,6 +28,9 @@
 #include <gdk/gdkx.h>
 #include <gtk/gtk.h>
 
+#include "debug.h"
+#include "StormWindow.h"
+#include "windows.h"
 
 static int resetVolatileTransparentWindowAttributes(
     GtkWidget *widget);
@@ -53,7 +53,7 @@ static int resetVolatileTransparentWindowAttributes(
  * the window is not click-through in Gnome.
  */
 
-int createTransparentWindow(Display* display,
+int createStormWindow(Display* display,
     GtkWidget* transparentGTKWindow, int xscreen,
     int sticky, int below, GdkWindow** gdk_window,
     Window* x11_window, int* wantx, int* wanty) {
