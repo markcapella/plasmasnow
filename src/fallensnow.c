@@ -829,12 +829,12 @@ FallenSnow* findFallenSnowItemByWindow(FallenSnow* first,
  **/
 void drawFallenSnowItem(FallenSnow* fsnow) {
     if (fsnow->winInfo.window == 0 ||
-        (!fsnow->winInfo.hidden &&
-            (isFallenSnowOnVisibleWorkspace(fsnow) ||
-                fsnow->winInfo.sticky))) {
+        (!fsnow->winInfo.hidden && (fsnow->winInfo.sticky ||
+            isFallenSnowOnVisibleWorkspace(fsnow)))) {
 
         // do not interfere with Santa
-        if (!Flags.NoSanta) {
+        if (!Flags.NoSanta && mGlobal.SantaPlowRegion) {
+
             int in = XRectInRegion(mGlobal.SantaPlowRegion, fsnow->x,
                 fsnow->y - fsnow->h, fsnow->w, fsnow->h);
 
