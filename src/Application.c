@@ -597,7 +597,7 @@ char* getDesktopSession() {
 }
 
 /** *********************************************************************
- ** This method ...
+ ** This method starts / creates the main storm window.
  **/
 int StartWindow() {
     mGlobal.Rootwindow = DefaultRootWindow(mGlobal.display);
@@ -635,37 +635,44 @@ int StartWindow() {
 
     // Normal Startup.
     } else {
-        // Try to create a transparent clickthrough window.
-        GtkWidget* newGTKWindow = gtk_message_dialog_new(NULL,
-            GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_OTHER,
-            GTK_BUTTONS_NONE, "unused");
+        // Try to create a transparent clickthrough window in a
+        // MessageDialog, avoiding an Icon in the dock.
+        GtkWidget* stormWindowWidget = (GtkWidget*) g_object_new(
+            GTK_TYPE_MESSAGE_DIALOG, "use-header-bar", false,
+            "message-type", GTK_MESSAGE_OTHER, "buttons",
+            GTK_BUTTONS_NONE, NULL);
 
-        gtk_widget_set_can_focus(newGTKWindow, TRUE);
-        gtk_window_set_decorated(GTK_WINDOW(newGTKWindow), FALSE);
-        gtk_window_set_type_hint(GTK_WINDOW(newGTKWindow),
+        // Remove icon that MessageDialog creates & we don't need.
+        if (GTK_IS_BIN(stormWindowWidget)) {
+            GtkWidget* child = gtk_bin_get_child(GTK_BIN(
+                stormWindowWidget));
+            if (child) {
+                gtk_container_remove(GTK_CONTAINER(
+                    stormWindowWidget), child);
+            }
+        }
+
+        gtk_widget_set_can_focus(stormWindowWidget, false);
+        gtk_window_set_decorated(GTK_WINDOW(stormWindowWidget), FALSE);
+        gtk_window_set_type_hint(GTK_WINDOW(stormWindowWidget),
             GDK_WINDOW_TYPE_HINT_POPUP_MENU);
 
         // xwin might be our transparent window ...
-        if (createStormWindow(mGlobal.display, newGTKWindow,
+        if (createStormWindow(mGlobal.display, stormWindowWidget,
             Flags.Screen, Flags.AllWorkspaces, true, NULL, &xwin,
             &wantx, &wanty)) {
-            mTransparentWindow = newGTKWindow;
 
+            mTransparentWindow = stormWindowWidget;
             mGlobal.SnowWin = xwin;
             mGlobal.hasTransparentWindow = true;
             mGlobal.hasDestopWindow = true;
-
             mGlobal.isDoubleBuffered = true;
-
-            GtkWidget *drawing_area = gtk_drawing_area_new();
-            gtk_container_add(GTK_CONTAINER(mTransparentWindow),
-                drawing_area);
 
             g_signal_connect(mTransparentWindow, "draw",
                 G_CALLBACK(handleTransparentWindowDrawEvents), NULL);
-
-        // xwin might be our rootwindow, pcmanfm or Desktop:
         } else {
+
+            // xwin might be our rootwindow, pcmanfm or Desktop:
             mGlobal.hasDestopWindow = true;
             mX11CairoEnabled = true;
 
@@ -737,7 +744,7 @@ int StartWindow() {
 }
 
 /** *********************************************************************
- ** Cairo specific. handleDisplayConfigurationChange() startApplication->StartWindow()
+ ** Cairo specific.
  **/
 void handleX11CairoDisplayChange() {
 #ifdef XDBE_AVAILABLE

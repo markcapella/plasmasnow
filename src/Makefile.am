@@ -35,9 +35,11 @@ QT_CINCLUDES = -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-g
 QT_LIBS      = /usr/lib/x86_64-linux-gnu/libQt5Core.so /usr/lib/x86_64-linux-gnu/libQt5Gui.so \
 	/usr/lib/x86_64-linux-gnu/libQt5Widgets.so
 
-plasmasnow_CPPFLAGS    = $(QT_CFLAGS) $(QT_CINCLUDES) $(GTK_CFLAGS) $(X11_CFLAGS) $(GSL_CFLAGS) -DLOCALEDIR=\"$(LOCALEDIR)\" \
-		    -DLANGUAGES='"$(LANGUAGES)"'
-plasmasnow_LDADD       = libxdo.a $(GTK_LIBS) $(QT_LIBS) $(X11_LIBS) -lXfixes $(GSL_LIBS) $(LIBINTL) 
+plasmasnow_CPPFLAGS    = $(QT_CFLAGS) $(QT_CINCLUDES) $(GTK_CFLAGS) \
+	$(X11_CFLAGS) $(GSL_CFLAGS) -DLOCALEDIR=\"$(LOCALEDIR)\" \
+	-DLANGUAGES='"$(LANGUAGES)"'
+plasmasnow_LDADD       = libxdo.a $(GTK_LIBS) $(QT_LIBS) $(X11_LIBS) \
+	-lXfixes $(GSL_LIBS) $(LIBINTL) 
 libxdo_a_CPPFLAGS = $(X11_CFLAGS)
 
 if USE_NLS

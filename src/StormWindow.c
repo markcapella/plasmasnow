@@ -32,28 +32,15 @@
 #include "StormWindow.h"
 #include "windows.h"
 
-static int resetVolatileTransparentWindowAttributes(
-    GtkWidget *widget);
 
-// extern int getTmpLogFile();
+/** *********************************************************************
+ ** Module globals and consts.
+ **/
 
-/*
- * creates transparent window using gtk3/cairo.
- *
- * transparentGTKWindow: (input)  GtkWidget to create transparent window in
- * xscreen:     (input)  <0: full-screen  else xinerama screen number
- * sticky:      (input)  visible on all workspaces or not
- * below:       (input)  1: below all other windows 2: above all other windows
- *                       0: no action
- *
- * gdk_window:  (output) GdkWindow created
- * x11_window:  (output) Window X11 created: (output)
- *
- * NOTE: with decorations set to TRUE (see gtk_window_set_decorated()),
- * the window is not click-through in Gnome.
- */
-
-int createStormWindow(Display* display,
+/** *********************************************************************
+ ** This method creates the main Storm Window.
+ **/
+bool createStormWindow(Display* display,
     GtkWidget* transparentGTKWindow, int xscreen,
     int sticky, int below, GdkWindow** gdk_window,
     Window* x11_window, int* wantx, int* wanty) {
@@ -72,7 +59,7 @@ int createStormWindow(Display* display,
     gtk_window_set_accept_focus(GTK_WINDOW(transparentGTKWindow), FALSE);
 
     g_signal_connect(transparentGTKWindow, "draw",
-        G_CALLBACK(resetVolatileTransparentWindowAttributes), NULL);
+        G_CALLBACK(setStormWindowAttributes), NULL);
 
     // Remove our things from inputStormWindow:
     g_object_steal_data(G_OBJECT(transparentGTKWindow), "trans_sticky");
@@ -162,34 +149,28 @@ int createStormWindow(Display* display,
         gtk_window_move(GTK_WINDOW(transparentGTKWindow), winx, winy);
     }
 
-    resetVolatileTransparentWindowAttributes(transparentGTKWindow);
+    setStormWindowAttributes(transparentGTKWindow);
     g_object_steal_data(G_OBJECT(transparentGTKWindow), "trans_done");
 
-    return TRUE;
+    return true;
 }
 
 /** *********************************************************************
+ **
+ ** for some reason, in some environments the 'below' and 'stick'
+ ** properties disappear. It works again, if we express our
+ ** wishes after starting gtk_main and the best place is in the
+ ** draw event.
  ** 
+ ** We want to reset the settings at least once to be sure.
+ ** Things like sticky and below should be stored in the
+ ** widget beforehand.
+ **
+ ** TODO:
+ ** Lotsa code fix during thread inititaliztion by MJC may
+ ** have fixed this. Tinker and test.
  **/
-// for some reason, in some environments the 'below' and 'stick' properties
-// disappear. It works again, if we express our wishes after starting gtk_main
-// and the best place is in the draw event.
-//
-// We want to reset the settings at least once to be sure.
-// Things like sticky and below should be stored in the widget beforehand.
-// Use the value of p itself, not what it points to.
-// Following the C standard, we have to use an array to subtract pointers.
-
-int resetVolatileTransparentWindowAttributes(GtkWidget *widget) {
-    /*
-    {   const char* logMsg =
-            "transparentwindow: resetVolatileTransparentWindowAttributes() Starts.\n";
-        write(getTmpLogFile(), logMsg, strlen(logMsg));
-    }
-    */
-
-    // must be >= 0, and is equal to the number of times the settings
-    // will be done when called more than once
+int setStormWindowAttributes(GtkWidget *widget) {
     enum {
         rep = 1,
         nrep
@@ -204,7 +185,7 @@ int resetVolatileTransparentWindowAttributes(GtkWidget *widget) {
     if (p - &something[0] >= rep) {
         /*
         {   const char* logMsg =
-                "transparentwindow: resetVolatileTransparentWindowAttributes() Finishes early.\n";
+                "transparentwindow: setStormWindowAttributes() Finishes early.\n";
             write(getTmpLogFile(), logMsg, strlen(logMsg));
         }
         */
@@ -241,7 +222,7 @@ int resetVolatileTransparentWindowAttributes(GtkWidget *widget) {
     }
     /*
     {   const char* logMsg =
-            "transparentwindow: resetVolatileTransparentWindowAttributes() Finishes.\n";
+            "transparentwindow: setStormWindowAttributes() Finishes.\n";
         write(getTmpLogFile(), logMsg, strlen(logMsg));
     }
     */
@@ -252,65 +233,15 @@ int resetVolatileTransparentWindowAttributes(GtkWidget *widget) {
  ** 
  **/
 void setTransparentWindowBelow(__attribute__((unused)) GtkWindow *window) {
-    //{   const char* logMsg =
-    //        "transparentwindow: setTransparentWindowBelow() Starts.\n";
-    //    fprintf(stdout, "%s", logMsg);
-    //}
-
     gtk_window_set_keep_above(GTK_WINDOW(window), false);
-
-    //{   const char* logMsg =
-    //        "transparentwindow: setTransparentWindowBelow() "
-    //        "keep_above FALSE finished.\n";
-    //    fprintf(stdout, "%s", logMsg);
-    //}
-
     gtk_window_set_keep_below(GTK_WINDOW(window), true);
-
-    //{   const char* logMsg =
-    //        "transparentwindow: setTransparentWindowBelow() "
-    //        "keep_below TRUE finished.\n";
-    //    fprintf(stdout, "%s", logMsg);
-    //}
-
-    //doLowerWindow(mGlobal.mPlasmaWindowTitle);
-
-    //{   const char* logMsg =
-    //        "transparentwindow: setTransparentWindowBelow() Finishes.\n";
-    //    fprintf(stdout, "%s", logMsg);
-    //}
 }
 
 /** *********************************************************************
  ** 
  **/
 void setTransparentWindowAbove(__attribute__((unused)) GtkWindow *window) {
-    //{   const char* logMsg =
-    //        "transparentwindow: setTransparentWindowAbove() Starts,\n";
-    //    fprintf(stdout, "%s", logMsg);
-    //}
-
     gtk_window_set_keep_below(GTK_WINDOW(window), false);
-
-    //{   const char* logMsg =
-    //        "transparentwindow: setTransparentWindowAbove() "
-    //        "keep_below FALSE finished.\n";
-    //    fprintf(stdout, "%s", logMsg);
-    //}
-
     gtk_window_set_keep_above(GTK_WINDOW(window), true);
-
-    //{   const char* logMsg =
-    //        "transparentwindow: setTransparentWindowAbove() "
-    //        "keep_above TRUE finished.\n";
-    //    fprintf(stdout, "%s", logMsg);
-    //}
-
     doRaiseWindow(mGlobal.mPlasmaWindowTitle);
-
-    //{   const char* logMsg =
-    //        "transparentwindow: setTransparentWindowAbove() "
-    //        "Finishes.\n";
-    //    fprintf(stdout, "%s", logMsg);
-    //}
 }

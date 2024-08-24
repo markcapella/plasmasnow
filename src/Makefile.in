@@ -688,7 +688,9 @@ QT_CINCLUDES = -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-g
 plasmasnow_CPPFLAGS = $(QT_CFLAGS) $(QT_CINCLUDES) $(GTK_CFLAGS) \
 	$(X11_CFLAGS) $(GSL_CFLAGS) -DLOCALEDIR=\"$(LOCALEDIR)\" \
 	-DLANGUAGES='"$(LANGUAGES)"' $(am__append_1) $(am__append_2)
-plasmasnow_LDADD = libxdo.a $(GTK_LIBS) $(QT_LIBS) $(X11_LIBS) -lXfixes $(GSL_LIBS) $(LIBINTL) 
+plasmasnow_LDADD = libxdo.a $(GTK_LIBS) $(QT_LIBS) $(X11_LIBS) \
+	-lXfixes $(GSL_LIBS) $(LIBINTL) 
+
 libxdo_a_CPPFLAGS = $(X11_CFLAGS)
 @USE_NLS_FALSE@LANGUAGES = 
 noinst_LIBRARIES = libxdo.a
