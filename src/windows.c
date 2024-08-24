@@ -106,7 +106,7 @@ extern void onWindowDestroyed(XEvent*);
 
 //**
 // Windows life-cycle helper methods.
-bool isMouseClickedAndHeldDown();
+bool isMouseClickedAndHeldInWindow();
 
 //**
 // Window dragging methods.
@@ -742,18 +742,26 @@ void onWindowMapped(XEvent* event) {
 
     // Determine window drag state.
     if (!isWindowBeingDragged()) {
-        // Did we just start dragging window via mouse?
-        if (isMouseClickedAndHeldDown(event->xmap.window)) {
-            // Clear snow from window that just started dragging.
-            setIsWindowBeingDragged(true);
-            setWindowBeingDragged(getDragWindowOf(
-                getFocusedX11Window()));
-            removeFallenSnowFromWindow(getWindowBeingDragged());
-            return;
+        if (isMouseClickedAndHeldInWindow(
+            event->xmap.window)) {
+            if (event->xmap.window != None) {
+                const Window focusedWindow =
+                    getFocusedX11Window();
+                if (focusedWindow != None) {
+                    const Window dragWindow =
+                        getDragWindowOf(focusedWindow);
+                    if (dragWindow != None) {
+                        setIsWindowBeingDragged(true);
+                        setWindowBeingDragged(dragWindow);
+                        removeFallenSnowFromWindow(getWindowBeingDragged());
+                        return;
+                    }
+                }
+            }
         }
     }
 
-    // Determine window drag state, KDE Plasma.
+    // 2nd Determine window drag state, for KDE Plasma.
     // Is this a signature of a transient Plasma DRAG Window
     // being mapped? If not, early exit.
     //     Event:  se? 0  ew [0x00000764]  w [0x018a1b21]  r? 0.
@@ -828,7 +836,7 @@ void onWindowDestroyed(__attribute__((unused)) XEvent* event) {
  ** This method decides if the user ia dragging a window via a mouse
  ** click-and-hold on the titlebar.
  **/
-bool isMouseClickedAndHeldDown(Window window) {
+bool isMouseClickedAndHeldInWindow(Window window) {
     //  Find the focused window pointer click state.
     Window root_return, child_return;
     int root_x_return, root_y_return;
