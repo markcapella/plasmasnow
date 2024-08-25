@@ -29,10 +29,10 @@
 #include "clocks.h"
 #include "debug.h"
 #include "Flags.h"
+#include "MainWindow.h"
 #include "meteor.h"
 #include "plasmasnow.h"
 #include "snow.h"
-#include "ui.h"
 #include "Utils.h"
 #include "windows.h"
 

@@ -43,7 +43,6 @@
     BUTTON(togglecode, plasmasnow_birds, ShowAttrPoint, 1)                          \
     BUTTON(togglecode, plasmasnow_birds, ShowBirds, 1)                              \
     BUTTON(togglecode, plasmasnow_settings, AllWorkspaces, 1)                       \
-    BUTTON(togglecode, plasmasnow_settings, BelowConfirm, 0)                        \
     BUTTON(togglecode, plasmasnow_settings, mAppTheme, 1)                           \
     BUTTON(togglecode, plasmasnow_celestials, NoMeteors, -1) /*i*/                  \
     BUTTON(togglecode, plasmasnow_celestials, Halo, 1)                              \

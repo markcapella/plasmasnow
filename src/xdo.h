@@ -246,11 +246,6 @@ xdo_t *xdo_new_with_opened_display(
     Display *xdpy, const char *display, int close_display_when_freed);
 
 /**
- * Return a string representing the version of this library
- */
-const char *xdo_version(void);
-
-/**
  * Free and destroy an xdo_t instance.
  *
  * If close_display_when_freed is set, then we will also close the Display.
@@ -684,7 +679,7 @@ int xdo_get_window_size(const xdo_t *xdo, Window wid, unsigned int *width_ret,
  *
  * @param window_ret Pointer to Window where the active window is stored.
  */
-int xdo_get_active_window(const xdo_t *xdo, Window *window_ret);
+int getActiveWindowFromXDO(const xdo_t *xdo, Window *window_ret);
 
 /**
  * Get a window ID by clicking on it. This function blocks until a selection

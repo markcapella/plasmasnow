@@ -19,17 +19,19 @@
 #-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-# 
 */
-#include "loadmeasure.h"
-#include "clocks.h"
-#include "debug.h"
-#include "Flags.h"
-#include "ui.h"
-#include "Utils.h"
-#include "plasmasnow.h"
-#include <gtk/gtk.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#include <gtk/gtk.h>
+
+#include "clocks.h"
+#include "debug.h"
+#include "Flags.h"
+#include "loadmeasure.h"
+#include "MainWindow.h"
+#include "plasmasnow.h"
+#include "Utils.h"
 
 
 /***********************************************************

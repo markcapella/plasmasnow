@@ -20,9 +20,19 @@
 #-# 
 */
 //
-#include "birds.h"
-#include "Santa.h"
+#include <assert.h>
+#include <math.h>
+#include <pthread.h>
+#include <semaphore.h>
+#include <signal.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include <gtk/gtk.h>
+
 #include "birdglobals.h"
+#include "birds.h"
 #include "clocks.h"
 #include "debug.h"
 #include "doitb.h"
@@ -30,20 +40,11 @@
 #include "hashtable.h"
 #include "ixpm.h"
 #include "kdtree.h"
-// #include "mainstub.h"
+#include "MainWindow.h"
 #include "pixmaps.h"
-#include "ui.h"
+#include "Santa.h"
 #include "Utils.h"
 #include "windows.h"
-#include <assert.h>
-#include <gtk/gtk.h>
-#include <math.h>
-#include <pthread.h>
-#include <semaphore.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdbool.h>
 
 #define NWINGS 8
 #define NBIRDPIXBUFS (3 * NWINGS)

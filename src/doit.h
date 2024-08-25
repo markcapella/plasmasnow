@@ -30,11 +30,10 @@
 // these flags are not written to the config file and
 // are no part of the ui (except BelowAll)
 #define DOITALL                                                                \
-    DOIT_I(BelowConfirm, 0, 0)  /*not a button or parameter */                 \
     DOIT_I(Changes, 0, 0)       /* not a parameter or button */                \
     DOIT_I(Defaults, 0, 0)                                                     \
     DOIT_I(Desktop, 0, 0)                                                      \
-    DOIT_I(shutdownRequested, 0, 0)                                                         \
+    DOIT_I(shutdownRequested, 0, 0)                                            \
     DOIT_I(ForceRoot, 0, 0)                                                    \
     DOIT_I(FullScreen, 0, 0)                                                   \
     DOIT_I(HideMenu, 0, 0)                                                     \
@@ -93,7 +92,7 @@
     DOIT_I(NoSnowFlakes, 0, 0)                                                 \
     DOIT_I(NoTrees, 0, 0)                                                      \
     DOIT_I(NoWind, 0, 0)                                                       \
-    DOIT_I(NStars, 20, 0)                                                      \
+    DOIT_I(NStars, 50, 0)                                                      \
     DOIT_I(OffsetS, 0, 0)                                                      \
     DOIT_I(OffsetW, -8, -8)                                                    \
     DOIT_I(OffsetX, 4, 4)                                                      \

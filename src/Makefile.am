@@ -60,10 +60,10 @@ plasmasnow_SOURCES = \
 		Application.c aurora.c birds.c blowoff.c clientwin.c \
 		clocks.c colorPicker.cpp csvpos.c docs.c dsimple.c \
 		fallensnow.c Flags.c hashtable.cpp ixpm.c kdtree.c \
-		loadmeasure.c mainstub.cpp meteor.c MsgBox.cpp moon.c \
-		pixmaps.c safe_malloc.c Santa.c scenery.c selfrep.c \
+		loadmeasure.c MainWindow.c mainstub.cpp meteor.c MsgBox.cpp \
+		moon.c pixmaps.c safe_malloc.c Santa.c scenery.c selfrep.c \
 		snow.c spline_interpol.c Stars.c StormWindow.c \
-		treesnow.c ui.glade ui.c Utils.c wind.c windows.c \
+		treesnow.c ui.glade Utils.c wind.c windows.c \
 		wmctrl.c
 
 nodist_plasmasnow_SOURCES = ui_xml.h snow_includes.h
@@ -105,12 +105,12 @@ snow_includes.h: Pixmaps
 install-data-local:
 	cp 'Pixmaps/plasmasnow.png' /usr/share/icons/hicolor/48x48/apps/
 	cp 'Pixmaps/plasmasnowbox.png' /usr/share/icons/hicolor/48x48/apps/
-	cp 'Pixmaps/plasmasnowbox.png' /usr/local/share/pixmaps/
+	cp 'Pixmaps/plasmasnowpicker.png' /usr/share/icons/hicolor/48x48/apps/
 
 uninstall-local:
 	rm -f /usr/share/icons/hicolor/48x48/apps/plasmasnow.png
 	rm -f /usr/share/icons/hicolor/48x48/apps/plasmasnowbox.png
-	rm -f /usr/local/share/pixmaps/plasmasnowbox.png
+	rm -f /usr/share/icons/hicolor/48x48/apps/plasmasnowpicker.png
 
 TESTS = test1.sh
 

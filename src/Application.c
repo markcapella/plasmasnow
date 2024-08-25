@@ -29,6 +29,7 @@
 #include <math.h>
 #include <pthread.h>
 #include <signal.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -61,6 +62,7 @@
 #include "Flags.h"
 #include "loadmeasure.h"
 #include "mainstub.h"
+#include "MainWindow.h"
 #include "meteor.h"
 #include "moon.h"
 #include "MsgBox.h"
@@ -77,7 +79,6 @@
 #include "version.h"
 #include "wind.h"
 #include "windows.h"
-#include "ui.h"
 #include "Utils.h"
 #include "vroot.h"
 #include "xdo.h"
@@ -145,7 +146,7 @@ static void mybindtestdomain();
 extern void setAppAboveOrBelowAllWindows();
 
 char* getDesktopSession();
-static void DoAllWorkspaces();
+static void respondToWorkspaceSettingsChange();
 extern void setTransparentWindowAbove(GtkWindow* window);
 extern int updateWindowsList();
 
@@ -160,7 +161,6 @@ extern void getWinInfoList();
 
 // ColorPicker methods.
 void uninitQPickerDialog();
-
 
 /** *********************************************************************
  ** Module globals and consts.
@@ -429,6 +429,10 @@ int startApplication(int argc, char *argv[]) {
 
     // Start Main GUI Window.
     InitSnowOnTrees();
+
+    updateWindowsList();
+    getWinInfoList();
+
     if (!StartWindow()) {
         return 1;
     }
@@ -450,20 +454,18 @@ int startApplication(int argc, char *argv[]) {
     XSelectInput(mGlobal.display, eventWindow,
         StructureNotifyMask | SubstructureNotifyMask |
         FocusChangeMask);
+
     XFixesSelectCursorInput(mGlobal.display, eventWindow,
         XFixesDisplayCursorNotifyMask);
 
     clearGlobalSnowWindow();
 
     if (!Flags.NoMenu && !mGlobal.XscreensaverMode) {
-        initUIClass();
+        createMainWindow();
         ui_set_sticky(Flags.AllWorkspaces);
     }
 
     Flags.shutdownRequested = 0;
-
-    updateWindowsList();
-    getWinInfoList();
 
     addWindowsModuleToMainloop();
 
@@ -502,10 +504,14 @@ int startApplication(int argc, char *argv[]) {
     }
 
     HandleCpuFactor();
-    fflush(stdout);
+    respondToWorkspaceSettingsChange();
 
-    // Set mGlobal.ChosenWorkSpace
-    DoAllWorkspaces();
+    // Log Storming window status.
+    printf("%splasmasnow: It\'s Snowing in: [0x%08lx]%s\n",
+        COLOR_CYAN, mGlobal.SnowWin, COLOR_NORMAL);
+
+    logWindow(mGlobal.SnowWin);
+    fflush(stdout);
 
     //***************************************************
     // Bring it all up !
@@ -725,16 +731,12 @@ int StartWindow() {
     // Report log.
     mGlobal.SnowWinX = wantx;
     mGlobal.SnowWinY = wanty;
-    printf(_("\nSnowing in %#lx: %s %d+%d %dx%d\n"), mGlobal.SnowWin, mSnowWindowTitlebarName,
-        mGlobal.SnowWinX, mGlobal.SnowWinY, mGlobal.SnowWinWidth,
-        mGlobal.SnowWinHeight);
 
     mPrevSnowWinWidth = mGlobal.SnowWinWidth;
     mPrevSnowWinHeight = mGlobal.SnowWinHeight;
-    printf(_("mGlobal.WindowOffsetX, mGlobal.WindowOffsetY: %d %d\n"),
-        mGlobal.WindowOffsetX, mGlobal.WindowOffsetY);
 
     fflush(stdout);
+
     SetWindowScale();
     if (mGlobal.XscreensaverMode && !Flags.BlackBackground) {
         SetBackground();
@@ -832,7 +834,7 @@ void setTransparentWindowStickyState(int isSticky) {
 /** *********************************************************************
  ** TODO:
  **/
-void DoAllWorkspaces() {
+void respondToWorkspaceSettingsChange() {
     if (Flags.AllWorkspaces) {
         setTransparentWindowStickyState(1);
     } else {
@@ -882,7 +884,7 @@ int doAllUISettingsUpdates() {
     UIDO(Scale, );
     UIDO(OffsetS, updateDisplayDimensions(););
     UIDO(OffsetY, updateFallenSnowRegionsWithLock(););
-    UIDO(AllWorkspaces, DoAllWorkspaces(););
+    UIDO(AllWorkspaces, respondToWorkspaceSettingsChange(););
 
     UIDOS(BackgroundFile, );
     UIDO(BlackBackground, );

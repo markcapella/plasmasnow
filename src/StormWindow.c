@@ -183,12 +183,6 @@ int setStormWindowAttributes(GtkWidget *widget) {
     }
 
     if (p - &something[0] >= rep) {
-        /*
-        {   const char* logMsg =
-                "transparentwindow: setStormWindowAttributes() Finishes early.\n";
-            write(getTmpLogFile(), logMsg, strlen(logMsg));
-        }
-        */
         return FALSE;
     }
 
@@ -220,12 +214,7 @@ int setStormWindowAttributes(GtkWidget *widget) {
     } else {
         gtk_window_unstick(GTK_WINDOW(widget));
     }
-    /*
-    {   const char* logMsg =
-            "transparentwindow: setStormWindowAttributes() Finishes.\n";
-        write(getTmpLogFile(), logMsg, strlen(logMsg));
-    }
-    */
+
     return FALSE;
 }
 

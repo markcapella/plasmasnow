@@ -53,97 +53,22 @@ bool is_WM_STATE_Hidden(Window window);
 
 void uninitQPickerDialog();
 
+/** *********************************************************************
+ ** Module globals and consts.
+ **/
 
-/***********************************************************
- * Module Method stubs.
- */
-//**
-// Workspace.
-static void DetermineVisualWorkspaces();
-static int do_sendevent();
-extern int updateWindowsList();
-
-//**
-// Active & Focused X11 Window Helper methods.
-extern Window getActiveX11Window();
-Window getFocusedX11Window();
-int getFocusedX11XPos();
-int getFocusedX11YPos();
-
-//**
-// ActiveApp member helper methods.
-Window mActiveAppWindow = None;
-void clearAllActiveAppFields();
-
-extern Window getActiveAppWindow();
-void setActiveAppWindow(Window);
-Window getParentOfActiveAppWindow();
-
-const int mINVALID_POSITION = -1;
-int mActiveAppXPos = mINVALID_POSITION;
-int getActiveAppXPos();
-void setActiveAppXPos(int);
-
-int mActiveAppYPos = mINVALID_POSITION;
-int getActiveAppYPos();
-void setActiveAppYPos(int);
-
-//**
-// Windows life-cycle methods.
-extern void onCursorChange(XEvent*);
-extern void onAppWindowChange(Window);
-
-extern void onWindowCreated(XEvent*);
-extern void onWindowReparent(XEvent*);
-extern void onWindowChanged(XEvent*);
-
-extern void onWindowMapped(XEvent*);
-extern void onWindowFocused(XEvent*);
-extern void onWindowBlurred(XEvent*);
-extern void onWindowUnmapped(XEvent*);
-
-extern void onWindowDestroyed(XEvent*);
-
-//**
-// Windows life-cycle helper methods.
-bool isMouseClickedAndHeldInWindow();
-
-//**
-// Window dragging methods.
-bool mIsWindowBeingDragged;
-void clearAllDragFields();
-
-extern bool isWindowBeingDragged();
-void setIsWindowBeingDragged(bool);
-
-Window mWindowBeingDragged = None;
-Window getWindowBeingDragged();
-void setWindowBeingDragged(Window);
-
-Window mActiveAppDragWindowCandidate = None;
-Window getActiveAppDragWindowCandidate();
-void setActiveAppDragWindowCandidate(Window);
-
-Window getDragWindowOf(Window);
-
-//**
-// Debug methods.
-void logCurrentTimestamp();
-void logWindowAndAllParents(Window window);
-
-//**
 // Main WinInfo (Windows) list & helpers.
 static int mWinInfoListLength = 0;
 static WinInfo* mWinInfoList = NULL;
 
-void getWinInfoList();
-void ensureWinInfoList();
-WinInfo* findWinInfoByWindowId(Window);
+bool mIsWindowBeingDragged;
+Window mWindowBeingDragged = None;
+Window mActiveAppDragWindowCandidate = None;
 
-
-/** *********************************************************************
- ** Module globals and consts.
- **/
+Window mActiveAppWindow = None;
+const int mINVALID_POSITION = -1;
+int mActiveAppXPos = mINVALID_POSITION;
+int mActiveAppYPos = mINVALID_POSITION;
 
 // Workspace on which transparent window is placed.
 static long TransWorkSpace = -SOMENUMBER;
@@ -512,9 +437,6 @@ int updateWindowsList() {
     if (currentWorkSpace < 0) {
         Flags.shutdownRequested = 1;
         unlockFallenSnowSemaphore();
-        {   const char* logMsg = "windows: updateWindowsList() Finishes.\n";
-            fprintf(stdout, "%s", logMsg);
-        }
         return TRUE;
     }
 
@@ -565,7 +487,7 @@ int updateWindowsList() {
 Window getActiveX11Window() {
     Window activeWindow = None;
 
-    xdo_get_active_window(xdo_new_with_opened_display(
+    getActiveWindowFromXDO(xdo_new_with_opened_display(
         mGlobal.display, (char*) NULL, 0), &activeWindow);
 
     return activeWindow;
@@ -988,15 +910,6 @@ void getWinInfoList() {
     }
 
     getX11WindowsList(&mWinInfoList, &mWinInfoListLength);
-}
-
-/** *********************************************************************
- ** This method frees existing list, and refreshes it.
- **/
-void ensureWinInfoList() {
-    if (!mWinInfoList) {
-        getX11WindowsList(&mWinInfoList, &mWinInfoListLength);
-    }
 }
 
 /** *********************************************************************

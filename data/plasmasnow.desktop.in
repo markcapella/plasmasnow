@@ -1,16 +1,15 @@
 [Desktop Entry]
 Name=plasmasnow
-Comment=Winter fun for Modern Desktops
-Version=4.2
+Comment=Wintery Drifting Scenes
 Type=Application
+StartupNotify=true
 Terminal=false
 
-Exec=plasmasnow
+Exec=plasmasnow 1>$HOME/.plasmasnowStdout 2>$HOME/.plasmasnowStderr
 Icon=plasmasnow.png
 
-StartupNotify=true
-Categories=Game;Simulation
-Keywords=christmas;santa;snow;xmas
+Categories=Game;
+Keywords=Storm; Snow;
 
 Actions=start;nomenu;
 

@@ -280,7 +280,9 @@
     <property name="page-increment">10</property>
   </object>
   <object class="GtkAdjustment" id="staradjustment">
-    <property name="upper">50</property>
+    <property name="lower">10</property>
+    <property name="upper">150</property>
+    <property name="value">50</property>
     <property name="step-increment">1</property>
     <property name="page-increment">10</property>
   </object>
@@ -514,7 +516,7 @@
                 <property name="can-focus">False</property>
                 <property name="halign">center</property>
                 <property name="valign">center</property>
-                <property name="pixbuf">Pixmaps/plasmasnow.xpm</property>
+                <property name="stock">gtk-orientation-portrait</property>
                 <property name="use-fallback">True</property>
               </object>
               <packing>
@@ -699,7 +701,6 @@ Flags: -snow, -nosnow</property>
             </child>
             <child>
               <object class="GtkToggleButton" id="id-SnowColor">
-                <property name="label">gtk-select-color</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
@@ -708,7 +709,9 @@ Flags: -snow, -nosnow</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">start</property>
                 <property name="valign">center</property>
-                <property name="use-stock">True</property>
+                <child>
+                  <placeholder/>
+                </child>
               </object>
               <packing>
                 <property name="left-attach">1</property>
@@ -717,7 +720,6 @@ Flags: -snow, -nosnow</property>
             </child>
             <child>
               <object class="GtkToggleButton" id="id-SnowColor2">
-                <property name="label">gtk-select-color</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
@@ -726,7 +728,9 @@ Flags: -snow, -nosnow</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">end</property>
                 <property name="valign">center</property>
-                <property name="use-stock">True</property>
+                <child>
+                  <placeholder/>
+                </child>
               </object>
               <packing>
                 <property name="left-attach">1</property>
@@ -1466,7 +1470,7 @@ Flags: -santa 0 -norudolph</property>
                     <property name="can-focus">False</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
-                    <property name="pixbuf">Pixmaps/RegularSanta1.xpm</property>
+                    <property name="stock">gtk-orientation-portrait</property>
                   </object>
                 </child>
               </object>
@@ -1497,7 +1501,7 @@ Flags: -santa 1 -norudolph</property>
                     <property name="can-focus">False</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
-                    <property name="pixbuf">Pixmaps/MediumSanta1.xpm</property>
+                    <property name="stock">gtk-orientation-portrait</property>
                   </object>
                 </child>
               </object>
@@ -1528,7 +1532,7 @@ Flags: -santa 2 -norudolph</property>
                     <property name="can-focus">False</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
-                    <property name="pixbuf">Pixmaps/BigSanta1.xpm</property>
+                    <property name="stock">gtk-orientation-portrait</property>
                   </object>
                 </child>
               </object>
@@ -1559,7 +1563,7 @@ Flags: -santa 3 -norudolph</property>
                     <property name="can-focus">False</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
-                    <property name="pixbuf">Pixmaps/BigSanta81.xpm</property>
+                    <property name="stock">gtk-orientation-portrait</property>
                   </object>
                 </child>
               </object>
@@ -1590,7 +1594,7 @@ Flags: -santa 4 -norudolph</property>
                     <property name="can-focus">False</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
-                    <property name="pixbuf">Pixmaps/AltSanta1.xpm</property>
+                    <property name="stock">gtk-orientation-portrait</property>
                   </object>
                 </child>
               </object>
@@ -1620,7 +1624,7 @@ Flags: -santa 4 -showrudolph</property>
                     <property name="can-focus">False</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
-                    <property name="pixbuf">Pixmaps/AltSantaRudolf1.xpm</property>
+                    <property name="stock">gtk-orientation-portrait</property>
                   </object>
                 </child>
               </object>
@@ -1652,7 +1656,7 @@ Flags: -santa 0 -showrudolph</property>
                     <property name="can-focus">False</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
-                    <property name="pixbuf">Pixmaps/RegularSantaRudolf1.xpm</property>
+                    <property name="stock">gtk-orientation-portrait</property>
                   </object>
                 </child>
               </object>
@@ -1682,7 +1686,7 @@ Flags: -santa 1 -showrudolph</property>
                     <property name="can-focus">False</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
-                    <property name="pixbuf">Pixmaps/MediumSantaRudolf1.xpm</property>
+                    <property name="stock">gtk-orientation-portrait</property>
                   </object>
                 </child>
               </object>
@@ -1712,7 +1716,7 @@ Flags: -santa 2 -showrudolph</property>
                     <property name="can-focus">False</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
-                    <property name="pixbuf">Pixmaps/BigSantaRudolf1.xpm</property>
+                    <property name="stock">gtk-orientation-portrait</property>
                   </object>
                 </child>
               </object>
@@ -1742,7 +1746,7 @@ Flags: -santa 3 -showrudolph</property>
                     <property name="can-focus">False</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
-                    <property name="pixbuf">Pixmaps/BigSantaRudolf81.xpm</property>
+                    <property name="stock">gtk-orientation-portrait</property>
                   </object>
                 </child>
               </object>
@@ -2305,7 +2309,7 @@ Flag: -treetype 0</property>
                         <property name="double-buffered">False</property>
                         <property name="halign">center</property>
                         <property name="valign">center</property>
-                        <property name="pixbuf">Pixmaps/tannenbaum.xpm</property>
+                        <property name="stock">gtk-orientation-portrait</property>
                         <property name="use-fallback">True</property>
                       </object>
                     </child>
@@ -2318,7 +2322,6 @@ Flag: -treetype 0</property>
                 </child>
                 <child>
                   <object class="GtkToggleButton" id="id-TreeColor">
-                    <property name="label">gtk-select-color</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
@@ -2328,7 +2331,9 @@ Flag: -treetype 0</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
                     <property name="margin-left">8</property>
-                    <property name="use-stock">True</property>
+                    <child>
+                      <placeholder/>
+                    </child>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -2480,7 +2485,7 @@ Flags: -treetype 1 or: -treetype all</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
-                    <property name="pixbuf">Pixmaps/tree.xpm</property>
+                    <property name="stock">gtk-orientation-portrait</property>
                   </object>
                 </child>
               </object>
@@ -2507,7 +2512,7 @@ Flags: -treetype 6 or: -treetype all</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
-                    <property name="pixbuf">Pixmaps/snowtree.xpm</property>
+                    <property name="stock">gtk-orientation-portrait</property>
                   </object>
                 </child>
               </object>
@@ -2534,7 +2539,7 @@ Flags: -treetype 2 or: -treetype all</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
-                    <property name="pixbuf">Pixmaps/greenTree.xpm</property>
+                    <property name="stock">gtk-orientation-portrait</property>
                   </object>
                 </child>
               </object>
@@ -2561,7 +2566,7 @@ Flags: -treetype 3 or: -treetype all</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
-                    <property name="pixbuf">Pixmaps/huis4.xpm</property>
+                    <property name="stock">gtk-orientation-portrait</property>
                   </object>
                 </child>
               </object>
@@ -2588,7 +2593,7 @@ Flags: -treetype 3 or: -treetype all</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
-                    <property name="pixbuf">Pixmaps/garland.xpm</property>
+                    <property name="stock">gtk-orientation-portrait</property>
                   </object>
                 </child>
               </object>
@@ -2615,7 +2620,7 @@ Flags: -treetype 3 or: -treetype all</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
-                    <property name="pixbuf">Pixmaps/candycane.xpm</property>
+                    <property name="stock">gtk-orientation-portrait</property>
                   </object>
                 </child>
               </object>
@@ -2642,7 +2647,7 @@ Flags: -treetype 4 or: -treetype all</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
-                    <property name="pixbuf">Pixmaps/rendier.xpm</property>
+                    <property name="stock">gtk-orientation-portrait</property>
                   </object>
                 </child>
               </object>
@@ -2669,7 +2674,7 @@ Flags: -treetype 5 or: -treetype all</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
-                    <property name="pixbuf">Pixmaps/eland.xpm</property>
+                    <property name="stock">gtk-orientation-portrait</property>
                   </object>
                 </child>
               </object>
@@ -2696,7 +2701,7 @@ Flags: -treetype 7 or: -treetype all</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
-                    <property name="pixbuf">Pixmaps/polarbear.xpm</property>
+                    <property name="stock">gtk-orientation-portrait</property>
                   </object>
                 </child>
               </object>
@@ -2919,7 +2924,6 @@ Flags: -showbirds 1, -showbirds 0</property>
             </child>
             <child>
               <object class="GtkToggleButton" id="id-BirdsColor">
-                <property name="label">gtk-select-color</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
@@ -2930,7 +2934,9 @@ Flags: -showbirds 1, -showbirds 0</property>
                 <property name="valign">center</property>
                 <property name="margin-left">10</property>
                 <property name="margin-right">10</property>
-                <property name="use-stock">True</property>
+                <child>
+                  <placeholder/>
+                </child>
               </object>
               <packing>
                 <property name="left-attach">0</property>

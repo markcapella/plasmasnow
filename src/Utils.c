@@ -219,19 +219,23 @@ void my_cairo_paint_with_alpha(cairo_t *cr, double alpha) {
     }
 }
 
+/** *********************************************************************
+ ** This method pretty-prints to log the app name, version, Author.
+ **/
 void logAppVersion() {
-    int l = 4 + strlen(PACKAGE_STRING);
-    int i;
-    printf("   ");
-    for (i = 0; i < l; i++) {
+    const int numberOfStars = strlen(PACKAGE_STRING) + 4;
+
+    printf("\n   ");
+    for (int i = 0; i < numberOfStars; i++) {
         printf("*");
     }
     printf("\n   * %s *\n", PACKAGE_STRING);
     printf("   ");
-    for (i = 0; i < l; i++) {
+    for (int i = 0; i < numberOfStars; i++) {
         printf("*");
     }
-    printf("\n%s\n", VERSIONBY);
+
+    printf("\n\n%s\n", VERSIONBY);
 }
 
 /** *********************************************************************

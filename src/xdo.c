@@ -56,14 +56,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <X11/Xutil.h>
 #include <X11/cursorfont.h>
 #include <X11/extensions/XTest.h>
-#include <X11/extensions/Xinerama.h>
 #include <X11/keysym.h>
 
 #include <xkbcommon/xkbcommon.h>
 
 #include "xdo.h"
 #include "xdo_util.h"
-#include "xdo_version.h"
+
+#include "ColorCodes.h"
 
 #define DEFAULT_DELAY 12
 
@@ -82,11 +82,12 @@ static void _xdo_charcodemap_from_keysym(
     const xdo_t *xdo, charcodemap_t *key, KeySym keysym);
 // static int _xdo_get_shiftcode_if_needed(const xdo_t *xdo, char key);
 
+static int _xdo_ewmh_is_supported(const xdo_t *xdo, const char *feature);
+
 static int _xdo_send_keysequence_window_to_keycode_list(
     const xdo_t *xdo, const char *keyseq, charcodemap_t **keys, int *nkeys);
 static int _xdo_send_keysequence_window_do(const xdo_t *xdo, Window window,
     const char *keyseq, int pressed, int *modifier, useconds_t delay);
-static int _xdo_ewmh_is_supported(const xdo_t *xdo, const char *feature);
 static void _xdo_init_xkeyevent(const xdo_t *xdo, XKeyEvent *xk);
 static void _xdo_send_key(const xdo_t *xdo, Window window, charcodemap_t *key,
     int modstate, int is_press, useconds_t delay);
@@ -94,11 +95,13 @@ static void _xdo_send_modifier(const xdo_t *xdo, int modmask, int is_press);
 
 static int _xdo_query_keycode_to_modifier(
     XModifierKeymap *modmap, KeyCode keycode);
-static int _xdo_mousebutton(
-    const xdo_t *xdo, Window window, int button, int is_press);
+static int _xdo_mousebutton(const xdo_t* xdo, Window window,
+    int button, int is_press);
 
-static int _is_success(const char *funcname, int code, const xdo_t *xdo);
+static int printMsgIfConditionTrue(const char *funcname, int code, const xdo_t *xdo);
+
 static void _xdo_debug(const xdo_t *xdo, const char *format, ...);
+
 static void _xdo_eprintf(
     const xdo_t *xdo, int hushable, const char *format, ...);
 
@@ -187,8 +190,6 @@ void xdo_free(xdo_t *xdo) {
     free(xdo);
 }
 
-const char *xdo_version(void) { return XDO_VERSION; }
-
 int xdo_wait_for_window_map_state_orig(
     const xdo_t *xdo, Window wid, int map_state);
 int xdo_wait_for_window_map_state_orig(
@@ -224,14 +225,14 @@ int xdo_map_window(const xdo_t *xdo, Window wid) {
     int ret = 0;
     ret = XMapWindow(xdo->xdpy, wid);
     XFlush(xdo->xdpy);
-    return _is_success("XMapWindow", ret == 0, xdo);
+    return printMsgIfConditionTrue("XMapWindow", ret == 0, xdo);
 }
 
 int xdo_unmap_window(const xdo_t *xdo, Window wid) {
     int ret = 0;
     ret = XUnmapWindow(xdo->xdpy, wid);
     XFlush(xdo->xdpy);
-    return _is_success("XUnmapWindow", ret == 0, xdo);
+    return printMsgIfConditionTrue("XUnmapWindow", ret == 0, xdo);
 }
 
 int xdo_reparent_window(
@@ -239,7 +240,7 @@ int xdo_reparent_window(
     int ret = 0;
     ret = XReparentWindow(xdo->xdpy, wid_source, wid_target, 0, 0);
     XFlush(xdo->xdpy);
-    return _is_success("XReparentWindow", ret == 0, xdo);
+    return printMsgIfConditionTrue("XReparentWindow", ret == 0, xdo);
 }
 
 int xdo_get_window_location(
@@ -283,7 +284,7 @@ int xdo_get_window_location(
             *screen_ret = attr.screen;
         }
     }
-    return _is_success("XGetWindowAttributes", ret == 0, xdo);
+    return printMsgIfConditionTrue("XGetWindowAttributes", ret == 0, xdo);
 }
 
 int xdo_get_window_size(const xdo_t *xdo, Window wid, unsigned int *width_ret,
@@ -300,7 +301,7 @@ int xdo_get_window_size(const xdo_t *xdo, Window wid, unsigned int *width_ret,
             *height_ret = attr.height;
         }
     }
-    return _is_success("XGetWindowAttributes", ret == 0, xdo);
+    return printMsgIfConditionTrue("XGetWindowAttributes", ret == 0, xdo);
 }
 
 /** *********************************************************************
@@ -311,7 +312,7 @@ int xdo_move_window(const xdo_t *xdo, Window wid, int x, int y) {
     wc.x = x;
     wc.y = y;
 
-    return _is_success("XConfigureWindow",
+    return printMsgIfConditionTrue("XConfigureWindow",
         XConfigureWindow(xdo->xdpy, wid, CWX | CWY, &wc) == 0, xdo);
 }
 
@@ -382,7 +383,7 @@ int xdo_set_window_size(const xdo_t *xdo, Window window,
 
     int ret = XConfigureWindow(xdo->xdpy, window, cw_flags, &wc);
     XFlush(xdo->xdpy);
-    return _is_success("XConfigureWindow", ret == 0, xdo);
+    return printMsgIfConditionTrue("XConfigureWindow", ret == 0, xdo);
 }
 
 /** *********************************************************************
@@ -396,7 +397,7 @@ int xdo_set_window_override_redirect(
     wattr.override_redirect = override_redirect;
     ret = XChangeWindowAttributes(xdo->xdpy, wid, mask, &wattr);
 
-    return _is_success("XChangeWindowAttributes", ret == 0, xdo);
+    return printMsgIfConditionTrue("XChangeWindowAttributes", ret == 0, xdo);
 }
 
 /** *********************************************************************
@@ -417,7 +418,7 @@ int xdo_set_window_class(
 
     ret = XSetClassHint(xdo->xdpy, wid, hint);
     XFree(hint);
-    return _is_success("XSetClassHint", ret == 0, xdo);
+    return printMsgIfConditionTrue("XSetClassHint", ret == 0, xdo);
 }
 
 int xdo_set_window_urgency(const xdo_t *xdo, Window wid, int urgency) {
@@ -435,7 +436,7 @@ int xdo_set_window_urgency(const xdo_t *xdo, Window wid, int urgency) {
 
     ret = XSetWMHints(xdo->xdpy, wid, hint);
     XFree(hint);
-    return _is_success("XSetWMHint", ret == 0, xdo);
+    return printMsgIfConditionTrue("XSetWMHint", ret == 0, xdo);
 }
 
 int xdo_set_window_property(
@@ -453,7 +454,7 @@ int xdo_set_window_property(
             XInternAtom(xdo->xdpy, "STRING", False), 8, PropModeReplace,
             (unsigned char *)value, strlen(value));
     if (ret == 0) {
-        return _is_success("XChangeProperty", ret == 0, xdo);
+        return printMsgIfConditionTrue("XChangeProperty", ret == 0, xdo);
     }
 
     // Change _NET_<property> just in case for simpler NETWM compliance?
@@ -461,14 +462,14 @@ int xdo_set_window_property(
         XInternAtom(xdo->xdpy, netwm_property, False),
         XInternAtom(xdo->xdpy, "STRING", False), 8, PropModeReplace,
         (unsigned char *)value, strlen(value));
-    return _is_success("XChangeProperty", ret == 0, xdo);
+    return printMsgIfConditionTrue("XChangeProperty", ret == 0, xdo);
 }
 
 int xdo_focus_window(const xdo_t *xdo, Window wid) {
     int ret = 0;
     ret = XSetInputFocus(xdo->xdpy, wid, RevertToParent, CurrentTime);
     XFlush(xdo->xdpy);
-    return _is_success("XSetInputFocus", ret == 0, xdo);
+    return printMsgIfConditionTrue("XSetInputFocus", ret == 0, xdo);
 }
 
 int xdo_wait_for_window_size(const xdo_t *xdo, Window window,
@@ -510,40 +511,21 @@ int xdo_wait_for_window_size(const xdo_t *xdo, Window window,
     return 0;
 }
 
-int xdo_wait_for_window_active(const xdo_t *xdo, Window window, int active) {
-    Window activewin = 0;
-    int ret = 0;
-    int tries = MAX_TRIES;
-
-    /* If active is true, wait until activewin is our window
-     * otherwise, wait until activewin is not our window */
-    while (tries > 0 && (active ? activewin != window : activewin == window)) {
-        ret = xdo_get_active_window(xdo, &activewin);
-        if (ret == XDO_ERROR) {
-            return ret;
-        }
-        usleep(30000);
-        tries--;
-    }
-
-    return 0;
-}
-
 int xdo_activate_window(const xdo_t *xdo, Window wid) {
     int ret = 0;
     long desktop = 0;
     XEvent xev;
     XWindowAttributes wattr;
 
-    if (_xdo_ewmh_is_supported(xdo, "_NET_ACTIVE_WINDOW") == False) {
-        fprintf(stderr,
-            "Your windowmanager claims not to support _NET_ACTIVE_WINDOW, "
-            "so the attempt to activate the window was aborted.\n");
+    if (_xdo_ewmh_is_supported(xdo,
+        "_NET_ACTIVE_WINDOW") == False) {
+        fprintf(stderr, "Your windowmanager claims not to "
+            "support _NET_ACTIVE_WINDOW, so the attempt to "
+            "activate the window was aborted.\n");
         return XDO_ERROR;
     }
 
     /* If this window is on another desktop, let's go to that desktop first */
-
     if (_xdo_ewmh_is_supported(xdo, "_NET_WM_DESKTOP") == True &&
         _xdo_ewmh_is_supported(xdo, "_NET_CURRENT_DESKTOP") == True) {
         xdo_get_desktop_for_window(xdo, wid, &desktop);
@@ -554,19 +536,22 @@ int xdo_activate_window(const xdo_t *xdo, Window wid) {
     xev.type = ClientMessage;
     xev.xclient.display = xdo->xdpy;
     xev.xclient.window = wid;
-    xev.xclient.message_type =
-        XInternAtom(xdo->xdpy, "_NET_ACTIVE_WINDOW", False);
+    xev.xclient.message_type = XInternAtom(xdo->xdpy,
+        "_NET_ACTIVE_WINDOW", False);
     xev.xclient.format = 32;
     xev.xclient.data.l[0] = 2L; /* 2 == Message from a window pager */
     xev.xclient.data.l[1] = CurrentTime;
 
     XGetWindowAttributes(xdo->xdpy, wid, &wattr);
+
+    /* XXX: XSendEvent returns 0 on conversion failure,
+       nonzero otherwise. Manpage says it will only generate
+       BadWindow or BadValue errors */
     ret = XSendEvent(xdo->xdpy, wattr.screen->root, False,
         SubstructureNotifyMask | SubstructureRedirectMask, &xev);
 
-    /* XXX: XSendEvent returns 0 on conversion failure, nonzero otherwise.
-     * Manpage says it will only generate BadWindow or BadValue errors */
-    return _is_success("XSendEvent[EWMH:_NET_ACTIVE_WINDOW]", ret == 0, xdo);
+    return printMsgIfConditionTrue("XSendEvent[EWMH:_NET_ACTIVE_WINDOW]",
+        ret == 0, xdo);
 }
 
 int xdo_set_number_of_desktops(const xdo_t *xdo, long ndesktops) {
@@ -596,7 +581,7 @@ int xdo_set_number_of_desktops(const xdo_t *xdo, long ndesktops) {
     ret = XSendEvent(xdo->xdpy, root, False,
         SubstructureNotifyMask | SubstructureRedirectMask, &xev);
 
-    return _is_success(
+    return printMsgIfConditionTrue(
         "XSendEvent[EWMH:_NET_NUMBER_OF_DESKTOPS]", ret == 0, xdo);
 }
 
@@ -628,7 +613,7 @@ int xdo_get_number_of_desktops(const xdo_t *xdo, long *ndesktops) {
     }
     free(data);
 
-    return _is_success(
+    return printMsgIfConditionTrue(
         "XGetWindowProperty[_NET_NUMBER_OF_DESKTOPS]", *ndesktops == 0, xdo);
 }
 
@@ -660,7 +645,7 @@ int xdo_set_current_desktop(const xdo_t *xdo, long desktop) {
     ret = XSendEvent(xdo->xdpy, root, False,
         SubstructureNotifyMask | SubstructureRedirectMask, &xev);
 
-    return _is_success("XSendEvent[EWMH:_NET_CURRENT_DESKTOP]", ret == 0, xdo);
+    return printMsgIfConditionTrue("XSendEvent[EWMH:_NET_CURRENT_DESKTOP]", ret == 0, xdo);
 }
 
 int xdo_get_current_desktop(const xdo_t *xdo, long *desktop) {
@@ -692,7 +677,7 @@ int xdo_get_current_desktop(const xdo_t *xdo, long *desktop) {
     }
     free(data);
 
-    return _is_success(
+    return printMsgIfConditionTrue(
         "XGetWindowProperty[_NET_CURRENT_DESKTOP]", *desktop == -1, xdo);
 }
 
@@ -722,7 +707,7 @@ int xdo_set_desktop_for_window(const xdo_t *xdo, Window wid, long desktop) {
     ret = XSendEvent(xdo->xdpy, wattr.screen->root, False,
         SubstructureNotifyMask | SubstructureRedirectMask, &xev);
 
-    return _is_success("XSendEvent[EWMH:_NET_WM_DESKTOP]", ret == 0, xdo);
+    return printMsgIfConditionTrue("XSendEvent[EWMH:_NET_WM_DESKTOP]", ret == 0, xdo);
 }
 
 int xdo_get_desktop_for_window(const xdo_t *xdo, Window wid, long *desktop) {
@@ -733,17 +718,17 @@ int xdo_get_desktop_for_window(const xdo_t *xdo, Window wid, long *desktop) {
     Atom request;
 
     if (_xdo_ewmh_is_supported(xdo, "_NET_WM_DESKTOP") == False) {
-        fprintf(stderr,
-            "Your windowmanager claims not to support _NET_WM_DESKTOP, "
-            "so the attempt to query a window's desktop location was "
-            "aborted.\n");
+        fprintf(stderr, "%splasmastorm: "
+            "xdo_get_desktop_for_window() Your windowmanager "
+            "claims not to support _NET_WM_DESKTOP.\nThe attempt "
+            "to query a window's desktop location was "
+            "aborted.%s\n", COLOR_RED, COLOR_NORMAL);
         return XDO_ERROR;
     }
 
     request = XInternAtom(xdo->xdpy, "_NET_WM_DESKTOP", False);
-
-    data = xdo_get_window_property_by_atom(
-        xdo, wid, request, &nitems, &type, &size);
+    data = xdo_get_window_property_by_atom(xdo, wid,
+        request, &nitems, &type, &size);
 
     if (nitems > 0) {
         *desktop = *((long *)(void *)data);
@@ -752,41 +737,50 @@ int xdo_get_desktop_for_window(const xdo_t *xdo, Window wid, long *desktop) {
     }
     free(data);
 
-    return _is_success(
+    return printMsgIfConditionTrue(
         "XGetWindowProperty[_NET_WM_DESKTOP]", *desktop == -1, xdo);
 }
 
-int xdo_get_active_window(const xdo_t *xdo, Window *window_ret) {
-    Atom type;
-    int size;
-    long nitems;
-    unsigned char *data;
-    Atom request;
-    Window root;
+/**
+ *
+ */
+int getActiveWindowFromXDO(const xdo_t* xdo, Window* window_ret) {
+    // printf("plasmastorm: getActiveWindowFromXDO() Starts.\n");
 
-    if (_xdo_ewmh_is_supported(xdo, "_NET_ACTIVE_WINDOW") == False) {
-        fprintf(stderr,
-            "Your windowmanager claims not to support _NET_ACTIVE_WINDOW, "
-            "so the attempt to query the active window aborted.\n");
+    if (_xdo_ewmh_is_supported(xdo,
+        "_NET_ACTIVE_WINDOW") == False) {
+        fprintf(stderr, "Your windowmanager claims "
+            "not to support _NET_ACTIVE_WINDOW.\nThe attempt "
+            "to query the active window aborted.\n");
+        printf("plasmastorm: getActiveWindowFromXDO() Finishes.\n");
         return XDO_ERROR;
     }
 
-    request = XInternAtom(xdo->xdpy, "_NET_ACTIVE_WINDOW", False);
-    root = XDefaultRootWindow(xdo->xdpy);
-    data = xdo_get_window_property_by_atom(
-        xdo, root, request, &nitems, &type, &size);
+    Window root = XDefaultRootWindow(xdo->xdpy);
+    Atom request = XInternAtom(xdo->xdpy,
+        "_NET_ACTIVE_WINDOW", False);
 
-    if (nitems > 0) {
-        *window_ret = *((Window *)(void *)data);
-    } else {
-        *window_ret = 0;
-    }
+    long nitems;
+    Atom type;
+    int size;
+
+    unsigned char* data = xdo_get_window_property_by_atom(
+        xdo, root, request, &nitems, &type, &size);
+    *window_ret = (nitems > 0) ?
+        *((Window*) (void*) data) : 0;
     free(data);
 
-    return _is_success(
-        "XGetWindowProperty[_NET_ACTIVE_WINDOW]", *window_ret == 0, xdo);
+    // Quiet message. Active window == null is ok dear.
+    // return printMsgIfConditionTrue("plasmastorm: "
+    //    "getActiveWindowFromXDO() XGetWindowProperty"
+    //    "[_NET_ACTIVE_WINDOW]", *window_ret == 0, xdo);
+
+    return *window_ret == 0;
 }
 
+/**
+ *
+ */
 int xdo_select_window_with_click(const xdo_t *xdo, Window *window_ret) {
     int screen_num;
     Screen *screen;
@@ -840,7 +834,7 @@ int xdo_raise_window(const xdo_t *xdo, Window wid) {
     int ret = 0;
     ret = XRaiseWindow(xdo->xdpy, wid);
     XFlush(xdo->xdpy);
-    return _is_success("XRaiseWindow", ret == 0, xdo);
+    return printMsgIfConditionTrue("XRaiseWindow", ret == 0, xdo);
 }
 
 int xdo_move_mouse(const xdo_t *xdo, int x, int y, int screen) {
@@ -854,7 +848,7 @@ int xdo_move_mouse(const xdo_t *xdo, int x, int y, int screen) {
     Window screen_root = RootWindow(xdo->xdpy, screen);
     ret = XWarpPointer(xdo->xdpy, None, screen_root, 0, 0, 0, 0, x, y);
     XFlush(xdo->xdpy);
-    return _is_success("XWarpPointer", ret == 0, xdo);
+    return printMsgIfConditionTrue("XWarpPointer", ret == 0, xdo);
 }
 
 int xdo_move_mouse_relative_to_window(
@@ -874,43 +868,49 @@ int xdo_move_mouse_relative(const xdo_t *xdo, int x, int y) {
     int ret = 0;
     ret = XTestFakeRelativeMotionEvent(xdo->xdpy, x, y, CurrentTime);
     XFlush(xdo->xdpy);
-    return _is_success("XTestFakeRelativeMotionEvent", ret == 0, xdo);
+    return printMsgIfConditionTrue("XTestFakeRelativeMotionEvent", ret == 0, xdo);
 }
 
-int _xdo_mousebutton(
-    const xdo_t *xdo, Window window, int button, int is_press) {
-    int ret = 0;
+int _xdo_mousebutton(const xdo_t *xdo, Window window,
+    int button, int is_press) {
 
     if (window == CURRENTWINDOW) {
-        ret = XTestFakeButtonEvent(xdo->xdpy, button, is_press, CurrentTime);
+        const int result = XTestFakeButtonEvent(xdo->xdpy,
+            button, is_press, CurrentTime);
+
         XFlush(xdo->xdpy);
-        return _is_success("XTestFakeButtonEvent(down)", ret == 0, xdo);
+        return printMsgIfConditionTrue("XTestFakeButtonEvent(down)",
+            result == 0, xdo);
+
     } else {
         /* Send to specific window */
+        XButtonEvent event;
         int screen = 0;
-        XButtonEvent xbpe;
-        charcodemap_t *active_mod;
+        xdo_get_mouse_location(xdo,
+            &event.x_root, &event.y_root, &screen);
+
+        charcodemap_t* active_mod;
         int active_mod_n;
+        xdo_get_active_modifiers(xdo, &active_mod,
+            &active_mod_n);
 
-        xdo_get_mouse_location(xdo, &xbpe.x_root, &xbpe.y_root, &screen);
-        xdo_get_active_modifiers(xdo, &active_mod, &active_mod_n);
+        event.window = window;
+        event.button = button;
+        event.display = xdo->xdpy;
+        event.root = RootWindow(xdo->xdpy, screen);
+        event.same_screen = True;
+        event.state = xdo_get_input_state(xdo);
+        event.subwindow = None;
+        event.time = CurrentTime;
+        event.type = is_press ?
+            ButtonPress : ButtonRelease;
 
-        xbpe.window = window;
-        xbpe.button = button;
-        xbpe.display = xdo->xdpy;
-        xbpe.root = RootWindow(xdo->xdpy, screen);
-        xbpe.same_screen = True; /* Should we detect if window is on the same
-                                     screen as cursor? */
-        xbpe.state = xdo_get_input_state(xdo);
+        // Get the coordinates of the cursor relative to
+        // event.window & find what subwindow it might be on.
 
-        xbpe.subwindow = None;
-        xbpe.time = CurrentTime;
-        xbpe.type = (is_press ? ButtonPress : ButtonRelease);
-
-        /* Get the coordinates of the cursor relative to xbpe.window and also
-         * find what subwindow it might be on */
-        XTranslateCoordinates(xdo->xdpy, xbpe.root, xbpe.window, xbpe.x_root,
-            xbpe.y_root, &xbpe.x, &xbpe.y, &xbpe.subwindow);
+        XTranslateCoordinates(xdo->xdpy, event.root,
+            event.window, event.x_root, event.y_root,
+            &event.x, &event.y, &event.subwindow);
 
         /* Normal behavior of 'mouse up' is that the modifier mask includes
          * 'ButtonNMotionMask' where N is the button being released. This works
@@ -918,27 +918,31 @@ int _xdo_mousebutton(
         if (!is_press) { /* is mouse up */
             switch (button) {
             case 1:
-                xbpe.state |= Button1MotionMask;
+                event.state |= Button1MotionMask;
                 break;
             case 2:
-                xbpe.state |= Button2MotionMask;
+                event.state |= Button2MotionMask;
                 break;
             case 3:
-                xbpe.state |= Button3MotionMask;
+                event.state |= Button3MotionMask;
                 break;
             case 4:
-                xbpe.state |= Button4MotionMask;
+                event.state |= Button4MotionMask;
                 break;
             case 5:
-                xbpe.state |= Button5MotionMask;
+                event.state |= Button5MotionMask;
                 break;
             }
         }
-        ret = XSendEvent(
-            xdo->xdpy, window, True, ButtonPressMask, (XEvent *)&xbpe);
+
+        const int result = XSendEvent(xdo->xdpy, window,
+            True, ButtonPressMask, (XEvent*) &event);
         XFlush(xdo->xdpy);
+
         free(active_mod);
-        return _is_success("XSendEvent(mousedown)", ret == 0, xdo);
+
+        return printMsgIfConditionTrue("XSendEvent(mousedown)",
+            result == 0, xdo);
     }
 }
 
@@ -963,14 +967,14 @@ int xdo_get_mouse_location2(const xdo_t *xdo, int *x_ret, int *y_ret,
     int *screen_num_ret, Window *window_ret) {
     int ret = False;
     int x = 0, y = 0, screen_num = 0;
-    int i = 0;
+
     Window window = 0;
     Window root = 0;
     int dummy_int = 0;
     unsigned int dummy_uint = 0;
     int screencount = ScreenCount(xdo->xdpy);
 
-    for (i = 0; i < screencount; i++) {
+    for (int i = 0; i < screencount; i++) {
         Screen *screen = ScreenOfDisplay(xdo->xdpy, i);
         ret = XQueryPointer(xdo->xdpy, RootWindowOfScreen(screen), &root,
             &window, &x, &y, &dummy_int, &dummy_int, &dummy_uint);
@@ -1021,7 +1025,7 @@ int xdo_get_mouse_location2(const xdo_t *xdo, int *x_ret, int *y_ret,
         }
     }
 
-    return _is_success("XQueryPointer", ret == False, xdo);
+    return printMsgIfConditionTrue("XQueryPointer", ret == False, xdo);
 }
 
 int xdo_click_window(const xdo_t *xdo, Window window, int button) {
@@ -1140,7 +1144,7 @@ int _xdo_send_keysequence_window_do(const xdo_t *xdo, Window window,
 int xdo_send_keysequence_window_list_do(const xdo_t *xdo, Window window,
     charcodemap_t *keys, int nkeys, int pressed, int *modifier,
     useconds_t delay) {
-    int i = 0;
+
     int modstate = 0;
     int keymapchanged = 0;
 
@@ -1152,10 +1156,9 @@ int xdo_send_keysequence_window_list_do(const xdo_t *xdo, Window window,
         xdo->keycode_high - xdo->keycode_low, &keysyms_per_keycode);
 
     /* Find a keycode that is unused for scratchspace */
-    for (i = xdo->keycode_low; i <= xdo->keycode_high; i++) {
-        int j = 0;
+    for (int i = xdo->keycode_low; i <= xdo->keycode_high; i++) {
         int key_is_empty = 1;
-        for (j = 0; j < keysyms_per_keycode; j++) {
+        for (int j = 0; j < keysyms_per_keycode; j++) {
             /*char *symname;*/
             int symindex = (i - xdo->keycode_low) * keysyms_per_keycode + j;
             /*symname = XKeysymToString(keysyms[symindex]);*/
@@ -1178,11 +1181,11 @@ int xdo_send_keysequence_window_list_do(const xdo_t *xdo, Window window,
         modifier = &modstate;
     }
 
-    for (i = 0; i < nkeys; i++) {
+    for (int i = 0; i < nkeys; i++) {
         if (keys[i].needs_binding == 1) {
             KeySym keysym_list[] = {keys[i].symbol};
-            _xdo_debug(
-                xdo, "Mapping sym %lu to %d", keys[i].symbol, scratch_keycode);
+            _xdo_debug(xdo, "Mapping sym %lu to %d",
+                keys[i].symbol, scratch_keycode);
             XChangeKeyboardMapping(
                 xdo->xdpy, scratch_keycode, 1, keysym_list, 1);
             XSync(xdo->xdpy, False);
@@ -1212,8 +1215,6 @@ int xdo_send_keysequence_window_list_do(const xdo_t *xdo, Window window,
 
     if (keymapchanged) {
         KeySym keysym_list[] = {0};
-        _xdo_debug(xdo, "Reverting scratch keycode (sym %lu to %d)",
-            keys[i].symbol, scratch_keycode);
         XChangeKeyboardMapping(xdo->xdpy, scratch_keycode, 1, keysym_list, 1);
     }
 
@@ -1262,7 +1263,7 @@ int xdo_get_focused_window(const xdo_t *xdo, Window *window_ret) {
             "This is likely a bug in the X server.\n",
             *window_ret);
     }
-    return _is_success("XGetInputFocus", ret == 0, xdo);
+    return printMsgIfConditionTrue("XGetInputFocus", ret == 0, xdo);
 }
 
 int xdo_wait_for_window_focus(const xdo_t *xdo, Window window, int want_focus) {
@@ -1293,7 +1294,7 @@ int xdo_wait_for_window_focus(const xdo_t *xdo, Window window, int want_focus) {
 int xdo_get_focused_window_sane(const xdo_t *xdo, Window *window_ret) {
     xdo_get_focused_window(xdo, window_ret);
     xdo_find_window_client(xdo, *window_ret, window_ret, XDO_FIND_PARENTS);
-    return _is_success("xdo_get_focused_window_sane", *window_ret == 0, xdo);
+    return printMsgIfConditionTrue("xdo_get_focused_window_sane", *window_ret == 0, xdo);
 }
 
 int xdo_find_window_client(
@@ -1316,8 +1317,8 @@ int xdo_find_window_client(
 
         if (items == 0) {
             /* This window doesn't have WM_STATE property, keep searching. */
-            _xdo_debug(xdo,
-                "window %lu has no WM_STATE property, digging more.", window);
+            _xdo_debug(xdo, "window %lu has no WM_STATE property, "
+                "digging more.", window);
             XQueryTree(
                 xdo->xdpy, window, &dummy, &parent, &children, &nchildren);
 
@@ -1329,12 +1330,13 @@ int xdo_find_window_client(
                     XFree(children);
                 }
                 window = parent;
+
             } else if (direction == XDO_FIND_CHILDREN) {
                 _xdo_debug(xdo, "searching %d children", nchildren);
                 unsigned int i = 0;
                 int ret;
                 done = True; /* recursion should end us */
-                for (i = 0; i < nchildren; i++) {
+                for (int i = 0; i < nchildren; i++) {
                     ret = xdo_find_window_client(
                         xdo, children[i], &window, direction);
                     // fprintf(stderr, "findclient: %ld\n", window);
@@ -1368,11 +1370,10 @@ int xdo_find_window_client(
 
 /* Helper functions */
 static KeySym _xdo_keysym_from_char(const xdo_t *xdo, wchar_t key) {
-    int i = 0;
     int len = xdo->charcodes_len;
 
     // printf("Finding symbol for key '%c'\n", key);
-    for (i = 0; i < len; i++) {
+    for (int i = 0; i < len; i++) {
         // printf("  => %c vs %c (%d)\n",
         // key, xdo->charcodes[i].key, (xdo->charcodes[i].key == key));
         if (xdo->charcodes[i].key == key) {
@@ -1397,7 +1398,6 @@ static void _xdo_charcodemap_from_char(const xdo_t *xdo, charcodemap_t *key) {
 
 static void _xdo_charcodemap_from_keysym(
     const xdo_t *xdo, charcodemap_t *key, KeySym keysym) {
-    int i = 0;
     int len = xdo->charcodes_len;
 
     key->code = 0;
@@ -1406,7 +1406,7 @@ static void _xdo_charcodemap_from_keysym(
     key->modmask = 0;
     key->needs_binding = 1;
 
-    for (i = 0; i < len; i++) {
+    for (int i = 0; i < len; i++) {
         if (xdo->charcodes[i].symbol == keysym) {
             key->code = xdo->charcodes[i].code;
             key->group = xdo->charcodes[i].group;
@@ -1510,7 +1510,7 @@ int _xdo_send_keysequence_window_to_keycode_list(
 
         /* Check if 'tok' (string keysym) is an alias to another key */
         /* symbol_map comes from xdo.util */
-        for (i = 0; symbol_map[i] != NULL; i += 2) {
+        for (int i = 0; symbol_map[i] != NULL; i += 2) {
             if (!strcasecmp(tok, symbol_map[i])) {
                 tok = symbol_map[i + 1];
             }
@@ -1551,10 +1551,10 @@ int _xdo_send_keysequence_window_to_keycode_list(
     return True;
 }
 
-int _is_success(const char *funcname, int code, const xdo_t *xdo) {
-    /* Nonzero is failure. */
+/* Nonzero is failure. */
+int printMsgIfConditionTrue(const char* funcname, int code, const xdo_t* xdo) {
     if (code != 0 && !xdo->quiet) {
-        fprintf(stderr, "%s failed (code=%d)\n", funcname, code);
+        fprintf(stderr, "%s failed, code = %d.\n", funcname, code);
     }
     return code;
 }
@@ -1570,52 +1570,51 @@ int xdo_get_window_property(const xdo_t *xdo, Window window,
     return XDO_SUCCESS;
 }
 
-/* Arbitrary window property retrieval
- * slightly modified version from xprop.c from Xorg */
-unsigned char *xdo_get_window_property_by_atom(const xdo_t *xdo, Window window,
-    Atom atom, long *nitems, Atom *type, int *size) {
+/**
+ * Arbitrary window property retrieval.
+ *
+ * Sightly modified version from xprop.c from Xorg.
+ */
+
+unsigned char* xdo_get_window_property_by_atom(const xdo_t* xdo,
+    Window window, Atom atom, long* nitems, Atom* type, int* size) {
+
+    // printf("%splasmastorm::xdo: xdo_get_window_property_by_atom() "
+    //    "Starts.%s\n\n", COLOR_RED, COLOR_NORMAL);
+
     Atom actual_type;
     int actual_format;
     unsigned long _nitems;
-    /*unsigned long nbytes;*/
-    unsigned long bytes_after; /* unused */
+    unsigned long bytes_after;
     unsigned char *prop;
-    int status;
 
-    status = XGetWindowProperty(xdo->xdpy, window, atom, 0, (~0L), False,
-        AnyPropertyType, &actual_type, &actual_format, &_nitems, &bytes_after,
-        &prop);
+    const int status = XGetWindowProperty(xdo->xdpy, window,
+        atom, 0, (~0L), False, AnyPropertyType,
+        &actual_type, &actual_format,
+        &_nitems, &bytes_after, &prop);
+
     if (status == BadWindow) {
-        fprintf(stderr, "window id # 0x%lx does not exists!", window);
+        fprintf(stderr, "window id # 0x%lx does not exists!\n", window);
         return NULL;
     }
     if (status != Success) {
-        fprintf(stderr, "XGetWindowProperty failed!");
+        fprintf(stderr, "XGetWindowProperty failed!\n");
         return NULL;
     }
-
-    /*
-     *if (actual_format == 32)
-     *  nbytes = sizeof(long);
-     *else if (actual_format == 16)
-     *  nbytes = sizeof(short);
-     *else if (actual_format == 8)
-     *  nbytes = 1;
-     *else if (actual_format == 0)
-     *  nbytes = 0;
-     */
 
     if (nitems != NULL) {
         *nitems = _nitems;
     }
-
     if (type != NULL) {
         *type = actual_type;
     }
-
     if (size != NULL) {
         *size = actual_format;
     }
+
+    // printf("%splasmastorm::xdo: xdo_get_window_property_by_atom() "
+    //     "Finishes.%s\n\n", COLOR_RED, COLOR_NORMAL);
+
     return prop;
 }
 
@@ -1624,7 +1623,6 @@ int _xdo_ewmh_is_supported(const xdo_t *xdo, const char *feature) {
     long nitems = 0L;
     int size = 0;
     Atom *results = NULL;
-    long i = 0;
 
     Window root;
     Atom request;
@@ -1636,7 +1634,7 @@ int _xdo_ewmh_is_supported(const xdo_t *xdo, const char *feature) {
 
     results = (Atom *)(void *)xdo_get_window_property_by_atom(
         xdo, root, request, &nitems, &type, &size);
-    for (i = 0L; i < nitems; i++) {
+    for (long i = 0L; i < nitems; i++) {
         if (results[i] == feature_atom) {
             return True;
         }
@@ -1687,11 +1685,14 @@ void _xdo_send_key(const xdo_t *xdo, Window window, charcodemap_t *key,
         XTestFakeKeyEvent(xdo->xdpy, key->code, is_press, CurrentTime);
         XkbLockGroup(xdo->xdpy, XkbUseCoreKbd, current_group);
         XSync(xdo->xdpy, False);
+
     } else {
-        /* Since key events have 'state' (shift, etc) in the event, we don't
-         * need to worry about key press ordering. */
+        // Since key events have 'state' (shift, etc) in the event,
+        // we don't need to worry about key press ordering.
+
         XKeyEvent xk;
         _xdo_init_xkeyevent(xdo, &xk);
+
         xk.window = window;
         xk.keycode = key->code;
         xk.state = mask | (key->group << 13);
@@ -1708,44 +1709,42 @@ void _xdo_send_key(const xdo_t *xdo, Window window, charcodemap_t *key,
 }
 
 int _xdo_query_keycode_to_modifier(XModifierKeymap *modmap, KeyCode keycode) {
-    int i = 0, j = 0;
+    /* 8 modifier types, per XGetModifierMapping(3X) */
     int max = modmap->max_keypermod;
 
-    for (i = 0; i < 8;
-         i++) { /* 8 modifier types, per XGetModifierMapping(3X) */
-        for (j = 0; j < max && modmap->modifiermap[(i * max) + j]; j++) {
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < max && modmap->modifiermap[(i * max) + j]; j++) {
             if (keycode == modmap->modifiermap[(i * max) + j]) {
                 switch (i) {
-                case ShiftMapIndex:
-                    return ShiftMask;
-                    break;
-                case LockMapIndex:
-                    return LockMask;
-                    break;
-                case ControlMapIndex:
-                    return ControlMask;
-                    break;
-                case Mod1MapIndex:
-                    return Mod1Mask;
-                    break;
-                case Mod2MapIndex:
-                    return Mod2Mask;
-                    break;
-                case Mod3MapIndex:
-                    return Mod3Mask;
-                    break;
-                case Mod4MapIndex:
-                    return Mod4Mask;
-                    break;
-                case Mod5MapIndex:
-                    return Mod5Mask;
-                    break;
+                    case ShiftMapIndex:
+                        return ShiftMask;
+                        break;
+                    case LockMapIndex:
+                        return LockMask;
+                        break;
+                    case ControlMapIndex:
+                        return ControlMask;
+                        break;
+                    case Mod1MapIndex:
+                        return Mod1Mask;
+                        break;
+                    case Mod2MapIndex:
+                        return Mod2Mask;
+                        break;
+                    case Mod3MapIndex:
+                        return Mod3Mask;
+                        break;
+                    case Mod4MapIndex:
+                        return Mod4Mask;
+                        break;
+                    case Mod5MapIndex:
+                        return Mod5Mask;
+                        break;
                 }
-            } /* end if */
-        }     /* end loop j */
-    }         /* end loop i */
+            }
+        }
+    }
 
-    /* No modifier found for this keycode, return no mask */
     return 0;
 }
 
@@ -1834,7 +1833,9 @@ unsigned int xdo_get_input_state(const xdo_t *xdo) {
     return mask;
 }
 
-const char **xdo_get_symbol_map(void) { return symbol_map; }
+const char** xdo_get_symbol_map(void) {
+    return symbol_map;
+}
 
 int xdo_clear_active_modifiers(const xdo_t *xdo, Window window,
     charcodemap_t *active_mods, int active_mods_n) {
@@ -1909,25 +1910,25 @@ int xdo_set_active_modifiers(const xdo_t *xdo, Window window,
     return ret;
 }
 
-int xdo_get_pid_window(const xdo_t *xdo, Window window) {
+int xdo_get_pid_window(const xdo_t* xdo, Window window) {
+    if (atom_NET_WM_PID == (Atom) - 1) {
+        atom_NET_WM_PID = XInternAtom(xdo->xdpy,
+            "_NET_WM_PID", False);
+    }
+
+    long nitems = 0;
     Atom type;
     int size;
-    long nitems = 0;
-    unsigned char *data;
-    int window_pid = 0;
 
-    if (atom_NET_WM_PID == (Atom)-1) {
-        atom_NET_WM_PID = XInternAtom(xdo->xdpy, "_NET_WM_PID", False);
-    }
+    printf("%sxdo: xdo_get_pid_window() Starts.%s\n\n",
+        COLOR_BLUE, COLOR_NORMAL);
+    unsigned char* data = xdo_get_window_property_by_atom(xdo, window,
+        atom_NET_WM_PID, &nitems, &type, &size);
+    printf("%sxdo: xdo_get_pid_window() Finishes.%s\n\n",
+        COLOR_BLUE, COLOR_NORMAL);
 
-    data = xdo_get_window_property_by_atom(
-        xdo, window, atom_NET_WM_PID, &nitems, &type, &size);
-
-    if (nitems > 0) {
-        /* The data itself is unsigned long, but everyone uses int as pid values
-         */
-        window_pid = (int)*((unsigned long *)(void *)data);
-    }
+    int window_pid = (nitems > 0) ?
+        (int) *((unsigned long*) (void*) data) : 0;
     free(data);
 
     return window_pid;
@@ -2016,24 +2017,25 @@ int xdo_set_desktop_viewport(const xdo_t *xdo, int x, int y) {
     xev.xclient.data.l[0] = x;
     xev.xclient.data.l[1] = y;
 
+    /* XXX: XSendEvent returns 0 on conversion failure, nonzero otherwise.
+     * Manpage says it will only generate BadWindow or BadValue errors */
     ret = XSendEvent(xdo->xdpy, root, False,
         SubstructureNotifyMask | SubstructureRedirectMask, &xev);
 
-    /* XXX: XSendEvent returns 0 on conversion failure, nonzero otherwise.
-     * Manpage says it will only generate BadWindow or BadValue errors */
-    return _is_success("XSendEvent[EWMH:_NET_DESKTOP_VIEWPORT]", ret == 0, xdo);
+    return printMsgIfConditionTrue("XSendEvent"
+        "[EWMH:_NET_DESKTOP_VIEWPORT]", ret == 0, xdo);
 }
 
 int xdo_kill_window(const xdo_t *xdo, Window window) {
     int ret;
     ret = XKillClient(xdo->xdpy, window);
-    return _is_success("XKillClient", ret == 0, xdo);
+    return printMsgIfConditionTrue("XKillClient", ret == 0, xdo);
 }
 
 int xdo_close_window(const xdo_t *xdo, Window window) {
     int ret;
     ret = XDestroyWindow(xdo->xdpy, window);
-    return _is_success("XDestroyWindow", ret == 0, xdo);
+    return printMsgIfConditionTrue("XDestroyWindow", ret == 0, xdo);
 }
 
 int xdo_get_window_name(const xdo_t *xdo, Window window,
@@ -2084,8 +2086,9 @@ int xdo_minimize_window(const xdo_t *xdo, Window window) {
 
     /* Minimize it */
     ret = XIconifyWindow(xdo->xdpy, window, screen);
-    return _is_success("XIconifyWindow", ret == 0, xdo);
+    return printMsgIfConditionTrue("XIconifyWindow", ret == 0, xdo);
 }
+
 
 void _xdo_debug(const xdo_t *xdo, const char *format, ...) {
     va_list args;
@@ -2095,7 +2098,8 @@ void _xdo_debug(const xdo_t *xdo, const char *format, ...) {
         vfprintf(stderr, format, args);
         fprintf(stderr, "\n");
     }
-} /* _xdo_debug */
+}
+
 
 /* Used for printing things conditionally based on xdo->quiet */
 void _xdo_eprintf(const xdo_t *xdo, int hushable, const char *format, ...) {
@@ -2120,30 +2124,4 @@ void xdo_disable_feature(xdo_t *xdo, int feature) {
 
 int xdo_has_feature(xdo_t *xdo, int feature) {
     return (xdo->features_mask & (1 << feature));
-}
-
-int xdo_get_viewport_dimensions(
-    xdo_t *xdo, unsigned int *width, unsigned int *height, int screen) {
-    int dummy;
-
-    if (XineramaQueryExtension(xdo->xdpy, &dummy, &dummy) &&
-        XineramaIsActive(xdo->xdpy)) {
-        XineramaScreenInfo *info;
-        int screens;
-
-        info = XineramaQueryScreens(xdo->xdpy, &screens);
-        if (screen < 0 || screen >= screens) {
-            fprintf(stderr, "Invalid screen number %d outside range 0 - %d\n",
-                screen, screens - 1);
-            return XDO_ERROR;
-        }
-        *width = (unsigned int)info[screen].width;
-        *height = (unsigned int)info[screen].height;
-        XFree(info);
-        return XDO_SUCCESS;
-    } else {
-        /* Use the root window size if no zinerama */
-        Window root = RootWindow(xdo->xdpy, screen);
-        return xdo_get_window_size(xdo, root, width, height);
-    }
 }

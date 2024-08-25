@@ -26,24 +26,24 @@
 #define GTK_MINOR 20
 #define GTK_MICRO 0
 
-extern void updateMainWindowUI(void);
-extern void initUIClass(void);
+void updateMainWindowUI();
+void createMainWindow();
 
-extern void ui_set_birds_header(const char *text);
-extern void ui_set_celestials_header(const char *text);
+void ui_set_birds_header(const char *text);
+void ui_set_celestials_header(const char *text);
 
-extern void ui_set_sticky(int x);
+void ui_set_sticky(int x);
 
-extern void addBusyStyleClass();
-extern void removeBusyStyleClass();
+void addBusyStyleClass();
+void removeBusyStyleClass();
 
-extern void ui_gray_ww(const int m);
-extern void ui_gray_below(const int m);
-extern void ui_gray_birds(int m);
-extern int isGtkVersionValid(void);
-extern char *ui_gtk_version(void);
-extern char *ui_gtk_required(void);
-extern int ui_run_nomenu(void);
+void ui_gray_ww(const int m);
+void ui_gray_below(const int m);
+void ui_gray_birds(int m);
+int isGtkVersionValid();
+char *ui_gtk_version();
+char *ui_gtk_required();
+int ui_run_nomenu();
 
-extern void set_buttons(void);
-extern void handle_language(int restart);
+void set_buttons();
+void handle_language(int restart);

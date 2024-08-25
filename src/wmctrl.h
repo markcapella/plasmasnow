@@ -45,7 +45,6 @@ unsigned long getX11StackedWindowsList(Window** wins);
 
 extern void logWindow(Window);
 extern void logAllWindowsStackedTopToBottom();
-extern void ensureWinInfoList();
 
 unsigned long getRootWindowProperty(Atom prop, Window **wins);
 extern void getX11WindowsList(WinInfo** winInfolist, int *listCount);

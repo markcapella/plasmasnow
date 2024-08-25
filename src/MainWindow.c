@@ -103,7 +103,7 @@
  *       - for scale buttons: a GtkScale, defining for example min and max
  * values
  *       - placement
- *       - for few buttons: a css class. Example: BelowConfirm
+ *       - for few buttons: a css class.
  *
  *     In Makefile.am, ui.glade is converted to an include file: ui_xml.h
  *     So, when compiled, the program does not need an external file for it's
@@ -144,31 +144,36 @@
 // #undef NEWLINE
 #ifdef NEWLINE
 
-#include "Santa.h"
-#include "birds.h"
-#include "clocks.h"
-#include "csvpos.h"
-#include "Flags.h"
-#include "mygettext.h"
-#include "pixmaps.h"
-#include "safe_malloc.h"
-#include "snow.h"
-#include "ui.h"
-#include "ui_xml.h"
-#include "Utils.h"
-#include "version.h"
-#include "windows.h"
-#include "plasmasnow.h"
-#include <X11/extensions/Xinerama.h>
 #include <assert.h>
-#include <glib.h>
-#include <glib/gprintf.h>
-#include <gtk/gtk.h>
 #include <math.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+
+#include <X11/extensions/Xinerama.h>
+
+#include <glib.h>
+#include <glib/gprintf.h>
+
+#include <gtk/gtk.h>
+
+#include "birds.h"
+#include "clocks.h"
+#include "ColorCodes.h"
+#include "csvpos.h"
+#include "Flags.h"
+#include "MainWindow.h"
+#include "mygettext.h"
+#include "pixmaps.h"
+#include "plasmasnow.h"
+#include "safe_malloc.h"
+#include "Santa.h"
+#include "snow.h"
+#include "ui_xml.h"
+#include "Utils.h"
+#include "version.h"
+#include "windows.h"
 
 
 /***********************************************************
@@ -649,6 +654,7 @@ static void initAllButtonValues() {
     NEWLINE g_signal_connect(G_OBJECT(Button.name), "file-set",                \
         G_CALLBACK(buttoncb(type, name)), NULL);
 
+
 static void connectAllButtonSignals() {
 
     ALL_BUTTONS
@@ -989,8 +995,7 @@ void handleFileChooserPreview(GtkFileChooser *file_chooser, gpointer data) {
 /** *********************************************************************
  ** Main UI Form control.
  **/
-
-void initUIClass() {
+void createMainWindow() {
     ui_running = True;
 
     builder = gtk_builder_new_from_string(plasmasnow_xml, -1);
@@ -1024,12 +1029,11 @@ void initUIClass() {
     g_signal_connect(G_OBJECT(mMainWindow), "visibility-notify-event",
         G_CALLBACK(handleMainWindowStateEvents), NULL);
 
-
     mStyleContext = gtk_widget_get_style_context(mMainWindow);
     applyMainWindowCSSTheme();
 
-    gtk_window_set_title(GTK_WINDOW(mMainWindow), mGlobal.mPlasmaWindowTitle);
-    //gtk_window_set_title(GTK_WINDOW(mMainWindow), "");
+    gtk_window_set_title(GTK_WINDOW(mMainWindow),
+        mGlobal.mPlasmaWindowTitle);
     if (getenv("plasmasnow_RESTART")) {
         gtk_window_set_position(GTK_WINDOW(mMainWindow),
             GTK_WIN_POS_CENTER_ALWAYS);
@@ -1038,8 +1042,11 @@ void initUIClass() {
     gtk_widget_show_all(mMainWindow);
 
     init_buttons();
+
     connectAllButtonSignals();
+
     init_pixmaps();
+
     set_buttons();
 
     preview = GTK_IMAGE(gtk_image_new());

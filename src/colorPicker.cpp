@@ -121,7 +121,7 @@ class PlasmaColorDialog : public QColorDialog {
  **
  **/
 static int argc = 1;
-static std::string argv[] = { "" };
+static std::string argv[] = { "plasmasnowpicker" };
 static QApplication* mColorApp = new QApplication(argc, (char**) argv);
 
 static PlasmaColorDialog* mColorDialog = new PlasmaColorDialog();
