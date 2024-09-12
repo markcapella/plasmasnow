@@ -28,7 +28,6 @@
 #include <gdk/gdkx.h>
 #include <gtk/gtk.h>
 
-#include "debug.h"
 #include "StormWindow.h"
 #include "windows.h"
 
@@ -102,7 +101,6 @@ bool createStormWindow(Display* display,
     if (xscreen < 0) {
         XWindowAttributes attr;
         XGetWindowAttributes(display, DefaultRootWindow(display), &attr);
-        P("width, height %d %d\n", attr.width, attr.height);
         gtk_widget_set_size_request(
             GTK_WIDGET(transparentGTKWindow), attr.width, attr.height);
         winx = 0;

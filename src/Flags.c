@@ -33,7 +33,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "debug.h"
+
 
 FLAGS Flags;
 FLAGS OldFlags;
@@ -370,7 +370,6 @@ static void makeflagsfile() {
         FlagsFile, strlen(FlagsFile) + 1 + strlen(FLAGSFILE) + 1);
     strcat(FlagsFile, "/");
     strcat(FlagsFile, FLAGSFILE);
-    P("FlagsFile: %s\n", FlagsFile);
 }
 
 void findflag(FILE *f, const char *x, char **value) {
@@ -435,7 +434,6 @@ void ReadFlags() {
     }
     f = fopen(FlagsFile, "r");
     if (f == NULL) {
-        I("Cannot read %s\n", FlagsFile);
         return;
     }
     char *value = NULL;
@@ -472,7 +470,6 @@ void WriteFlags() {
     }
     f = fopen(FlagsFile, "w");
     if (f == NULL) {
-        I("Cannot write %s\n", FlagsFile);
         return;
     }
 #define DOIT_I(x, d, v) fprintf(f, "%s %d\n", #x, Flags.x);

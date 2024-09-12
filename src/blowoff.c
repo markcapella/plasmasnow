@@ -21,7 +21,7 @@
  */
 
 #include "blowoff.h"
-#include "debug.h"
+
 #include "fallensnow.h"
 #include "Flags.h"
 #include "Utils.h"
@@ -68,7 +68,6 @@ int do_blowoff() {
     }
     FallenSnow *fsnow = mGlobal.FsnowFirst;
     while (fsnow) {
-        P("blowoff ...\n");
         if (canSnowCollectOnWindowOrScreenBottom(fsnow) && !Flags.NoSnowFlakes) {
             if (fsnow->winInfo.window == 0 ||
                 (!fsnow->winInfo.hidden &&

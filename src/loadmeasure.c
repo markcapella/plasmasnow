@@ -26,7 +26,7 @@
 #include <gtk/gtk.h>
 
 #include "clocks.h"
-#include "debug.h"
+
 #include "Flags.h"
 #include "loadmeasure.h"
 #include "MainWindow.h"
