@@ -85,7 +85,7 @@ static void add_random_flakes(int n);
 static int  do_SwitchFlakes();
 
 static void DelFlake(SnowFlake *flake);
-static void EraseSnowFlake1(SnowFlake *flake);
+static void eraseSnowFlake(SnowFlake *flake);
 
 static void SetSnowSize(void);
 
@@ -380,7 +380,7 @@ int snow_erase(int force) {
     SnowFlake *flake;
     int n = 0;
     while ((flake = (SnowFlake *)set_next())) {
-        EraseSnowFlake1(flake);
+        eraseSnowFlake(flake);
         n++;
     }
     return true;
@@ -518,15 +518,15 @@ int do_UpdateSnowFlake(SnowFlake* flake) {
     }
 
     if ((flake->freeze || flake->fluff) && mGlobal.RemoveFluff) {
+        eraseSnowFlake(flake);
         DelFlake(flake);
-        EraseSnowFlake1(flake);
         return false;
     }
 
     // handle fluff and KillFlakes
     if (KillFlakes || (flake->fluff && flake->flufftimer > flake->flufftime)) {
+        eraseSnowFlake(flake);
         DelFlake(flake);
-        EraseSnowFlake1(flake);
         return false;
     }
 
@@ -766,30 +766,32 @@ SnowFlake* MakeFlake(int type) {
 /** *********************************************************************
  ** This method ...
  **/
-void EraseSnowFlake1(SnowFlake *flake) {
+void eraseSnowFlake(SnowFlake* flake) {
     if (mGlobal.isDoubleBuffered) {
         return;
     }
+
     int x = flake->ix - 1;
     int y = flake->iy - 1;
     int flakew = snowPix[flake->whatFlake].width + 2;
     int flakeh = snowPix[flake->whatFlake].height + 2;
-    sanelyCheckAndClearDisplayArea(
-        mGlobal.display, mGlobal.SnowWin, x, y, flakew, flakeh, mGlobal.xxposures);
+
+    sanelyCheckAndClearDisplayArea(mGlobal.display,
+        mGlobal.SnowWin, x, y, flakew, flakeh,
+        mGlobal.xxposures);
 }
 
 /** *********************************************************************
  ** This method ...
  **/
-// a call to this function must be followed by 'return false' to remove this
-// flake from the g_timeout callback
-void DelFlake(SnowFlake *flake) {
+void DelFlake(SnowFlake* flake) {
     if (flake->fluff) {
         mGlobal.FluffCount--;
     }
 
     set_erase(flake);
     free(flake);
+
     mGlobal.FlakeCount--;
 }
 
