@@ -30,7 +30,7 @@
 #include <gdk/gdkx.h>
 #include <gtk/gtk.h>
 
-#include "ColorCodes.h"
+#include "debug.h"
 #include "dsimple.h"
 #include "fallensnow.h"
 #include "Flags.h"
@@ -73,20 +73,17 @@ int mActiveAppYPos = mINVALID_POSITION;
 // Workspace on which transparent window is placed.
 static long TransWorkSpace = -SOMENUMBER;
 
-
 /** *********************************************************************
  ** This method ...
  **/
 void addWindowsModuleToMainloop() {
     if (mGlobal.hasDestopWindow) {
         DetermineVisualWorkspaces();
-        addMethodToMainloop(PRIORITY_DEFAULT, time_wupdate,
-            updateWindowsList);
+        addMethodToMainloop(PRIORITY_DEFAULT, time_wupdate, updateWindowsList);
     }
 
     if (!mGlobal.isDoubleBuffered) {
-        addMethodToMainloop(PRIORITY_DEFAULT, time_sendevent,
-            do_sendevent);
+        addMethodToMainloop(PRIORITY_DEFAULT, time_sendevent, do_sendevent);
     }
 }
 
@@ -124,8 +121,7 @@ int do_sendevent() {
     event.width = mGlobal.SnowWinWidth;
     event.height = mGlobal.SnowWinHeight;
 
-    XSendEvent(mGlobal.display, mGlobal.SnowWin,
-        True, Expose, (XEvent *) &event);
+    XSendEvent(mGlobal.display, mGlobal.SnowWin, True, Expose, (XEvent *) &event);
     return TRUE;
 }
 
@@ -198,6 +194,7 @@ void DetermineVisualWorkspaces() {
 
         int xm = x + w / 2;
         int ym = y + h / 2;
+        P("movewindow: %d %d\n", xm, ym);
         xdo_move_window(mGlobal.xdo, probeWindow, xm, ym);
         xdo_wait_for_window_map_state(mGlobal.xdo, probeWindow, IsViewable);
         long desktop;
@@ -205,6 +202,7 @@ void DetermineVisualWorkspaces() {
         if (rc == XDO_ERROR) {
             desktop = mGlobal.CWorkSpace;
         }
+        P("desktop: %ld rc: %d\n", desktop, rc);
         mGlobal.VisWorkSpaces[i] = desktop;
 
         if (desktop != prev) {
@@ -354,6 +352,7 @@ void SetBackground() {
         malloc(w * h * 4 * sizeof(unsigned char));
 
     int rowstride = gdk_pixbuf_get_rowstride(pixbuf);
+    P("rowstride: %d\n", rowstride);
     int i, j;
     int k = 0;
     if (is_little_endian()) {
@@ -367,6 +366,8 @@ void SetBackground() {
             }
         }
     } else {
+        I("Big endian system, swapping bytes in background.\n");
+        I("Let me know if this is not OK.\n");
         for (i = 0; i < h; i++) {
             for (j = 0; j < w; j++) {
                 guchar *p = &pixels[i * rowstride + j * n_channels];
@@ -972,33 +973,16 @@ void updateFallenSnowRegionsWithLock() {
  ** This method ...
  **/
 void updateFallenSnowRegions() {
-    // Count fallensnow regions, then allocate + 1.
-    int numberFallen = 0;
-    FallenSnow* tempFallen = mGlobal.FsnowFirst;
+    FallenSnow *fsnow;
 
-    while (tempFallen) {
-        numberFallen++;
-        tempFallen = tempFallen->next;
-    }
-
-    long int* toremove = (long int*)
-        malloc(sizeof(*toremove) * (numberFallen + 1));
-    int ntoremove = 0;
-
-
-    // Add fallensnow regions on window Created.
+    // add fallensnow regions:
     WinInfo* addWin = mWinInfoList;
     for (int i = 0; i < mWinInfoListLength; i++) {
-        FallenSnow* fsnow = findFallenSnowItemByWindow(mGlobal.FsnowFirst,
-            addWin->window);
+        fsnow = findFallenSnowItemByWindow(mGlobal.FsnowFirst, addWin->window);
         if (fsnow) {
             fsnow->winInfo = *addWin;
             if ((!fsnow->winInfo.sticky) &&
                 fsnow->winInfo.ws != mGlobal.CWorkSpace) {
-
-                //printf("%splasmasnow: windows() Fallen snow hidden "
-                //    "on WS change.%s\n", COLOR_YELLOW, COLOR_NORMAL);
-
                 eraseFallenSnowOnDisplay(fsnow, 0, fsnow->w);
             }
         }
@@ -1009,7 +993,7 @@ void updateFallenSnowRegions() {
         // and also not if this window is a "dock"
         if (!fsnow) {
             if (addWin->window != mGlobal.SnowWin &&
-                addWin->y > 0 && !addWin->dock) {
+                addWin->y > 0 && !(addWin->dock)) {
                 if ((int) (addWin->w) == mGlobal.SnowWinWidth &&
                     addWin->x == 0 && addWin->y < 100) {
                     continue;
@@ -1020,10 +1004,6 @@ void updateFallenSnowRegions() {
                     continue;
                 }
 
-                //printf("%splasmasnow: windows() New window performs "
-                //    "pushFallenSnowItem.%s\n", COLOR_YELLOW, COLOR_NORMAL);
-                //logWindow(addWin->window);
-
                 pushFallenSnowItem(&mGlobal.FsnowFirst, addWin,
                     addWin->x + Flags.OffsetX, addWin->y + Flags.OffsetY,
                     addWin->w + Flags.OffsetW, Flags.MaxWinSnowDepth);
@@ -1033,19 +1013,25 @@ void updateFallenSnowRegions() {
         addWin++;
     }
 
+    // Count fallensnow regions.
+    FallenSnow* tempFallen = mGlobal.FsnowFirst;
+    int numberFallen = 0;
+    while (tempFallen) {
+        numberFallen++;
+        tempFallen = tempFallen->next;
+    }
 
-    // Remove fallensnow regions on window Hidden or Closed.
-    FallenSnow* fsnow = mGlobal.FsnowFirst;
+    // Allocate + 1, prevent allocation of zero bytes.
+    int ntoremove = 0;
+    long int *toremove = (long int *)
+        malloc(sizeof(*toremove) * (numberFallen + 1));
+
+    // 
+    fsnow = mGlobal.FsnowFirst;
     while (fsnow) {
         if (fsnow->winInfo.window != 0) {
             // Test if fsnow->winInfo.window is hidden.
             if (fsnow->winInfo.hidden) {
-
-                //printf("%splasmasnow: windows() Remove window is HIDDEN "
-                //    "& performs eraseFallenSnowOnDisplay & "
-                //    "generateFallenSnowFlakes.%s\n",
-                //    COLOR_YELLOW, COLOR_NORMAL);
-
                 eraseFallenSnowOnDisplay(fsnow, 0, fsnow->w);
                 generateFallenSnowFlakes(fsnow, 0, fsnow->w, -10.0);
                 toremove[ntoremove++] = fsnow->winInfo.window;
@@ -1054,16 +1040,9 @@ void updateFallenSnowRegions() {
             WinInfo* removeWin = findWinInfoByWindowId(
                 fsnow->winInfo.window);
             if (!removeWin ||
+                (removeWin->w > 0.8 * mGlobal.SnowWinWidth && removeWin->ya < Flags.IgnoreTop) ||
                 (removeWin->w > 0.8 * mGlobal.SnowWinWidth &&
-                    removeWin->ya < Flags.IgnoreTop) ||
-                (removeWin->w > 0.8 * mGlobal.SnowWinWidth &&
-                    (int) mGlobal.SnowWinHeight - removeWin->ya <
-                        Flags.IgnoreBottom)) {
-
-                // printf("%splasmasnow: windows() Remove window is GONE "
-                //     "& performs generateFallenSnowFlakes.%s\n",
-                //     COLOR_YELLOW, COLOR_NORMAL);
-
+                    (int)mGlobal.SnowWinHeight - removeWin->ya < Flags.IgnoreBottom)) {
                 generateFallenSnowFlakes(fsnow, 0, fsnow->w, -10.0);
                 toremove[ntoremove++] = fsnow->winInfo.window;
             }
@@ -1072,8 +1051,7 @@ void updateFallenSnowRegions() {
         fsnow = fsnow->next;
     }
 
-
-    // Remove fallensnow regions on Moved or Resized.
+    // Test if window has been moved or resized.
     WinInfo* movedWin = mWinInfoList;
     for (int i = 0; i < mWinInfoListLength; i++) {
         fsnow = findFallenSnowItemByWindow(mGlobal.FsnowFirst, movedWin->window);
@@ -1081,11 +1059,6 @@ void updateFallenSnowRegions() {
             if (fsnow->x != movedWin->x + Flags.OffsetX ||
                 fsnow->y != movedWin->y + Flags.OffsetY ||
                 (unsigned int) fsnow->w != movedWin->w + Flags.OffsetW) {
-
-                // printf("%splasmasnow: windows() Remove window is MOVED "
-                //     "or RESIZED performs eraseFallenSnowOnDisplay "
-                //     "& generateFallenSnowFlakes.%s\n",
-                //     COLOR_YELLOW, COLOR_NORMAL);
 
                 eraseFallenSnowOnDisplay(fsnow, 0, fsnow->w);
                 generateFallenSnowFlakes(fsnow, 0, fsnow->w, -10.0);

@@ -23,7 +23,7 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-
+#include "debug.h"
 #include "hashtable.h"
 
 #ifdef HAVE_UNORDERED_MAP
@@ -44,6 +44,7 @@ void *table_get(unsigned int key) { return (table[key]); }
 void table_clear(void (*destroy)(void *p)) {
     for (MAP<unsigned int, void *>::iterator it = table.begin();
          it != table.end(); ++it) {
+        P("%d %p\n", it->first, it->second);
         destroy(it->second);
         it->second = 0;
     }

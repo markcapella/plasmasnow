@@ -29,7 +29,7 @@
 #include <gtk/gtk.h>
 
 #include "blowoff.h"
-
+#include "debug.h"
 #include "Flags.h"
 #include "plasmasnow.h"
 #include "safe_malloc.h"

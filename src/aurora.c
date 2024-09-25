@@ -22,7 +22,7 @@
 
 #include "aurora.h"
 #include "clocks.h"
-
+#include "debug.h"
 #include "Flags.h"
 #include "safe_malloc.h"
 #include "snow.h"
@@ -229,6 +229,8 @@ void aurora_draw(cairo_t *cr) {
     } else if (alpha < 0) {
         alpha = 0;
     }
+    P("alphas: %d %f %f %f\n", Flags.AuroraBrightness, alpha, a.alpha,
+        ALPHA * alpha);
     cairo_paint_with_alpha(cr, ALPHA * alpha);
     unlock_copy();
 }
@@ -443,6 +445,7 @@ void aurora_setparms(AuroraMap *a) {
     for (i = 0; i < AURORA_POINTS; i++) {
         a->points[i] = 0.2 + 0.4 * drand48();
         a->dpoints[i] = (2 * (i % 2) - 1) * 0.0005;
+        P("a.dpoints %d %f\n", i, a.dpoints[i]);
     }
 
     a->slantmax = 3;
@@ -491,6 +494,7 @@ void aurora_changeparms(AuroraMap *a) {
         } else if (a->alpha < 0.4) {
             a->dalpha = fabs(a->dalpha);
         }
+        P("a,alpha: %f\n", a->alpha);
     }
 
     if (1) {
@@ -535,6 +539,7 @@ void aurora_changeparms(AuroraMap *a) {
             if (a->theta > 360) {
                 a->theta -= 360;
             }
+            P("a.theta: %f %f %f\n", a->theta, dt, a->dtheta);
         }
         if (1) {
             double dt = 0.2;
@@ -546,6 +551,7 @@ void aurora_changeparms(AuroraMap *a) {
                 a->theta = 185;
                 a->dtheta = -fabs(a->dtheta);
             }
+            P("a.theta: %f\n", a->theta);
         }
     }
     // slant
@@ -559,6 +565,7 @@ void aurora_changeparms(AuroraMap *a) {
                 a->slant[i] = -a->slantmax;
                 a->dslant[i] = fabs(a->dslant[i]);
             }
+            P("slant: %d %f\n", i, a->slant[i]);
         }
     }
 
@@ -632,15 +639,19 @@ void aurora_computeparms(AuroraMap *a) {
         static const double dmax = 0.01;
         if (fabs(ymin - ymin_old) < 0.3) {
             if ((ymin - ymin_old) > dmax) {
+                P("ymin %f\n", ymin - ymin_old);
                 ymin = ymin_old + dmax;
             } else if ((ymin - ymin_old) < -dmax) {
+                P("ymin %f\n", ymin - ymin_old);
                 ymin = ymin_old - dmax;
             }
         }
         if (fabs(ymax - ymax_old) < 0.3) {
             if ((ymax - ymax_old) > dmax) {
+                P("ymax %f\n", ymax - ymax_old);
                 ymax = ymax_old + dmax;
             } else if ((ymax - ymax_old) < -dmax) {
+                P("ymax %f\n", ymax - ymax_old);
                 ymax = ymax_old - dmax;
             }
         }
@@ -653,8 +664,10 @@ void aurora_computeparms(AuroraMap *a) {
         d = 0.1;
     }
     double s = (a->base - a->hmax) / d;
+    P("ymin %f %f %f %f\n", ymin, ymax, d, s);
     for (i = 0; i < a->nz; i++) {
         a->z[i].y = a->base - (a->z[i].y - ymin) * s;
+        P("a->z[i].y: %d %f\n", i, z[i].y);
     }
 
     // height
@@ -719,6 +732,7 @@ void aurora_computeparms(AuroraMap *a) {
         }
         if (i > a->nz * (1 - a->fuzzright)) {
             alpha = ((float)(a->nz - i)) / (a->fuzzright * a->nz);
+            P("alpha: %d %f\n", i, alpha);
         }
         alpha += 0.05 * a->zaa[i];
         a->za[i] *= alpha;
@@ -744,8 +758,12 @@ void aurora_computeparms(AuroraMap *a) {
                     a->fuzz =
                         (fuzz_t *)realloc(a->fuzz, a->lfuzz * sizeof(fuzz_t));
                 }
+                P("d0 d: %d %d %d %d %d\n", a->z[i].x, d0, d, a->nfuzz,
+                    a->lfuzz);
                 if (d0 > 0) // edge on the right side
                 {
+                    P("Right side... %d %d %d %ld\n", a->z[i].x, a->nfuzz,
+                        a->lfuzz, sizeof(fuzz_t));
                     int jmax = i + f;
                     if (jmax > a->nz - 1) {
                         jmax = a->nz - 1;
@@ -759,6 +777,7 @@ void aurora_computeparms(AuroraMap *a) {
                         }
                     }
                     if (jmax > j) {
+                        P("adjust jmax: %d %d\n", jmax, j);
                         jmax = j;
                     }
 
@@ -767,11 +786,14 @@ void aurora_computeparms(AuroraMap *a) {
                         jj = 1;
                     }
                     for (j = i - 1; j > jj; j--) {
+                        P("a d: %d %d\n", d, (a->z[j - 1].x - a->z[j].x));
                         if (a->z[j - 1].x - a->z[j].x != d) {
+                            P("break %d\n", j);
                             break;
                         }
                     }
                     if (jmax + j > 2 * i) {
+                        P("Adjust\n");
                         jmax = 2 * i - j;
                     }
 
@@ -789,6 +811,8 @@ void aurora_computeparms(AuroraMap *a) {
                     }
                 } else // edge on the left side
                 {
+                    P("Left side... %d %d %d %ld\n", a->z[i].x, a->nfuzz,
+                        a->lfuzz, sizeof(fuzz_t));
                     int jmin = i - f;
                     if (jmin < 1) {
                         jmin = 1;
@@ -804,6 +828,8 @@ void aurora_computeparms(AuroraMap *a) {
                         }
                     }
                     if (j + jmin < 2 * i) {
+                        P("adjust jmin:  %d %d %d %d\n", jmin, j, a->z[i].x,
+                            mGlobal.counter++);
                         jmin = 2 * i - j;
                     }
 
@@ -812,7 +838,9 @@ void aurora_computeparms(AuroraMap *a) {
                         jj = 1;
                     }
                     for (j = i; j > jj; j--) {
+                        P("a d: %d %d\n", d, (a->z[j - 1].x - a->z[j].x));
                         if (a->z[j - 1].x - a->z[j].x != d) {
+                            P("break %d\n", j);
                             break;
                         }
                     }

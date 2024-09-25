@@ -38,19 +38,20 @@
  ** Module globals and consts.
  **/
 
-const int STAR_SIZE = 8;
-const float LOCAL_SCALE = 0.8;
-
 #define STARANIMATIONS 4
-cairo_surface_t* mStarSurfaceArray[STARANIMATIONS];
 
-char* mStarColorArray[STARANIMATIONS] =
-    { "gold", "gold1", "gold4", "orange" };
+static const int STAR_SIZE = 9;
+static const float LOCAL_SCALE = 0.8;
 
-int mNumberOfStars;
-StarCoordinate* mStarCoordinates = NULL;
+static int mNumberOfStars;
 
-int mPreviousAppScale = 100;
+static StarCoordinate* mStarCoordinates = NULL;
+
+static char* mStarColorArray[STARANIMATIONS] =
+    { (char*) "gold", (char*) "gold1",
+      (char*) "gold4", (char*) "orange"};
+
+static cairo_surface_t* mStarSurfaceArray[STARANIMATIONS];
 
 
 /** *********************************************************************
@@ -191,7 +192,7 @@ void drawStarsFrame(cairo_t *cr) {
         cairo_set_source_surface(cr,
             mStarSurfaceArray[star->color], star->x, star->y);
 
-        paintCairoContextWithAlpha(cr,
+        my_cairo_paint_with_alpha(cr,
             (0.01 * (100 - Flags.Transparency)));
     }
 
@@ -206,7 +207,8 @@ void updateStarsUserSettings() {
     UIDO(NStars, initStarsModuleArrays(); clearGlobalSnowWindow(););
     UIDO(Stars, clearGlobalSnowWindow(););
 
-    if (appScalesHaveChanged(&mPreviousAppScale)) {
+    static int prev = 100;
+    if (appScalesHaveChanged(&prev)) {
         initStarsModuleSurfaces();
         initStarsModuleArrays();
     }

@@ -33,7 +33,7 @@
 
 #include <gtk/gtk.h>
 
-
+#include "debug.h"
 #include "Flags.h"
 #include "meteor.h"
 #include "mygettext.h"
@@ -211,11 +211,11 @@ int is_little_endian(void) {
     return (*(char *)&endiantest) == 1;
 }
 
-void paintCairoContextWithAlpha(cairo_t* cc, double alpha) {
+void my_cairo_paint_with_alpha(cairo_t *cr, double alpha) {
     if (alpha > 0.9) {
-        cairo_paint(cc);
+        cairo_paint(cr);
     } else {
-        cairo_paint_with_alpha(cc, alpha);
+        cairo_paint_with_alpha(cr, alpha);
     }
 }
 
@@ -245,6 +245,7 @@ void rgba2color(GdkRGBA *c, char **s) {
     *s = (char *)malloc(8);
     sprintf(*s, "#%02lx%02lx%02lx", lrint(c->red * 255), lrint(c->green * 255),
         lrint(c->blue * 255));
+    P("rgba2color %s %d\n", *s, strlen(*s));
 }
 
 /** *********************************************************************
@@ -279,10 +280,12 @@ void randomuniqarray(double *a, int n, double d, unsigned short *seed) {
     int i;
     if (seed) {
 
+        P("seed != NULL\n");
         for (i = 0; i < n; i++) {
             a[i] = erand48(seed);
         }
     } else {
+        P("seed = NULL\n");
         for (i = 0; i < n; i++) {
             a[i] = drand48();
         }
@@ -382,14 +385,19 @@ Window largest_window_with_name(xdo_t *myxdo, const char *name) {
     Window *windows = NULL;
     unsigned int nwindows;
     xdo_search_windows(myxdo, &search, &windows, &nwindows);
+    P("nwindows: %s %d\n", search.winname, nwindows);
 
     Window w = 0;
     unsigned int maxsize = 0;
     for (unsigned int i = 0; i < nwindows; i++) {
         unsigned int width, height;
         xdo_get_window_size(myxdo, windows[i], &width, &height);
+        P("window: 0x%lx %d %d\n", windows[i], width, height);
 
-        const unsigned int size = width * height;
+        unsigned int size = width * height;
+        P("width %d height %d size %d prev maxsize %d\n",
+            width, height, size, maxsize);
+
         if (size <= maxsize) {
             continue;
         }

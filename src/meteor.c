@@ -27,7 +27,7 @@
 #include <gtk/gtk.h>
 
 #include "clocks.h"
-
+#include "debug.h"
 #include "Flags.h"
 #include "MainWindow.h"
 #include "meteor.h"

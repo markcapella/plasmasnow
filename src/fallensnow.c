@@ -41,7 +41,7 @@
 #include <gtk/gtk.h>
 
 #include "blowoff.h"
-
+#include "debug.h"
 #include "fallensnow.h"
 #include "Flags.h"
 #include "safe_malloc.h"
@@ -619,6 +619,7 @@ int do_adjust_deshes(__attribute__((unused))void* dummy) {
                 fsnow->snowHeight[i] -= c;
             }
         }
+        P("adjustments: %d\n", adjustments);
         fsnow = fsnow->next;
     }
 
@@ -919,7 +920,7 @@ void cairoDrawAllFallenSnowItems(cairo_t *cr) {
         if (canSnowCollectOnWindowOrScreenBottom(fsnow)) {
             cairo_set_source_surface(cr, fsnow->surface,
                 fsnow->x, fsnow->y - fsnow->h);
-            paintCairoContextWithAlpha(cr, ALPHA);
+            my_cairo_paint_with_alpha(cr, ALPHA);
 
             fsnow->prevx = fsnow->x;
             fsnow->prevy = fsnow->y - fsnow->h + 1;

@@ -23,14 +23,7 @@
 
 #include <gtk/gtk.h>
 
-void updateMoonAppSettings(void);
-void init_moon_surface(void);
-
-void initMoonModule(void);
-int moon_draw(cairo_t *cr);
-int moon_erase(int force);
-int do_umoon();
-
-void init_halo_surface(void);
-void halo_draw(cairo_t *cr);
-void halo_erase();
+extern int moon_draw(cairo_t *cr);
+extern void moon_init(void);
+extern void moon_ui(void);
+extern int moon_erase(int force);

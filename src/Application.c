@@ -55,6 +55,7 @@
 #include "blowoff.h"
 #include "clocks.h"
 #include "ColorCodes.h"
+#include "debug.h"
 #include "docs.h"
 #include "dsimple.h"
 #include "fallensnow.h"
@@ -468,19 +469,23 @@ int startApplication(int argc, char *argv[]) {
 
     addWindowsModuleToMainloop();
 
-    // #1 Init app modules.
+    // Init app modules.
     snow_init();
     initFallenSnowModule();
     blowoff_init();
     wind_init();
+
     Santa_init();
+
     initSceneryModule();
     treesnow_init();
+
     birds_init();
+
     initStarsModule();
     initMeteorModule();
     aurora_init();
-    initMoonModule();
+    moon_init();
 
     addLoadMonitorToMainloop();
 
@@ -490,8 +495,6 @@ int startApplication(int argc, char *argv[]) {
         handlePendingX11Events);
     addMethodToMainloop(PRIORITY_DEFAULT, time_display_dimensions,
         handleDisplayConfigurationChange);
-
-    // #2 Init app modules User Settings.
     addMethodToMainloop(PRIORITY_HIGH, TIME_BETWEEEN_UI_SETTINGS_UPDATES,
         doAllUISettingsUpdates);
 
@@ -872,7 +875,7 @@ int doAllUISettingsUpdates() {
     doFallenSnowUserSettingUpdates();
     blowoff_ui();
     treesnow_ui();
-    updateMoonAppSettings();
+    moon_ui();
     aurora_ui();
     updateMainWindowUI();
 
@@ -889,6 +892,7 @@ int doAllUISettingsUpdates() {
     if (Flags.Changes > 0) {
         WriteFlags();
         set_buttons();
+        P("-----------Changes: %d\n", Flags.Changes);
         Flags.Changes = 0;
     }
 
@@ -909,12 +913,15 @@ int onTimerEventDisplayChanged() {
         return -1;
     }
 
+    // I(_("Refresh due to change of screen or language settings ...\n"));
     if (mGlobal.ForceRestart) {
         mDoRestartDueToDisplayChange = 1;
         Flags.shutdownRequested = 1;
         return -1;
     }
 
+    // P("width height: %d %d %d %d\n", w, h, mGlobal.Wroot, mGlobal.Hroot);
+    // I(_("Refresh due to change of display settings...\n"));
     Display *display = XOpenDisplay(Flags.DisplayName);
     Screen *screen = DefaultScreenOfDisplay(display);
 
@@ -1099,7 +1106,7 @@ int drawCairoWindow(void *cr) {
  ** repeated a few times. This is not harmful. We do not draw
  ** anything the first few times this function is called.
  **/
-void drawCairoWindowInternal(cairo_t* cc) {
+void drawCairoWindowInternal(cairo_t *cr) {
     // Instabilities (?).
     static int counter = 0;
     if (counter * time_draw_all < 1.5) {
@@ -1120,7 +1127,7 @@ void drawCairoWindowInternal(cairo_t* cc) {
     } else if (!mGlobal.isDoubleBuffered) {
         XFlush(mGlobal.display);
         moon_erase(0);
-        Santa_erase(cc);
+        Santa_erase(cr);
         eraseStarsFrame();
         birds_erase(0);
         snow_erase(1);
@@ -1129,7 +1136,7 @@ void drawCairoWindowInternal(cairo_t* cc) {
     }
 
     // Do cairo.
-    cairo_save(cc);
+    cairo_save(cr);
 
     int tx = 0;
     int ty = 0;
@@ -1137,32 +1144,32 @@ void drawCairoWindowInternal(cairo_t* cc) {
         tx = mGlobal.SnowWinX;
         ty = mGlobal.SnowWinY;
     }
-    cairo_translate(cc, tx, ty);
+    cairo_translate(cr, tx, ty);
 
     // Do all module draws.
     if (WorkspaceActive()) {
-        drawStarsFrame(cc);
-        moon_draw(cc);
-        aurora_draw(cc);
-        drawMeteorFrame(cc);
-        drawSceneryFrame(cc);
-        birds_draw(cc);
-        cairoDrawAllFallenSnowItems(cc);
+        drawStarsFrame(cr);
+        moon_draw(cr);
+        aurora_draw(cr);
+        drawMeteorFrame(cr);
+        drawSceneryFrame(cr);
+        birds_draw(cr);
+        cairoDrawAllFallenSnowItems(cr);
         if (!Flags.ShowBirds || !Flags.FollowSanta) {
             // If Flags.FollowSanta, drawing of Santa
             // is done in Birds module.
-            Santa_draw(cc);
+            Santa_draw(cr);
         }
-        treesnow_draw(cc);
-        snow_draw(cc);
+        treesnow_draw(cr);
+        snow_draw(cr);
     }
 
     // Draw app window outline.
     if (Flags.Outline) {
-        rectangle_draw(cc);
+        rectangle_draw(cr);
     }
 
-    cairo_restore(cc);
+    cairo_restore(cr);
     XFlush(mGlobal.display);
 }
 
@@ -1180,6 +1187,7 @@ void SetWindowScale() {
     } else {
         mGlobal.WindowScale = y;
     }
+    P("WindowScale: %f\n", mGlobal.WindowScale);
 }
 
 /** *********************************************************************
@@ -1364,6 +1372,9 @@ void mybindtestdomain() {
             // setenv("LC_ALL",lc,1);
             // setenv("LANG",lc,1);
             setenv("LANGUAGE", Flags.Language, 1);
+            P("LC_ALL: %s\n", getenv("LC_ALL"));
+            P("LANG: %s\n", getenv("LANG"));
+            P("LANGUAGE: %s\n", getenv("LANGUAGE"));
 
         } else {
             unsetenv("LANGUAGE");
@@ -1372,14 +1383,19 @@ void mybindtestdomain() {
                 char *l = getenv("LANG");
                 if (l && !getenv("LANGUAGE")) {
                     char *lang = strdup(l);
+                    P("lang: %s\n", lang);
                     char *p = strchr(lang, '_');
                     if (p) {
                         *p = 0; // TODO: wrong
+                        P("lang: %s\n", lang);
                         setenv("LANGUAGE", lang, 1);
                     }
                     free(lang);
                 }
             }
+            P("LC_ALL: %s\n", getenv("LC_ALL"));
+            P("LANG: %s\n", getenv("LANG"));
+            P("LANGUAGE: %s\n", getenv("LANGUAGE"));
         }
     }
 #endif

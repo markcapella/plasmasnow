@@ -40,7 +40,7 @@
 #include <X11/Xutil.h>
 
 #include "ColorCodes.h"
-
+#include "debug.h"
 #include "dsimple.h"
 #include "safe_malloc.h"
 #include "windows.h"

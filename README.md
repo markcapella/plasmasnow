@@ -18,7 +18,7 @@ a QT screen color picker that works on Plasma, dual snow colors,
 
 * xSnow 3.7.5 is derived from
      Rick Jansen's xsnow-1.42.
-
+  
 &nbsp;
 
 ## Installation.
@@ -54,7 +54,9 @@ a QT screen color picker that works on Plasma, dual snow colors,
        plasmasnow
 &nbsp;
 
-## markcapella@twcny.rr.com Rocks !
+## Acknowledgements.
+
+### markcapella@twcny.rr.com Rocks !
 
 #### Yeah I do.
 &nbsp;

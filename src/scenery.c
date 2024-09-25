@@ -33,7 +33,7 @@
 #include "config.h"
 #endif
 #include "csvpos.h"
-
+#include "debug.h"
 #include "fallensnow.h"
 #include "Flags.h"
 #include "ixpm.h"
@@ -497,7 +497,7 @@ int drawSceneryFrame(cairo_t *cr) {
     for (int i = 0; i < NTrees; i++) {
         SceneryInfo *tree = mSceneryInfoArray[i];
         cairo_set_source_surface(cr, tree->surface, tree->x, tree->y);
-        paintCairoContextWithAlpha(cr, ALPHA);
+        my_cairo_paint_with_alpha(cr, ALPHA);
     }
 
     return TRUE;

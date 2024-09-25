@@ -25,7 +25,7 @@
 #include <stdlib.h>
 
 #include "clocks.h"
-
+#include "debug.h"
 #include "Flags.h"
 #include "Utils.h"
 #include "wind.h"
@@ -52,6 +52,7 @@ void wind_ui() {
     if (Flags.WindNow) {
         Flags.WindNow = 0;
         mGlobal.Wind = 2;
+        P("Gust: %d\n", Flags.Changes);
     }
 }
 
@@ -60,6 +61,7 @@ void draw_wind() {
 }
 
 int do_newwind() {
+    P("newwind\n");
     if (Flags.shutdownRequested) {
         return FALSE;
     }
@@ -104,6 +106,7 @@ int do_newwind() {
 }
 
 int do_wind() {
+    P("wind\n");
     if (Flags.shutdownRequested) {
         return FALSE;
     }
@@ -156,6 +159,7 @@ int do_wind() {
             //                   after on average WhirlTimerStart secs
         }
     }
+    P("Wind: %d %f\n", mGlobal.Wind, mGlobal.NewWind);
     return TRUE;
     // (void) d;
 }

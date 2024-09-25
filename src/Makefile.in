@@ -687,10 +687,9 @@ QT_CDEFINES = -DQT_NO_DEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB
 QT_CINCLUDES = -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtCore \
 	-I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets
 
-plasmasnow_CPPFLAGS = $(QT_CFLAGS) -g -O2 $(QT_CINCLUDES) \
-	$(GTK_CFLAGS) $(X11_CFLAGS) $(GSL_CFLAGS) \
-	-DLOCALEDIR=\"$(LOCALEDIR)\" -DLANGUAGES='"$(LANGUAGES)"' \
-	$(am__append_1) $(am__append_2)
+plasmasnow_CPPFLAGS = $(QT_CFLAGS) $(QT_CINCLUDES) $(GTK_CFLAGS) \
+	$(X11_CFLAGS) $(GSL_CFLAGS) -DLOCALEDIR=\"$(LOCALEDIR)\" \
+	-DLANGUAGES='"$(LANGUAGES)"' $(am__append_1) $(am__append_2)
 plasmasnow_LDADD = libxdo.a $(GTK_LIBS) $(QT_LIBS) $(X11_LIBS) \
 	-lXfixes $(GSL_LIBS) $(LIBINTL) 
 

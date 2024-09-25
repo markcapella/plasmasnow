@@ -20,7 +20,7 @@
 #-# 
 */
 #include "ixpm.h"
-
+#include "debug.h"
 #include "safe_malloc.h"
 #include "Utils.h"
 #include <assert.h>
@@ -34,6 +34,7 @@ static void xpmCreatePixmapFromImage(
     GC gc;
     XGCValues values;
 
+    P("XCreatePixmap\n");
     *pixmap_return =
         XCreatePixmap(display, d, ximage->width, ximage->height, ximage->depth);
     /* set fg and bg in case we have an XYBitmap */
@@ -103,7 +104,9 @@ int iXpmCreatePixmapFromData(Display *display, Drawable d, const char *data[],
     XImage *ximage = NULL, *shapeimage = NULL;
     rc = XpmCreateImageFromData(display, idata, &ximage, &shapeimage, attr);
     // NOTE: shapeimage is only created if color None is defined ...
+    P("ximage shapeimage: %p %p\n", ximage, shapeimage);
     if (rc != 0) {
+        I("rc from XpmCreateImageFromData: ");
         switch (rc) {
         case 1:
             printf("XpmColorError\n");
@@ -168,7 +171,9 @@ Region regionfromxpm(const char **data, int flop, float scale) {
     int offset = nc + 1;
     for (i = 1; i <= nc; i++) {
         char s[101];
+        P("%s\n", data[i]);
         sscanf(data[i] + n, "%*s %100s", s);
+        P("%s\n", s);
         if (!strcasecmp(s, "None")) {
             code = strndup(data[i], n);
             break;
@@ -200,6 +205,7 @@ Region regionfromxpm(const char **data, int flop, float scale) {
 cairo_region_t *gregionfromxpm(const char **data, int flop, float scale) {
     int w, h;
     sscanf(data[0], "%d %d", &w, &h);
+    P("gregionfromxpm: w:%d h:%d\n", w, h);
 
     GdkPixbuf *pixbuf;
     GdkPixbuf *pixbuf1 = gdk_pixbuf_new_from_xpm_data(data);
@@ -373,9 +379,11 @@ void xpm_set_color(char **data, char ***out, int *lines, const char *color) {
 
     strcat(x[2], ". c ");
     strcat(x[2], color);
+    P("c: [%s]\n", x[2]);
 
     for (j = 3; j < n + 3; j++) {
         x[j] = strdup(data[j]);
+        P("%d %s\n", j, x[j]);
     }
     *lines = n + 3;
 }

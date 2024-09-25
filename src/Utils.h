@@ -55,7 +55,7 @@ extern float sq3(float x, float y, float z);
 extern Pixel IAllocNamedColor(const char *colorName, Pixel dfltPix);
 extern Pixel AllocNamedColor(const char *colorName, Pixel dfltPix);
 extern int randint(int m);
-extern void paintCairoContextWithAlpha(cairo_t *cr, double alpha);
+extern void my_cairo_paint_with_alpha(cairo_t *cr, double alpha);
 extern void rgba2color(GdkRGBA *c, char **s);
 
 extern void sanelyCheckAndClearDisplayArea(

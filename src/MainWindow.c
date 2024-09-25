@@ -218,7 +218,7 @@ int getQPickerBlue();
 // Flip and rebuild :)
 #undef DEBUG
 
-
+#include "debug.h"
 #endif /* NEWLINE */
 
 #ifdef __cplusplus
@@ -289,6 +289,7 @@ void updateMainWindowTheme() {
 }
 
 void handle_screen() {
+    P("handle_screen:%d\n", Flags.Screen);
 
     if (HaveXinerama && Nscreens > 1) {
         mGlobal.ForceRestart = 1;
@@ -296,6 +297,7 @@ void handle_screen() {
 }
 
 void handle_language(int restart) {
+    P("handle_language: %s\n", Flags.Language);
 
     if (!strcmp(Flags.Language, "sys")) {
         unsetenv("LANGUAGE");
@@ -565,6 +567,7 @@ void onClickedTreeColor() {
  **/
 
 #define togglecode(type, name, m)                                              \
+    NEWLINE P("toggle %s %s %d %d\n", #name, #type, m, Flags.name);            \
     NEWLINE if (m) {                                                           \
         NEWLINE if (m > 0) {                                                   \
             NEWLINE gtk_toggle_button_set_active(                              \
@@ -580,10 +583,12 @@ void onClickedTreeColor() {
     }
 
 #define scalecode(type, name, m)                                               \
+    NEWLINE P("range %s %s %d %d\n", #name, #type, m, Flags.name);             \
     NEWLINE gtk_range_set_value(                                               \
         GTK_RANGE(Button.name), m *((gdouble)Flags.name));
 
 #define colorcode(type, name, m)                                               \
+    NEWLINE P("color %s %s %d %s\n", #name, #type m, Flags.name);              \
     NEWLINE                                                                    \
     NEWLINE gdk_rgba_parse(&color, Flags.name);                                \
     NEWLINE gtk_color_chooser_set_rgba(                                        \
@@ -591,6 +596,7 @@ void onClickedTreeColor() {
     NEWLINE
 
 #define filecode(type, name, m)                                                \
+    NEWLINE P("file %s %s %d %s\n", #name, #type, m, Flags.name);              \
     NEWLINE gtk_file_chooser_set_filename(                                     \
         GTK_FILE_CHOOSER(Button.name), Flags.BackgroundFile);
 
@@ -629,18 +635,22 @@ static void initAllButtonValues() {
  **/
 
 #define togglecode(type, name, m)                                              \
+    NEWLINE P("%s %s\n", #name, #type);                                        \
     NEWLINE g_signal_connect(G_OBJECT(Button.name), "toggled",                 \
         G_CALLBACK(buttoncb(type, name)), NULL);
 
 #define scalecode(type, name, m)                                               \
+    NEWLINE P("%s %s\n", #name, #type);                                        \
     NEWLINE g_signal_connect(G_OBJECT(Button.name), "value-changed",           \
         G_CALLBACK(buttoncb(type, name)), NULL);
 
 #define colorcode(type, name, m)                                               \
+    NEWLINE P("%s %s\n", #name, #type);                                        \
     NEWLINE g_signal_connect(G_OBJECT(Button.name), "color-set",               \
         G_CALLBACK(buttoncb(type, name)), NULL);
 
 #define filecode(type, name, m)                                                \
+    NEWLINE P("%s %s\n", #name, #type);                                        \
     NEWLINE g_signal_connect(G_OBJECT(Button.name), "file-set",                \
         G_CALLBACK(buttoncb(type, name)), NULL);
 
@@ -791,6 +801,7 @@ MODULE_EXPORT
 void combo_screen(GtkComboBoxText *combo, gpointer data) {
     (void)data;
     int num = gtk_combo_box_get_active(GTK_COMBO_BOX(combo));
+    P("combo_screen:%d\n", num);
     Flags.Screen = num - 1;
 }
 
@@ -798,6 +809,7 @@ MODULE_EXPORT
 void onSelectedLanguageButton(GtkComboBoxText *combo, gpointer data) {
     (void)data;
     int num = gtk_combo_box_get_active(GTK_COMBO_BOX(combo));
+    P("onSelectedLanguageButton:%d\n", num);
     Flags.Language = strdup(lang[num]);
 }
 
@@ -1047,6 +1059,7 @@ void createMainWindow() {
     XineramaScreenInfo *xininfo =
         XineramaQueryScreens(mGlobal.display, &Nscreens);
     if (xininfo == NULL) {
+        P("No xinerama...\n");
         HaveXinerama = 0;
     } else {
         HaveXinerama = 1;
@@ -1110,6 +1123,7 @@ void createMainWindow() {
     char *token = strtok(languages, " ");
     nlang = 1;
     while (token != NULL) {
+        P("token: %s\n", token);
         lang[nlang] = strdup(token);
         gtk_combo_box_text_append_text(LangButton, lang[nlang]);
         nlang++;
@@ -1361,6 +1375,7 @@ void onClickedTreeButton(GtkWidget *w) {
     free(a);
     free(b);
 
+    P("Tree_Type set to %s\n", Flags.TreeType);
 }
 
 MODULE_EXPORT
@@ -1370,6 +1385,7 @@ void onClickedQuitApplication() {
 
 MODULE_EXPORT
 void onClickedActivateWind() {
+    P("onClickedActivateWind\n");
     Flags.WindNow = 1;
 }
 
@@ -1397,6 +1413,7 @@ void onClickedSetCelestialsDefaults() { setTabDefaults(plasmasnow_celestials); }
 
 MODULE_EXPORT
 void onClickedSetBirdsDefaults() {
+    P("onClickedDefaultBirds\n");
     setTabDefaults(plasmasnow_birds);
 }
 
