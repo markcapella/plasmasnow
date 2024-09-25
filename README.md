@@ -21,6 +21,11 @@ a QT screen color picker that works on Plasma, dual snow colors,
 
 &nbsp;
 
+## NOTE to Devs.
+
+plasmasnow is under active development. You may notice an issue. Please
+report it via email (included below)  :-)
+
 ## Installation.
 
 ### Clone plasmasnow working source folder.
