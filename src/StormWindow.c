@@ -19,6 +19,7 @@
 #-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-# 
 */
+#include <ctype.h>
 #include <pthread.h>
 #include <stdbool.h>
 
@@ -91,14 +92,16 @@ bool createStormWindow(Display* display,
         return false;
     }
 
-    // Ensure the widget (the window, actually) can take RGBA
-    gtk_widget_set_visual(transparentGTKWindow, gdk_screen_get_rgba_visual(screen));
-
-    int winx, winy; // desired position of window
-    int winw, winh; // desired size of window
-    int wantxin = (xscreen >= 0);
+    // Ensure the widget (the window, actually) can take RGBA.
+    gtk_widget_set_visual(transparentGTKWindow,
+        gdk_screen_get_rgba_visual(screen));
 
     // set full screen if so desired:
+    int winx, winy; // desired position of window
+    int winw, winh; // desired size of window
+
+    int wantxin = (xscreen >= 0);
+
     if (xscreen < 0) {
         XWindowAttributes attr;
         XGetWindowAttributes(display, DefaultRootWindow(display), &attr);
@@ -117,9 +120,22 @@ bool createStormWindow(Display* display,
         }
     }
 
+    // Show.
     gtk_widget_show_all(transparentGTKWindow);
     GdkWindow* gdkwin = gtk_widget_get_window(
         GTK_WIDGET(transparentGTKWindow));
+
+    // Gnome needs this as dock or it snows
+    // on top of things. KDE needs it as not-a-dock,
+    // or it snows on top of things.
+    char* desktop = getenv("XDG_SESSION_DESKTOP");
+    for (char* eachChar = desktop; *eachChar; ++eachChar) {
+        *eachChar = tolower(*eachChar);
+    }
+    if (strstr(desktop, "gnome")) {
+        gdk_window_set_type_hint(gdkwin,
+            GDK_WINDOW_TYPE_HINT_DOCK);
+    }
 
     // Set return values.
     if (x11_window) {

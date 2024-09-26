@@ -5,7 +5,7 @@ Type=Application
 StartupNotify=true
 Terminal=false
 
-Exec=plasmasnow 1>$HOME/.plasmasnowStdout 2>$HOME/.plasmasnowStderr
+Exec=plasmasnow
 Icon=plasmasnow.png
 
 Categories=Game;
