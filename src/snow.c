@@ -33,7 +33,6 @@
 
 #include "blowoff.h"
 #include "clocks.h"
-#include "debug.h"
 #include "fallensnow.h"
 #include "Flags.h"
 #include "hashtable.h"
@@ -73,11 +72,11 @@ void endQPickerDialog();
 static int do_genflakes();
 
 static void InitFlake(SnowFlake *flake);
-static void InitFlakesPerSecond(void);
-static void InitSnowColor(void);
-static void InitSnowSpeedFactor(void);
+static void InitFlakesPerSecond();
+static void InitSnowColor();
+static void InitSnowSpeedFactor();
 
-static void init_snow_pix(void);
+static void init_snow_pix();
 
 static void genxpmflake(char ***xpm, int w, int h);
 static void add_random_flakes(int n);
@@ -86,7 +85,7 @@ static int  do_SwitchFlakes();
 static void DelFlake(SnowFlake *flake);
 static void EraseSnowFlake1(SnowFlake *flake);
 
-static void SetSnowSize(void);
+static void SetSnowSize();
 
 static void checkIfFlakeCollectsInFallenSnow(SnowFlake* flake,
     int xPosition, int yPosition, int flakeWidth);
@@ -127,23 +126,17 @@ int mFlakeColorToggle = 0;
  ** Init.
  **/
 void snow_init() {
-    int i;
-
     MaxFlakeTypes = 0;
     while (snow_xpm[MaxFlakeTypes]) {
         MaxFlakeTypes++;
     }
     NFlakeTypesVintage = MaxFlakeTypes;
 
-    add_random_flakes(EXTRA_FLAKES); // will change MaxFlakeTypes
-    //                            and create plasmasnow_xpm, containing
-    //                            vintage and new flakes
+    add_random_flakes(EXTRA_FLAKES);
 
-    snowPix = (SnowMap *)malloc(MaxFlakeTypes * sizeof(SnowMap));
-
-    P("MaxFlakeTypes: %d\n", MaxFlakeTypes);
-
-    for (i = 0; i < MaxFlakeTypes; i++) {
+    snowPix = (SnowMap*) malloc(
+        MaxFlakeTypes * sizeof(SnowMap));
+    for (int i = 0; i < MaxFlakeTypes; i++) {
         snowPix[i].surface = NULL;
     }
 
@@ -154,16 +147,10 @@ void snow_init() {
     InitSnowColor();
     InitSnowSpeedFactor();
 
-    addMethodToMainloop(PRIORITY_DEFAULT, time_genflakes, do_genflakes);
-    addMethodToMainloop(PRIORITY_DEFAULT, time_switchflakes, do_SwitchFlakes);
-
-    // now we would like to be able to get rid of the snow xpms:
-    /*
-       for (i=0; i<MaxFlakeTypes; i++)
-       xpm_destroy(plasmasnow_xpm[i]);
-       free(plasmasnow_xpm);
-       */
-    // but we cannot: they are needed if user changes color
+    addMethodToMainloop(PRIORITY_DEFAULT,
+        time_genflakes, do_genflakes);
+    addMethodToMainloop(PRIORITY_DEFAULT,
+        time_switchflakes, do_SwitchFlakes);
 }
 
 /** *********************************************************************
@@ -335,24 +322,20 @@ int snow_draw(cairo_t *cr) {
     if (Flags.NoSnowFlakes) {
         return TRUE;
     }
-    P("snow_draw %d\n", counter++);
 
     set_begin();
     SnowFlake *flake;
     while ((flake = (SnowFlake *) set_next())) {
-        P("snow_draw %d %f\n", counter++, ALPHA);
-        cairo_set_source_surface(
-            cr, snowPix[flake->whatFlake].surface, flake->rx, flake->ry);
-        double alpha = ALPHA;
+        cairo_set_source_surface(cr,
+            snowPix[flake->whatFlake].surface, flake->rx, flake->ry);
 
+        double alpha = ALPHA;
         if (flake->fluff) {
             alpha *= (1 - flake->flufftimer / flake->flufftime);
         }
-
         if (alpha < 0) {
             alpha = 0;
         }
-
         if (mGlobal.isDoubleBuffered || !(flake->freeze || flake->fluff)) {
             my_cairo_paint_with_alpha(cr, alpha);
         }
@@ -360,6 +343,7 @@ int snow_draw(cairo_t *cr) {
         flake->ix = lrint(flake->rx);
         flake->iy = lrint(flake->ry);
     }
+
     return TRUE;
 }
 
@@ -377,7 +361,7 @@ int snow_erase(int force) {
         EraseSnowFlake1(flake);
         n++;
     }
-    P("snow_erase %d %d\n", counter++, n);
+
     return TRUE;
 }
 
@@ -389,15 +373,16 @@ int do_genflakes() {
         return FALSE;
     }
 
-#define RETURN                                                                 \
-    do {                                                                       \
-        Prevtime = TNow;                                                       \
-        return TRUE;                                                           \
-    } while (0)
+    #define RETURN \
+        do { \
+            Prevtime = TNow; \
+            return TRUE; \
+        } while (0)
 
     static double Prevtime;
     static double sumdt;
     static int first_run = 1;
+
     double TNow = wallclock();
 
     if (KillFlakes) {
@@ -421,10 +406,8 @@ int do_genflakes() {
         RETURN;
     }
     int desflakes = lrint((dt + sumdt) * FlakesPerSecond);
-    P("desflakes: %lf %lf %d %lf %d\n", dt, sumdt, desflakes, FlakesPerSecond,
-        mGlobal.FlakeCount);
-    if (desflakes ==
-        0) { // save dt for use next time: happens with low snowfall rate
+
+    if (desflakes == 0) {
         sumdt += dt;
     } else {
         sumdt = 0;
@@ -435,7 +418,6 @@ int do_genflakes() {
     }
 
     RETURN;
-    // (void) d;
 
 #undef RETURN
 }
@@ -515,16 +497,15 @@ int do_UpdateSnowFlake(SnowFlake* flake) {
     }
 
     if ((flake->freeze || flake->fluff) && mGlobal.RemoveFluff) {
-        P("removefluff\n");
-        DelFlake(flake);
         EraseSnowFlake1(flake);
+        DelFlake(flake);
         return FALSE;
     }
 
     // handle fluff and KillFlakes
     if (KillFlakes || (flake->fluff && flake->flufftimer > flake->flufftime)) {
-        DelFlake(flake);
         EraseSnowFlake1(flake);
+        DelFlake(flake);
         return FALSE;
     }
 
@@ -556,8 +537,6 @@ int do_UpdateSnowFlake(SnowFlake* flake) {
      * update speed in x Direction
      */
     if (!Flags.NoWind) {
-        P("flakevx1: %p %f\n", (void *)flake, flake->vx);
-
         float f = FlakesDT * flake->wsens / flake->m;
         if (f > 0.9) {
             f = 0.9;
@@ -572,17 +551,12 @@ int do_UpdateSnowFlake(SnowFlake* flake) {
         float speedxmax = 2 * speedxmaxes[mGlobal.Wind];
 
         if (fabs(flake->vx) > speedxmax) {
-            P("flakevx:  %p %f %f %f %f %f %f\n", (void *)flake, flake->vx,
-                FlakesDT, flake->wsens, mGlobal.NewWind, flake->vx, flake->m);
-
             if (flake->vx > speedxmax) {
                 flake->vx = speedxmax;
             }
             if (flake->vx < -speedxmax) {
                 flake->vx = -speedxmax;
             }
-
-            P("vxa: %f\n", flake->vx);
         }
     }
 
@@ -770,17 +744,17 @@ SnowFlake* MakeFlake(int type) {
  ** This method ...
  **/
 void EraseSnowFlake1(SnowFlake *flake) {
-    P("Erasesnowflake1\n");
     if (mGlobal.isDoubleBuffered) {
         return;
     }
-    P("Erasesnowflake++++++++\n");
+
     int x = flake->ix - 1;
     int y = flake->iy - 1;
     int flakew = snowPix[flake->whatFlake].width + 2;
     int flakeh = snowPix[flake->whatFlake].height + 2;
-    sanelyCheckAndClearDisplayArea(
-        mGlobal.display, mGlobal.SnowWin, x, y, flakew, flakeh, mGlobal.xxposures);
+
+    sanelyCheckAndClearDisplayArea(mGlobal.display, mGlobal.SnowWin,
+        x, y, flakew, flakeh, mGlobal.xxposures);
 }
 
 /** *********************************************************************
@@ -837,10 +811,9 @@ void InitFlake(SnowFlake *flake) {
  ** This method ...
  **/
 void InitFlakesPerSecond() {
-    FlakesPerSecond = mGlobal.SnowWinWidth * 0.0015 * Flags.SnowFlakesFactor *
-                      0.001 * FLAKES_PER_SEC_PER_PIXEL * SnowSpeedFactor;
-    P("snowflakesfactor: %d %f %f\n", Flags.SnowFlakesFactor, FlakesPerSecond,
-        SnowSpeedFactor);
+    FlakesPerSecond = mGlobal.SnowWinWidth * 0.0015 *
+        Flags.SnowFlakesFactor * 0.001 *
+        FLAKES_PER_SEC_PER_PIXEL * SnowSpeedFactor;
 }
 
 /** *********************************************************************
@@ -866,10 +839,10 @@ void InitSnowSpeedFactor() {
  ** This method ...
  **/
 int do_initsnow() {
-    P("initsnow %d %d\n", mGlobal.FlakeCount, counter++);
     if (Flags.shutdownRequested) {
         return FALSE;
     }
+
     // first, kill all snowflakes
     KillFlakes = 1;
 
@@ -881,8 +854,7 @@ int do_initsnow() {
     // signal that flakes may be generated
     KillFlakes = 0;
 
-    return FALSE; // stop callback
-                  // (void) d;
+    return FALSE;
 }
 
 /** *********************************************************************
@@ -891,9 +863,10 @@ int do_initsnow() {
 // generate random xpm for flake with dimensions wxh
 // the flake will be rotated, so the w and h of the resulting xpm will
 // be different from the input w and h.
+
 void genxpmflake(char ***xpm, int w, int h) {
-    P("%d genxpmflake %d %d\n", counter++, w, h);
     const char c = '.'; // imposed by xpm_set_color
+
     int nmax = w * h;
     float *x, *y;
 
@@ -965,31 +938,11 @@ void genxpmflake(char ***xpm, int w, int h) {
 
     int nw = ceilf(xmax - xmin + 1);
     int nh = ceilf(ymax - ymin + 1);
-
-    // for some reason, drawing of cairo_surfaces derived from 1x1 xpm slow down
-    // the x server terribly. So, to be sure, I demand that none of
-    // the dimensions is 1, and that the width is a multiple of 8.
-    // Btw: genxpmflake rotates and compresses the original wxh xpm,
-    // and sometimes that results in an xpm with both dimensions one.
-
-    // Now, suddenly, nw doesn't seem to matter any more?
-    // nw = ((nw-1)/8+1)*8;
-    // nw = ((nw-1)/32+1)*32;
-    P("%d nw nh: %d %d\n", counter++, nw, nh);
-    // Ah! nh should be 2 at least ...
-    // nw is not important
-    //
-    // Ok, I tried some things, and it seems that if both nw and nh are 1,
-    // then we have trouble.
-    // Some pages on the www point in the same direction.
-
     if (nw == 1 && nh == 1) {
         nh = 2;
     }
-
     assert(nh > 0);
 
-    P("allocating %d\n", (nh + 3) * sizeof(char *));
     *xpm = (char **)malloc((nh + 3) * sizeof(char *));
     char **X = *xpm;
 
@@ -1001,7 +954,6 @@ void genxpmflake(char ***xpm, int w, int h) {
     snprintf(X[2], 80, "%c c black", c);
 
     int offset = 3;
-    P("allocating %d\n", nw + 1);
     assert(nw >= 0);
     for (i = 0; i < nh; i++) {
         X[i + offset] = (char *)malloc((nw + 1) * sizeof(char));
@@ -1014,11 +966,10 @@ void genxpmflake(char ***xpm, int w, int h) {
         X[i + offset][nw] = 0;
     }
 
-    P("max: %d %f %f %f %f\n", n, ymin, ymax, xmin, xmax);
     for (i = 0; i < n; i++) {
         X[offset + (int)(ya[i] - ymin)][(int)(xa[i] - xmin)] = c;
-        P("%f %f\n", ya[i] - ymin, xa[i] - xmin);
     }
+
     free(x);
     free(y);
     free(xa);
@@ -1084,10 +1035,9 @@ void fluffify(SnowFlake *flake, float t) {
  ** This method ...
  **/
 int do_SwitchFlakes() {
-    // (void) d;
     static int prev = 0;
+
     if (Flags.VintageFlakes != prev) {
-        P("SwitchFlakes\n");
         set_begin();
         SnowFlake *flake;
         while ((flake = (SnowFlake *)set_next())) {
@@ -1101,6 +1051,7 @@ int do_SwitchFlakes() {
         }
         prev = Flags.VintageFlakes;
     }
+
     return TRUE;
 }
 
