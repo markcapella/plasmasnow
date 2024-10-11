@@ -753,7 +753,7 @@ void EraseSnowFlake1(SnowFlake *flake) {
     int flakew = snowPix[flake->whatFlake].width + 2;
     int flakeh = snowPix[flake->whatFlake].height + 2;
 
-    sanelyCheckAndClearDisplayArea(mGlobal.display, mGlobal.SnowWin,
+    clearDisplayArea(mGlobal.display, mGlobal.SnowWin,
         x, y, flakew, flakeh, mGlobal.xxposures);
 }
 

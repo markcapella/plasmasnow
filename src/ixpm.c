@@ -367,7 +367,9 @@ void xpm_set_color(char **data, char ***out, int *lines, const char *color) {
 
     sscanf(data[0], "%*d %d", &n);
     assert(n + 3 > 0);
+
     *out = (char **)malloc(sizeof(char *) * (n + 3));
+
     char **x = *out;
     int j;
     for (j = 0; j < 2; j++) {

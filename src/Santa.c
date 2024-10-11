@@ -102,7 +102,7 @@ int Santa_draw(cairo_t *cr) {
 void Santa_erase(cairo_t *cr) {
     P("Santa_erase %d %d\n", OldSantaX, OldSantaY);
     (void)cr;
-    sanelyCheckAndClearDisplayArea(mGlobal.display, mGlobal.SnowWin, OldSantaX, OldSantaY,
+    clearDisplayArea(mGlobal.display, mGlobal.SnowWin, OldSantaX, OldSantaY,
         mGlobal.SantaWidth + 1, mGlobal.SantaHeight, mGlobal.xxposures);
 }
 

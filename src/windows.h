@@ -30,7 +30,13 @@
 
 extern void addWindowsModuleToMainloop(void);
 
-extern int WorkspaceActive(void);
+#ifdef __cplusplus
+extern "C" {
+#endif
+int WorkspaceActive();
+#ifdef __cplusplus
+}
+#endif
 
 extern void initDisplayDimensions();
 extern void updateDisplayDimensions(void);

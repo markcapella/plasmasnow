@@ -710,7 +710,7 @@ int birds_erase(int force) {
         BirdType *bird = &birds[i];
         if (bird->prevdrawable && bird->prevw != 0 && bird->prevh != 0) {
             P("birds_erase xclear %d\n", counter++);
-            sanelyCheckAndClearDisplayArea(mGlobal.display, mGlobal.SnowWin, bird->prevx,
+            clearDisplayArea(mGlobal.display, mGlobal.SnowWin, bird->prevx,
                 bird->prevy, bird->prevw, bird->prevh, mGlobal.xxposures);
         }
     }
@@ -740,7 +740,7 @@ int attrbird_erase(int force) {
         px = attrbird.prevx;
         py = attrbird.prevy;
         pw = attrbird.prevw;
-        sanelyCheckAndClearDisplayArea(mGlobal.display, mGlobal.SnowWin, px, py, pw, attrbird.prevh,
+        clearDisplayArea(mGlobal.display, mGlobal.SnowWin, px, py, pw, attrbird.prevh,
             mGlobal.xxposures);
     }
     return TRUE;

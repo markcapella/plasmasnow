@@ -42,25 +42,39 @@
 
 #include "xdo.h"
 
-extern guint addMethodToMainloop(gint prio, float time, GSourceFunc func);
 extern guint addMethodWithArgToMainloop(
     gint prio, float time, GSourceFunc func, gpointer datap);
 
 extern void remove_from_mainloop(guint *tag);
 extern void clearGlobalSnowWindow(void);
 extern float fsignf(float x);
+
 extern FILE *HomeOpen(const char *file, const char *mode, char **path);
+
 extern float sq2(float x, float y);
 extern float sq3(float x, float y, float z);
+
 extern Pixel IAllocNamedColor(const char *colorName, Pixel dfltPix);
 extern Pixel AllocNamedColor(const char *colorName, Pixel dfltPix);
-extern int randint(int m);
-extern void my_cairo_paint_with_alpha(cairo_t *cr, double alpha);
-extern void rgba2color(GdkRGBA *c, char **s);
 
-extern void sanelyCheckAndClearDisplayArea(
-    Display *display, Window win, int x, int y, int w, int h, int exposures);
-extern int appScalesHaveChanged(int *prev);
+#ifdef __cplusplus
+extern "C" {
+#endif
+    guint addMethodToMainloop(gint prio, float time,
+        GSourceFunc func);
+    int randint(int m);
+    void clearDisplayArea(Display* display,
+        Window win, int x, int y, int w, int h,
+        int exposures);
+    void my_cairo_paint_with_alpha(cairo_t* cc, double alpha);
+    int appScalesHaveChanged(int* prev);
+#ifdef __cplusplus
+}
+#endif
+
+extern void rgba2color(GdkRGBA* c, char** s);
+
+
 extern int ValidColor(const char *color);
 extern ssize_t mywrite(int fd, const void *buf, size_t count);
 extern int IsReadableFile(char *path);

@@ -115,7 +115,7 @@ ssize_t mywrite(int fd, const void *buf, size_t count) {
 /** *********************************************************************
  ** Module MAINLOOP methods.
  **/
-void sanelyCheckAndClearDisplayArea(Display *dsp, Window win,
+void clearDisplayArea(Display *dsp, Window win,
     int x, int y, int w, int h, Bool exposures) {
     if (w == 0 || h == 0 ||
         w < 0 || h < 0 ||
@@ -189,8 +189,8 @@ double gaussian(double mean, double std, double min, double max) {
 }
 
 guint addMethodToMainloop(gint prio, float time, GSourceFunc func) {
-    return g_timeout_add_full(
-        prio, (int)1000 * (time * (0.95 + 0.1 * drand48())), func, NULL, NULL);
+    return g_timeout_add_full(prio, (int) 1000 * (time *
+        (0.95 + 0.1 * drand48())), func, NULL, NULL);
 }
 
 guint addMethodWithArgToMainloop(

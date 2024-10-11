@@ -20,12 +20,14 @@
 #-# 
 */
 
-#include "pixmaps.h"
-#include "snow.h"
-#include "snow_includes.h" // a generated file, containing #includes for snow xbm's and xpm's
-#include "plasmasnow.h"
 #include <pthread.h>
-//                            and the definition of SNOW_ALL
+
+#include "pixmaps.h"
+#include "plasmasnow.h" // definition of SNOW_ALL
+
+#include "snow.h"
+#include "snow_includes.h" // a generated file,
+// containing #includes for snow xbm's and xpm's
 
 #include "Pixmaps/BigSanta1.xpm"
 #include "Pixmaps/BigSanta2.xpm"
@@ -132,9 +134,6 @@ XPM_TYPE **xpmtrees[NUM_ALL_SCENE_TYPES] = {
     candycane_xpm, garland_xpm, extratree_xpm };
 
 
-#include "Pixmaps/star.xbm"
-StarMap starPix = {star_bits, None, star_height, star_width};
-
 #include "Pixmaps/plasmasnow.xpm"
 XPM_TYPE **plasmasnow_logo = (XPM_TYPE **) plasmasnow_xpm;
 
@@ -178,14 +177,8 @@ XPM_TYPE **birds_xpm[] = {bird1_xpm, bird2_xpm, bird3_xpm, bird4_xpm, bird5_xpm,
 #include "Pixmaps/moon2.xpm"
 XPM_TYPE **moons_xpm[] = {moon1_xpm, moon2_xpm};
 
+// Snow defs.
 #define SNOW(x) snow##x##_xpm,
 XPM_TYPE **snow_xpm[] = {SNOW_ALL NULL};
-/* Like:
- * XPM_TYPE **snow_xpm[] =
- * {
- *    snow00_xpm,
- *    snow01_xpm,
- *    NULL
- * }
- * */
+
 #include "undefall.inc"

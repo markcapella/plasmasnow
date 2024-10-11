@@ -99,7 +99,7 @@ int eraseMeteorFrame() {
         w += 2;
         h += 2;
 
-        sanelyCheckAndClearDisplayArea(mGlobal.display,
+        clearDisplayArea(mGlobal.display,
             mGlobal.SnowWin, x, y, w, h, mGlobal.xxposures);
     }
 
@@ -145,8 +145,7 @@ int updateMeteorFrame() {
 }
 
 /** *********************************************************************
- ** This method draws a single Meteor
- ** frame from drawCairoWindowInternal().
+ ** This method draws a single Meteor frame.
  **/
 void drawMeteorFrame(cairo_t *cr) {
     if (!meteor.active) {

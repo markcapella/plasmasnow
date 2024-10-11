@@ -490,18 +490,18 @@ uninstall-am:
 # it would be nice to skip all-local when running make check
 
 all-local: 
-	if test -z "$(AFTERBURNER)" ; then                          \
-		if test "$(makeselfrep)" ; then                         \
-			echo "Creating tar file $(tarfile) ..." ;           \
-			$(MAKE) -C "$(top_builddir)" AFTERBURNER=1 dist ;   \
-			echo "Remaking app, using real tar file ..." ;    \
-			ls -l "$(tarfile)" ;                                \
-			$(MAKE) -C "$(top_builddir)" AFTERBURNER=1 ;        \
-		fi ;                                                    \
-		if test "$(use_nls)" ; then                             \
-			echo "Creating gmo files ... $(top_builddir)/po" ;  \
-			$(MAKE) -C "$(top_builddir)/po" update-gmo ;        \
-		fi ;                                                    \
+	if test -z "$(AFTERBURNER)" ; then \
+		if test "$(makeselfrep)" ; then \
+			echo "Creating tar file $(tarfile) ..." ; \
+			$(MAKE) -C "$(top_builddir)" AFTERBURNER=1 dist ; \
+			echo "Remaking app, using real tar file ..." ; \
+			ls -l "$(tarfile)" ; \
+			$(MAKE) -C "$(top_builddir)" AFTERBURNER=1 ; \
+		fi ; \
+		if test "$(use_nls)" ; then \
+			echo "Creating gmo files ... $(top_builddir)/po" ; \
+			$(MAKE) -C "$(top_builddir)/po" update-gmo ; \
+		fi ; \
 	fi
 
 install:

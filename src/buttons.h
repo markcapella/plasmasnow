@@ -48,12 +48,13 @@
     BUTTON(togglecode, plasmasnow_celestials, Halo, 1)                              \
     BUTTON(togglecode, plasmasnow_celestials, Moon, 1)                              \
     BUTTON(togglecode, plasmasnow_santa, NoSanta, -1) /*i*/                         \
+    BUTTON(togglecode, plasmasnow_santa, showGreenLights, 1) \
     BUTTON(togglecode, plasmasnow_snow, BlowSnow, 1)                                \
     BUTTON(togglecode, plasmasnow_snow, NoKeepSnowOnBottom, -1)        /*i*/        \
     BUTTON(togglecode, plasmasnow_snow, NoKeepSnowOnWindows, -1)        /*i*/       \
     BUTTON(togglecode, plasmasnow_snow, NoKeepSnowOnTrees, -1) /*i*/                \
     BUTTON(togglecode, plasmasnow_snow, NoSnowFlakes, -1)      /*i*/                \
-    BUTTON(togglecode, plasmasnow_celestials, Stars, 1)                             \
+    BUTTON(togglecode, plasmasnow_celestials, Stars, 1) \
     BUTTON(togglecode, plasmasnow_scenery, NoTrees, -1) /*i*/                       \
     BUTTON(togglecode, plasmasnow_scenery, Overlap, 1)                              \
     BUTTON(togglecode, plasmasnow_celestials, NoWind, -1) /*i*/                     \

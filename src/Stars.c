@@ -132,8 +132,7 @@ void initStarsModuleSurfaces() {
 }
 
 /** *********************************************************************
- ** This method erases a single Stars
- ** frame from drawCairoWindowInternal().
+ ** This method erases a single Stars frame.
  **/
 void eraseStarsFrame() {
     if (!Flags.Stars) {
@@ -145,7 +144,7 @@ void eraseStarsFrame() {
         int x = star->x;
         int y = star->y;
 
-        sanelyCheckAndClearDisplayArea(mGlobal.display,
+        clearDisplayArea(mGlobal.display,
             mGlobal.SnowWin, x, y, STAR_SIZE, STAR_SIZE,
             mGlobal.xxposures);
     }
@@ -173,8 +172,7 @@ int updateStarsFrame() {
 }
 
 /** *********************************************************************
- ** This method draws a single Stars
- ** frame from drawCairoWindowInternal().
+ ** This method draws a single Stars frame.
  **/
 void drawStarsFrame(cairo_t *cr) {
     if (!Flags.Stars) {

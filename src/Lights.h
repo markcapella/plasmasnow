@@ -19,8 +19,44 @@
 #-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-# 
 */
-#define star_width 9
-#define star_height 9
-static unsigned char star_bits[] = {
-   0x01, 0x01, 0x92, 0x00, 0x54, 0x00, 0x38, 0x00, 0xfe, 0x00, 0x38, 0x00,
-   0x54, 0x00, 0x92, 0x00, 0x01, 0x01};
+#pragma once
+
+#include <gtk/gtk.h>
+
+#include "plasmasnow.h"
+
+/***********************************************************
+ * Module Method stubs.
+ */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void initLightsModule();
+
+void setAllBulbPositions();
+void setAllBulbColors();
+gboolean changeRandomBulbColors(void*);
+
+void drawLightsFrame(cairo_t* cc);
+void eraseLightsFrame();
+
+void updateLightsUserSettings();
+
+int getBulbCount();
+int getFirstBulbXPos();
+int getYPosForBulbNumber(int bulbNumber);
+
+GdkRGBA getBrightGreenRandomColor();
+GdkRGBA getNormalGreenRandomColor();
+GdkRGBA getDarkGreenRandomColor();
+
+int getRoughColor(int color);
+
+void createColoredBulb(GdkRGBA bright, GdkRGBA normal,
+     GdkRGBA dark, char*** out, int* lines);
+void destroyColoredBulb(char** data);
+
+#ifdef __cplusplus
+}
+#endif

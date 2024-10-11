@@ -57,10 +57,6 @@ void uninitQPickerDialog();
  ** Module globals and consts.
  **/
 
-// Main WinInfo (Windows) list & helpers.
-static int mWinInfoListLength = 0;
-static WinInfo* mWinInfoList = NULL;
-
 bool mIsWindowBeingDragged;
 Window mWindowBeingDragged = None;
 Window mActiveAppDragWindowCandidate = None;
@@ -457,9 +453,9 @@ int updateWindowsList() {
     // Get new list, error if none.
     getWinInfoList();
 
-    for (int i = 0; i < mWinInfoListLength; i++) {
-        mWinInfoList[i].x += mGlobal.WindowOffsetX - mGlobal.SnowWinX;
-        mWinInfoList[i].y += mGlobal.WindowOffsetY - mGlobal.SnowWinY;
+    for (int i = 0; i < mGlobal.mWinInfoListLength; i++) {
+        mGlobal.mWinInfoList[i].x += mGlobal.WindowOffsetX - mGlobal.SnowWinX;
+        mGlobal.mWinInfoList[i].y += mGlobal.WindowOffsetY - mGlobal.SnowWinY;
     }
 
     WinInfo* winInfo = findWinInfoByWindowId(mGlobal.SnowWin);
@@ -811,15 +807,15 @@ void setActiveAppDragWindowCandidate(Window candidate) {
 /** *********************************************************************
  ** This method determines which window is being dragged on user
  ** click and hold window. Returns self or ancestor whose Window
- ** is in mWinInfoList (visible window on screen).
+ ** is in mGlobal.mWinInfoList (visible window on screen).
  **/
 Window getDragWindowOf(Window window) {
     Window windowNode = window;
 
     while (true) {
         // Is current node in windows list?
-        WinInfo* windowListItem = mWinInfoList;
-        for (int i = 0; i < mWinInfoListLength; i++) {
+        WinInfo* windowListItem = mGlobal.mWinInfoList;
+        for (int i = 0; i < mGlobal.mWinInfoListLength; i++) {
             if (windowNode == windowListItem->window) {
                 return windowNode;
             }
@@ -905,19 +901,19 @@ void logWindowAndAllParents(Window window) {
  ** This method frees existing list, and refreshes it.
  **/
 void getWinInfoList() {
-    if (mWinInfoList) {
-        free(mWinInfoList);
+    if (mGlobal.mWinInfoList) {
+        free(mGlobal.mWinInfoList);
     }
 
-    getX11WindowsList(&mWinInfoList, &mWinInfoListLength);
+    getX11WindowsList(&mGlobal.mWinInfoList, &mGlobal.mWinInfoListLength);
 }
 
 /** *********************************************************************
  ** This method scans all WinInfos for a requested ID.
  **/
 WinInfo* findWinInfoByWindowId(Window window) {
-    WinInfo* winInfoItem = mWinInfoList;
-    for (int i = 0; i < mWinInfoListLength; i++) {
+    WinInfo* winInfoItem = mGlobal.mWinInfoList;
+    for (int i = 0; i < mGlobal.mWinInfoListLength; i++) {
         if (winInfoItem->window == window) {
             return winInfoItem;
         }
@@ -925,158 +921,4 @@ WinInfo* findWinInfoByWindowId(Window window) {
     }
 
     return NULL;
-}
-
-/** *********************************************************************
- ** This method removes all FallenSnow after a window moves out from
- ** under it but we don't know which one it was.
- **/
-void removeAllFallenSnowWindows() {
-    WinInfo* winInfoListItem = mWinInfoList;
-    for (int i = 0; i < mWinInfoListLength; i++) {
-        removeFallenSnowFromWindow(winInfoListItem[i].window);
-    }
-}
-
-/** *********************************************************************
- ** This method removes FallenSnow after a window moves out from
- ** under it.
- **/
-void removeFallenSnowFromWindow(Window window) {
-    FallenSnow* fallenListItem = findFallenSnowItemByWindow(
-        mGlobal.FsnowFirst, window);
-    if (!fallenListItem) {
-        return;
-    }
-
-    lockFallenSnowSemaphore();
-    eraseFallenSnowOnDisplay(fallenListItem, 0,
-        fallenListItem->w);
-    generateFallenSnowFlakes(fallenListItem, 0,
-        fallenListItem->w, -10.0);
-    eraseFallenSnowListItem(fallenListItem->winInfo.window);
-    removeFallenSnowListItem(&mGlobal.FsnowFirst,
-        fallenListItem->winInfo.window);
-    unlockFallenSnowSemaphore();
-}
-
-/** *********************************************************************
- ** This method ...
- **/
-void updateFallenSnowRegionsWithLock() {
-    lockFallenSnowSemaphore();
-    updateFallenSnowRegions();
-    unlockFallenSnowSemaphore();
-}
-
-/** *********************************************************************
- ** This method ...
- **/
-void updateFallenSnowRegions() {
-    FallenSnow *fsnow;
-
-    // add fallensnow regions:
-    WinInfo* addWin = mWinInfoList;
-    for (int i = 0; i < mWinInfoListLength; i++) {
-        fsnow = findFallenSnowItemByWindow(mGlobal.FsnowFirst, addWin->window);
-        if (fsnow) {
-            fsnow->winInfo = *addWin;
-            if ((!fsnow->winInfo.sticky) &&
-                fsnow->winInfo.ws != mGlobal.CWorkSpace) {
-                eraseFallenSnowOnDisplay(fsnow, 0, fsnow->w);
-            }
-        }
-
-        // window found in mWinInfoList, but not in list of fallensnow,
-        // add it, but not if we are snowing or birding in this window
-        // (Desktop for example) and also not if this window has y <= 0
-        // and also not if this window is a "dock"
-        if (!fsnow) {
-            if (addWin->window != mGlobal.SnowWin &&
-                addWin->y > 0 && !(addWin->dock)) {
-                if ((int) (addWin->w) == mGlobal.SnowWinWidth &&
-                    addWin->x == 0 && addWin->y < 100) {
-                    continue;
-                }
-
-                // Avoid adding new regions as windows drag realtime.
-                if (isWindowBeingDragged()) {
-                    continue;
-                }
-
-                pushFallenSnowItem(&mGlobal.FsnowFirst, addWin,
-                    addWin->x + Flags.OffsetX, addWin->y + Flags.OffsetY,
-                    addWin->w + Flags.OffsetW, Flags.MaxWinSnowDepth);
-            }
-        }
-
-        addWin++;
-    }
-
-    // Count fallensnow regions.
-    FallenSnow* tempFallen = mGlobal.FsnowFirst;
-    int numberFallen = 0;
-    while (tempFallen) {
-        numberFallen++;
-        tempFallen = tempFallen->next;
-    }
-
-    // Allocate + 1, prevent allocation of zero bytes.
-    int ntoremove = 0;
-    long int *toremove = (long int *)
-        malloc(sizeof(*toremove) * (numberFallen + 1));
-
-    // 
-    fsnow = mGlobal.FsnowFirst;
-    while (fsnow) {
-        if (fsnow->winInfo.window != 0) {
-            // Test if fsnow->winInfo.window is hidden.
-            if (fsnow->winInfo.hidden) {
-                eraseFallenSnowOnDisplay(fsnow, 0, fsnow->w);
-                generateFallenSnowFlakes(fsnow, 0, fsnow->w, -10.0);
-                toremove[ntoremove++] = fsnow->winInfo.window;
-            }
-
-            WinInfo* removeWin = findWinInfoByWindowId(
-                fsnow->winInfo.window);
-            if (!removeWin ||
-                (removeWin->w > 0.8 * mGlobal.SnowWinWidth && removeWin->ya < Flags.IgnoreTop) ||
-                (removeWin->w > 0.8 * mGlobal.SnowWinWidth &&
-                    (int)mGlobal.SnowWinHeight - removeWin->ya < Flags.IgnoreBottom)) {
-                generateFallenSnowFlakes(fsnow, 0, fsnow->w, -10.0);
-                toremove[ntoremove++] = fsnow->winInfo.window;
-            }
-        }
-
-        fsnow = fsnow->next;
-    }
-
-    // Test if window has been moved or resized.
-    WinInfo* movedWin = mWinInfoList;
-    for (int i = 0; i < mWinInfoListLength; i++) {
-        fsnow = findFallenSnowItemByWindow(mGlobal.FsnowFirst, movedWin->window);
-        if (fsnow) {
-            if (fsnow->x != movedWin->x + Flags.OffsetX ||
-                fsnow->y != movedWin->y + Flags.OffsetY ||
-                (unsigned int) fsnow->w != movedWin->w + Flags.OffsetW) {
-
-                eraseFallenSnowOnDisplay(fsnow, 0, fsnow->w);
-                generateFallenSnowFlakes(fsnow, 0, fsnow->w, -10.0);
-
-                toremove[ntoremove++] = fsnow->winInfo.window;
-
-                fsnow->x = movedWin->x + Flags.OffsetX;
-                fsnow->y = movedWin->y + Flags.OffsetY;
-                XFlush(mGlobal.display);
-            }
-        }
-
-        movedWin++;
-    }
-
-    for (int i = 0; i < ntoremove; i++) {
-        eraseFallenSnowListItem(toremove[i]);
-        removeFallenSnowListItem(&mGlobal.FsnowFirst, toremove[i]);
-    }
-    free(toremove);
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.38.2 -->
+<!-- Generated with glade 3.40.0 -->
 <!-- -copyright-
 #-# 
 #-# plasmasnow: Let it snow on your desktop
@@ -701,6 +701,7 @@ Flags: -snow, -nosnow</property>
             </child>
             <child>
               <object class="GtkToggleButton" id="id-SnowColor">
+                <property name="label" translatable="yes">     </property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
@@ -709,9 +710,6 @@ Flags: -snow, -nosnow</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">start</property>
                 <property name="valign">center</property>
-                <child>
-                  <placeholder/>
-                </child>
               </object>
               <packing>
                 <property name="left-attach">1</property>
@@ -720,6 +718,7 @@ Flags: -snow, -nosnow</property>
             </child>
             <child>
               <object class="GtkToggleButton" id="id-SnowColor2">
+                <property name="label" translatable="yes">     </property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
@@ -728,9 +727,6 @@ Flags: -snow, -nosnow</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">end</property>
                 <property name="valign">center</property>
-                <child>
-                  <placeholder/>
-                </child>
               </object>
               <packing>
                 <property name="left-attach">1</property>
@@ -1441,8 +1437,8 @@ Flag: -snowspeedfactor</property>
           </packing>
         </child>
         <child>
-          <!-- n-columns=5 n-rows=16 -->
-          <object class="GtkGrid" id="grid_santa">
+          <!-- n-columns=5 n-rows=15 -->
+          <object class="GtkGrid" id="grid_xmas">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
             <property name="halign">center</property>
@@ -1476,7 +1472,7 @@ Flags: -santa 0 -norudolph</property>
               </object>
               <packing>
                 <property name="left-attach">0</property>
-                <property name="top-attach">10</property>
+                <property name="top-attach">9</property>
                 <property name="width">2</property>
               </packing>
             </child>
@@ -1507,7 +1503,7 @@ Flags: -santa 1 -norudolph</property>
               </object>
               <packing>
                 <property name="left-attach">0</property>
-                <property name="top-attach">11</property>
+                <property name="top-attach">10</property>
                 <property name="width">2</property>
               </packing>
             </child>
@@ -1538,7 +1534,7 @@ Flags: -santa 2 -norudolph</property>
               </object>
               <packing>
                 <property name="left-attach">0</property>
-                <property name="top-attach">12</property>
+                <property name="top-attach">11</property>
                 <property name="width">2</property>
               </packing>
             </child>
@@ -1569,7 +1565,7 @@ Flags: -santa 3 -norudolph</property>
               </object>
               <packing>
                 <property name="left-attach">0</property>
-                <property name="top-attach">13</property>
+                <property name="top-attach">12</property>
                 <property name="width">2</property>
               </packing>
             </child>
@@ -1600,7 +1596,7 @@ Flags: -santa 4 -norudolph</property>
               </object>
               <packing>
                 <property name="left-attach">0</property>
-                <property name="top-attach">14</property>
+                <property name="top-attach">13</property>
                 <property name="width">2</property>
               </packing>
             </child>
@@ -1630,7 +1626,7 @@ Flags: -santa 4 -showrudolph</property>
               </object>
               <packing>
                 <property name="left-attach">3</property>
-                <property name="top-attach">14</property>
+                <property name="top-attach">13</property>
                 <property name="width">2</property>
               </packing>
             </child>
@@ -1662,7 +1658,7 @@ Flags: -santa 0 -showrudolph</property>
               </object>
               <packing>
                 <property name="left-attach">3</property>
-                <property name="top-attach">10</property>
+                <property name="top-attach">9</property>
                 <property name="width">2</property>
               </packing>
             </child>
@@ -1692,7 +1688,7 @@ Flags: -santa 1 -showrudolph</property>
               </object>
               <packing>
                 <property name="left-attach">3</property>
-                <property name="top-attach">11</property>
+                <property name="top-attach">10</property>
                 <property name="width">2</property>
               </packing>
             </child>
@@ -1722,7 +1718,7 @@ Flags: -santa 2 -showrudolph</property>
               </object>
               <packing>
                 <property name="left-attach">3</property>
-                <property name="top-attach">12</property>
+                <property name="top-attach">11</property>
                 <property name="width">2</property>
               </packing>
             </child>
@@ -1752,7 +1748,7 @@ Flags: -santa 3 -showrudolph</property>
               </object>
               <packing>
                 <property name="left-attach">3</property>
-                <property name="top-attach">13</property>
+                <property name="top-attach">12</property>
                 <property name="width">2</property>
               </packing>
             </child>
@@ -1771,7 +1767,7 @@ Flags: -showsanta, -nosanta</property>
               </object>
               <packing>
                 <property name="left-attach">1</property>
-                <property name="top-attach">2</property>
+                <property name="top-attach">3</property>
               </packing>
             </child>
             <child>
@@ -1782,12 +1778,12 @@ Flags: -showsanta, -nosanta</property>
               </object>
               <packing>
                 <property name="left-attach">0</property>
-                <property name="top-attach">13</property>
+                <property name="top-attach">12</property>
               </packing>
             </child>
             <child>
               <!-- n-columns=1 n-rows=2 -->
-              <object class="GtkGrid" id="header-santa">
+              <object class="GtkGrid" id="header-xmas">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <child>
@@ -1807,7 +1803,7 @@ Flags: -showsanta, -nosanta</property>
                   <object class="GtkLabel">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">Santa Settings</property>
+                    <property name="label" translatable="yes">Xmas Settings</property>
                     <property name="justify">center</property>
                     <property name="width-chars">96</property>
                     <attributes>
@@ -1908,7 +1904,7 @@ Flags: -showsanta, -nosanta</property>
               </object>
               <packing>
                 <property name="left-attach">2</property>
-                <property name="top-attach">2</property>
+                <property name="top-attach">3</property>
               </packing>
             </child>
             <child>
@@ -1924,7 +1920,7 @@ Flags: -showsanta, -nosanta</property>
               </object>
               <packing>
                 <property name="left-attach">2</property>
-                <property name="top-attach">3</property>
+                <property name="top-attach">4</property>
               </packing>
             </child>
             <child>
@@ -1945,7 +1941,7 @@ Flags: -santascale &lt;n&gt;</property>
               </object>
               <packing>
                 <property name="left-attach">3</property>
-                <property name="top-attach">2</property>
+                <property name="top-attach">3</property>
               </packing>
             </child>
             <child>
@@ -1968,7 +1964,7 @@ Flag: -santaspeedfactor</property>
               </object>
               <packing>
                 <property name="left-attach">3</property>
-                <property name="top-attach">3</property>
+                <property name="top-attach">4</property>
               </packing>
             </child>
             <child>
@@ -1992,7 +1988,7 @@ Flag: -santaspeedfactor</property>
               </object>
               <packing>
                 <property name="left-attach">0</property>
-                <property name="top-attach">4</property>
+                <property name="top-attach">2</property>
               </packing>
             </child>
             <child>
@@ -2016,35 +2012,23 @@ Flag: -santaspeedfactor</property>
               </object>
               <packing>
                 <property name="left-attach">0</property>
-                <property name="top-attach">9</property>
+                <property name="top-attach">14</property>
               </packing>
             </child>
             <child>
-              <object class="GtkLabel">
+              <object class="GtkToggleButton" id="id-showGreenLights">
+                <property name="label" translatable="yes">Show Green Lights</property>
                 <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="vexpand">True</property>
-                <property name="label" translatable="yes">    </property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="tooltip-text" translatable="yes">Turns on or off the Green Lights strand.</property>
+                <property name="double-buffered">False</property>
+                <property name="valign">center</property>
               </object>
               <packing>
-                <property name="left-attach">0</property>
-                <property name="top-attach">15</property>
+                <property name="left-attach">1</property>
+                <property name="top-attach">1</property>
               </packing>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
             </child>
             <child>
               <placeholder/>
@@ -2150,8 +2134,8 @@ Flag: -santaspeedfactor</property>
             </child>
           </object>
           <packing>
-            <property name="name">pageSanta</property>
-            <property name="title" translatable="yes">Santa</property>
+            <property name="name">page Xmas</property>
+            <property name="title" translatable="yes">Xmas</property>
             <property name="position">2</property>
           </packing>
         </child>
@@ -2322,6 +2306,7 @@ Flag: -treetype 0</property>
                 </child>
                 <child>
                   <object class="GtkToggleButton" id="id-TreeColor">
+                    <property name="label" translatable="yes">     </property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
@@ -2331,9 +2316,6 @@ Flag: -treetype 0</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
                     <property name="margin-left">8</property>
-                    <child>
-                      <placeholder/>
-                    </child>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -2924,6 +2906,7 @@ Flags: -showbirds 1, -showbirds 0</property>
             </child>
             <child>
               <object class="GtkToggleButton" id="id-BirdsColor">
+                <property name="label" translatable="yes">     </property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
@@ -2934,9 +2917,6 @@ Flags: -showbirds 1, -showbirds 0</property>
                 <property name="valign">center</property>
                 <property name="margin-left">10</property>
                 <property name="margin-right">10</property>
-                <child>
-                  <placeholder/>
-                </child>
               </object>
               <packing>
                 <property name="left-attach">0</property>

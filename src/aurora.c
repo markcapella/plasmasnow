@@ -239,7 +239,7 @@ void aurora_draw(cairo_t *cr) {
  ** This method ...
  **/
 void aurora_erase() {
-    sanelyCheckAndClearDisplayArea(mGlobal.display, mGlobal.SnowWin,
+    clearDisplayArea(mGlobal.display, mGlobal.SnowWin,
         a.x, a.y, a.width, a.base, mGlobal.xxposures);
 }
 

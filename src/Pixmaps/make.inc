@@ -81,6 +81,7 @@ flake6.xpm \
 garland.xpm \
 greenTree.xpm \
 huis4.xpm \
+lightBulb.xpm \
 MediumSanta1.xpm \
 MediumSanta2.xpm \
 MediumSanta3.xpm \
@@ -103,7 +104,6 @@ RegularSantaRudolf3.xpm \
 RegularSantaRudolf4.xpm \
 rendier.xpm \
 snowtree.xpm \
-star.xbm \
 tannenbaum.xpm \
 tree1.xpm \
 tree.xpm 

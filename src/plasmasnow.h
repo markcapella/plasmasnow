@@ -79,7 +79,6 @@
 // time between killing flakes (used in emergency only)
 #define time_init_snow  0.2
 #define time_initbaum 0.30          // time between check for (re)create trees
-#define time_initstars 1.00         // time between check for (re)create stars
 #define time_main_window 0.5        // time between checks for birds window
 #define TIME_BETWEEN_LOAD_MONITOR_EVENTS  0.1  // time between cpu load measurements
 #define time_meteor 3.00            // time between meteors
@@ -88,7 +87,6 @@
 #define time_sfallen 2.30           // time between smoothing of fallen snow
 #define time_show_range_etc 0.50    // time between showing range etc.
 #define time_snow_on_trees 0.50     // time between redrawings of snow on trees
-#define time_star 0.50              // time between drawing stars
 
 // time between checks if flakes should be switched beteen default and
 // vintage
@@ -98,6 +96,7 @@
 #define time_umoon 0.04    // time between update position of moon
 #define time_usanta 0.04   // time between update of santa position
 #define time_ustar 2.00    // time between updating stars
+#define TIME_BETWEEN_LIGHTS_UPDATES 0.5 // time between updating xmas Lights.
 #define time_wind 0.10     // time between starting or ending wind
 #define time_wupdate 0.02  // time between getting windows information
 #define time_change_bottom 300.0 // time between changing desired heights
@@ -165,7 +164,7 @@ typedef struct _SnowMap {
 
 
 /***********************************************************
- * Santa consts.
+ * Xmas consts.
  */
 #define MAXSANTA           4
 #define PIXINANIMATION     4 // nr of santa animations
@@ -176,6 +175,13 @@ typedef struct _SnowMap {
 #define SANTASPEED2       50
 #define SANTASPEED3       50
 #define SANTASPEED4       70
+
+typedef struct {
+        int x;
+        int y;
+
+        int color;
+} LightCoordinate;
 
 
 /***********************************************************
@@ -372,6 +378,10 @@ extern struct _mGlobal {
         double moonR; // radius of moon in pixels
 
         // Fallensnow defs.
+        // Main WinInfo (Windows) list & helpers.
+        int mWinInfoListLength;
+        WinInfo* mWinInfoList;
+
         FallenSnow *FsnowFirst;
         int MaxScrSnowDepth;
         int RemoveFluff;

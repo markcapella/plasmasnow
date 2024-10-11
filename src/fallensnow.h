@@ -69,11 +69,13 @@ extern int unlockFallenSnowBaseSemaphore();
 
 //
 extern void initFallenSnowModule();
+extern void initFallenSnowListWithDesktop();
 
 void* execFallenSnowThread();
 void updateAllFallenSnowOnThread();
 
 extern void doFallenSnowUserSettingUpdates();
+
 extern void setMaxScreenSnowDepth();
 extern void setMaxScreenSnowDepthWithLock();
 
@@ -87,6 +89,11 @@ extern void updateFallenSnowAtBottom();
 extern void generateFallenSnowFlakes(FallenSnow*,
     int x, int w, float vy);
 
+// FallenSnow Stack Helpers.
+extern void pushFallenSnowItem(FallenSnow**, WinInfo*,
+    int x, int y, int w, int h);
+void popFallenSnowItem(FallenSnow**);
+
 // Desh method helpers.
 void CreateDesh(FallenSnow*);
 int do_change_deshes();
@@ -99,13 +106,6 @@ void eraseFallenSnowAtPixel(FallenSnow*, int x);
 
 extern void eraseFallenSnowOnDisplay(FallenSnow*, int x, int w);
 extern void freeFallenSnowItemMemory(FallenSnow*);
-
-// FallenSnow Stack Helpers.
-extern void initFallenSnowListWithDesktop();
-
-extern void pushFallenSnowItem(FallenSnow**, WinInfo*,
-    int x, int y, int w, int h);
-void popFallenSnowItem(FallenSnow**);
 
 extern FallenSnow* findFallenSnowItemByWindow(FallenSnow*, Window);
 extern void drawFallenSnowItem(FallenSnow*);

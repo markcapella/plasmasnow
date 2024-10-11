@@ -60,6 +60,7 @@
 #include "dsimple.h"
 #include "fallensnow.h"
 #include "Flags.h"
+#include "Lights.h"
 #include "loadmeasure.h"
 #include "mainstub.h"
 #include "MainWindow.h"
@@ -243,6 +244,9 @@ int startApplication(int argc, char *argv[]) {
     mGlobal.VisWorkSpaces[0] = 0;
     mGlobal.WindowsChanged = 0;
     mGlobal.ForceRestart = 0;
+
+    mGlobal.mWinInfoListLength = 0;
+    mGlobal.mWinInfoList = NULL;
 
     mGlobal.FsnowFirst = NULL;
     mGlobal.MaxScrSnowDepth = 0;
@@ -474,16 +478,14 @@ int startApplication(int argc, char *argv[]) {
     initFallenSnowModule();
     blowoff_init();
     wind_init();
-
     Santa_init();
-
     initSceneryModule();
     treesnow_init();
-
     birds_init();
-
     initStarsModule();
+    initLightsModule();
     initMeteorModule();
+
     aurora_init();
     moon_init();
 
@@ -866,12 +868,11 @@ int doAllUISettingsUpdates() {
     Santa_ui();
     updateSceneryUserSettings();
     birds_ui();
-
     snow_ui();
-
     updateMeteorUserSettings();
     wind_ui();
     updateStarsUserSettings();
+    updateLightsUserSettings();
     doFallenSnowUserSettingUpdates();
     blowoff_ui();
     treesnow_ui();
@@ -879,6 +880,7 @@ int doAllUISettingsUpdates() {
     aurora_ui();
     updateMainWindowUI();
 
+    // updateAdvancedUserSettings.
     UIDO(CpuLoad, HandleCpuFactor(););
     UIDO(Transparency, );
     UIDO(Scale, );
@@ -889,10 +891,10 @@ int doAllUISettingsUpdates() {
     UIDOS(BackgroundFile, );
     UIDO(BlackBackground, );
 
+    // Write flags prefs if they've changed.
     if (Flags.Changes > 0) {
         WriteFlags();
         set_buttons();
-        P("-----------Changes: %d\n", Flags.Changes);
         Flags.Changes = 0;
     }
 
@@ -913,15 +915,12 @@ int onTimerEventDisplayChanged() {
         return -1;
     }
 
-    // I(_("Refresh due to change of screen or language settings ...\n"));
     if (mGlobal.ForceRestart) {
         mDoRestartDueToDisplayChange = 1;
         Flags.shutdownRequested = 1;
         return -1;
     }
 
-    // P("width height: %d %d %d %d\n", w, h, mGlobal.Wroot, mGlobal.Hroot);
-    // I(_("Refresh due to change of display settings...\n"));
     Display *display = XOpenDisplay(Flags.DisplayName);
     Screen *screen = DefaultScreenOfDisplay(display);
 
@@ -1026,7 +1025,10 @@ void RestartDisplay() {
     fflush(stdout);
 
     initFallenSnowListWithDesktop();
+
     initStarsModuleArrays();
+    setAllBulbPositions();
+
     clearAndRedrawScenery();
 
     if (!Flags.NoKeepSnowOnTrees && !Flags.NoTrees) {
@@ -1129,6 +1131,7 @@ void drawCairoWindowInternal(cairo_t *cr) {
         moon_erase(0);
         Santa_erase(cr);
         eraseStarsFrame();
+        eraseLightsFrame();
         birds_erase(0);
         snow_erase(1);
         aurora_erase();
@@ -1149,6 +1152,7 @@ void drawCairoWindowInternal(cairo_t *cr) {
     // Do all module draws.
     if (WorkspaceActive()) {
         drawStarsFrame(cr);
+        drawLightsFrame(cr);
         moon_draw(cr);
         aurora_draw(cr);
         drawMeteorFrame(cr);
