@@ -158,8 +158,9 @@ typedef struct _Snow {
 typedef struct _SnowMap {
         // Pixmap pixmap;
         cairo_surface_t* surface;
-        unsigned int width BITS(16);
-        unsigned int height BITS(16);
+
+        unsigned int width;
+        unsigned int height;
 } SnowMap;
 
 
@@ -335,7 +336,7 @@ extern struct _mGlobal {
         Window SnowWin;
         int SnowWinX;
         int SnowWinY;
-        SnowMap *fluffpix;
+        SnowMap* fluffpix;
 
         unsigned int MaxFlakeHeight;      /* Biggest flake */
         unsigned int MaxFlakeWidth;       /* Biggest flake */

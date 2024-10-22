@@ -217,11 +217,6 @@ int startApplication(int argc, char *argv[]) {
     // Cleaar space for app Global struct.
     memset(&mGlobal, 0, sizeof(mGlobal));
 
-    XInitThreads();
-    initFallenSnowSemaphores();
-    aurora_sem_init();
-    birds_sem_init();
-
     // Titlebar string, but not one.
     mGlobal.mPlasmaWindowTitle = "";
 
@@ -266,6 +261,12 @@ int startApplication(int argc, char *argv[]) {
     mGlobal.Message[0] = 0;
 
     mGlobal.SantaPlowRegion = 0;
+
+
+    XInitThreads();
+    initFallenSnowSemaphores();
+    aurora_sem_init();
+    birds_sem_init();
 
     // we search for flags that only produce output to stdout,
     // to enable to run in a non-X environment, in which case
@@ -1024,7 +1025,7 @@ int handlePendingX11Events() {
 void RestartDisplay() {
     fflush(stdout);
 
-    initFallenSnowListWithDesktop();
+    clearAllFallenSnowItems();
 
     initStarsModuleArrays();
     setAllBulbPositions();

@@ -109,64 +109,65 @@ int softLockFallenSnowBaseSemaphore(
  ** This method ...
  **/
 void initFallenSnowModule() {
-    initFallenSnowListWithDesktop();
+    clearAllFallenSnowItems();
 
     addMethodToMainloop(PRIORITY_DEFAULT,
         time_change_bottom, do_change_deshes);
     addMethodToMainloop(PRIORITY_DEFAULT,
         time_adjust_bottom, do_adjust_deshes);
 
+    // Start main background thread looper & exit.
     static pthread_t thread;
-    pthread_create(&thread, NULL, execFallenSnowThread, NULL);
+    pthread_create(&thread, NULL, startFallenSnowBackgroundThread, NULL);
 }
 
 /** *********************************************************************
  ** This method clears and inits the FallenSnow list of items.
  **/
-void initFallenSnowListWithDesktop() {
+void clearAllFallenSnowItems() {
     lockFallenSnowSemaphore();
 
-    // Pop all off list.
+    // Clear all fallen snow areas.
     while (mGlobal.FsnowFirst) {
         popFallenSnowItem(&mGlobal.FsnowFirst);
     }
 
-    // Create FallenSnow item for bottom of screen.
-    // Add to list as first entry.
-    WinInfo* tempWindow = (WinInfo*) malloc(sizeof(WinInfo));
-    memset(tempWindow, 0, sizeof(WinInfo));
-    pushFallenSnowItem(&mGlobal.FsnowFirst, tempWindow,
-        0, mGlobal.SnowWinHeight, mGlobal.SnowWinWidth,
-        mGlobal.MaxScrSnowDepth);
-    free(tempWindow);
+    // Allocate temp empty WinInfo.
+    WinInfo* tempWinInfo = (WinInfo*) malloc(sizeof(WinInfo));
+    memset(tempWinInfo, 0, sizeof(WinInfo));
 
+    // Push first fallen area with zero-ed WinInfo
+    // into list as desktop.
+    pushFallenSnowItem(&mGlobal.FsnowFirst,
+        tempWinInfo, 0, mGlobal.SnowWinHeight,
+        mGlobal.SnowWinWidth, mGlobal.MaxScrSnowDepth);
+
+    free(tempWinInfo);
     unlockFallenSnowSemaphore();
 }
 
 /** *********************************************************************
  ** This method is a private thread looper.
  **/
-void* execFallenSnowThread() {
-    // Loop until cancelled.
-    while (1) {
+void* startFallenSnowBackgroundThread() {
+    while (true) {
         if (Flags.shutdownRequested) {
             pthread_exit(NULL);
         }
 
         // Main thread method.
-        updateAllFallenSnowOnThread();
-
-        usleep((useconds_t) TIME_BETWWEEN_FALLENSNOW_THREADS * 1000000);
+        execFallenSnowBackgroundThread();
+        usleep((useconds_t)
+            TIME_BETWWEEN_FALLENSNOW_THREADS * 1000000);
     }
 
     return NULL;
 }
 
-
 /** *********************************************************************
- ** This method ...
+ ** This method is the main "draw frame" routine for fallen snow.
  **/
-void updateAllFallenSnowOnThread() {
+void execFallenSnowBackgroundThread() {
     if (!WorkspaceActive()) {
         return;
     }
@@ -182,7 +183,8 @@ void updateAllFallenSnowOnThread() {
 
     lockFallenSnowSemaphore();
 
-    FallenSnow *fallenSnowItem = mGlobal.FsnowFirst;
+    // Draw all fallen snow areas.
+    FallenSnow* fallenSnowItem = mGlobal.FsnowFirst;
     while (fallenSnowItem) {
         if (canSnowCollectOnWindowOrScreenBottom(fallenSnowItem)) {
             drawFallenSnowItem(fallenSnowItem);
@@ -192,6 +194,7 @@ void updateAllFallenSnowOnThread() {
 
     XFlush(mGlobal.display);
     swapFallenSnowListItemSurfaces();
+
     unlockFallenSnowSemaphore();
 }
 
@@ -200,20 +203,20 @@ void updateAllFallenSnowOnThread() {
  **/
 void doFallenSnowUserSettingUpdates() {
     UIDO(MaxWinSnowDepth,
-        initFallenSnowListWithDesktop();
+        clearAllFallenSnowItems();
         clearGlobalSnowWindow();
     );
     UIDO(MaxScrSnowDepth,
         setMaxScreenSnowDepthWithLock();
-        initFallenSnowListWithDesktop();
+        clearAllFallenSnowItems();
         clearGlobalSnowWindow();
     );
     UIDO(NoKeepSnowOnBottom,
-        initFallenSnowListWithDesktop();
+        clearAllFallenSnowItems();
         clearGlobalSnowWindow();
     );
     UIDO(NoKeepSnowOnWindows,
-        initFallenSnowListWithDesktop();
+        clearAllFallenSnowItems();
         clearGlobalSnowWindow();
     );
 
@@ -472,10 +475,9 @@ void generateFallenSnowFlakes(FallenSnow *fsnow, int x, int w, float vy) {
  ** This method pushes a node onto the list.
  **/
 void pushFallenSnowItem(FallenSnow** fallenSnowArray,
-    WinInfo* window, int x, int y, int w, int h) {
+    WinInfo* winInfo, int x, int y, int w, int h) {
 
-    // TODO: "Too-narrow" windows
-    // results in complications.
+    // TODO: "Too-narrow" windows cause issues.
     if (w < MINIMUM_SPLINE_WIDTH) {
         return;
     }
@@ -484,7 +486,7 @@ void pushFallenSnowItem(FallenSnow** fallenSnowArray,
     FallenSnow* fallenSnowListItem = (FallenSnow*)
         malloc(sizeof(FallenSnow));
 
-    fallenSnowListItem->winInfo = *window;
+    fallenSnowListItem->winInfo = *winInfo;
 
     fallenSnowListItem->x = x;
     fallenSnowListItem->y = y;
@@ -527,15 +529,29 @@ void pushFallenSnowItem(FallenSnow** fallenSnowArray,
 /** *********************************************************************
  ** This method pops a node from the start of the list.
  **/
-void popFallenSnowItem(FallenSnow **list) {
+void popFallenSnowItem(FallenSnow** list) {
     if (*list == NULL) {
         return;
     }
 
     FallenSnow* next_node = (*list)->next;
-    freeFallenSnowItemMemory(*list);
+    freeFallenSnowItem(*list);
 
     *list = next_node;
+}
+
+/** *********************************************************************
+ ** This method ...
+ **/
+void freeFallenSnowItem(FallenSnow* fallen) {
+    free(fallen->columnColor);
+    free(fallen->snowHeight);
+    free(fallen->maxSnowHeight);
+
+    cairo_surface_destroy(fallen->surface);
+    cairo_surface_destroy(fallen->surface1);
+
+    free(fallen);
 }
 
 /** *********************************************************************
@@ -837,20 +853,6 @@ void eraseFallenSnowOnDisplay(FallenSnow *fsnow, int xstart, int w) {
 /** *********************************************************************
  ** This method ...
  **/
-void freeFallenSnowItemMemory(FallenSnow *fallen) {
-    free(fallen->columnColor);
-    free(fallen->snowHeight);
-    free(fallen->maxSnowHeight);
-
-    cairo_surface_destroy(fallen->surface);
-    cairo_surface_destroy(fallen->surface1);
-
-    free(fallen);
-}
-
-/** *********************************************************************
- ** This method ...
- **/
 FallenSnow* findFallenSnowItemByWindow(FallenSnow* first,
     Window window) {
     FallenSnow* fallenSnowItem = first;
@@ -991,7 +993,7 @@ int removeFallenSnowListItem(FallenSnow **list, Window id) {
     FallenSnow *fallen = *list;
     if (fallen->winInfo.window == id) {
         fallen = fallen->next;
-        freeFallenSnowItemMemory(*list);
+        freeFallenSnowItem(*list);
         *list = fallen; // ?
         return 1;
     }
@@ -1012,7 +1014,7 @@ int removeFallenSnowListItem(FallenSnow **list, Window id) {
     }
 
     fallen->next = scratch->next;
-    freeFallenSnowItemMemory(scratch);
+    freeFallenSnowItem(scratch);
 
     return 1;
 }

@@ -69,10 +69,10 @@ extern int unlockFallenSnowBaseSemaphore();
 
 //
 extern void initFallenSnowModule();
-extern void initFallenSnowListWithDesktop();
+extern void clearAllFallenSnowItems();
 
-void* execFallenSnowThread();
-void updateAllFallenSnowOnThread();
+void* startFallenSnowBackgroundThread();
+void execFallenSnowBackgroundThread();
 
 extern void doFallenSnowUserSettingUpdates();
 
@@ -92,7 +92,9 @@ extern void generateFallenSnowFlakes(FallenSnow*,
 // FallenSnow Stack Helpers.
 extern void pushFallenSnowItem(FallenSnow**, WinInfo*,
     int x, int y, int w, int h);
+
 void popFallenSnowItem(FallenSnow**);
+extern void freeFallenSnowItem(FallenSnow*);
 
 // Desh method helpers.
 void CreateDesh(FallenSnow*);
@@ -105,7 +107,6 @@ extern void cairoDrawAllFallenSnowItems(cairo_t*);
 void eraseFallenSnowAtPixel(FallenSnow*, int x);
 
 extern void eraseFallenSnowOnDisplay(FallenSnow*, int x, int w);
-extern void freeFallenSnowItemMemory(FallenSnow*);
 
 extern FallenSnow* findFallenSnowItemByWindow(FallenSnow*, Window);
 extern void drawFallenSnowItem(FallenSnow*);

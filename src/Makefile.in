@@ -584,7 +584,7 @@ PTHREAD_CC = @PTHREAD_CC@
 PTHREAD_CFLAGS = @PTHREAD_CFLAGS@
 PTHREAD_CXX = @PTHREAD_CXX@
 PTHREAD_LIBS = @PTHREAD_LIBS@
-QT_CFLAGS = -pipe -O2 -Wall -Wextra -D_REENTRANT -fPIC $(QT_CDEFINES)
+QT_CFLAGS = -pipe -D_REENTRANT -fPIC $(QT_CDEFINES)
 QT_LIBS = /usr/lib/x86_64-linux-gnu/libQt5Core.so \
 	/usr/lib/x86_64-linux-gnu/libQt5Gui.so \
 	/usr/lib/x86_64-linux-gnu/libQt5Widgets.so

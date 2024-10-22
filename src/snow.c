@@ -26,7 +26,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-
 #include <gtk/gtk.h>
 
 #include "plasmasnow.h"
@@ -82,8 +81,8 @@ static void genxpmflake(char ***xpm, int w, int h);
 static void add_random_flakes(int n);
 static int  do_SwitchFlakes();
 
-static void DelFlake(SnowFlake *flake);
-static void EraseSnowFlake1(SnowFlake *flake);
+static void DelFlake(SnowFlake* flake);
+static void EraseSnowFlake1(SnowFlake* flake);
 
 static void SetSnowSize();
 
@@ -110,12 +109,12 @@ static int KillFlakes = 0;
 
 static float SnowSpeedFactor;
 
-static SnowMap *snowPix;
+static SnowMap* snowPix;
 
 static char ***plasmasnow_xpm = NULL;
 
-static int NFlakeTypesVintage;
 static int MaxFlakeTypes;
+static int NFlakeTypesVintage;
 
 // Flake color helper methods.
 GdkRGBA mFlakeColor;
@@ -169,8 +168,11 @@ void SetSnowSize() {
  ** This method ...
  **/
 void snow_ui() {
-    UIDO(
-        NoSnowFlakes, if (Flags.NoSnowFlakes) { clearGlobalSnowWindow(); });
+    UIDO(NoSnowFlakes,
+        if (Flags.NoSnowFlakes) {
+            clearGlobalSnowWindow();
+        }
+    );
 
     UIDO(SnowFlakesFactor, InitFlakesPerSecond(););
 
@@ -187,6 +189,8 @@ void snow_ui() {
         rgba2color(&color, &Flags.SnowColor);
 
         endQPickerDialog();
+        clearAllFallenSnowItems();
+        clearGlobalSnowWindow();
     }
 
     UIDOS(SnowColor2, InitSnowColor(); clearGlobalSnowWindow(););
@@ -202,6 +206,8 @@ void snow_ui() {
         rgba2color(&color, &Flags.SnowColor2);
 
         endQPickerDialog();
+        clearAllFallenSnowItems();
+        clearGlobalSnowWindow();
     }
 
     UIDO(SnowSpeedFactor, InitSnowSpeedFactor(););
@@ -219,13 +225,14 @@ void snow_ui() {
  **/
 void init_snow_pix() {
     for (int flake = 0; flake < MaxFlakeTypes; flake++) {
+
         int w, h;
         sscanf(plasmasnow_xpm[flake][0], "%d %d", &w, &h);
 
         w *= 0.01 * Flags.Scale * LocalScale * mGlobal.WindowScale;
         h *= 0.01 * Flags.Scale * LocalScale * mGlobal.WindowScale;
 
-        SnowMap *rp = &snowPix[flake];
+        SnowMap* rp = &snowPix[flake];
         rp->width = w;
         rp->height = h;
 
@@ -236,7 +243,7 @@ void init_snow_pix() {
             &data, &lines, getNextFlakeColorAsString());
 
         // Create pixbuf.
-        GdkPixbuf *pixbuf = gdk_pixbuf_new_from_xpm_data(
+        GdkPixbuf* pixbuf = gdk_pixbuf_new_from_xpm_data(
             (const char**) data);
         xpm_destroy(data);
 
@@ -252,7 +259,7 @@ void init_snow_pix() {
         }
 
         // Destroy & recreate surface.
-        GdkPixbuf *pixbufscaled = gdk_pixbuf_scale_simple(
+        GdkPixbuf* pixbufscaled = gdk_pixbuf_scale_simple(
             pixbuf, w, h, GDK_INTERP_HYPER);
         if (rp->surface) {
             cairo_surface_destroy(rp->surface);
@@ -324,10 +331,39 @@ int snow_draw(cairo_t *cr) {
     }
 
     set_begin();
-    SnowFlake *flake;
-    while ((flake = (SnowFlake *) set_next())) {
-        cairo_set_source_surface(cr,
-            snowPix[flake->whatFlake].surface, flake->rx, flake->ry);
+
+    static int mDebugSnowDraw = 5;
+    static int mDebugSnowWhatFlake = 5;
+
+    int setIndex = 0;
+    SnowFlake* flake;
+    while ((flake = (SnowFlake*) set_next())) {
+        if (mDebugSnowDraw-- > 0) {
+            printf("snow.c: snow_draw(%lu) flake->whatFlake %i.\n",
+                (unsigned long) pthread_self(), flake->whatFlake);
+        }
+
+        // Crashes this way
+        if ((int) flake->whatFlake < 0) {
+            if (mDebugSnowWhatFlake-- > 0) {
+                printf("snow.c: snow_draw(%lu) "
+                    "Has invalid negative type : %i @ %i.\n",
+                    (unsigned long) pthread_self(),
+                    (int) flake->whatFlake, setIndex);
+            }
+        }
+        if ((int) flake->whatFlake >= MaxFlakeTypes) {
+            if (mDebugSnowWhatFlake-- > 0) {
+                printf("snow.c: snow_draw(%lu) "
+                    "Has invalid positive type : %i @ %i.\n",
+                    (unsigned long) pthread_self(),
+                    (int) flake->whatFlake, setIndex);
+            }
+        }
+        setIndex++;
+
+        cairo_set_source_surface(cr, snowPix[flake->whatFlake].surface,
+            flake->rx, flake->ry);
 
         double alpha = ALPHA;
         if (flake->fluff) {
@@ -354,10 +390,12 @@ int snow_erase(int force) {
     if (!force && Flags.NoSnowFlakes) {
         return TRUE;
     }
+
     set_begin();
-    SnowFlake *flake;
+
+    SnowFlake* flake;
     int n = 0;
-    while ((flake = (SnowFlake *)set_next())) {
+    while ((flake = (SnowFlake*) set_next())) {
         EraseSnowFlake1(flake);
         n++;
     }
@@ -497,15 +535,15 @@ int do_UpdateSnowFlake(SnowFlake* flake) {
     }
 
     if ((flake->freeze || flake->fluff) && mGlobal.RemoveFluff) {
-        EraseSnowFlake1(flake);
         DelFlake(flake);
+        EraseSnowFlake1(flake);
         return FALSE;
     }
 
     // handle fluff and KillFlakes
     if (KillFlakes || (flake->fluff && flake->flufftimer > flake->flufftime)) {
-        EraseSnowFlake1(flake);
         DelFlake(flake);
+        EraseSnowFlake1(flake);
         return FALSE;
     }
 
@@ -718,20 +756,39 @@ int do_UpdateSnowFlake(SnowFlake* flake) {
  **    0 < type <= SNOWFLAKEMAXTYPE.
  **/
 SnowFlake* MakeFlake(int type) {
+
+    static int mDebugSnowWhatFlake = 5;
+
     mGlobal.FlakeCount++;
     SnowFlake *flake = (SnowFlake *) malloc(sizeof(SnowFlake));
 
     // If type < 0, create random type.
     if (type < 0) {
-        if (Flags.VintageFlakes) {
-            type = drand48() * NFlakeTypesVintage;
-        } else {
-            type = NFlakeTypesVintage + drand48() *
-                (MaxFlakeTypes - NFlakeTypesVintage);
+        type = Flags.VintageFlakes ?
+            drand48() * NFlakeTypesVintage :
+            NFlakeTypesVintage + (drand48() *
+                (MaxFlakeTypes - NFlakeTypesVintage));
+    }
+    flake->whatFlake = type;
+
+    // Crashes this way
+    if ((int) flake->whatFlake < 0) {
+        if (mDebugSnowWhatFlake-- > 0) {
+            printf("snow.c: MakeFlake(%lu) "
+                "Has invalid negative type : %i.\n",
+                (unsigned long) pthread_self(),
+                (int) flake->whatFlake);
+        }
+    }
+    if ((int) flake->whatFlake >= MaxFlakeTypes) {
+        if (mDebugSnowWhatFlake-- > 0) {
+            printf("snow.c: MakeFlake(%lu) "
+                "Has invalid positive type : %i.\n",
+                (unsigned long) pthread_self(),
+                (int) flake->whatFlake);
         }
     }
 
-    flake->whatFlake = type;
     InitFlake(flake);
 
     addMethodWithArgToMainloop(PRIORITY_HIGH, time_snowflakes,
@@ -1037,18 +1094,39 @@ void fluffify(SnowFlake *flake, float t) {
 int do_SwitchFlakes() {
     static int prev = 0;
 
+    static int mDebugSnowWhatFlake = 5;
+
     if (Flags.VintageFlakes != prev) {
+
         set_begin();
-        SnowFlake *flake;
-        while ((flake = (SnowFlake *)set_next())) {
-            if (Flags.VintageFlakes) {
-                flake->whatFlake = drand48() * NFlakeTypesVintage;
-            } else {
-                flake->whatFlake =
-                    NFlakeTypesVintage +
-                    drand48() * (MaxFlakeTypes - NFlakeTypesVintage);
+
+        SnowFlake* flake;
+        while ((flake = (SnowFlake*) set_next())) {
+
+            flake->whatFlake = Flags.VintageFlakes ?
+                drand48() * NFlakeTypesVintage :
+                NFlakeTypesVintage + (drand48() *
+                    (MaxFlakeTypes - NFlakeTypesVintage));
+
+            // Crashes this way
+            if ((int) flake->whatFlake < 0) {
+                if (mDebugSnowWhatFlake-- > 0) {
+                    printf("snow.c: do_SwitchFlakes(%lu) "
+                        "Has invalid negative type : %i.\n",
+                        (unsigned long) pthread_self(),
+                        (int) flake->whatFlake);
+                }
+            }
+            if ((int) flake->whatFlake >= MaxFlakeTypes) {
+                if (mDebugSnowWhatFlake-- > 0) {
+                    printf("snow.c: do_SwitchFlakes(%lu) "
+                        "Has invalid positive type : %i.\n",
+                        (unsigned long) pthread_self(),
+                        (int) flake->whatFlake);
+                }
             }
         }
+
         prev = Flags.VintageFlakes;
     }
 

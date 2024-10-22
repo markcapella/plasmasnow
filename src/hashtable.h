@@ -27,6 +27,7 @@ extern "C" {
 extern void table_insert(unsigned int key, void *value);
 extern void *table_get(unsigned int key);
 extern void table_clear(void (*destroy)(void *p));
+
 extern void set_insert(void *key);
 extern void set_erase(void *key);
 extern int set_count(void *key);

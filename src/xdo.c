@@ -131,18 +131,19 @@ xdo_t *xdo_new(const char *display_name) {
     return xdo_new_with_opened_display(xdpy, display_name, 1);
 }
 
-xdo_t *xdo_new_with_opened_display(
-    Display *xdpy, const char *display, int close_display_when_freed) {
-    xdo_t *xdo = NULL;
+xdo_t* xdo_new_with_opened_display(Display* xdpy,
+    const char* display, int close_display_when_freed) {
 
+    // Can we use xdo_eprintf yet ?
     if (xdpy == NULL) {
-        /* Can't use _xdo_eprintf yet ... */
-        fprintf(stderr, "xdo_new: xdisplay I was given is a null pointer\n");
+        fprintf(stderr, "xdo_new: xdisplay I was "
+            "given is a null pointer\n");
         return NULL;
     }
 
-    /* XXX: Check for NULL here */
-    xdo = (xdo_t *)malloc(sizeof(xdo_t));
+    // ...
+    xdo_t* xdo = NULL;
+    xdo = (xdo_t*) malloc(sizeof(xdo_t));
     memset(xdo, 0, sizeof(xdo_t));
 
     xdo->xdpy = xdpy;
@@ -159,11 +160,11 @@ xdo_t *xdo_new_with_opened_display(
     if (_xdo_has_xtest(xdo)) {
         xdo_enable_feature(xdo, XDO_FEATURE_XTEST);
         _xdo_debug(xdo, "XTEST enabled.");
+
     } else {
-        _xdo_eprintf(xdo, False,
-            "Warning: XTEST extension unavailable on '%s'. Some"
-            " functionality may be disabled; See 'man xdotool' for more"
-            " info.",
+        _xdo_eprintf(xdo, False, "Warning: XTEST extension "
+            "unavailable on '%s'. Some functionality may be "
+            "disabled; See 'man xdotool' for morey info.",
             xdo->display_name);
         xdo_disable_feature(xdo, XDO_FEATURE_XTEST);
     }

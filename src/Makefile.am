@@ -29,7 +29,7 @@ games_PROGRAMS = plasmasnow
 
 # Qt Dev package
 QT_CDEFINES  = -DQT_NO_DEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB
-QT_CFLAGS    = -pipe -O2 -Wall -Wextra -D_REENTRANT -fPIC $(QT_CDEFINES)
+QT_CFLAGS    = -pipe -D_REENTRANT -fPIC $(QT_CDEFINES)
 QT_CINCLUDES = -I/usr/include/x86_64-linux-gnu/qt5 \
 	-I/usr/include/x86_64-linux-gnu/qt5/QtCore \
 	-I/usr/include/x86_64-linux-gnu/qt5/QtGui \
@@ -38,10 +38,10 @@ QT_LIBS      = /usr/lib/x86_64-linux-gnu/libQt5Core.so \
 	/usr/lib/x86_64-linux-gnu/libQt5Gui.so \
 	/usr/lib/x86_64-linux-gnu/libQt5Widgets.so
 
-plasmasnow_CPPFLAGS    = $(QT_CFLAGS) $(QT_CINCLUDES) $(GTK_CFLAGS) \
+plasmasnow_CPPFLAGS = $(QT_CFLAGS) $(QT_CINCLUDES) $(GTK_CFLAGS) \
 	$(X11_CFLAGS) $(GSL_CFLAGS) -DLOCALEDIR=\"$(LOCALEDIR)\" \
 	-DLANGUAGES='"$(LANGUAGES)"'
-plasmasnow_LDADD       = libxdo.a $(GTK_LIBS) $(QT_LIBS) $(X11_LIBS) \
+plasmasnow_LDADD = libxdo.a $(GTK_LIBS) $(QT_LIBS) $(X11_LIBS) \
 	-lXfixes $(GSL_LIBS) $(LIBINTL) 
 libxdo_a_CPPFLAGS = $(X11_CFLAGS)
 

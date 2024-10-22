@@ -434,10 +434,10 @@ static struct _button {
         ALL_BUTTONS
 
         // QColorDialog "Widgets".
-        GtkWidget *SnowColor;
-        GtkWidget *SnowColor2;
-        GtkWidget *BirdsColor;
-        GtkWidget *TreeColor;
+        GtkWidget* SnowColor;
+        GtkWidget* SnowColor2;
+        GtkWidget* BirdsColor;
+        GtkWidget* TreeColor;
 
 } Button;
 
@@ -463,13 +463,13 @@ static void getAllButtonFormIDs() {
 
     // QColorDialog "Widgets".
     Button.SnowColor =
-        (GtkWidget *) gtk_builder_get_object(builder, "id-SnowColor");
+        (GtkWidget*) gtk_builder_get_object(builder, "id-SnowColor");
     Button.SnowColor2 =
-        (GtkWidget *) gtk_builder_get_object(builder, "id-SnowColor2");
+        (GtkWidget*) gtk_builder_get_object(builder, "id-SnowColor2");
     Button.BirdsColor =
-        (GtkWidget *) gtk_builder_get_object(builder, "id-BirdsColor");
+        (GtkWidget*) gtk_builder_get_object(builder, "id-BirdsColor");
     Button.TreeColor =
-        (GtkWidget *) gtk_builder_get_object(builder, "id-TreeColor");
+        (GtkWidget*) gtk_builder_get_object(builder, "id-TreeColor");
 }
 
 #include "undefall.inc"

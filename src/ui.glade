@@ -412,7 +412,7 @@
                     <property name="can-focus">False</property>
                     <property name="double-buffered">False</property>
                     <property name="label" translatable="yes">About</property>
-                    <property name="width-chars">96</property>
+                    <property name="width-chars">91</property>
                     <attributes>
                       <attribute name="scale" value="1.5"/>
                     </attributes>
@@ -4856,7 +4856,7 @@ Flag: -ignorebottom</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">end</property>
                 <property name="valign">center</property>
-                <property name="label" translatable="yes">Window Bottoms:</property>
+                <property name="label" translatable="yes">Screen Bottom:</property>
                 <property name="justify">center</property>
                 <property name="wrap">True</property>
                 <property name="ellipsize">end</property>

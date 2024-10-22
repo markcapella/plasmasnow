@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include <sys/time.h>
 #include <vector>
 
 #include <X11/Intrinsic.h>
@@ -31,7 +32,6 @@
 
 #include "Flags.h"
 #include "Lights.h"
-#include "safe_malloc.h"
 #include "Utils.h"
 #include "windows.h"
 
@@ -61,6 +61,13 @@ std::vector<GdkRGBA> mDarkBulbColor;
 
 // Ued to track screen scale changes.
 int mCurrentAppScale = 100;
+
+// Debug for speed timings.
+int mDebugSetterCnt = 5;
+int mDebugDrawCnt = 5;
+
+struct timeval mDebugStartTime;
+struct timeval mDebugEndTime;
 
 
 /** ***********************************************************
@@ -100,6 +107,8 @@ void setAllBulbPositions() {
  **/
 void setAllBulbColors() {
 
+    gettimeofday(&mDebugStartTime, NULL);
+
     mBrightBulbColor.clear();
     mNormalBulbColor.clear();
     mDarkBulbColor.clear();
@@ -111,6 +120,18 @@ void setAllBulbColors() {
             getNormalGreenRandomColor());
         mDarkBulbColor.push_back(
             getDarkGreenRandomColor());
+    }
+
+    if (mDebugSetterCnt-- > 0) {
+        gettimeofday(&mDebugEndTime, NULL);
+        const long seconds  = mDebugEndTime.tv_sec -
+            mDebugStartTime.tv_sec;
+        const long useconds = mDebugEndTime.tv_usec -
+            mDebugStartTime.tv_usec;
+        const double duration = seconds +
+            useconds / 1000000.0;
+        printf("setAllBulbColors() Elapsed time: %f  ms.\n",
+            duration);
     }
 }
 
@@ -144,8 +165,9 @@ void drawLightsFrame(cairo_t* cc) {
         return;
     }
 
-    cairo_save(cc);
+    gettimeofday(&mDebugStartTime, NULL);
 
+    cairo_save(cc);
     cairo_set_line_width(cc, 1);
     cairo_set_antialias(cc, CAIRO_ANTIALIAS_NONE);
 
@@ -177,6 +199,18 @@ void drawLightsFrame(cairo_t* cc) {
     }
 
     cairo_restore(cc);
+
+    if (mDebugDrawCnt-- > 0) {
+        gettimeofday(&mDebugEndTime, NULL);
+        const long seconds  = mDebugEndTime.tv_sec -
+            mDebugStartTime.tv_sec;
+        const long useconds = mDebugEndTime.tv_usec -
+            mDebugStartTime.tv_usec;
+        const double duration = seconds +
+            useconds / 1000000.0;
+        printf("drawLightsFrame() Elapsed time: %f  ms.\n",
+            duration);
+    }
 }
 
 /** ***********************************************************
@@ -200,10 +234,13 @@ void eraseLightsFrame() {
  ** Lights module settings.
  **/
 void updateLightsUserSettings() {
+    // Update pref.
+    UIDO(showGreenLights,);
 
     // Detect app scale change.
     if (appScalesHaveChanged(&mCurrentAppScale)) {
         setAllBulbPositions();
+        setAllBulbColors();
     }
 }
 
@@ -281,7 +318,8 @@ GdkRGBA getDarkGreenRandomColor() {
 }
 
 /** ***********************************************************
- ** This method ...
+ ** This method sets a color randomly within a range
+ ** of a start color to provide a twinkling effect.
  **/
 int getRoughColor(int color) {
     const int RANGE_ABOVE_AND_BELOW = 45;
@@ -294,7 +332,8 @@ int getRoughColor(int color) {
 }
 
 /** ***********************************************************
- ** This method creates a 3-colored XPM bulb from a gray template.
+ ** This method creates a 3-colored XPM bulb
+ ** from a gray template.
  **/
 void createColoredBulb(GdkRGBA bright, GdkRGBA normal,
      GdkRGBA dark, char*** targetXPM,
@@ -317,7 +356,7 @@ void createColoredBulb(GdkRGBA bright, GdkRGBA normal,
 
     // Get source image attributes.
     const int headerStrings = 1;
-    const int colorIndex = 3;
+    const int colorIndex = 4;
 
     int colorStrings, dataStrings;
     sscanf(mLightShape[0], "%*d %d %d",
@@ -377,7 +416,8 @@ void createColoredBulb(GdkRGBA bright, GdkRGBA normal,
 }
 
 /** ***********************************************************
- ** This method destroys a previously created 3-colored XPM bulb.
+ ** This method destroys a previously created
+ ** 3-colored XPM bulb.
  **/
 void destroyColoredBulb(char** xpmStrings) {
     int dataStrings, colorStrings;

@@ -142,7 +142,6 @@ void DetermineVisualWorkspaces() {
     if (probeWindow) {
         XDestroyWindow(mGlobal.display, probeWindow);
     } else {
-
         // Probe window
         attr.background_pixel = WhitePixel(mGlobal.display, mGlobal.Screen);
         attr.border_pixel = WhitePixel(mGlobal.display, mGlobal.Screen);
@@ -169,6 +168,7 @@ void DetermineVisualWorkspaces() {
     probeWindow = XCreateWindow(mGlobal.display, mGlobal.Rootwindow, 1, 1, 1, 1,
         10, DefaultDepth(mGlobal.display, mGlobal.Screen), InputOutput,
         DefaultVisual(mGlobal.display, mGlobal.Screen), valuemask, &attr);
+
     XSetClassHint(mGlobal.display, probeWindow, &class_hints);
 
     // to prevent the user to determine the intial position (in twm for example)
@@ -176,6 +176,7 @@ void DetermineVisualWorkspaces() {
 
     XChangeProperty(mGlobal.display, probeWindow, motif_hints, motif_hints, 32,
         PropModeReplace, (unsigned char *) &hints, 5);
+
     xdo_map_window(mGlobal.xdo, probeWindow);
 
     mGlobal.NVisWorkSpaces = number;
@@ -186,24 +187,25 @@ void DetermineVisualWorkspaces() {
         int w = info[i].width;
         int h = info[i].height;
 
-        // place probeWindow in the center of xinerama screen[i]
-
+        // Place probeWindow in the center of xinerama screen[i].
         int xm = x + w / 2;
         int ym = y + h / 2;
-        P("movewindow: %d %d\n", xm, ym);
+
         xdo_move_window(mGlobal.xdo, probeWindow, xm, ym);
-        xdo_wait_for_window_map_state(mGlobal.xdo, probeWindow, IsViewable);
+        xdo_wait_for_window_map_state(mGlobal.xdo,
+            probeWindow, IsViewable);
+
         long desktop;
-        int rc = xdo_get_desktop_for_window(mGlobal.xdo, probeWindow, &desktop);
+        int rc = xdo_get_desktop_for_window(mGlobal.xdo,
+            probeWindow, &desktop);
         if (rc == XDO_ERROR) {
             desktop = mGlobal.CWorkSpace;
         }
-        P("desktop: %ld rc: %d\n", desktop, rc);
         mGlobal.VisWorkSpaces[i] = desktop;
 
+        // This is for the case that the xinerama screens belong to
+        // different workspaces, as seems to be the case in e.g. bspwm.
         if (desktop != prev) {
-            // this is for the case that the xinerama screens belong to
-            // different workspaces, as seems to be the case in e.g. bspwm
             if (prev >= 0) {
                 mGlobal.WindowOffsetX = 0;
                 mGlobal.WindowOffsetY = 0;
@@ -211,6 +213,7 @@ void DetermineVisualWorkspaces() {
             prev = desktop;
         }
     }
+
     xdo_unmap_window(mGlobal.xdo, probeWindow);
 }
 
@@ -483,8 +486,7 @@ int updateWindowsList() {
 Window getActiveX11Window() {
     Window activeWindow = None;
 
-    getActiveWindowFromXDO(xdo_new_with_opened_display(
-        mGlobal.display, (char*) NULL, 0), &activeWindow);
+    getActiveWindowFromXDO(mGlobal.xdo, &activeWindow);
 
     return activeWindow;
 }

@@ -35,6 +35,4 @@
 #endif
 
 #define VERSIONBY \
-    "December 14th 2001 by Rick Jansen \n" \
-    "February 2023 by Willem Vermin\n" \
     "October 2023 by Mark Capella\n"

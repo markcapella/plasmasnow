@@ -20,20 +20,22 @@
 #-# 
 */
 #include <pthread.h>
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+
 #include "debug.h"
 #include "hashtable.h"
 
 #ifdef HAVE_UNORDERED_MAP
-#include <unordered_map>
-#define MAP std::unordered_map
+    #include <unordered_map>
+    #define MAP std::unordered_map
 #else
-#include <map>
-#define MAP std::map
-#pragma message __FILE__                                                       \
-    ": Using map for the hash table, because unordered_map is not available."
+    #include <map>
+    #define MAP std::map
+    #pragma message __FILE__                                                       \
+        ": Using map for the hash table, because unordered_map is not available."
 #endif
 
 static MAP<unsigned int, void *> table;

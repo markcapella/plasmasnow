@@ -2,6 +2,7 @@
 # plasmasnow
 
 !['plasmasnow'](https://github.com/markcapella/plasmasnow/blob/main/assets/images/screenshot.png)
+!['plasmasnowLights'](https://github.com/markcapella/plasmasnow/blob/main/assets/images/screenshotLights.png)
 
 &nbsp;
 
