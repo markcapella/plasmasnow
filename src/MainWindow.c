@@ -146,6 +146,7 @@
 
 #include <assert.h>
 #include <math.h>
+#include <pthread.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
@@ -227,15 +228,20 @@ int getQPickerBlue();
 #define MODULE_EXPORT G_MODULE_EXPORT
 #endif
 
+
 #define PREFIX_SANTA "santa-"
 
 #define SANTA2(x) SANTA(x) SANTA(x##r)
 
-#define SANTA_ALL SANTA2(0) SANTA2(1) SANTA2(2) SANTA2(3) SANTA2(4)
+#define SANTA_ALL \
+    SANTA2(0) SANTA2(1) SANTA2(2) \
+    SANTA2(3) SANTA2(4)
 
 
 #define PREFIX_TREE "tree-"
-#define TREE_ALL TREE(0) TREE(1) TREE(2) TREE(3) TREE(4) TREE(5) TREE(6) TREE(7) TREE(8) TREE(9)
+#define TREE_ALL \
+    TREE(0) TREE(1) TREE(2) TREE(3) TREE(4) \
+    TREE(5) TREE(6) TREE(7) TREE(8) TREE(9)
 
 
 #define DEFAULT(name) DefaultFlags.name
@@ -289,16 +295,12 @@ void updateMainWindowTheme() {
 }
 
 void handle_screen() {
-    P("handle_screen:%d\n", Flags.Screen);
-
     if (HaveXinerama && Nscreens > 1) {
         mGlobal.ForceRestart = 1;
     }
 }
 
 void handle_language(int restart) {
-    P("handle_language: %s\n", Flags.Language);
-
     if (!strcmp(Flags.Language, "sys")) {
         unsetenv("LANGUAGE");
     } else {
@@ -436,9 +438,27 @@ static struct _button {
         // QColorDialog "Widgets".
         GtkWidget* SnowColor;
         GtkWidget* SnowColor2;
+
         GtkWidget* BirdsColor;
         GtkWidget* TreeColor;
 
+        GtkWidget* LightColorRed;
+        GtkWidget* LightColorLime;
+        GtkWidget* LightColorPurple;
+        GtkWidget* LightColorCyan;
+        GtkWidget* LightColorGreen;
+        GtkWidget* LightColorOrange;
+        GtkWidget* LightColorBlue;
+        GtkWidget* LightColorPink;
+
+        GtkWidget* ShowLightColorRed;
+        GtkWidget* ShowLightColorLime;
+        GtkWidget* ShowLightColorPurple;
+        GtkWidget* ShowLightColorCyan;
+        GtkWidget* ShowLightColorGreen;
+        GtkWidget* ShowLightColorOrange;
+        GtkWidget* ShowLightColorBlue;
+        GtkWidget* ShowLightColorPink;
 } Button;
 
 #include "undefall.inc"
@@ -458,18 +478,52 @@ static struct _button {
 #define filecode togglecode
 
 static void getAllButtonFormIDs() {
-
     ALL_BUTTONS
 
     // QColorDialog "Widgets".
-    Button.SnowColor =
-        (GtkWidget*) gtk_builder_get_object(builder, "id-SnowColor");
-    Button.SnowColor2 =
-        (GtkWidget*) gtk_builder_get_object(builder, "id-SnowColor2");
-    Button.BirdsColor =
-        (GtkWidget*) gtk_builder_get_object(builder, "id-BirdsColor");
-    Button.TreeColor =
-        (GtkWidget*) gtk_builder_get_object(builder, "id-TreeColor");
+    Button.SnowColor = (GtkWidget*)
+        gtk_builder_get_object(builder, "id-SnowColor");
+    Button.SnowColor2 = (GtkWidget*)
+        gtk_builder_get_object(builder, "id-SnowColor2");
+
+    Button.BirdsColor = (GtkWidget*)
+        gtk_builder_get_object(builder, "id-BirdsColor");
+    Button.TreeColor = (GtkWidget*)
+        gtk_builder_get_object(builder, "id-TreeColor");
+
+    Button.LightColorRed = (GtkWidget*)
+        gtk_builder_get_object(builder, "id-LightColorRed");
+    Button.LightColorLime = (GtkWidget*)
+        gtk_builder_get_object(builder, "id-LightColorLime");
+    Button.LightColorPurple = (GtkWidget*)
+        gtk_builder_get_object(builder, "id-LightColorPurple");
+    Button.LightColorCyan = (GtkWidget*)
+        gtk_builder_get_object(builder, "id-LightColorCyan");
+    Button.LightColorGreen = (GtkWidget*)
+        gtk_builder_get_object(builder, "id-LightColorGreen");
+    Button.LightColorOrange = (GtkWidget*)
+        gtk_builder_get_object(builder, "id-LightColorOrange");
+    Button.LightColorBlue = (GtkWidget*)
+        gtk_builder_get_object(builder, "id-LightColorBlue");
+    Button.LightColorPink = (GtkWidget*)
+        gtk_builder_get_object(builder, "id-LightColorPink");
+
+    Button.ShowLightColorRed = (GtkWidget*)
+        gtk_builder_get_object(builder, "id-ShowLightColorRed");
+    Button.ShowLightColorLime = (GtkWidget*)
+        gtk_builder_get_object(builder, "id-ShowLightColorLime");
+    Button.ShowLightColorPurple = (GtkWidget*)
+        gtk_builder_get_object(builder, "id-ShowLightColorPurple");
+    Button.ShowLightColorCyan = (GtkWidget*)
+        gtk_builder_get_object(builder, "id-ShowLightColorCyan");
+    Button.ShowLightColorGreen = (GtkWidget*)
+        gtk_builder_get_object(builder, "id-ShowLightColorGreen");
+    Button.ShowLightColorOrange = (GtkWidget*)
+        gtk_builder_get_object(builder, "id-ShowLightColorOrange");
+    Button.ShowLightColorBlue = (GtkWidget*)
+        gtk_builder_get_object(builder, "id-ShowLightColorBlue");
+    Button.ShowLightColorPink = (GtkWidget*)
+        gtk_builder_get_object(builder, "id-ShowLightColorPink");
 }
 
 #include "undefall.inc"
@@ -530,7 +584,9 @@ static void getAllButtonFormIDs() {
 
 ALL_BUTTONS
 
-// QColorDialog "Widgets".
+/** *********************************************************************
+ ** Helpers for LightColors Control Panel settings.
+ **/
 void onClickedSnowColor() {
     if (!human_interaction) {
         return;
@@ -559,15 +615,82 @@ void onClickedTreeColor() {
     startQPickerDialog("TreeColorTAG", Flags.TreeColor);
 }
 
+void onClickedLightColorRed() {
+    if (human_interaction) {
+        Flags.ShowLightColorRed = !Flags.ShowLightColorRed;
+    }
+}
+void onClickedLightColorLime() {
+    if (human_interaction) {
+        Flags.ShowLightColorLime = !Flags.ShowLightColorLime;
+    }
+}
+void onClickedLightColorPurple() {
+    if (human_interaction) {
+        Flags.ShowLightColorPurple = !Flags.ShowLightColorPurple;
+    }
+}
+void onClickedLightColorCyan() {
+    if (human_interaction) {
+        Flags.ShowLightColorCyan = !Flags.ShowLightColorCyan;
+    }
+}
+void onClickedLightColorGreen() {
+    if (human_interaction) {
+        Flags.ShowLightColorGreen = !Flags.ShowLightColorGreen;
+    }
+}
+void onClickedLightColorOrange() {
+    if (human_interaction) {
+        Flags.ShowLightColorOrange = !Flags.ShowLightColorOrange;
+    }
+}
+void onClickedLightColorBlue() {
+    if (human_interaction) {
+        Flags.ShowLightColorBlue = !Flags.ShowLightColorBlue;
+    }
+}
+void onClickedLightColorPink() {
+    if (human_interaction) {
+        Flags.ShowLightColorPink = !Flags.ShowLightColorPink;
+    }
+}
+
+/** *********************************************************************
+ ** Helper for ...
+ **/
+bool shouldShowLightColorRed() {
+    return Flags.ShowLightColorRed;
+}
+bool shouldShowLightColorLime() {
+    return Flags.ShowLightColorLime;
+}
+bool shouldShowLightColorPurple() {
+    return Flags.ShowLightColorPurple;
+}
+bool shouldShowLightColorCyan() {
+    return Flags.ShowLightColorCyan;
+}
+bool shouldShowLightColorGreen() {
+    return Flags.ShowLightColorGreen;
+}
+bool shouldShowLightColorOrange() {
+    return Flags.ShowLightColorOrange;
+}
+bool shouldShowLightColorBlue() {
+    return Flags.ShowLightColorBlue;
+}
+bool shouldShowLightColorPink() {
+    return Flags.ShowLightColorPink;
+}
+
 #pragma GCC diagnostic pop
 #include "undefall.inc"
 
 /** *********************************************************************
  ** Init all buttons values.
  **/
-
 #define togglecode(type, name, m)                                              \
-    NEWLINE P("toggle %s %s %d %d\n", #name, #type, m, Flags.name);            \
     NEWLINE if (m) {                                                           \
         NEWLINE if (m > 0) {                                                   \
             NEWLINE gtk_toggle_button_set_active(                              \
@@ -583,12 +706,10 @@ void onClickedTreeColor() {
     }
 
 #define scalecode(type, name, m)                                               \
-    NEWLINE P("range %s %s %d %d\n", #name, #type, m, Flags.name);             \
     NEWLINE gtk_range_set_value(                                               \
         GTK_RANGE(Button.name), m *((gdouble)Flags.name));
 
 #define colorcode(type, name, m)                                               \
-    NEWLINE P("color %s %s %d %s\n", #name, #type m, Flags.name);              \
     NEWLINE                                                                    \
     NEWLINE gdk_rgba_parse(&color, Flags.name);                                \
     NEWLINE gtk_color_chooser_set_rgba(                                        \
@@ -596,7 +717,6 @@ void onClickedTreeColor() {
     NEWLINE
 
 #define filecode(type, name, m)                                                \
-    NEWLINE P("file %s %s %d %s\n", #name, #type, m, Flags.name);              \
     NEWLINE gtk_file_chooser_set_filename(                                     \
         GTK_FILE_CHOOSER(Button.name), Flags.BackgroundFile);
 
@@ -605,10 +725,10 @@ static void initAllButtonValues() {
 
     ALL_BUTTONS
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-
     // QColorDialog Widgets.
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
     gdk_rgba_parse(&color, Flags.SnowColor);
     gtk_widget_override_background_color(
         Button.SnowColor, GTK_STATE_FLAG_NORMAL, &color);
@@ -625,7 +745,72 @@ static void initAllButtonValues() {
     gtk_widget_override_background_color(
         Button.TreeColor, GTK_STATE_FLAG_NORMAL, &color);
 
-#pragma GCC diagnostic pop
+    // Lights module.
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(
+        Button.ShowLightColorRed), Flags.ShowLightColorRed);
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(
+        Button.LightColorRed), Flags.ShowLightColorRed);
+    gdk_rgba_parse(&color, Flags.LightColorRed);
+    gtk_widget_override_background_color(Button.LightColorRed,
+        GTK_STATE_FLAG_NORMAL, &color);
+
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(
+        Button.ShowLightColorLime), Flags.ShowLightColorLime);
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(
+        Button.LightColorLime), Flags.ShowLightColorLime);
+    gdk_rgba_parse(&color, Flags.LightColorLime);
+    gtk_widget_override_background_color(Button.LightColorLime,
+        GTK_STATE_FLAG_NORMAL, &color);
+
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(
+        Button.ShowLightColorPurple), Flags.ShowLightColorPurple);
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(
+        Button.LightColorPurple), Flags.ShowLightColorPurple);
+    gdk_rgba_parse(&color, Flags.LightColorPurple);
+    gtk_widget_override_background_color(Button.LightColorPurple,
+        GTK_STATE_FLAG_NORMAL, &color);
+
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(
+        Button.ShowLightColorCyan), Flags.ShowLightColorCyan);
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(
+        Button.LightColorCyan), Flags.ShowLightColorCyan);
+    gdk_rgba_parse(&color, Flags.LightColorCyan);
+    gtk_widget_override_background_color(Button.LightColorCyan,
+        GTK_STATE_FLAG_NORMAL, &color);
+
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(
+        Button.ShowLightColorGreen), Flags.ShowLightColorGreen);
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(
+        Button.LightColorGreen), Flags.ShowLightColorGreen);
+    gdk_rgba_parse(&color, Flags.LightColorGreen);
+    gtk_widget_override_background_color(Button.LightColorGreen,
+        GTK_STATE_FLAG_NORMAL, &color);
+
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(
+        Button.ShowLightColorOrange), Flags.ShowLightColorOrange);
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(
+        Button.LightColorOrange), Flags.ShowLightColorOrange);
+    gdk_rgba_parse(&color, Flags.LightColorOrange);
+    gtk_widget_override_background_color(Button.LightColorOrange,
+        GTK_STATE_FLAG_NORMAL, &color);
+
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(
+        Button.ShowLightColorBlue), Flags.ShowLightColorBlue);
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(
+        Button.LightColorBlue), Flags.ShowLightColorBlue);
+    gdk_rgba_parse(&color, Flags.LightColorBlue);
+    gtk_widget_override_background_color(Button.LightColorBlue,
+        GTK_STATE_FLAG_NORMAL, &color);
+
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(
+        Button.ShowLightColorPink), Flags.ShowLightColorPink);
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(
+        Button.LightColorPink), Flags.ShowLightColorPink);
+    gdk_rgba_parse(&color, Flags.LightColorPink);
+    gtk_widget_override_background_color(Button.LightColorPink,
+        GTK_STATE_FLAG_NORMAL, &color);
+
+    #pragma GCC diagnostic pop
 }
 
 #include "undefall.inc"
@@ -635,22 +820,18 @@ static void initAllButtonValues() {
  **/
 
 #define togglecode(type, name, m)                                              \
-    NEWLINE P("%s %s\n", #name, #type);                                        \
     NEWLINE g_signal_connect(G_OBJECT(Button.name), "toggled",                 \
         G_CALLBACK(buttoncb(type, name)), NULL);
 
 #define scalecode(type, name, m)                                               \
-    NEWLINE P("%s %s\n", #name, #type);                                        \
     NEWLINE g_signal_connect(G_OBJECT(Button.name), "value-changed",           \
         G_CALLBACK(buttoncb(type, name)), NULL);
 
 #define colorcode(type, name, m)                                               \
-    NEWLINE P("%s %s\n", #name, #type);                                        \
     NEWLINE g_signal_connect(G_OBJECT(Button.name), "color-set",               \
         G_CALLBACK(buttoncb(type, name)), NULL);
 
 #define filecode(type, name, m)                                                \
-    NEWLINE P("%s %s\n", #name, #type);                                        \
     NEWLINE g_signal_connect(G_OBJECT(Button.name), "file-set",                \
         G_CALLBACK(buttoncb(type, name)), NULL);
 
@@ -668,6 +849,23 @@ static void connectAllButtonSignals() {
         G_CALLBACK(onClickedBirdsColor), NULL);
     g_signal_connect(G_OBJECT(Button.TreeColor), "toggled",
         G_CALLBACK(onClickedTreeColor), NULL);
+
+    g_signal_connect(G_OBJECT(Button.LightColorRed), "toggled",
+        G_CALLBACK(onClickedLightColorRed), NULL);
+    g_signal_connect(G_OBJECT(Button.LightColorLime), "toggled",
+        G_CALLBACK(onClickedLightColorLime), NULL);
+    g_signal_connect(G_OBJECT(Button.LightColorPurple), "toggled",
+        G_CALLBACK(onClickedLightColorPurple), NULL);
+    g_signal_connect(G_OBJECT(Button.LightColorCyan), "toggled",
+        G_CALLBACK(onClickedLightColorCyan), NULL);
+    g_signal_connect(G_OBJECT(Button.LightColorGreen), "toggled",
+        G_CALLBACK(onClickedLightColorGreen), NULL);
+    g_signal_connect(G_OBJECT(Button.LightColorOrange), "toggled",
+        G_CALLBACK(onClickedLightColorOrange), NULL);
+    g_signal_connect(G_OBJECT(Button.LightColorBlue), "toggled",
+        G_CALLBACK(onClickedLightColorBlue), NULL);
+    g_signal_connect(G_OBJECT(Button.LightColorPink), "toggled",
+        G_CALLBACK(onClickedLightColorPink), NULL);
 }
 
 #include "undefall.inc"
@@ -760,38 +958,31 @@ static void init_pixmaps() {
 
 static void set_tree_buttons() {
 
-#define TREE(x)                                                                \
-    NEWLINE gtk_toggle_button_set_active(                                      \
+#define TREE(x) \
+    NEWLINE gtk_toggle_button_set_active( \
         GTK_TOGGLE_BUTTON(tree_buttons.tree_##x.button), FALSE);
 
     TREE_ALL;
+    #include "undefall.inc"
 
-#include "undefall.inc"
-    int *a, n;
+    int* a, n;
     csvpos(Flags.TreeType, &a, &n);
 
     for (int i = 0; i < n; i++) {
         switch (a[i]) {
-
-#define TREE(x)                                                                \
-    NEWLINE case x:                                                            \
-    gtk_toggle_button_set_active(                                              \
-        GTK_TOGGLE_BUTTON(tree_buttons.tree_##x.button), TRUE);                \
-    NEWLINE break;
+            #define TREE(x) \
+                NEWLINE case x: \
+                gtk_toggle_button_set_active( \
+                    GTK_TOGGLE_BUTTON(tree_buttons.tree_##x.button), TRUE); \
+                NEWLINE break;
 
             TREE_ALL;
-
-#include "undefall.inc"
+            #include "undefall.inc"
         }
     }
 
     free(a);
 }
-
-typedef struct _general_button {
-        GtkWidget *button;
-} general_button;
-
 
 /** *********************************************************************
  ** Helpers.
@@ -799,17 +990,17 @@ typedef struct _general_button {
 
 MODULE_EXPORT
 void combo_screen(GtkComboBoxText *combo, gpointer data) {
-    (void)data;
-    int num = gtk_combo_box_get_active(GTK_COMBO_BOX(combo));
-    P("combo_screen:%d\n", num);
+    const int num = gtk_combo_box_get_active(
+        GTK_COMBO_BOX(combo));
+
     Flags.Screen = num - 1;
 }
 
 MODULE_EXPORT
 void onSelectedLanguageButton(GtkComboBoxText *combo, gpointer data) {
-    (void)data;
-    int num = gtk_combo_box_get_active(GTK_COMBO_BOX(combo));
-    P("onSelectedLanguageButton:%d\n", num);
+    const int num = gtk_combo_box_get_active(
+        GTK_COMBO_BOX(combo));
+
     Flags.Language = strdup(lang[num]);
 }
 
@@ -817,8 +1008,8 @@ void onSelectedLanguageButton(GtkComboBoxText *combo, gpointer data) {
  ** Helpers.
  **/
 static void init_general_buttons() {
-    setLabelText(GTK_LABEL(gtk_builder_get_object(builder, "id-version")),
-        "plasmasnow-" VERSION);
+    setLabelText(GTK_LABEL(gtk_builder_get_object(builder,
+        "id-version")), "plasmasnow-" VERSION);
 }
 
 /** *********************************************************************
@@ -882,23 +1073,92 @@ void setTabDefaults(int tab) {
 
     if (tab == 1) {
         Flags.SnowColor = DefaultFlags.SnowColor;
-    }
-    if (tab == 1) {
         Flags.SnowColor2 = DefaultFlags.SnowColor2;
     }
-    if (tab == 5) {
-        Flags.BirdsColor = DefaultFlags.BirdsColor;
+
+    // Lights module on Tab #2 (Xmas/Santa).
+    if (tab == 2) {
+        // Default which light colors are active.
+        Flags.ShowLightColorRed = DefaultFlags.ShowLightColorRed;
+        Flags.ShowLightColorLime = DefaultFlags.ShowLightColorLime;
+        Flags.ShowLightColorPurple = DefaultFlags.ShowLightColorPurple;
+        Flags.ShowLightColorCyan = DefaultFlags.ShowLightColorCyan;
+        Flags.ShowLightColorGreen = DefaultFlags.ShowLightColorGreen;
+        Flags.ShowLightColorOrange = DefaultFlags.ShowLightColorOrange;
+        Flags.ShowLightColorBlue = DefaultFlags.ShowLightColorBlue;
+        Flags.ShowLightColorPink = DefaultFlags.ShowLightColorPink;
+
+        // Apply the light color button "active" states.
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(
+            Button.ShowLightColorRed), Flags.ShowLightColorRed);
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(
+            Button.ShowLightColorLime), Flags.ShowLightColorLime);
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(
+            Button.ShowLightColorPurple), Flags.ShowLightColorPurple);
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(
+            Button.ShowLightColorCyan), Flags.ShowLightColorCyan);
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(
+            Button.ShowLightColorGreen), Flags.ShowLightColorGreen);
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(
+            Button.ShowLightColorOrange), Flags.ShowLightColorOrange);
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(
+            Button.ShowLightColorBlue), Flags.ShowLightColorBlue);
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(
+            Button.ShowLightColorPink), Flags.ShowLightColorPink);
+
+        // Default the light colors.
+        Flags.LightColorRed = DefaultFlags.LightColorRed;
+        Flags.LightColorLime = DefaultFlags.LightColorLime;
+        Flags.LightColorPurple = DefaultFlags.LightColorPurple;
+        Flags.LightColorCyan = DefaultFlags.LightColorCyan;
+        Flags.LightColorGreen = DefaultFlags.LightColorGreen;
+        Flags.LightColorOrange = DefaultFlags.LightColorOrange;
+        Flags.LightColorBlue = DefaultFlags.LightColorBlue;
+        Flags.LightColorPink = DefaultFlags.LightColorPink;
+
+        // Apply the light colors.
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
+        GdkRGBA color;
+
+        gdk_rgba_parse(&color, Flags.LightColorRed);
+        gtk_widget_override_background_color(Button.LightColorRed,
+            GTK_STATE_FLAG_NORMAL, &color);
+        gdk_rgba_parse(&color, Flags.LightColorLime);
+        gtk_widget_override_background_color(Button.LightColorLime,
+            GTK_STATE_FLAG_NORMAL, &color);
+        gdk_rgba_parse(&color, Flags.LightColorPurple);
+        gtk_widget_override_background_color(Button.LightColorPurple,
+            GTK_STATE_FLAG_NORMAL, &color);
+        gdk_rgba_parse(&color, Flags.LightColorCyan);
+        gtk_widget_override_background_color(Button.LightColorCyan,
+            GTK_STATE_FLAG_NORMAL, &color);
+        gdk_rgba_parse(&color, Flags.LightColorGreen);
+        gtk_widget_override_background_color(Button.LightColorGreen,
+            GTK_STATE_FLAG_NORMAL, &color);
+        gdk_rgba_parse(&color, Flags.LightColorOrange);
+        gtk_widget_override_background_color(Button.LightColorOrange,
+            GTK_STATE_FLAG_NORMAL, &color);
+        gdk_rgba_parse(&color, Flags.LightColorBlue);
+        gtk_widget_override_background_color(Button.LightColorBlue,
+            GTK_STATE_FLAG_NORMAL, &color);
+        gdk_rgba_parse(&color, Flags.LightColorPink);
+        gtk_widget_override_background_color(Button.LightColorPink,
+            GTK_STATE_FLAG_NORMAL, &color);
+
+        #pragma GCC diagnostic pop
     }
+
     if (tab == 3) {
         Flags.TreeColor = DefaultFlags.TreeColor;
     }
 
-    switch (tab) {
-        case plasmasnow_scenery:
-            free(Flags.TreeType);
-            Flags.TreeType = strdup(DEFAULT(TreeType));
-            break;
+    if (tab == 5) {
+        Flags.BirdsColor = DefaultFlags.BirdsColor;
+    }
 
+    switch (tab) {
         case plasmasnow_snow:
             Flags.VintageFlakes = 0;
             break;
@@ -908,9 +1168,13 @@ void setTabDefaults(int tab) {
             Flags.Rudolf = DEFAULT(Rudolf);
             break;
 
+        case plasmasnow_scenery:
+            free(Flags.TreeType);
+            Flags.TreeType = strdup(DEFAULT(TreeType));
+            break;
+
         case plasmasnow_settings:
             free(Flags.BackgroundFile);
-
             Flags.BackgroundFile = strdup(background);
             Flags.Screen = DEFAULT(Screen);
             break;
@@ -1056,14 +1320,9 @@ void createMainWindow() {
     g_signal_connect(GTK_FILE_CHOOSER(Button.BackgroundFile), "update-preview",
         G_CALLBACK(handleFileChooserPreview), preview);
 
-    XineramaScreenInfo *xininfo =
+    XineramaScreenInfo* xininfo =
         XineramaQueryScreens(mGlobal.display, &Nscreens);
-    if (xininfo == NULL) {
-        P("No xinerama...\n");
-        HaveXinerama = 0;
-    } else {
-        HaveXinerama = 1;
-    }
+    HaveXinerama = (xininfo == NULL) ? 0 : 1;
 
     /**
      ** Monitors.
@@ -1123,7 +1382,6 @@ void createMainWindow() {
     char *token = strtok(languages, " ");
     nlang = 1;
     while (token != NULL) {
-        P("token: %s\n", token);
         lang[nlang] = strdup(token);
         gtk_combo_box_text_append_text(LangButton, lang[nlang]);
         nlang++;
@@ -1374,8 +1632,6 @@ void onClickedTreeButton(GtkWidget *w) {
 
     free(a);
     free(b);
-
-    P("Tree_Type set to %s\n", Flags.TreeType);
 }
 
 MODULE_EXPORT
@@ -1385,7 +1641,6 @@ void onClickedQuitApplication() {
 
 MODULE_EXPORT
 void onClickedActivateWind() {
-    P("onClickedActivateWind\n");
     Flags.WindNow = 1;
 }
 
@@ -1400,34 +1655,43 @@ void onClickedActivateScreensaver() {
  **/
 
 MODULE_EXPORT
-void onClickedSetSnowDefaults() { setTabDefaults(plasmasnow_snow); }
+void onClickedSetSnowDefaults() {
+    setTabDefaults(plasmasnow_snow);
+}
 
 MODULE_EXPORT
-void onClickedSetSantaDefaults() { setTabDefaults(plasmasnow_santa); }
+void onClickedSetSantaDefaults() {
+    setTabDefaults(plasmasnow_santa);
+}
 
 MODULE_EXPORT
-void onClickedSetSceneryDefaults() { setTabDefaults(plasmasnow_scenery); }
-
-MODULE_EXPORT
-void onClickedSetCelestialsDefaults() { setTabDefaults(plasmasnow_celestials); }
+void onClickedSetSceneryDefaults() {
+    setTabDefaults(plasmasnow_scenery);
+}
 
 MODULE_EXPORT
 void onClickedSetBirdsDefaults() {
-    P("onClickedDefaultBirds\n");
     setTabDefaults(plasmasnow_birds);
 }
 
 MODULE_EXPORT
-void onClickedSetAdvancedDefaults() { setTabDefaults(plasmasnow_settings); }
+void onClickedSetCelestialsDefaults() {
+    setTabDefaults(plasmasnow_celestials);
+}
+
+MODULE_EXPORT
+void onClickedSetAdvancedDefaults() {
+    setTabDefaults(plasmasnow_settings);
+}
 
 MODULE_EXPORT
 void onClickedSetAllDefaults() {
-    setTabDefaults(plasmasnow_settings);
-
     setTabDefaults(plasmasnow_snow);
     setTabDefaults(plasmasnow_santa);
     setTabDefaults(plasmasnow_scenery);
-    setTabDefaults(plasmasnow_celestials);
     setTabDefaults(plasmasnow_birds);
+    setTabDefaults(plasmasnow_celestials);
+    setTabDefaults(plasmasnow_settings);
     // set_belowall_default();
 }
+

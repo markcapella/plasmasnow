@@ -56,8 +56,11 @@
 const int MINIMUM_SPLINE_WIDTH = 3;
 
 // Semaphore & lock members.
-static sem_t mFallenSnowSwapSemaphore;
-static sem_t mFallenSnowBaseSemaphore;
+sem_t mFallenSnowSwapSemaphore;
+sem_t mFallenSnowBaseSemaphore;
+
+int mDebugGenerateCnt = 15;
+int mDebugMsgMax = 5;
 
 
 /***********************************************************
@@ -290,14 +293,15 @@ int isFallenSnowOnVisibleWorkspace(FallenSnow *fsnow) {
  ** Also add snowflakes.
  **/
 void updateFallenSnowWithWind(FallenSnow *fsnow, int w, int h) {
-    int x = randint(fsnow->w - w);
+    const int x = randint(fsnow->w - w);
+
     for (int i = x; i < x + w; i++) {
         if (fsnow->snowHeight[i] > h) {
 
             if (!Flags.NoWind && mGlobal.Wind != 0 && drand48() > 0.5) {
                 const int numberOfFlakesToMake = getNumberOfFlakesToBlowoff();
                 for (int j = 0; j < numberOfFlakesToMake; j++) {
-                    SnowFlake *flake = MakeFlake(-1);
+                    SnowFlake* flake = MakeFlake(-1);
 
                     flake->rx = fsnow->x + i;
                     flake->ry = fsnow->y - fsnow->snowHeight[i] - drand48() * 4;
@@ -316,7 +320,9 @@ void updateFallenSnowWithWind(FallenSnow *fsnow, int w, int h) {
 /** *********************************************************************
  ** This method ...
  **/
-void updateFallenSnowPartial(FallenSnow* fsnow, int position, int width) {
+void updateFallenSnowPartial(FallenSnow* fsnow,
+    int position, int width) {
+
     if (!WorkspaceActive() || Flags.NoSnowFlakes ||
         (Flags.NoKeepSnowOnWindows && Flags.NoKeepSnowOnBottom)) {
         return;
@@ -342,6 +348,7 @@ void updateFallenSnowPartial(FallenSnow* fsnow, int position, int width) {
     if (imax > fsnow->w) {
         imax = fsnow->w;
     }
+
     int k = 0;
     for (int i = imin - 1; i <= imax; i++) {
         if (i < 0) {
@@ -369,7 +376,8 @@ void updateFallenSnowPartial(FallenSnow* fsnow, int position, int width) {
         if ((fsnow->maxSnowHeight[i] > tempHeightArray[k]) &&
             (tempHeightArray[k - 1] >= tempHeightArray[k] ||
                 tempHeightArray[k + 1] >= tempHeightArray[k])) {
-            fsnow->snowHeight[i] = amountToRaiseHeight + (tempHeightArray[k - 1] + tempHeightArray[k + 1]) / 2;
+            fsnow->snowHeight[i] = amountToRaiseHeight +
+                (tempHeightArray[k - 1] + tempHeightArray[k + 1]) / 2;
         }
         k++;
     }
@@ -418,23 +426,23 @@ void updateFallenSnowAtBottom() {
 /** *********************************************************************
  ** This method ...
  **/
-void generateFallenSnowFlakes(FallenSnow *fsnow, int x, int w, float vy) {
+void generateFallenSnowFlakes(FallenSnow* fsnow,
+    int xPos, int xWidth, float vy, bool limitToMax) {
+
     // threads: locking by caller
     if (!Flags.BlowSnow || Flags.NoSnowFlakes) {
         return;
     }
 
-    // animation of fallen fallen snow
-    // x-values x..x+w are transformed in flakes, vertical speed vy
-    int i;
-    int ifirst = x;
+    int ifirst = xPos;
     if (ifirst < 0) {
         ifirst = 0;
     }
     if (ifirst > fsnow->w) {
         ifirst = fsnow->w;
     }
-    int ilast = x + w;
+
+    int ilast = xPos + xWidth;
     if (ilast < 0) {
         ilast = 0;
     }
@@ -442,30 +450,33 @@ void generateFallenSnowFlakes(FallenSnow *fsnow, int x, int w, float vy) {
         ilast = fsnow->w;
     }
 
-    for (i = ifirst; i < ilast; i += 1) {
-        int j;
-        for (j = 0; j < fsnow->snowHeight[i]; j++) {
-            int k, kmax = getNumberOfFlakesToBlowoff();
-            for (k = 0; k < kmax; k++) {
-                float p = 0;
-                p = drand48();
-                // In X11, (mGlobal.hasTransparentWindow!=1) we want not too much
-                // generated flakes
-                // Otherwize, we go for more dramatic effects
-                // But, it appeared that, if mGlobal.hasTransparentWindow==1, too much snow
-                // is generated, choking the x server.
-                if (p < 0.15) {
-                    SnowFlake *flake = MakeFlake(-1);
-                    flake->rx = fsnow->x + i + 16 * (drand48() - 0.5);
-                    flake->ry = fsnow->y - j - 8;
-                    if (Flags.NoWind) {
-                        flake->vx = 0;
-                    } else {
-                        flake->vx = mGlobal.NewWind / 8;
-                    }
-                    flake->vy = vy;
-                    flake->cyclic = 0;
+    const int maxValueDuringGenerate =
+        (int) ((float) Flags.FlakeCountMax * 0.9);
+
+    for (int i = ifirst; i < ilast; i++) {
+        for (int j = 0; j < fsnow->snowHeight[i]; j++) {
+            const int kmax = getNumberOfFlakesToBlowoff();
+
+            for (int k = 0; k < kmax; k++) {
+                if (drand48() >= 0.15) {
+                    continue;
                 }
+
+                // Avoid runaway flake generation especially during plowing.
+                if (limitToMax &&
+                    mGlobal.FlakeCount >= maxValueDuringGenerate) {
+                    printf("generateFallenSnowFlakes() before MakeFlake : "
+                        "Actual: %i Max during generate: %i flakes.\n",
+                        mGlobal.FlakeCount, maxValueDuringGenerate);
+                    return;
+                }
+
+                SnowFlake* flake = MakeFlake(-1);
+                flake->cyclic = 0;
+                flake->rx = fsnow->x + i + 16 * (drand48() - 0.5);
+                flake->ry = fsnow->y - j - 8;
+                flake->vx = (Flags.NoWind) ? 0 : mGlobal.NewWind / 8;
+                flake->vy = vy;
             }
         }
     }
@@ -871,36 +882,27 @@ FallenSnow* findFallenSnowItemByWindow(FallenSnow* first,
  ** This method ...
  **/
 void drawFallenSnowItem(FallenSnow* fsnow) {
-    if (fsnow->winInfo.window == 0 ||
+    const int SNOW_TO_PLOW = 1;
+
+    if (fsnow->winInfo.window == None ||
         (!fsnow->winInfo.hidden && (fsnow->winInfo.sticky ||
             isFallenSnowOnVisibleWorkspace(fsnow)))) {
 
         // do not interfere with Santa
         if (!Flags.NoSanta && mGlobal.SantaPlowRegion) {
+            const bool isIn = XRectInRegion(mGlobal.SantaPlowRegion,
+                fsnow->x, fsnow->y - fsnow->h, fsnow->w, fsnow->h);
 
-            int in = XRectInRegion(mGlobal.SantaPlowRegion, fsnow->x,
-                fsnow->y - fsnow->h, fsnow->w, fsnow->h);
+            // Determine front & back of Santa in fsnow.
+            // Santa can back of Santa in fsnow. Santa can
+            if (isIn == RectangleIn || isIn == RectanglePart) {
+                const int santaFront = (mGlobal.SantaDirection == 0) ?
+                    mGlobal.SantaX + mGlobal.SantaWidth - fsnow->x :
+                    mGlobal.SantaX - fsnow->x;
+                const int santaRear = (mGlobal.SantaDirection == 0) ?
+                    santaFront - mGlobal.SantaWidth :
+                    santaFront + mGlobal.SantaWidth;
 
-            if (in == RectangleIn || in == RectanglePart) {
-                // determine front of Santa in fsnow
-                int xfront;
-                if (mGlobal.SantaDirection == 0) {
-                    xfront = mGlobal.SantaX + mGlobal.SantaWidth - fsnow->x;
-                } else {
-                    xfront = mGlobal.SantaX - fsnow->x;
-                }
-
-                // determine back of Santa in fsnow, Santa can move backwards in
-                // strong wind
-                int xback;
-                if (mGlobal.SantaDirection == 0) {
-                    xback = xfront - mGlobal.SantaWidth;
-                } else {
-                    xback = xfront + mGlobal.SantaWidth;
-                }
-
-                // clearing determines the amount of generated ploughing snow
-                const int clearing = 10;
                 float vy = -1.5 * mGlobal.ActualSantaSpeed;
                 if (vy > 0) {
                     vy = -vy;
@@ -909,31 +911,34 @@ void drawFallenSnowItem(FallenSnow* fsnow) {
                     vy = -100;
                 }
 
-                // This is cool ! Santa plows window snow !!
                 if (mGlobal.ActualSantaSpeed > 0) {
                     if (mGlobal.SantaDirection == 0) {
-                        generateFallenSnowFlakes(fsnow, xfront, clearing, vy);
-                        eraseFallenSnowOnDisplay(fsnow, xback - clearing,
-                            mGlobal.SantaWidth + 2 * clearing);
+                        generateFallenSnowFlakes(fsnow, santaFront,
+                            SNOW_TO_PLOW, vy, true);
+                        eraseFallenSnowOnDisplay(fsnow, santaRear -
+                            SNOW_TO_PLOW, mGlobal.SantaWidth + 2 *
+                            SNOW_TO_PLOW);
                     } else {
-                        generateFallenSnowFlakes(
-                            fsnow, xfront - clearing, clearing, vy);
-                        eraseFallenSnowOnDisplay(fsnow, xback + clearing,
-                            mGlobal.SantaWidth + 2 * clearing);
+                        generateFallenSnowFlakes(fsnow, santaFront -
+                            SNOW_TO_PLOW, SNOW_TO_PLOW, vy, true);
+                        eraseFallenSnowOnDisplay(fsnow, santaRear +
+                            SNOW_TO_PLOW, mGlobal.SantaWidth + 2 *
+                            SNOW_TO_PLOW);
                     }
                 }
 
                 if (mGlobal.SantaDirection == 0) {
-                    int i;
-                    for (i = 0; i < fsnow->w; i++) {
-                        if (i < xfront + clearing && i >= xback - clearing) {
+                    for (int i = 0; i < fsnow->w; i++) {
+                        if (i < santaFront + SNOW_TO_PLOW &&
+                            i >= santaRear - SNOW_TO_PLOW) {
                             fsnow->snowHeight[i] = 0;
                         }
                     }
                 } else {
                     int i;
                     for (i = 0; i < fsnow->w; i++) {
-                        if (i > xfront - clearing && i <= xback + clearing) {
+                        if (i > santaFront - SNOW_TO_PLOW &&
+                            i <= santaRear + SNOW_TO_PLOW) {
                             fsnow->snowHeight[i] = 0;
                         }
                     }
@@ -1042,13 +1047,17 @@ void removeFallenSnowFromWindow(Window window) {
     }
 
     lockFallenSnowSemaphore();
+
     eraseFallenSnowOnDisplay(fallenListItem, 0,
         fallenListItem->w);
+
     generateFallenSnowFlakes(fallenListItem, 0,
-        fallenListItem->w, -10.0);
+        fallenListItem->w, -10.0, false);
+
     eraseFallenSnowListItem(fallenListItem->winInfo.window);
     removeFallenSnowListItem(&mGlobal.FsnowFirst,
         fallenListItem->winInfo.window);
+
     unlockFallenSnowSemaphore();
 }
 
@@ -1115,28 +1124,56 @@ void updateFallenSnowRegions() {
 
     // Allocate + 1, prevent allocation of zero bytes.
     int ntoremove = 0;
-    long int *toremove = (long int *)
+    long int* toremove = (long int*)
         malloc(sizeof(*toremove) * (numberFallen + 1));
 
-    // 
+    // Determine fallen regions to be removed.
     fsnow = mGlobal.FsnowFirst;
     while (fsnow) {
         if (fsnow->winInfo.window != 0) {
-            // Test if fsnow->winInfo.window is hidden.
+            // Test if fsnow->winInfo.window has become hidden.
             if (fsnow->winInfo.hidden) {
                 eraseFallenSnowOnDisplay(fsnow, 0, fsnow->w);
-                generateFallenSnowFlakes(fsnow, 0, fsnow->w, -10.0);
+                generateFallenSnowFlakes(fsnow, 0, fsnow->w, -10.0, false);
                 toremove[ntoremove++] = fsnow->winInfo.window;
+                fsnow = fsnow->next;
+                continue;
             }
 
+            // Test if fsnow->winInfo.window has become closed.
             WinInfo* removeWin = findWinInfoByWindowId(
                 fsnow->winInfo.window);
-            if (!removeWin ||
-                (removeWin->w > 0.8 * mGlobal.SnowWinWidth && removeWin->ya < Flags.IgnoreTop) ||
-                (removeWin->w > 0.8 * mGlobal.SnowWinWidth &&
-                    (int)mGlobal.SnowWinHeight - removeWin->ya < Flags.IgnoreBottom)) {
-                generateFallenSnowFlakes(fsnow, 0, fsnow->w, -10.0);
+            if (!removeWin) {
+                generateFallenSnowFlakes(fsnow, 0, fsnow->w, -10.0, false);
                 toremove[ntoremove++] = fsnow->winInfo.window;
+                fsnow = fsnow->next;
+                continue;
+            }
+
+            // Do we have a large window?
+            const float WIN_WIDTH_LIMIT =
+                mGlobal.SnowWinWidth * 0.8;
+            if (removeWin->w <= WIN_WIDTH_LIMIT) {
+                fsnow = fsnow->next;
+                continue;
+            }
+
+            // Large Window Ignores - Top.
+            if (removeWin->ya < Flags.IgnoreTop) {
+                generateFallenSnowFlakes(fsnow, 0, fsnow->w, -10.0, false);
+                toremove[ntoremove++] = fsnow->winInfo.window;
+                fsnow = fsnow->next;
+                continue;
+            }
+
+            // Large Window Ignores - Bottom.
+            const int REMOVE_POS = (int) mGlobal.SnowWinHeight -
+                removeWin->ya;
+            if (REMOVE_POS < Flags.IgnoreBottom) {
+                generateFallenSnowFlakes(fsnow, 0, fsnow->w, -10.0, false);
+                toremove[ntoremove++] = fsnow->winInfo.window;
+                fsnow = fsnow->next;
+                continue;
             }
         }
 
@@ -1153,7 +1190,7 @@ void updateFallenSnowRegions() {
                 (unsigned int) fsnow->w != movedWin->w + Flags.OffsetW) {
 
                 eraseFallenSnowOnDisplay(fsnow, 0, fsnow->w);
-                generateFallenSnowFlakes(fsnow, 0, fsnow->w, -10.0);
+                generateFallenSnowFlakes(fsnow, 0, fsnow->w, -10.0, false);
 
                 toremove[ntoremove++] = fsnow->winInfo.window;
 
@@ -1166,6 +1203,7 @@ void updateFallenSnowRegions() {
         movedWin++;
     }
 
+    // Remove all identified fallen regions.
     for (int i = 0; i < ntoremove; i++) {
         eraseFallenSnowListItem(toremove[i]);
         removeFallenSnowListItem(&mGlobal.FsnowFirst, toremove[i]);

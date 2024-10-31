@@ -42,7 +42,7 @@ a QT screen color picker that works on Plasma, dual snow colors,
 &nbsp;
 
 ### Tl;Dr
-       ./configure && make && sudo make install
+    ./configure && make && sudo make install
 
 &nbsp;
 

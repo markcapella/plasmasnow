@@ -20,56 +20,61 @@
 #-# 
 */
 
-#include "Santa.h"
+#include <math.h>
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <X11/Intrinsic.h>
+#include <X11/xpm.h>
+#include <gtk/gtk.h>
+
 #include "debug.h"
 #include "Flags.h"
 #include "ixpm.h"
 #include "moon.h"
 #include "pixmaps.h"
 #include "safe_malloc.h"
+#include "Santa.h"
 #include "Utils.h"
 #include "wind.h"
 #include "windows.h"
-#include <X11/Intrinsic.h>
-#include <X11/xpm.h>
-#include <gtk/gtk.h>
-#include <math.h>
-#include <pthread.h>
-#include <stdio.h>
-#include <stdlib.h>
 
-static int do_usanta();
-static void init_Santa_surfaces(void);
-static Region RegionCreateRectangle(int x, int y, int w, int h);
-static void ResetSanta(void);
-static void SetSantaSizeSpeed(void);
-static void setSantaRegions(void);
 
-static int CurrentSanta;
-static Pixmap SantaMaskPixmap[PIXINANIMATION];
-static Pixmap SantaPixmap[PIXINANIMATION];
-static Region SantaRegion = 0;
-static float SantaSpeed;
-static float SantaXr;
-static float SantaYr;
-static int SantaYStep;
-static int OldSantaX = 0; // the x value of Santa when he was last drawn
-static int OldSantaY = 0; // the y value of Santa when he was last drawn
-static const float LocalScale = 0.6;
-static int MoonSeeking = 1;
+const float LocalScale = 0.6;
 
-//                                      size      rudolph  direction animation
-static cairo_surface_t *Santa_surfaces[MAXSANTA + 1][2][2][PIXINANIMATION];
+int CurrentSanta;
 
-/* Speed for each Santa  in pixels/second*/
+Pixmap SantaMaskPixmap[PIXINANIMATION];
+Pixmap SantaPixmap[PIXINANIMATION];
+
+Region SantaRegion = 0;
+
+float SantaSpeed;
+float SantaXr;
+float SantaYr;
+
+int SantaYStep;
+
+// Santa when last drawn.
+int OldSantaX = 0;
+int OldSantaY = 0;
+
+int MoonSeeking = 1;
+
+static cairo_surface_t* Santa_surfaces
+    [MAXSANTA + 1][2][2][PIXINANIMATION];
+
+// Speed for each Santa  in pixels/second.
 static float Speed[] = {
-    SANTASPEED0, /* Santa 0 */
-    SANTASPEED1, /* Santa 1 */
-    SANTASPEED2, /* Santa 2 */
-    SANTASPEED3, /* Santa 3 */
-    SANTASPEED4, /* Santa 4 */
+    SANTASPEED0, SANTASPEED1, SANTASPEED2,
+    SANTASPEED3, SANTASPEED4
 };
 
+
+/** *********************************************************************
+ ** This method ...
+ **/
 void Santa_ui() {
     UIDO(SantaSize, SetSantaSizeSpeed(););
     UIDO(Rudolf, SetSantaSizeSpeed(););
@@ -84,6 +89,9 @@ void Santa_ui() {
     }
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 int Santa_draw(cairo_t *cr) {
     if (Flags.NoSanta) {
         return TRUE;
@@ -99,24 +107,29 @@ int Santa_draw(cairo_t *cr) {
     return TRUE;
 }
 
-void Santa_erase(cairo_t *cr) {
-    P("Santa_erase %d %d\n", OldSantaX, OldSantaY);
-    (void)cr;
-    clearDisplayArea(mGlobal.display, mGlobal.SnowWin, OldSantaX, OldSantaY,
-        mGlobal.SantaWidth + 1, mGlobal.SantaHeight, mGlobal.xxposures);
+/** *********************************************************************
+ ** This method ...
+ **/
+void Santa_erase(cairo_t* cc) {
+
+    clearDisplayArea(mGlobal.display, mGlobal.SnowWin,
+        OldSantaX, OldSantaY,
+        mGlobal.SantaWidth + 1, mGlobal.SantaHeight,
+        mGlobal.xxposures);
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 void Santa_init() {
-    P("Santa_init\n");
-    int i;
-    for (i = 0; i < PIXINANIMATION; i++) {
+    for (int i = 0; i < PIXINANIMATION; i++) {
         SantaPixmap[i] = 0;
         SantaMaskPixmap[i] = 0;
     }
-    int j, k;
-    for (i = 0; i < MAXSANTA + 1; i++) {
-        for (j = 0; j < 2; j++) {
-            for (k = 0; k < PIXINANIMATION; k++) {
+
+    for (int i = 0; i < MAXSANTA + 1; i++) {
+        for (int j = 0; j < 2; j++) {
+            for (int k = 0; k < PIXINANIMATION; k++) {
                 Santa_surfaces[i][j][0][k] = NULL;
                 Santa_surfaces[i][j][1][k] = NULL;
             }
@@ -125,24 +138,29 @@ void Santa_init() {
 
     SantaRegion = XCreateRegion();
     mGlobal.SantaPlowRegion = XCreateRegion();
+
     init_Santa_surfaces();
     SetSantaSizeSpeed();
+
     if (drand48() > 0.5) {
         mGlobal.SantaDirection = 0;
     } else {
         mGlobal.SantaDirection = 1;
     }
+
     ResetSanta();
     addMethodToMainloop(PRIORITY_HIGH, time_usanta, do_usanta);
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 void init_Santa_surfaces() {
-    P("init_Santa_surfaces\n");
-    GdkPixbuf *pixbuf;
-    int i, j, k;
-    for (i = 0; i < MAXSANTA + 1; i++) {
-        for (j = 0; j < 2; j++) {
-            for (k = 0; k < PIXINANIMATION; k++) {
+
+    for (int i = 0; i < MAXSANTA + 1; i++) {
+        for (int j = 0; j < 2; j++) {
+            for (int k = 0; k < PIXINANIMATION; k++) {
+
                 int w, h;
                 sscanf(Santas[i][j][k][0], "%d %d", &w, &h);
                 w *= 0.01 * Flags.Scale * LocalScale * mGlobal.WindowScale *
@@ -150,8 +168,6 @@ void init_Santa_surfaces() {
                 h *= 0.01 * Flags.Scale * LocalScale * mGlobal.WindowScale *
                      0.01 * Flags.SantaScale;
 
-                pixbuf = gdk_pixbuf_new_from_xpm_data(
-                    (const char **)Santas[i][j][k]);
                 if (w < 1) {
                     w = 1;
                 }
@@ -161,10 +177,16 @@ void init_Santa_surfaces() {
                 if (w == 1 && h == 1) {
                     h = 2;
                 }
-                GdkPixbuf *pixbufscaled0 =
-                    gdk_pixbuf_scale_simple(pixbuf, w, h, GDK_INTERP_HYPER);
 
-                GdkPixbuf *pixbufscaled1 = gdk_pixbuf_flip(pixbufscaled0, TRUE);
+                GdkPixbuf* pixbuf = gdk_pixbuf_new_from_xpm_data(
+                    (const char**) Santas[i][j][k]);
+
+                GdkPixbuf* pixbufscaled0 = gdk_pixbuf_scale_simple(
+                    pixbuf, w, h, GDK_INTERP_HYPER);
+                g_clear_object(&pixbuf);
+
+                GdkPixbuf* pixbufscaled1 =
+                    gdk_pixbuf_flip(pixbufscaled0, TRUE);
 
                 if (Santa_surfaces[i][j][0][k]) {
                     cairo_surface_destroy(Santa_surfaces[i][j][0][k]);
@@ -174,90 +196,92 @@ void init_Santa_surfaces() {
                 Santa_surfaces[i][j][0][k] =
                     gdk_cairo_surface_create_from_pixbuf(
                         pixbufscaled0, 0, NULL);
+                g_clear_object(&pixbufscaled0);
+
                 Santa_surfaces[i][j][1][k] =
                     gdk_cairo_surface_create_from_pixbuf(
                         pixbufscaled1, 0, NULL);
-                g_clear_object(&pixbuf);
-                g_clear_object(&pixbufscaled0);
                 g_clear_object(&pixbufscaled1);
             }
         }
     }
-    int ok = 1;
-    char *path[PIXINANIMATION];
-    const char *filenames[] = {
+
+    char* path[PIXINANIMATION];
+    const char* filenames[] = {
         "plasmasnow/pixmaps/santa1.xpm",
         "plasmasnow/pixmaps/santa2.xpm",
         "plasmasnow/pixmaps/santa3.xpm",
         "plasmasnow/pixmaps/santa4.xpm",
     };
-    for (i = 0; i < PIXINANIMATION; i++) {
+
+    for (int  i = 0; i < PIXINANIMATION; i++) {
         path[i] = NULL;
-        FILE *f = HomeOpen(filenames[i], "r", &path[i]);
-        if (!f) {
-            ok = 0;
+        FILE* file = HomeOpen(filenames[i], "r", &path[i]);
+        if (!file) {
             if (path[i]) {
                 free(path[i]);
             }
-            break;
+            setSantaRegions();
+            return;
         }
-        fclose(f);
+
+        fclose(file);
     }
-    if (ok) {
-        printf("Using external Santa: %s.\n", path[0]);
-        printf("Use first Santa in menu to show Him.\n");
-        fflush(stdout);
-        /*
-       if (!Flags.NoMenu)
-       printf("Disabling menu.\n");
-       Flags.NoMenu = 1;
-       */
-        int rc, i;
-        char **santaxpm;
-        for (i = 0; i < PIXINANIMATION; i++) {
-            rc = XpmReadFileToData(path[i], &santaxpm);
-            if (rc == XpmSuccess) {
-                int w, h;
-                sscanf(santaxpm[0], "%d %d", &w, &h);
-                w *= 0.01 * Flags.Scale * LocalScale * mGlobal.WindowScale;
-                h *= 0.01 * Flags.Scale * LocalScale * mGlobal.WindowScale;
-                if (w < 1) {
-                    w = 1;
-                }
-                if (h < 1) {
-                    h = 1;
-                }
-                if (w == 1 && h == 1) {
-                    h = 2;
-                }
-                pixbuf = gdk_pixbuf_new_from_xpm_data((const char **)santaxpm);
-                GdkPixbuf *pixbufscaled0 =
-                    gdk_pixbuf_scale_simple(pixbuf, w, h, GDK_INTERP_HYPER);
-                GdkPixbuf *pixbufscaled1 = gdk_pixbuf_flip(pixbufscaled0, TRUE);
-                cairo_surface_destroy(Santa_surfaces[0][0][0][i]);
-                cairo_surface_destroy(Santa_surfaces[0][0][1][i]);
-                Santa_surfaces[0][0][0][i] =
-                    gdk_cairo_surface_create_from_pixbuf(
-                        pixbufscaled0, 0, NULL);
-                Santa_surfaces[0][0][1][i] =
-                    gdk_cairo_surface_create_from_pixbuf(
-                        pixbufscaled1, 0, NULL);
-                XpmFree(santaxpm);
-                g_clear_object(&pixbuf);
-                g_clear_object(&pixbufscaled0);
-                g_clear_object(&pixbufscaled1);
-            } else {
-                printf("Invalid external xpm for Santa given: %s\n", path[i]);
-                exit(1);
-            }
-            free(path[i]);
+
+    int rc, i;
+    char **santaxpm;
+
+    for (i = 0; i < PIXINANIMATION; i++) {
+        rc = XpmReadFileToData(path[i], &santaxpm);
+
+        int w, h;
+        sscanf(santaxpm[0], "%d %d", &w, &h);
+        w *= 0.01 * Flags.Scale * LocalScale * mGlobal.WindowScale;
+        h *= 0.01 * Flags.Scale * LocalScale * mGlobal.WindowScale;
+
+        if (w < 1) {
+            w = 1;
         }
-        Flags.SantaSize = 0;
-        Flags.Rudolf = 0;
+        if (h < 1) {
+            h = 1;
+        }
+        if (w == 1 && h == 1) {
+            h = 2;
+        }
+
+        GdkPixbuf* pixbuf = gdk_pixbuf_new_from_xpm_data(
+            (const char**) santaxpm);
+        XpmFree(santaxpm);
+
+        GdkPixbuf* pixbufscaled0 =
+            gdk_pixbuf_scale_simple(pixbuf, w, h, GDK_INTERP_HYPER);
+        g_clear_object(&pixbuf);
+
+        GdkPixbuf* pixbufscaled1 = gdk_pixbuf_flip(pixbufscaled0, TRUE);
+
+        cairo_surface_destroy(Santa_surfaces[0][0][0][i]);
+        cairo_surface_destroy(Santa_surfaces[0][0][1][i]);
+
+        Santa_surfaces[0][0][0][i] = gdk_cairo_surface_create_from_pixbuf(
+            pixbufscaled0, 0, NULL);
+        Santa_surfaces[0][0][1][i] = gdk_cairo_surface_create_from_pixbuf(
+            pixbufscaled1, 0, NULL);
+
+        g_clear_object(&pixbufscaled0);
+        g_clear_object(&pixbufscaled1);
+
+        free(path[i]);
     }
+
+    Flags.SantaSize = 0;
+    Flags.Rudolf = 0;
+
     setSantaRegions();
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 void SetSantaSizeSpeed() {
     SantaSpeed = Speed[Flags.SantaSize];
     if (Flags.SantaSpeedFactor < 10) {
@@ -275,46 +299,49 @@ void SetSantaSizeSpeed() {
     setSantaRegions();
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 // update santa's coordinates and speed
 int do_usanta() {
-    P("do_usanta %d\n", counter++);
-
     if (Flags.shutdownRequested) {
         return FALSE;
     }
-#define RETURN                                                                 \
-    do {                                                                       \
-        return TRUE;                                                           \
+
+#define RETURN \
+    do { \
+        return TRUE; \
     } while (0)
+
     if (!WorkspaceActive()) {
         RETURN;
     }
     if (Flags.NoSanta && !Flags.FollowSanta) {
         RETURN;
     }
+
     double yspeed;
     static int yspeeddir = 0;
+
     static double sdt = 0;
     static double dtt = 0;
+    double dt = time_usanta;
 
     int oldx = mGlobal.SantaX;
     int oldy = mGlobal.SantaY;
 
-    double dt = time_usanta;
-
     double santayrmin = 0;
     double santayrmax = mGlobal.SnowWinHeight * 0.33;
 
-    // mGlobal.ActualSantaSpeed is the absolute value of Santa's speed
-    // as is SantaSpeed
+
+    // mGlobal.ActualSantaSpeed is the absolute value
+    // of Santa's speed as is SantaSpeed.
     if (mGlobal.SantaDirection == 0) {
-        mGlobal.ActualSantaSpeed +=
-            dt *
-            (SANTASENS * mGlobal.NewWind + SantaSpeed - mGlobal.ActualSantaSpeed);
+        mGlobal.ActualSantaSpeed += dt * (SANTASENS * mGlobal.NewWind +
+            SantaSpeed - mGlobal.ActualSantaSpeed);
     } else {
-        mGlobal.ActualSantaSpeed +=
-            dt * (-SANTASENS * mGlobal.NewWind + SantaSpeed -
-                     mGlobal.ActualSantaSpeed);
+        mGlobal.ActualSantaSpeed += dt * ((-SANTASENS) * mGlobal.NewWind +
+            SantaSpeed - mGlobal.ActualSantaSpeed);
     }
 
     if (mGlobal.ActualSantaSpeed > 3 * SantaSpeed) {
@@ -329,8 +356,6 @@ int do_usanta() {
         SantaXr -= dt * mGlobal.ActualSantaSpeed;
     }
 
-    P("SantaXr: %ld mGlobal.SnowWinWidth: %d\n", lrint(SantaXr),
-        mGlobal.SnowWinWidth);
     if ((SantaXr >= mGlobal.SnowWinWidth && mGlobal.SantaDirection == 0) ||
         (SantaXr <= -mGlobal.SantaWidth && mGlobal.SantaDirection == 1)) {
         ResetSanta();
@@ -386,8 +411,6 @@ int do_usanta() {
             } else if (dy > Flags.MoonSize / 2) {
                 yspeeddir = -3;
             }
-            P("moon seeking %f %f %d %f\n", SantaYr, moonY, yspeeddir,
-                SantaSpeed);
         }
     }
 
@@ -399,15 +422,18 @@ int do_usanta() {
     if (SantaYr > santayrmax) {
         SantaYr = santayrmax;
     }
-
     mGlobal.SantaY = lrintf(SantaYr);
+
     XOffsetRegion(SantaRegion, mGlobal.SantaX - oldx, mGlobal.SantaY - oldy);
-    XOffsetRegion(
-        mGlobal.SantaPlowRegion, mGlobal.SantaX - oldx, mGlobal.SantaY - oldy);
+    XOffsetRegion(mGlobal.SantaPlowRegion, mGlobal.SantaX - oldx,
+        mGlobal.SantaY - oldy);
 
     RETURN;
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 void ResetSanta() {
     // Most of the times, Santa will reappear at the side where He disappears
     if (drand48() > 0.2) {
@@ -425,12 +451,11 @@ void ResetSanta() {
     } else {
         mGlobal.SantaX = mGlobal.SnowWinWidth + offset;
     }
-    P("%d\n", mGlobal.SantaX);
+
     SantaXr = mGlobal.SantaX;
     mGlobal.SantaY = randint(mGlobal.SnowWinHeight / 3) + 40;
-    // sometimes Santa is moon seeking, sometimes not
     MoonSeeking = drand48() > 0.5;
-    P("MoonSeeking: %d\n", MoonSeeking);
+
     int ms;
     if (mGlobal.SantaDirection == 0) {
         ms = MoonSeeking && Flags.Moon && mGlobal.moonX < 400;
@@ -440,17 +465,21 @@ void ResetSanta() {
     }
 
     if (ms) {
-        P("moon seeking at start\n");
         mGlobal.SantaY = randint(Flags.MoonSize + 40) + mGlobal.moonY - 20;
     } else {
         mGlobal.SantaY = randint(mGlobal.SnowWinHeight / 3) + 40;
     }
+
     SantaYr = mGlobal.SantaY;
     SantaYStep = 1;
     CurrentSanta = 0;
+
     SetSantaSizeSpeed();
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 void SantaVisible() {
     mGlobal.SantaX = mGlobal.SnowWinWidth / 3;
     mGlobal.SantaY = mGlobal.SnowWinHeight / 6 + 40;
@@ -458,18 +487,21 @@ void SantaVisible() {
     SantaYr = mGlobal.SantaY;
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 void setSantaRegions() {
-    P("setSantaRegions %d %d %d %d\n", mGlobal.SantaX, mGlobal.SantaY,
-        mGlobal.SantaWidth, mGlobal.SantaHeight);
     if (SantaRegion) {
         XDestroyRegion(SantaRegion);
     }
+
     SantaRegion = RegionCreateRectangle(
         mGlobal.SantaX, mGlobal.SantaY, mGlobal.SantaWidth, mGlobal.SantaHeight);
 
     if (mGlobal.SantaPlowRegion) {
         XDestroyRegion(mGlobal.SantaPlowRegion);
     }
+
     if (mGlobal.SantaDirection == 0) {
         mGlobal.SantaPlowRegion =
             RegionCreateRectangle(mGlobal.SantaX + mGlobal.SantaWidth,
@@ -480,6 +512,9 @@ void setSantaRegions() {
     }
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 Region RegionCreateRectangle(int x, int y, int w, int h) {
     XPoint p[5];
     p[0].x = x;

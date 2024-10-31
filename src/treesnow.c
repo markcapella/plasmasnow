@@ -89,11 +89,11 @@ void ConvertOnTreeToFlakes() {
         for (int j = 0; j < 2; j++) {
             int numberOfFlakesToMake = getNumberOfFlakesToBlowoff();
             for (int k = 0; k < numberOfFlakesToMake; k++) {
-                SnowFlake *flake = MakeFlake(-1);
+                SnowFlake* flake = MakeFlake(-1);
                 flake->rx = mGlobal.SnowOnTrees[i].x;
                 flake->ry = mGlobal.SnowOnTrees[i].y - 5 * j;
-                flake->vy = 0;
                 flake->vx = mGlobal.NewWind / 2;
+                flake->vy = 0;
                 flake->cyclic = 0;
             }
         }

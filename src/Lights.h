@@ -25,37 +25,81 @@
 
 #include "plasmasnow.h"
 
+
 /***********************************************************
  * Module Method stubs.
  */
+
+typedef int BULB_COLOR_TYPE;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void initLightsModule();
+     void initLightsModule();
+     void setAllBulbPositions();
+     void setAllBulbColors();
 
-void setAllBulbPositions();
-void setAllBulbColors();
-gboolean changeRandomBulbColors(void*);
+     void updateLightsUserSettings();
 
-void drawLightsFrame(cairo_t* cc);
-void eraseLightsFrame();
+     void drawLightsFrame(cairo_t* cc);
+     gboolean twinkleLightsFrame(void*);
+     void eraseLightsFrame();
 
-void updateLightsUserSettings();
+     int getBulbCount();
+     int getFirstBulbXPos();
+     int getYPosForBulbNumber(int bulbNumber);
 
-int getBulbCount();
-int getFirstBulbXPos();
-int getYPosForBulbNumber(int bulbNumber);
+     bool areThereAvailableColorTypes();
+     BULB_COLOR_TYPE getFirstAvailableColorType();
+     BULB_COLOR_TYPE getNextAvailableColorType(
+          BULB_COLOR_TYPE startFrom);
+     bool getColorTypeAvailabilityAt(int index);
 
-GdkRGBA getBrightGreenRandomColor();
-GdkRGBA getNormalGreenRandomColor();
-GdkRGBA getDarkGreenRandomColor();
+     GdkRGBA getTwinklingBright(BULB_COLOR_TYPE colorType);
+     GdkRGBA getTwinklingNormal(BULB_COLOR_TYPE colorType);
+     GdkRGBA getTwinklingDark(BULB_COLOR_TYPE colorType);
 
-int getRoughColor(int color);
+     GdkRGBA getTwinklingRedBright();
+     GdkRGBA getTwinklingRedNormal();
+     GdkRGBA getTwinklingRedDark();
 
-void createColoredBulb(GdkRGBA bright, GdkRGBA normal,
-     GdkRGBA dark, char*** out, int* lines);
-void destroyColoredBulb(char** data);
+     GdkRGBA getTwinklingLimeBright();
+     GdkRGBA getTwinklingLimeNormal();
+     GdkRGBA getTwinklingLimeDark();
+
+     GdkRGBA getTwinklingPurpleBright();
+     GdkRGBA getTwinklingPurpleNormal();
+     GdkRGBA getTwinklingPurpleDark();
+
+     GdkRGBA getTwinklingCyanBright();
+     GdkRGBA getTwinklingCyanNormal();
+     GdkRGBA getTwinklingCyanDark();
+
+     GdkRGBA getTwinklingGreenBright();
+     GdkRGBA getTwinklingGreenNormal();
+     GdkRGBA getTwinklingGreenDark();
+
+     GdkRGBA getTwinklingOrangeBright();
+     GdkRGBA getTwinklingOrangeNormal();
+     GdkRGBA getTwinklingOrangeDark();
+
+     GdkRGBA getTwinklingBlueBright();
+     GdkRGBA getTwinklingBlueNormal();
+     GdkRGBA getTwinklingBlueDark();
+
+     GdkRGBA getTwinklingPinkBright();
+     GdkRGBA getTwinklingPinkNormal();
+     GdkRGBA getTwinklingPinkDark();
+
+     GdkRGBA getTwinkledColorTypeFrom(GdkRGBA seed);
+
+     int getFuzzyRGBInt(int color);
+
+     void createColoredBulb(GdkRGBA bright,
+          GdkRGBA normal, GdkRGBA dark,
+          char*** targetXPM, int* targetLineCount);
+     void destroyColoredBulb(char** xpmStrings);
 
 #ifdef __cplusplus
 }

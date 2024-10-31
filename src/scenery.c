@@ -23,15 +23,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 
 #include <X11/Intrinsic.h>
 #include <X11/xpm.h>
 
 #include <gtk/gtk.h>
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
 #include "csvpos.h"
 #include "debug.h"
 #include "fallensnow.h"
@@ -547,3 +545,122 @@ void clearAndRedrawScenery() {
     reinit_treesnow_region(); // treesnow.c.
     clearGlobalSnowWindow();
 }
+
+//
+//  equal to XpmCreatePixmapFromData, with extra flags:
+//  flop: if 1, reverse the data horizontally
+//  Extra: 0xff000000 is added to the pixmap data
+//
+int iXpmCreatePixmapFromData(Display *display, Drawable d, const char *data[],
+    Pixmap *p, Pixmap *s, XpmAttributes *attr, int flop) {
+    int rc, lines, ncolors, height, w;
+    char **idata;
+
+    sscanf(data[0], "%*s %d %d %d", &height, &ncolors, &w);
+    lines = height + ncolors + 1;
+    idata = (char **)malloc(lines * sizeof(*idata));
+
+    for (int i = 0; i < lines; i++) {
+        idata[i] = strdup(data[i]);
+    }
+
+    // flop the image data
+    if (flop) {
+        for (int i = 1 + ncolors; i < lines; i++) {
+            strrevertScenery(idata[i], w);
+        }
+    }
+
+    XImage *ximage = NULL, *shapeimage = NULL;
+    rc = XpmCreateImageFromData(display, idata, &ximage, &shapeimage, attr);
+    // NOTE: shapeimage is only created if color None is defined ...
+    if (rc != 0) {
+        switch (rc) {
+        case 1:
+            printf("XpmColorError\n");
+            for (int i = 0; i < lines; i++) {
+                printf("\"%s\",\n", idata[i]);
+            }
+            break;
+        case -1:
+            printf("XpmOpenFailed\n");
+            break;
+        case -2:
+            printf("XpmFileInvalid\n");
+            break;
+        case -3:
+            printf("XpmNoMemory: maybe issue with width of data: w=%d\n", w);
+            break;
+        case -4:
+            printf("XpmColorFailed\n");
+            for (int i = 0; i < lines; i++) {
+                printf("\"%s\",\n", idata[i]);
+            }
+            break;
+        default:
+            printf("%d\n", rc);
+            break;
+        }
+        printf("exiting\n");
+        fflush(NULL);
+        abort();
+    }
+    XAddPixel(ximage, 0xff000000);
+    if (p && ximage) {
+        xpmCreatePixmapFromImage(display, d, ximage, p);
+    }
+    if (s && shapeimage) {
+        xpmCreatePixmapFromImage(display, d, shapeimage, s);
+    }
+    if (ximage) {
+        XDestroyImage(ximage);
+    }
+    if (shapeimage) {
+        XDestroyImage(shapeimage);
+    }
+    for (int i = 0; i < lines; i++) {
+        free(idata[i]);
+    }
+    free(idata);
+    return rc;
+}
+
+// reverse characters in string, characters taken in chunks of l
+// if you know what I mean
+void strrevertScenery(char *s, size_t l) {
+
+    size_t n = strlen(s) / l;
+    size_t i;
+    char *c = (char *)malloc(l * sizeof(*c));
+    char *a = s;
+    char *b = s + strlen(s) - l;
+    for (i = 0; i < n / 2; i++) {
+        strncpy(c, a, l);
+        strncpy(a, b, l);
+        strncpy(b, c, l);
+        a += l;
+        b -= l;
+    }
+    free(c);
+}
+
+// from the xpm package:
+void xpmCreatePixmapFromImage(
+    Display *display, Drawable d, XImage *ximage, Pixmap *pixmap_return) {
+    GC gc;
+    XGCValues values;
+
+    *pixmap_return =
+        XCreatePixmap(display, d, ximage->width, ximage->height, ximage->depth);
+    /* set fg and bg in case we have an XYBitmap */
+    values.foreground = 1;
+    values.background = 0;
+    gc = XCreateGC(
+        display, *pixmap_return, GCForeground | GCBackground, &values);
+
+    XPutImage(display, *pixmap_return, gc, ximage, 0, 0, 0, 0, ximage->width,
+        ximage->height);
+
+    XFreeGC(display, gc);
+}
+

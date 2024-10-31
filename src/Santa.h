@@ -23,8 +23,16 @@
 
 #include <gtk/gtk.h>
 
-extern int Santa_draw(cairo_t *cr);
-extern void Santa_erase(cairo_t *cr);
+extern int Santa_draw(cairo_t* cc);
+extern void Santa_erase(cairo_t* cc);
 extern void Santa_init(void);
 extern void Santa_ui(void);
 extern void SantaVisible(void);
+static int do_usanta();
+
+static void init_Santa_surfaces(void);
+static Region RegionCreateRectangle(
+    int x, int y, int w, int h);
+static void ResetSanta(void);
+static void SetSantaSizeSpeed(void);
+static void setSantaRegions(void);

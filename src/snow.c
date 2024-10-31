@@ -105,7 +105,7 @@ static float FlakesPerSecond;
 
 // 1: signal to flakes to kill themselves,
 // & do not generate flakes.
-static int KillFlakes = 0;
+static int mKillFlakes = 0;
 
 static float SnowSpeedFactor;
 
@@ -119,6 +119,10 @@ static int NFlakeTypesVintage;
 // Flake color helper methods.
 GdkRGBA mFlakeColor;
 int mFlakeColorToggle = 0;
+
+float mSpeedMaxValues[] = {
+    100.0, 300.0, 600.0
+};
 
 
 /** *********************************************************************
@@ -327,41 +331,13 @@ char* getNextFlakeColorAsString() {
  **/
 int snow_draw(cairo_t *cr) {
     if (Flags.NoSnowFlakes) {
-        return TRUE;
+        return true;
     }
 
     set_begin();
-
-    static int mDebugSnowDraw = 5;
-    static int mDebugSnowWhatFlake = 5;
-
-    int setIndex = 0;
     SnowFlake* flake;
+
     while ((flake = (SnowFlake*) set_next())) {
-        if (mDebugSnowDraw-- > 0) {
-            printf("snow.c: snow_draw(%lu) flake->whatFlake %i.\n",
-                (unsigned long) pthread_self(), flake->whatFlake);
-        }
-
-        // Crashes this way
-        if ((int) flake->whatFlake < 0) {
-            if (mDebugSnowWhatFlake-- > 0) {
-                printf("snow.c: snow_draw(%lu) "
-                    "Has invalid negative type : %i @ %i.\n",
-                    (unsigned long) pthread_self(),
-                    (int) flake->whatFlake, setIndex);
-            }
-        }
-        if ((int) flake->whatFlake >= MaxFlakeTypes) {
-            if (mDebugSnowWhatFlake-- > 0) {
-                printf("snow.c: snow_draw(%lu) "
-                    "Has invalid positive type : %i @ %i.\n",
-                    (unsigned long) pthread_self(),
-                    (int) flake->whatFlake, setIndex);
-            }
-        }
-        setIndex++;
-
         cairo_set_source_surface(cr, snowPix[flake->whatFlake].surface,
             flake->rx, flake->ry);
 
@@ -372,7 +348,9 @@ int snow_draw(cairo_t *cr) {
         if (alpha < 0) {
             alpha = 0;
         }
-        if (mGlobal.isDoubleBuffered || !(flake->freeze || flake->fluff)) {
+
+        if (mGlobal.isDoubleBuffered ||
+            !(flake->freeze || flake->fluff)) {
             my_cairo_paint_with_alpha(cr, alpha);
         }
 
@@ -380,7 +358,7 @@ int snow_draw(cairo_t *cr) {
         flake->iy = lrint(flake->ry);
     }
 
-    return TRUE;
+    return true;
 }
 
 /** *********************************************************************
@@ -423,7 +401,7 @@ int do_genflakes() {
 
     double TNow = wallclock();
 
-    if (KillFlakes) {
+    if (mKillFlakes) {
         RETURN;
     }
 
@@ -464,8 +442,8 @@ int do_genflakes() {
  ** This method ...
  **/
 // if so: make the flake inactive.
-// the bottom pixels of the snowflake are at y = NewY + (height of
-// flake) the bottompixels are at x values NewX .. NewX+(width of
+// the bottom pixels of the snowflake are at y = newFlakeYPos + (height of
+// flake) the bottompixels are at x values newFlakeXPos .. newFlakeXPos+(width of
 // flake)-1
 // investigate if flake is in a not-hidden fallensnowarea on current
 // workspace.
@@ -531,108 +509,123 @@ void checkIfFlakeCollectsInFallenSnow(SnowFlake* flake,
  **/
 int do_UpdateSnowFlake(SnowFlake* flake) {
     if (NOTACTIVE) {
-        return TRUE;
+        return true;
     }
 
     if ((flake->freeze || flake->fluff) && mGlobal.RemoveFluff) {
-        DelFlake(flake);
         EraseSnowFlake1(flake);
-        return FALSE;
+        DelFlake(flake);
+        return false;
     }
 
-    // handle fluff and KillFlakes
-    if (KillFlakes || (flake->fluff && flake->flufftimer > flake->flufftime)) {
-        DelFlake(flake);
+    // handle fluff and mKillFlakes
+    if (mKillFlakes || (flake->fluff &&
+            flake->flufftimer > flake->flufftime)) {
         EraseSnowFlake1(flake);
-        return FALSE;
+        DelFlake(flake);
+        return false;
     }
 
-    // NewX/y.
-    double FlakesDT = time_snowflakes;
+    // Look ahead to the flakes new x/y position.
+    const double flakesDT = time_snowflakes;
+    float newFlakeXPos = flake->rx +
+        (flake->vx * flakesDT) * SnowSpeedFactor;
+    float newFlakeYPos = flake->ry +
+        (flake->vy * flakesDT) * SnowSpeedFactor;
 
-    float NewX = flake->rx + (flake->vx * FlakesDT) * SnowSpeedFactor;
-    float NewY = flake->ry + (flake->vy * FlakesDT) * SnowSpeedFactor;
-
+    // Update flake based on "fluff" status.
     if (flake->fluff) {
         if (!flake->freeze) {
-            flake->rx = NewX;
-            flake->ry = NewY;
+            flake->rx = newFlakeXPos;
+            flake->ry = newFlakeYPos;
         }
-        flake->flufftimer += FlakesDT;
-        return TRUE;
+        flake->flufftimer += flakesDT;
+        return true;
     }
 
-    int fckill = mGlobal.FlakeCount - mGlobal.FluffCount >= Flags.FlakeCountMax;
-    if ((fckill && !flake->cyclic &&
-            drand48() > 0.3) || // high probability to remove blown-off flake
-        (fckill && drand48() > 0.9) // low probability to remove other flakes
-    ) {
-        fluffify(flake, 0.51);
-        return TRUE;
+    // Are we over flake max limit & trying to remove them ?
+    const bool shouldKillFlake =
+        ((mGlobal.FlakeCount - mGlobal.FluffCount) >=
+            Flags.FlakeCountMax);
+
+    // Can we remove them?
+    if (shouldKillFlake) {
+        if ((!flake->cyclic && drand48() > 0.3) ||
+            (drand48() > 0.9)) {
+            fluffify(flake, 0.51);
+            return true;
+        }
     }
 
-    /** **************************
-     * update speed in x Direction
-     */
+    // Update flake speed in X Direction.
     if (!Flags.NoWind) {
-        float f = FlakesDT * flake->wsens / flake->m;
-        if (f > 0.9) {
-            f = 0.9;
+        // Calc speed.
+        float newXVel = flakesDT *
+            flake->wsens / flake->m;
+
+        if (newXVel > 0.9) {
+            newXVel = 0.9;
         }
-        if (f < -0.9) {
-            f = -0.9;
+        if (newXVel < -0.9) {
+            newXVel = -0.9;
         }
 
-        flake->vx += f * (mGlobal.NewWind - flake->vx);
+        // Apply speed limits.
+        const float xVelMax = 2 * mSpeedMaxValues[mGlobal.Wind];
+        flake->vx += newXVel * (mGlobal.NewWind - flake->vx);
 
-        static float speedxmaxes[] = { 100.0, 300.0, 600.0, };
-        float speedxmax = 2 * speedxmaxes[mGlobal.Wind];
-
-        if (fabs(flake->vx) > speedxmax) {
-            if (flake->vx > speedxmax) {
-                flake->vx = speedxmax;
+        if (fabs(flake->vx) > xVelMax) {
+            if (flake->vx > xVelMax) {
+                flake->vx = xVelMax;
             }
-            if (flake->vx < -speedxmax) {
-                flake->vx = -speedxmax;
+            if (flake->vx < -xVelMax) {
+                flake->vx = -xVelMax;
             }
         }
     }
 
+    // Update flake speed in Y Direction.
     flake->vy += INITIALYSPEED * (drand48() - 0.4) * 0.1;
     if (flake->vy > flake->ivy * 1.5) {
         flake->vy = flake->ivy * 1.5;
     }
 
+    // If flake is frozen, we're done.
     if (flake->freeze) {
         return TRUE;
     }
 
     // Flake w/h.
-    int flakew = snowPix[flake->whatFlake].width;
-    int flakeh = snowPix[flake->whatFlake].height;
+    const int flakew = snowPix[flake->whatFlake].width;
+    const int flakeh = snowPix[flake->whatFlake].height;
 
+    // Update flake based on "cyclic" status.
     if (flake->cyclic) {
-        if (NewX < -flakew) {
-            NewX += mGlobal.SnowWinWidth - 1;
+        if (newFlakeXPos < -flakew) {
+            newFlakeXPos += mGlobal.SnowWinWidth - 1;
         }
-        if (NewX >= mGlobal.SnowWinWidth) {
-            NewX -= mGlobal.SnowWinWidth;
+        if (newFlakeXPos >= mGlobal.SnowWinWidth) {
+            newFlakeXPos -= mGlobal.SnowWinWidth;
         }
-    } else if (NewX < 0 || NewX >= mGlobal.SnowWinWidth) {
-        // not-cyclic flakes die when going left or right out of the window
-        DelFlake(flake);
-        return FALSE;
+    } else {
+        // Non-cyclic means we remove it when it
+        // goes left or right out of the window.
+        if (newFlakeXPos < 0 ||
+            newFlakeXPos >= mGlobal.SnowWinWidth) {
+            DelFlake(flake);
+            return FALSE;
+        }
     }
 
-    // remove flake if it falls below bottom of screen:
-    if (NewY >= mGlobal.SnowWinHeight) {
+    // Remove flake if it falls below bottom of screen.
+    if (newFlakeYPos >= mGlobal.SnowWinHeight) {
         DelFlake(flake);
         return FALSE;
     }
 
     // Flake nx/ny.
-    int nx = lrintf(NewX);
-    int ny = lrintf(NewY);
+    int nx = lrintf(newFlakeXPos);
+    int ny = lrintf(newFlakeYPos);
 
     // Determine if non-fluffy-flake touches the fallen snow.
     if (!flake->fluff) {
@@ -729,24 +722,25 @@ int do_UpdateSnowFlake(SnowFlake* flake) {
                 flake->freeze = 1;
                 fluffify(flake, 0.6);
 
-                SnowFlake *newflake;
+                SnowFlake* newflake;
                 if (Flags.VintageFlakes) {
                     newflake = MakeFlake(0);
                 } else {
                     newflake = MakeFlake(-1);
                 }
 
-                newflake->freeze = 1;
                 newflake->rx = xfound;
                 newflake->ry = yfound - snowPix[1].height * 0.3f;
+                newflake->freeze = 1;
                 fluffify(newflake, 8);
+
                 return TRUE;
             }
         }
     }
 
-    flake->rx = NewX;
-    flake->ry = NewY;
+    flake->rx = newFlakeXPos;
+    flake->ry = newFlakeYPos;
     return TRUE;
 }
 
@@ -895,23 +889,21 @@ void InitSnowSpeedFactor() {
 /** *********************************************************************
  ** This method ...
  **/
-int do_initsnow() {
+int setKillFlakes() {
     if (Flags.shutdownRequested) {
-        return FALSE;
+        return true;
     }
-
-    // first, kill all snowflakes
-    KillFlakes = 1;
 
     // if FlakeCount != 0, there are still some flakes
     if (mGlobal.FlakeCount > 0) {
-        return TRUE;
+        // Kill all snowflakes.
+        mKillFlakes = 1;
+        return true;
     }
 
-    // signal that flakes may be generated
-    KillFlakes = 0;
-
-    return FALSE;
+    // Flakes may be generated.
+    mKillFlakes = 0;
+    return false;
 }
 
 /** *********************************************************************
@@ -1094,37 +1086,15 @@ void fluffify(SnowFlake *flake, float t) {
 int do_SwitchFlakes() {
     static int prev = 0;
 
-    static int mDebugSnowWhatFlake = 5;
-
     if (Flags.VintageFlakes != prev) {
-
         set_begin();
-
         SnowFlake* flake;
-        while ((flake = (SnowFlake*) set_next())) {
 
+        while ((flake = (SnowFlake*) set_next())) {
             flake->whatFlake = Flags.VintageFlakes ?
                 drand48() * NFlakeTypesVintage :
                 NFlakeTypesVintage + (drand48() *
                     (MaxFlakeTypes - NFlakeTypesVintage));
-
-            // Crashes this way
-            if ((int) flake->whatFlake < 0) {
-                if (mDebugSnowWhatFlake-- > 0) {
-                    printf("snow.c: do_SwitchFlakes(%lu) "
-                        "Has invalid negative type : %i.\n",
-                        (unsigned long) pthread_self(),
-                        (int) flake->whatFlake);
-                }
-            }
-            if ((int) flake->whatFlake >= MaxFlakeTypes) {
-                if (mDebugSnowWhatFlake-- > 0) {
-                    printf("snow.c: do_SwitchFlakes(%lu) "
-                        "Has invalid positive type : %i.\n",
-                        (unsigned long) pthread_self(),
-                        (int) flake->whatFlake);
-                }
-            }
         }
 
         prev = Flags.VintageFlakes;

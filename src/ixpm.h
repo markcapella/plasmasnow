@@ -24,14 +24,22 @@
 #include <X11/xpm.h>
 #include <gtk/gtk.h>
 
-extern int iXpmCreatePixmapFromData(Display *display, Drawable d,
-    const char **data, Pixmap *p, Pixmap *s, XpmAttributes *attr, int flop);
-extern Region regionfromxpm(const char **data, int flop, float scale);
-cairo_region_t *gregionfromxpm(const char **data, int flop, float scale);
 
-extern void xpm_set_color(
-    char **data, char ***out, int *lines, const char *color);
-extern void xpm_destroy(char **data);
-extern int xpmtobits(char *xpm[], unsigned char **bitsreturn, int *wreturn,
-    int *hreturn, int *lreturn);
-extern void xpm_print(char **xpm);
+Region regionfromxpm(const char** data, int flop,
+        float scale);
+
+cairo_region_t* gregionfromxpm(const char** data,
+    int flop, float scale);
+
+void xpm_set_color(char** data, char*** out,
+    int* lines, const char* color);
+
+int xpmtobits(char* xpm[],
+    unsigned char** bitsreturn, int* wreturn,
+    int* hreturn, int* lreturn);
+
+void xpm_print(char** xpm);
+
+void strrevert(char*, size_t);
+
+void xpm_destroy(char** data);

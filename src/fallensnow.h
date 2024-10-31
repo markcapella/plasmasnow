@@ -23,6 +23,7 @@
 
 #include <pthread.h>
 #include <semaphore.h>
+#include <stdbool.h>
 #include <stdlib.h>
 
 #include <X11/Intrinsic.h>
@@ -86,8 +87,8 @@ extern void updateFallenSnowWithWind(FallenSnow*, int w, int h);
 extern void updateFallenSnowPartial(FallenSnow*, int x, int w);
 extern void updateFallenSnowAtBottom();
 
-extern void generateFallenSnowFlakes(FallenSnow*,
-    int x, int w, float vy);
+void generateFallenSnowFlakes(FallenSnow* fsnow,
+    int xPos, int xWidth, float vy, bool limitToMax);
 
 // FallenSnow Stack Helpers.
 extern void pushFallenSnowItem(FallenSnow**, WinInfo*,

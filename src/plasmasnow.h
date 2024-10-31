@@ -104,7 +104,7 @@
 // time between adjusting height of bottom snow
 #define time_adjust_bottom (time_change_bottom / 20)
 // time between recompute fallen snow surfaces
-#define TIME_BETWWEEN_FALLENSNOW_THREADS 0.20
+#define TIME_BETWWEEN_FALLENSNOW_THREADS 0.01
 
 // time between updates of snowflakes positions etc
 #define time_snowflakes    (0.02 * mGlobal.cpufactor)
@@ -311,8 +311,6 @@ extern struct _mGlobal {
         // Cairo defs.
         cairo_region_t *TreeRegion;
         cairo_region_t *gSnowOnTreesRegion;
-
-        char Message[256];
 
         // Display defs.
         Display *display;

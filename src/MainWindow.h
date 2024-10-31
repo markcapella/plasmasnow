@@ -21,6 +21,8 @@
 */
 #pragma once
 
+#include <stdbool.h>
+
 // required GTK version for running the ui. (from ui.xml, made using glade)
 #define GTK_MAJOR 3
 #define GTK_MINOR 20
@@ -47,3 +49,21 @@ int ui_run_nomenu();
 
 void set_buttons();
 void handle_language(int restart);
+
+// Helpers for LightColors Control Panel settings.
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+bool shouldShowLightColorRed();
+bool shouldShowLightColorLime();
+bool shouldShowLightColorPurple();
+bool shouldShowLightColorCyan();
+bool shouldShowLightColorGreen();
+bool shouldShowLightColorOrange();
+bool shouldShowLightColorBlue();
+bool shouldShowLightColorPink();
+
+#ifdef __cplusplus
+}
+#endif

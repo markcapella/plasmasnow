@@ -121,6 +121,7 @@ GdkRGBA getRGBFromString(char* colorString);
 /***********************************************************
  * Module Method stubs.
  */
+
 static void HandleCpuFactor();
 static void RestartDisplay();
 static void appShutdownHook(int);
@@ -130,7 +131,7 @@ static void getX11Window(Window*);
 static int drawCairoWindow(void*);
 static void handleX11CairoDisplayChange();
 
-static void drawCairoWindowInternal(cairo_t*);
+static void drawCairoWindowInternal(cairo_t* cc);
 static int drawTransparentWindow(gpointer);
 static void addWindowDrawMethodToMainloop();
 static gboolean handleTransparentWindowDrawEvents(
@@ -239,31 +240,28 @@ int startApplication(int argc, char *argv[]) {
     mGlobal.VisWorkSpaces[0] = 0;
     mGlobal.WindowsChanged = 0;
     mGlobal.ForceRestart = 0;
+    mGlobal.MaxScrSnowDepth = 0;
 
     mGlobal.mWinInfoListLength = 0;
     mGlobal.mWinInfoList = NULL;
-
-    mGlobal.FsnowFirst = NULL;
-    mGlobal.MaxScrSnowDepth = 0;
-    mGlobal.RemoveFluff = 0;
-
-    mGlobal.SnowOnTrees = NULL;
-    mGlobal.OnTrees = 0;
-
-    mGlobal.moonX = 1000;
-    mGlobal.moonY = 80;
 
     mGlobal.Wind = 0;
     mGlobal.Direction = 0;
     mGlobal.WindMax = 500.0;
     mGlobal.NewWind = 100.0;
 
-    mGlobal.Message[0] = 0;
+    mGlobal.FsnowFirst = NULL;
 
     mGlobal.SantaPlowRegion = 0;
+    mGlobal.SnowOnTrees = NULL;
+    mGlobal.OnTrees = 0;
+    mGlobal.RemoveFluff = 0;
 
+    mGlobal.moonX = 1000;
+    mGlobal.moonY = 80;
 
     XInitThreads();
+
     initFallenSnowSemaphores();
     aurora_sem_init();
     birds_sem_init();
@@ -406,8 +404,7 @@ int startApplication(int argc, char *argv[]) {
 
     mGlobal.Screen = DefaultScreen(mGlobal.display);
 
-    // Default any snow colors,
-    // a user may have set in .plasmasnowrc.
+    // Default any colors a user may have set in .plasmasnowrc.
     int wasThereAnInvalidColor = false;
 
     if (!ValidColor(Flags.SnowColor)) {
@@ -426,6 +423,40 @@ int startApplication(int argc, char *argv[]) {
         Flags.TreeColor = strdup(DefaultFlags.TreeColor);
         wasThereAnInvalidColor = true;
     }
+
+    if (!ValidColor(Flags.LightColorRed)) {
+        Flags.LightColorRed = strdup(DefaultFlags.LightColorRed);
+        wasThereAnInvalidColor = true;
+    }
+    if (!ValidColor(Flags.LightColorLime)) {
+        Flags.LightColorLime = strdup(DefaultFlags.LightColorLime);
+        wasThereAnInvalidColor = true;
+    }
+    if (!ValidColor(Flags.LightColorPurple)) {
+        Flags.LightColorPurple = strdup(DefaultFlags.LightColorPurple);
+        wasThereAnInvalidColor = true;
+    }
+    if (!ValidColor(Flags.LightColorCyan)) {
+        Flags.LightColorCyan = strdup(DefaultFlags.LightColorCyan);
+        wasThereAnInvalidColor = true;
+    }
+    if (!ValidColor(Flags.LightColorGreen)) {
+        Flags.LightColorGreen = strdup(DefaultFlags.LightColorGreen);
+        wasThereAnInvalidColor = true;
+    }
+    if (!ValidColor(Flags.LightColorOrange)) {
+        Flags.LightColorOrange = strdup(DefaultFlags.LightColorOrange);
+        wasThereAnInvalidColor = true;
+    }
+    if (!ValidColor(Flags.LightColorBlue)) {
+        Flags.LightColorBlue = strdup(DefaultFlags.LightColorBlue);
+        wasThereAnInvalidColor = true;
+    }
+    if (!ValidColor(Flags.LightColorPink)) {
+        Flags.LightColorPink = strdup(DefaultFlags.LightColorPink);
+        wasThereAnInvalidColor = true;
+    }
+
     if (wasThereAnInvalidColor) {
         WriteFlags();
     }
@@ -1089,18 +1120,18 @@ int handleX11ErrorEvent(Display* dpy, XErrorEvent* event) {
  ** This method id the draw callback.
  **/
 gboolean handleTransparentWindowDrawEvents(
-    __attribute__((unused)) GtkWidget *widget, cairo_t *cr,
+    __attribute__((unused)) GtkWidget* widget, cairo_t* cc,
     __attribute__((unused)) gpointer user_data) {
 
-    drawCairoWindowInternal(cr);
+    drawCairoWindowInternal(cc);
     return FALSE;
 }
 
 /** *********************************************************************
  ** This method ...
  **/
-int drawCairoWindow(void *cr) {
-    drawCairoWindowInternal((cairo_t *) cr);
+int drawCairoWindow(void* cc) {
+    drawCairoWindowInternal((cairo_t*) cc);
     return TRUE;
 }
 
@@ -1109,7 +1140,7 @@ int drawCairoWindow(void *cr) {
  ** repeated a few times. This is not harmful. We do not draw
  ** anything the first few times this function is called.
  **/
-void drawCairoWindowInternal(cairo_t *cr) {
+void drawCairoWindowInternal(cairo_t* cc) {
     // Instabilities (?).
     static int counter = 0;
     if (counter * time_draw_all < 1.5) {
@@ -1130,7 +1161,7 @@ void drawCairoWindowInternal(cairo_t *cr) {
     } else if (!mGlobal.isDoubleBuffered) {
         XFlush(mGlobal.display);
         moon_erase(0);
-        Santa_erase(cr);
+        Santa_erase(cc);
         eraseStarsFrame();
         eraseLightsFrame();
         birds_erase(0);
@@ -1140,7 +1171,7 @@ void drawCairoWindowInternal(cairo_t *cr) {
     }
 
     // Do cairo.
-    cairo_save(cr);
+    cairo_save(cc);
 
     int tx = 0;
     int ty = 0;
@@ -1148,33 +1179,33 @@ void drawCairoWindowInternal(cairo_t *cr) {
         tx = mGlobal.SnowWinX;
         ty = mGlobal.SnowWinY;
     }
-    cairo_translate(cr, tx, ty);
+    cairo_translate(cc, tx, ty);
 
     // Do all module draws.
     if (WorkspaceActive()) {
-        drawStarsFrame(cr);
-        drawLightsFrame(cr);
-        moon_draw(cr);
-        aurora_draw(cr);
-        drawMeteorFrame(cr);
-        drawSceneryFrame(cr);
-        birds_draw(cr);
-        cairoDrawAllFallenSnowItems(cr);
+        drawStarsFrame(cc);
+        drawLightsFrame(cc);
+        moon_draw(cc);
+        aurora_draw(cc);
+        drawMeteorFrame(cc);
+        drawSceneryFrame(cc);
+        birds_draw(cc);
+        cairoDrawAllFallenSnowItems(cc);
         if (!Flags.ShowBirds || !Flags.FollowSanta) {
             // If Flags.FollowSanta, drawing of Santa
             // is done in Birds module.
-            Santa_draw(cr);
+            Santa_draw(cc);
         }
-        treesnow_draw(cr);
-        snow_draw(cr);
+        treesnow_draw(cc);
+        snow_draw(cc);
     }
 
     // Draw app window outline.
     if (Flags.Outline) {
-        rectangle_draw(cr);
+        rectangle_draw(cc);
     }
 
-    cairo_restore(cr);
+    cairo_restore(cc);
     XFlush(mGlobal.display);
 }
 
@@ -1248,7 +1279,7 @@ void HandleCpuFactor() {
         mGlobal.cpufactor = 100.0 / Flags.CpuLoad;
     }
 
-    addMethodToMainloop(PRIORITY_HIGH, time_init_snow, do_initsnow);
+    addMethodToMainloop(PRIORITY_HIGH, time_init_snow, setKillFlakes);
 
     addWindowDrawMethodToMainloop();
 }

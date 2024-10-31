@@ -40,18 +40,18 @@
 
 #define STARANIMATIONS 4
 
-static const int STAR_SIZE = 9;
-static const float LOCAL_SCALE = 0.8;
+const int STAR_SIZE = 9;
+const float LOCAL_SCALE = 0.8;
 
-static int mNumberOfStars;
+int mNumberOfStars;
 
-static StarCoordinate* mStarCoordinates = NULL;
+StarCoordinate* mStarCoordinates = NULL;
 
-static char* mStarColorArray[STARANIMATIONS] =
+char* mStarColorArray[STARANIMATIONS] =
     { (char*) "gold", (char*) "gold1",
       (char*) "gold4", (char*) "orange"};
 
-static cairo_surface_t* mStarSurfaceArray[STARANIMATIONS];
+cairo_surface_t* mStarSurfaceArray[STARANIMATIONS];
 
 
 /** *********************************************************************
@@ -81,7 +81,7 @@ void initStarsModuleArrays() {
     REALLOC_CHECK(mStarCoordinates);
 
     for (int i = 0; i < mNumberOfStars; i++) {
-        StarCoordinate *star = &mStarCoordinates[i];
+        StarCoordinate* star = &mStarCoordinates[i];
         star->x = randint(mGlobal.SnowWinWidth);
         star->y = randint(mGlobal.SnowWinHeight / 4);
         star->color = randint(STARANIMATIONS);
@@ -140,12 +140,9 @@ void eraseStarsFrame() {
     }
 
     for (int i = 0; i < mNumberOfStars; i++) {
-        StarCoordinate *star = &mStarCoordinates[i];
-        int x = star->x;
-        int y = star->y;
-
-        clearDisplayArea(mGlobal.display,
-            mGlobal.SnowWin, x, y, STAR_SIZE, STAR_SIZE,
+        StarCoordinate* star = &mStarCoordinates[i];
+        clearDisplayArea(mGlobal.display, mGlobal.SnowWin,
+            star->x, star->y, STAR_SIZE, STAR_SIZE,
             mGlobal.xxposures);
     }
 }
@@ -162,9 +159,20 @@ int updateStarsFrame() {
         return TRUE;
     }
 
+    // Change color of 1/5 stars.
     for (int i = 0; i < mNumberOfStars; i++) {
-        if (drand48() > 0.8) {
-            mStarCoordinates[i].color = randint(STARANIMATIONS);
+        if (randint(5) == 0) {
+            StarCoordinate* star = &mStarCoordinates[i];
+            star->color = randint(STARANIMATIONS);
+        }
+    }
+
+    // Change position of 1/50 stars.
+    for (int i = 0; i < mNumberOfStars; i++) {
+        if (randint(50) == 0) {
+            StarCoordinate* star = &mStarCoordinates[i];
+            star->x = randint(mGlobal.SnowWinWidth);
+            star->y = randint(mGlobal.SnowWinHeight / 4);
         }
     }
 
@@ -185,11 +193,10 @@ void drawStarsFrame(cairo_t *cr) {
     cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
 
     for (int i = 0; i < mNumberOfStars; i++) {
-        const StarCoordinate* star = &mStarCoordinates[i];
+        StarCoordinate* star = &mStarCoordinates[i];
 
         cairo_set_source_surface(cr,
             mStarSurfaceArray[star->color], star->x, star->y);
-
         my_cairo_paint_with_alpha(cr,
             (0.01 * (100 - Flags.Transparency)));
     }

@@ -24,16 +24,18 @@
 #include "plasmasnow.h"
 #include <gtk/gtk.h>
 
-extern int do_initsnow();
-extern SnowFlake *MakeFlake(int type);
-extern int snow_draw(cairo_t *cr);
-extern void snow_init(void);
-extern void snow_ui(void);
-extern void fluffify(SnowFlake *flake, float t);
-extern void printflake(SnowFlake *flake);
-extern int snow_erase(int force);
+int setKillFlakes();
+SnowFlake* MakeFlake(int type);
+
+int snow_draw(cairo_t *cr);
+void snow_init(void);
+void snow_ui(void);
+
+void fluffify(SnowFlake *flake, float t);
+void printflake(SnowFlake *flake);
+int snow_erase(int force);
 
 void setGlobalFlakeColor(GdkRGBA);
 char* getNextFlakeColorAsString();
-extern GdkRGBA getNextFlakeColorAsRGB();
-extern GdkRGBA getRGBFromString(char* colorString);
+GdkRGBA getNextFlakeColorAsRGB();
+GdkRGBA getRGBFromString(char* colorString);

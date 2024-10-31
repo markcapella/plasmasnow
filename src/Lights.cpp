@@ -32,6 +32,7 @@
 
 #include "Flags.h"
 #include "Lights.h"
+#include "MainWindow.h"
 #include "Utils.h"
 #include "windows.h"
 
@@ -47,14 +48,49 @@ const int LIGHTBULB_SIZE_WIDTH = 40;
 const int LIGHTBULB_SIZE_HEIGHT = 57;
 const int LIGHTBULB_SPACING_WIDTH = 15;
 
+const int BRIGHT_COLOR = 252;
+const int NORMAL_COLOR = 176;
+const int DARK_COLOR = 132;
+
+const int BRIGHT_GRAY = 0xa8;
+const int NORMAL_GRAY = 0xdb;
+const int DARK_GRAY = 0xb4;
+
+// Light color types.
+const BULB_COLOR_TYPE GRAYED = -1;
+
+const BULB_COLOR_TYPE RED = 0;
+const BULB_COLOR_TYPE LIME = 1;
+const BULB_COLOR_TYPE PURPLE = 2;
+const BULB_COLOR_TYPE CYAN = 3;
+const BULB_COLOR_TYPE GREEN = 4;
+const BULB_COLOR_TYPE ORANGE = 5;
+const BULB_COLOR_TYPE BLUE = 6;
+const BULB_COLOR_TYPE PINK = 7;
+
+const int MAX_BULB_TYPES = 8;
+
+const GdkRGBA BRIGHT_GRAYED_RGBA {
+    .red = BRIGHT_GRAY, .green = BRIGHT_GRAY,
+    .blue = BRIGHT_GRAY, .alpha = 0x00
+};
+const GdkRGBA NORMAL_GRAYED_RGBA {
+    .red = NORMAL_GRAY, .green = NORMAL_GRAY,
+    .blue = NORMAL_GRAY, .alpha = 0x00
+};
+const GdkRGBA DARK_GRAYED_RGBA {
+    .red = DARK_GRAY, .green = DARK_GRAY,
+    .blue = DARK_GRAY, .alpha = 0x00
+};
+
 // Bulb position arrays.
 std::vector<int> mLightXPos;
 std::vector<int> mLightYPos;
 
 // Bulb color arrays.
-std::vector<GdkRGBA> mBrightBulbColor;
-std::vector<GdkRGBA> mNormalBulbColor;
-std::vector<GdkRGBA> mDarkBulbColor;
+std::vector<GdkRGBA> mBulbColorBright;
+std::vector<GdkRGBA> mBulbColorNormal;
+std::vector<GdkRGBA> mBulbColorDark;
 
 // Gray themed template XPM (mLightShape).
 #include "Pixmaps/lightBulb.xpm"
@@ -62,32 +98,23 @@ std::vector<GdkRGBA> mDarkBulbColor;
 // Ued to track screen scale changes.
 int mCurrentAppScale = 100;
 
-// Debug for speed timings.
-int mDebugSetterCnt = 5;
-int mDebugDrawCnt = 5;
-
-struct timeval mDebugStartTime;
-struct timeval mDebugEndTime;
-
 
 /** ***********************************************************
  ** This method initializes the Lights module.
  **/
 void initLightsModule() {
-
     setAllBulbPositions();
     setAllBulbColors();
 
     addMethodToMainloop(PRIORITY_DEFAULT,
         TIME_BETWEEN_LIGHTS_UPDATES,
-        changeRandomBulbColors);
+        twinkleLightsFrame);
 }
 
 /** ***********************************************************
  ** This method sets each bulbs initial x/y position.
  **/
 void setAllBulbPositions() {
-
     mLightXPos.clear();
     mLightYPos.clear();
 
@@ -106,66 +133,82 @@ void setAllBulbPositions() {
  ** This method sets each bulbs initial 3-color theme.
  **/
 void setAllBulbColors() {
+    mBulbColorBright.clear();
+    mBulbColorNormal.clear();
+    mBulbColorDark.clear();
 
-    gettimeofday(&mDebugStartTime, NULL);
-
-    mBrightBulbColor.clear();
-    mNormalBulbColor.clear();
-    mDarkBulbColor.clear();
+    // printf("setAllBulbColors() 0.\n");
+    int colorType = getFirstAvailableColorType();
 
     for (int i = 0; i < getBulbCount(); i++) {
-        mBrightBulbColor.push_back(
-            getBrightGreenRandomColor());
-        mNormalBulbColor.push_back(
-            getNormalGreenRandomColor());
-        mDarkBulbColor.push_back(
-            getDarkGreenRandomColor());
-    }
+        mBulbColorBright.push_back(
+            getTwinklingBright(colorType));
+        mBulbColorNormal.push_back(
+            getTwinklingNormal(colorType));
+        mBulbColorDark.push_back(
+            getTwinklingDark(colorType));
 
-    if (mDebugSetterCnt-- > 0) {
-        gettimeofday(&mDebugEndTime, NULL);
-        const long seconds  = mDebugEndTime.tv_sec -
-            mDebugStartTime.tv_sec;
-        const long useconds = mDebugEndTime.tv_usec -
-            mDebugStartTime.tv_usec;
-        const double duration = seconds +
-            useconds / 1000000.0;
-        printf("setAllBulbColors() Elapsed time: %f  ms.\n",
-            duration);
+        if (colorType != GRAYED) {
+            colorType = getNextAvailableColorType(colorType);
+        }
     }
 }
 
 /** ***********************************************************
- ** This method changes the bulbs randomly to produce
- ** blinking effect.
+ ** This method checks for & performs user changes of
+ ** Lights module settings.
  **/
-gboolean changeRandomBulbColors(__attribute__
-    ((unused)) void* data) {
+void updateLightsUserSettings() {
+    // Update pref.
+    UIDO(ShowLights,);
 
-    if (Flags.shutdownRequested) {
-        return false;
-    }
+    UIDO(ShowLightColorRed,
+        eraseLightsFrame();
+        setAllBulbColors();
+    );
+    UIDO(ShowLightColorLime,
+        eraseLightsFrame();
+        setAllBulbColors();
+    );
+    UIDO(ShowLightColorPurple,
+        eraseLightsFrame();
+        setAllBulbColors();
+    );
+    UIDO(ShowLightColorCyan,
+        eraseLightsFrame();
+        setAllBulbColors();
+    );
+    UIDO(ShowLightColorGreen,
+        eraseLightsFrame();
+        setAllBulbColors();
+    );
+    UIDO(ShowLightColorOrange,
+        eraseLightsFrame();
+        setAllBulbColors();
+    );
+    UIDO(ShowLightColorBlue,
+        eraseLightsFrame();
+        setAllBulbColors();
+    );
+    UIDO(ShowLightColorPink,
+        eraseLightsFrame();
+        setAllBulbColors();
+    );
 
-    // Change 1 out of 5 bulbs.
-    for (int i = 0; i < getBulbCount(); i++) {
-        if (randint(5) == 0) {
-            mBrightBulbColor[i] = getBrightGreenRandomColor();
-            mNormalBulbColor[i] = getNormalGreenRandomColor();
-            mDarkBulbColor[i] = getDarkGreenRandomColor();
-        }
+    // Detect app scale change.
+    if (appScalesHaveChanged(&mCurrentAppScale)) {
+        setAllBulbPositions();
+        setAllBulbColors();
     }
-    return true;
 }
 
 /** ***********************************************************
  ** This method draws the bulbs onto the display screen.
  **/
 void drawLightsFrame(cairo_t* cc) {
-    if (!Flags.showGreenLights) {
+    if (!Flags.ShowLights) {
         return;
     }
-
-    gettimeofday(&mDebugStartTime, NULL);
 
     cairo_save(cc);
     cairo_set_line_width(cc, 1);
@@ -175,8 +218,9 @@ void drawLightsFrame(cairo_t* cc) {
         // Create XPM from 3-color themed bulb.
         char** tempBulbXPM;
         int unusedLineCount;
-        createColoredBulb(mBrightBulbColor[i],
-            mNormalBulbColor[i], mDarkBulbColor[i],
+
+        createColoredBulb(mBulbColorBright[i],
+            mBulbColorNormal[i], mBulbColorDark[i],
             &tempBulbXPM, &unusedLineCount);
 
         // Create colored surface from XPM.
@@ -199,25 +243,42 @@ void drawLightsFrame(cairo_t* cc) {
     }
 
     cairo_restore(cc);
+}
 
-    if (mDebugDrawCnt-- > 0) {
-        gettimeofday(&mDebugEndTime, NULL);
-        const long seconds  = mDebugEndTime.tv_sec -
-            mDebugStartTime.tv_sec;
-        const long useconds = mDebugEndTime.tv_usec -
-            mDebugStartTime.tv_usec;
-        const double duration = seconds +
-            useconds / 1000000.0;
-        printf("drawLightsFrame() Elapsed time: %f  ms.\n",
-            duration);
+/** ***********************************************************
+ ** This method changes the bulbs randomly to produce
+ ** blinking effect.
+ **/
+gboolean twinkleLightsFrame(__attribute__
+    ((unused)) void* data) {
+    if (Flags.shutdownRequested) {
+        return false;
     }
+
+    // Change 1 out of 5 bulbs.
+    int colorType = getFirstAvailableColorType();
+    if (colorType != GRAYED) {
+        for (int i = 0; i < getBulbCount(); i++) {
+            if (randint(5) == 0) {
+                mBulbColorBright[i] =
+                    getTwinklingBright(colorType);
+                mBulbColorNormal[i] =
+                    getTwinklingNormal(colorType);
+                mBulbColorDark[i] =
+                    getTwinklingDark(colorType);
+            }
+            colorType = getNextAvailableColorType(colorType);
+        }
+    }
+
+    return true;
 }
 
 /** ***********************************************************
  ** This method erases the bulbs from the display screen.
  **/
 void eraseLightsFrame() {
-    if (!Flags.showGreenLights) {
+    if (!Flags.ShowLights) {
         return;
     }
 
@@ -226,21 +287,6 @@ void eraseLightsFrame() {
             mLightXPos[i], mLightYPos[i],
             LIGHTBULB_SIZE_WIDTH, LIGHTBULB_SIZE_HEIGHT,
             mGlobal.xxposures);
-    }
-}
-
-/** ***********************************************************
- ** This method checks for performs user changes of
- ** Lights module settings.
- **/
-void updateLightsUserSettings() {
-    // Update pref.
-    UIDO(showGreenLights,);
-
-    // Detect app scale change.
-    if (appScalesHaveChanged(&mCurrentAppScale)) {
-        setAllBulbPositions();
-        setAllBulbColors();
     }
 }
 
@@ -288,40 +334,368 @@ int getYPosForBulbNumber(int bulbNumber) {
 }
 
 /** ***********************************************************
- ** Helper methods for green color shading.
+ ** This method returns true if the user has selected
+ ** at least one colortype button for display when bulbs
+ ** are on. Helps determine if bulbs should be grayed.
  **/
-GdkRGBA getBrightGreenRandomColor() {
-    const int BRIGHT_GREEN = 252;
-    const int newColor = getRoughColor(BRIGHT_GREEN);
-
-    return (GdkRGBA) { .red = 0x0,
-        .green = (gdouble) newColor,
-        .blue = 0x0, .alpha = 0x0 };
-}
-
-GdkRGBA getNormalGreenRandomColor() {
-    const int NORMAL_GREEN = 176;
-    const int newColor = getRoughColor(NORMAL_GREEN);
-
-    return (GdkRGBA) { .red = 0x0,
-        .green = (gdouble) newColor,
-        .blue = 0x0, .alpha = 0x0 };
-}
-
-GdkRGBA getDarkGreenRandomColor() {
-    const int DARK_GREEN = 132;
-    const int newColor = getRoughColor(DARK_GREEN);
-
-    return (GdkRGBA) { .red = 0x0,
-        .green = (gdouble) newColor,
-        .blue = 0x0, .alpha = 0x0 };
+bool areThereAvailableColorTypes() {
+    return shouldShowLightColorRed() ||
+        shouldShowLightColorLime() || shouldShowLightColorPurple() ||
+        shouldShowLightColorCyan() || shouldShowLightColorGreen() ||
+        shouldShowLightColorOrange() || shouldShowLightColorBlue() ||
+        shouldShowLightColorPink();
 }
 
 /** ***********************************************************
- ** This method sets a color randomly within a range
- ** of a start color to provide a twinkling effect.
+ ** This method returns the first colortype available
+ ** as selected by the user.
  **/
-int getRoughColor(int color) {
+BULB_COLOR_TYPE getFirstAvailableColorType() {
+    // Find @ least one.
+    return areThereAvailableColorTypes() ?
+        getNextAvailableColorType(GRAYED) : GRAYED;
+}
+
+/** ***********************************************************
+ ** This method returns the next colortype available
+ ** after a start point as selected by the user list.
+ **/
+BULB_COLOR_TYPE getNextAvailableColorType(
+    BULB_COLOR_TYPE startFrom) {
+
+    // Find @ least one.
+    if (!areThereAvailableColorTypes()) {
+        return GRAYED;
+    }
+
+    while (true) {
+        startFrom++;
+        if (startFrom == MAX_BULB_TYPES) {
+            startFrom = getFirstAvailableColorType();
+        }
+
+        if (getColorTypeAvailabilityAt(startFrom)) {
+            return startFrom;
+        }
+    }
+}
+
+/** ***********************************************************
+ ** This method determines if a colortype is available
+ ** at a start point as selected by the user list.
+ **/
+bool getColorTypeAvailabilityAt(int index) {
+    switch (index) {
+        case RED: return shouldShowLightColorRed();
+        case LIME: return shouldShowLightColorLime();
+        case PURPLE: return shouldShowLightColorPurple();
+        case CYAN: return shouldShowLightColorCyan();
+        case GREEN: return shouldShowLightColorGreen();
+        case ORANGE: return shouldShowLightColorOrange();
+        case BLUE: return shouldShowLightColorBlue();
+        case PINK: return shouldShowLightColorPink();
+
+        default:
+            return false;
+    }
+}
+
+/** ***********************************************************
+ ** This method gets a "twinkling" version of a
+ ** Bright bulb colorType.
+ **/
+GdkRGBA getTwinklingBright(
+    BULB_COLOR_TYPE colorType) {
+
+    switch (colorType) {
+        case RED: return getTwinklingRedBright();
+        case LIME: return getTwinklingLimeBright();
+        case PURPLE: return getTwinklingPurpleBright();
+        case CYAN: return getTwinklingCyanBright();
+        case GREEN: return getTwinklingGreenBright();
+        case ORANGE: return getTwinklingOrangeBright();
+        case BLUE: return getTwinklingBlueBright();
+        case PINK: return getTwinklingPinkBright();
+
+        case GRAYED:
+        default:
+            return BRIGHT_GRAYED_RGBA;
+
+    }
+}
+
+/** ***********************************************************
+ ** This method gets a "twinkling" version of a
+ ** Normal bulb colorType.
+ **/
+GdkRGBA getTwinklingNormal(
+    BULB_COLOR_TYPE colorType) {
+
+    switch (colorType) {
+        case RED: return getTwinklingRedNormal();
+        case LIME: return getTwinklingLimeNormal();
+        case PURPLE: return getTwinklingPurpleNormal();
+        case CYAN: return getTwinklingCyanNormal();
+        case GREEN: return getTwinklingGreenNormal();
+        case ORANGE: return getTwinklingOrangeNormal();
+        case BLUE: return getTwinklingBlueNormal();
+        case PINK: return getTwinklingPinkNormal();
+
+        case GRAYED:
+        default:
+            return NORMAL_GRAYED_RGBA;
+    }
+}
+
+/** ***********************************************************
+ ** This method gets a "twinkling" version of a
+ ** Dark bulb colorType.
+ **/
+GdkRGBA getTwinklingDark(
+    BULB_COLOR_TYPE colorType) {
+
+    switch (colorType) {
+        case RED: return getTwinklingRedDark();
+        case LIME: return getTwinklingLimeDark();
+        case PURPLE: return getTwinklingPurpleDark();
+        case CYAN: return getTwinklingCyanDark();
+        case GREEN: return getTwinklingGreenDark();
+        case ORANGE: return getTwinklingOrangeDark();
+        case BLUE: return getTwinklingBlueDark();
+        case PINK: return getTwinklingPinkDark();
+
+        case GRAYED:
+        default:
+            return DARK_GRAYED_RGBA;
+    }
+}
+
+/** ***********************************************************
+ ** Helper methods for Red bulbs.
+ **/
+GdkRGBA getTwinklingRedBright() {
+    const GdkRGBA seed = {
+        .red = BRIGHT_COLOR, .green = 0x00,
+        .blue = 0x00, .alpha = 0x00
+    };
+    return getTwinkledColorTypeFrom(seed);
+}
+GdkRGBA getTwinklingRedNormal() {
+    const GdkRGBA seed = {
+        .red = NORMAL_COLOR, .green = 0x00,
+        .blue = 0x00, .alpha = 0x00
+    };
+    return getTwinkledColorTypeFrom(seed);
+}
+GdkRGBA getTwinklingRedDark() {
+    const GdkRGBA seed = {
+        .red = DARK_COLOR, .green = 0x00,
+        .blue = 0x00, .alpha = 0x00
+    };
+    return getTwinkledColorTypeFrom(seed);
+}
+
+/** ***********************************************************
+ ** Helper methods for Lime bulbs.
+ **/
+GdkRGBA getTwinklingLimeBright() {
+    const GdkRGBA seed = {
+        .red = BRIGHT_COLOR, .green = 0xff,
+        .blue = 0x00, .alpha = 0x00
+    };
+    return getTwinkledColorTypeFrom(seed);
+}
+GdkRGBA getTwinklingLimeNormal() {
+    const GdkRGBA seed = {
+        .red = NORMAL_COLOR, .green = 0xff,
+        .blue = 0x00, .alpha = 0x00
+    };
+    return getTwinkledColorTypeFrom(seed);
+}
+GdkRGBA getTwinklingLimeDark() {
+    const GdkRGBA seed = {
+        .red = DARK_COLOR, .green = 0xff,
+        .blue = 0x00, .alpha = 0x00
+    };
+    return getTwinkledColorTypeFrom(seed);
+}
+
+/** ***********************************************************
+ ** Helper methods for Purple bulbs.
+ **/
+GdkRGBA getTwinklingPurpleBright() {
+    const GdkRGBA seed = {
+        .red = BRIGHT_COLOR, .green = 0x00,
+        .blue = 0xff, .alpha = 0x00
+    };
+    return getTwinkledColorTypeFrom(seed);
+}
+GdkRGBA getTwinklingPurpleNormal() {
+    const GdkRGBA seed = {
+        .red = NORMAL_COLOR, .green = 0x00,
+        .blue = 0xff, .alpha = 0x00
+    };
+    return getTwinkledColorTypeFrom(seed);
+}
+GdkRGBA getTwinklingPurpleDark() {
+    const GdkRGBA seed = {
+        .red = DARK_COLOR, .green = 0x00,
+        .blue = 0xff, .alpha = 0x00
+    };
+    return getTwinkledColorTypeFrom(seed);
+}
+
+/** ***********************************************************
+ ** Helper methods for Cyan bulbs.
+ **/
+GdkRGBA getTwinklingCyanBright() {
+    const GdkRGBA seed = {
+        .red = BRIGHT_COLOR, .green = 0xff,
+        .blue = 0xff, .alpha = 0x00
+    };
+    return getTwinkledColorTypeFrom(seed);
+}
+GdkRGBA getTwinklingCyanNormal() {
+    const GdkRGBA seed = {
+        .red = NORMAL_COLOR, .green = 0xff,
+        .blue = 0xff, .alpha = 0x00
+    };
+    return getTwinkledColorTypeFrom(seed);
+}
+GdkRGBA getTwinklingCyanDark() {
+    const GdkRGBA seed = {
+        .red = DARK_COLOR, .green = 0xff,
+        .blue = 0xff, .alpha = 0x00
+    };
+    return getTwinkledColorTypeFrom(seed);
+}
+
+/** ***********************************************************
+ ** Helper methods for Green bulbs.
+ **/
+GdkRGBA getTwinklingGreenBright() {
+    const GdkRGBA seed = {
+        .red = 0x00, .green = BRIGHT_COLOR,
+        .blue = 0x00, .alpha = 0x00
+    };
+    return getTwinkledColorTypeFrom(seed);
+}
+GdkRGBA getTwinklingGreenNormal() {
+    const GdkRGBA seed = {
+        .red = 0x00, .green = NORMAL_COLOR,
+        .blue = 0x00, .alpha = 0x00
+    };
+    return getTwinkledColorTypeFrom(seed);
+}
+GdkRGBA getTwinklingGreenDark() {
+    const GdkRGBA seed = {
+        .red = 0x00, .green = DARK_COLOR,
+        .blue = 0x00, .alpha = 0x00
+    };
+    return getTwinkledColorTypeFrom(seed);
+}
+
+/** ***********************************************************
+ ** Helper methods for Orange bulbs.
+ **/
+GdkRGBA getTwinklingOrangeBright() {
+    const GdkRGBA seed = {
+        .red = 0xff, .green = BRIGHT_COLOR,
+        .blue = 0x00, .alpha = 0x00
+    };
+    return getTwinkledColorTypeFrom(seed);
+}
+GdkRGBA getTwinklingOrangeNormal() {
+    const GdkRGBA seed = {
+        .red = 0xff, .green = NORMAL_COLOR,
+        .blue = 0x00, .alpha = 0x00
+    };
+    return getTwinkledColorTypeFrom(seed);
+}
+GdkRGBA getTwinklingOrangeDark() {
+    const GdkRGBA seed = {
+        .red = 0xff, .green = DARK_COLOR,
+        .blue = 0x00, .alpha = 0x00
+    };
+    return getTwinkledColorTypeFrom(seed);
+}
+
+/** ***********************************************************
+ ** Helper methods for Blue bulbs.
+ **/
+GdkRGBA getTwinklingBlueBright() {
+    const GdkRGBA seed = {
+        .red = 0x00, .green = BRIGHT_COLOR,
+        .blue = 0xff, .alpha = 0x00
+    };
+    return getTwinkledColorTypeFrom(seed);
+}
+GdkRGBA getTwinklingBlueNormal() {
+    const GdkRGBA seed = {
+        .red = 0x00, .green = NORMAL_COLOR,
+        .blue = 0xff, .alpha = 0x00
+    };
+    return getTwinkledColorTypeFrom(seed);
+}
+GdkRGBA getTwinklingBlueDark() {
+    const GdkRGBA seed = {
+        .red = 0x00, .green = DARK_COLOR,
+        .blue = 0xff, .alpha = 0x00
+    };
+    return getTwinkledColorTypeFrom(seed);
+}
+
+/** ***********************************************************
+ ** Helper methods for Pink bulbs.
+ **/
+GdkRGBA getTwinklingPinkBright() {
+    const GdkRGBA seed = {
+        .red = 0xff, .green = BRIGHT_COLOR,
+        .blue = 0xff, .alpha = 0x00
+    };
+    return getTwinkledColorTypeFrom(seed);
+}
+GdkRGBA getTwinklingPinkNormal() {
+    const GdkRGBA seed = {
+        .red = 0xff, .green = NORMAL_COLOR,
+        .blue = 0xff, .alpha = 0x00
+    };
+    return getTwinkledColorTypeFrom(seed);
+}
+GdkRGBA getTwinklingPinkDark() {
+    const GdkRGBA seed = {
+        .red = 0xff, .green = DARK_COLOR,
+        .blue = 0xff, .alpha = 0x00
+    };
+    return getTwinkledColorTypeFrom(seed);
+}
+
+/** ***********************************************************
+ ** Main "Twinkle method". Slightly randomize each
+ ** R / G / B int in the GdkRGBA.
+ **/
+GdkRGBA getTwinkledColorTypeFrom(GdkRGBA seed) {
+    return (GdkRGBA) {
+        .red =
+            seed.red == 0x00 ? 0x00 :
+            seed.red == 0xff ? 0xff :
+            (gdouble) getFuzzyRGBInt(seed.red),
+        .green =
+            seed.green == 0x00 ? 0x00 :
+            seed.green == 0xff ? 0xff :
+            (gdouble) getFuzzyRGBInt(seed.green),
+        .blue =
+            seed.blue == 0x00 ? 0x00 :
+            seed.blue == 0xff ? 0xff :
+            (gdouble) getFuzzyRGBInt(seed.blue),
+        .alpha = 0x0
+    };
+}
+
+/** ***********************************************************
+ ** Slightly randomize an R / G / B int from a GdkRGBA.
+ **/
+int getFuzzyRGBInt(int color) {
     const int RANGE_ABOVE_AND_BELOW = 45;
 
     const int newColor = randint(2) == 0 ?
@@ -339,7 +713,6 @@ void createColoredBulb(GdkRGBA bright, GdkRGBA normal,
      GdkRGBA dark, char*** targetXPM,
     int* targetLineCount) {
 
-    // string brightColorValue = "#00ff00";
     char brightColorValue[16];
     char normalColorValue[16];
     char darkColorValue[16];

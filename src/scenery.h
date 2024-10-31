@@ -21,9 +21,11 @@
  */
 #pragma once
 
+#include <X11/xpm.h>
 #include <gtk/gtk.h>
 
-extern void initSceneryModule();
+
+void initSceneryModule();
 void setSceneryScale();
 void initSceneryPixmaps();
 
@@ -35,7 +37,17 @@ int updateSceneryFrame();
 int compareTrees(const void*, const void*);
 void updateColorTree();
 
-extern int drawSceneryFrame(cairo_t *cr);
+int drawSceneryFrame(cairo_t *cr);
 
-extern void updateSceneryUserSettings();
-extern void clearAndRedrawScenery();
+void updateSceneryUserSettings();
+void clearAndRedrawScenery();
+
+int iXpmCreatePixmapFromData(Display* display,
+    Drawable d, const char** data,
+    Pixmap* p, Pixmap* s,
+    XpmAttributes* attr, int flop);
+
+void strrevertScenery(char*, size_t);
+
+void xpmCreatePixmapFromImage(Display* display,
+    Drawable d, XImage* ximage, Pixmap* pixmap_return);

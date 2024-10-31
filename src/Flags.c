@@ -264,12 +264,14 @@ int HandleFlags(int argc, char *argv[]) {
             handle_ia(-ignoretop, IgnoreTop);
             handle_ia(-ignorebottom, IgnoreBottom);
             handle_ia(-transparency, Transparency);
+
             handle_im(-screen, Screen);
             handle_ia(-outline, Outline);
 
-            handle_is(-display, DisplayName);
-            handle_is(-sc, SnowColor);
-            handle_is(-sc2, SnowColor2);
+            handle_is(display, DisplayName);
+            handle_is(sc, SnowColor);
+            handle_is(sc2, SnowColor2);
+
             handle_is(-birdscolor, BirdsColor);
             handle_is(-tc, TreeColor);
             handle_is(-treetype, TreeType);

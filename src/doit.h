@@ -106,7 +106,6 @@
     DOIT_I(SnowSize, 8, 8)                                                     \
     DOIT_I(SnowSpeedFactor, 100, 100)                                          \
     DOIT_I(Stars, 1, 0) \
-    DOIT_I(showGreenLights, 1, 1) \
     DOIT_I(mAppTheme, 1, 1)                                                    \
     DOIT_I(Outline, 0, 0)                                                      \
     DOIT_I(TreeFill, 30, 30)                                                   \
@@ -116,14 +115,34 @@
     DOIT_I(WhirlTimer, 30, 30)                                                 \
     DOIT_I(IgnoreTop, 0, 0)                                                    \
     DOIT_I(IgnoreBottom, 0, 0)                                                 \
-                                                                               \
-    DOIT_S(SnowColor, "white", "white")                                        \
-    DOIT_S(SnowColor2, "cyan", "cyan")                                         \
-    DOIT_S(BirdsColor, "blue", "blue")                                         \
-    DOIT_S(TreeColor, "red", "red")                                            \
-                                                                               \
-    DOIT_S(TreeType, "1,2,3,4,5,6,7,", "0,")                                   \
-                                                                               \
+    \
+    DOIT_S(SnowColor, "white", "white") \
+    DOIT_S(SnowColor2, "cyan", "cyan") \
+    DOIT_S(BirdsColor, "blue", "blue") \
+    DOIT_S(TreeColor, "red", "red") \
+    \
+    DOIT_I(ShowLights, 1, 1) \
+    \
+    DOIT_I(ShowLightColorRed, 1, 1) \
+    DOIT_I(ShowLightColorLime, 0, 0) \
+    DOIT_I(ShowLightColorPurple, 0, 0) \
+    DOIT_I(ShowLightColorCyan, 0, 0) \
+    DOIT_I(ShowLightColorGreen, 1, 1) \
+    DOIT_I(ShowLightColorOrange, 0, 0) \
+    DOIT_I(ShowLightColorBlue, 1, 1) \
+    DOIT_I(ShowLightColorPink, 0, 0) \
+    \
+    DOIT_S(LightColorRed, "#B00000", "#B00000") \
+    DOIT_S(LightColorLime, "#B0ff00", "#B0ff00") \
+    DOIT_S(LightColorPurple, "#B000ff", "#B000ff") \
+    DOIT_S(LightColorCyan, "#B0ffff", "#B0ffff") \
+    DOIT_S(LightColorGreen, "#00B000", "#00B000") \
+    DOIT_S(LightColorOrange, "#ffB000", "#ffB000") \
+    DOIT_S(LightColorBlue, "#00B0ff", "#00B0ff") \
+    DOIT_S(LightColorPink, "#ffB0ff", "#ffB0ff") \
+    \
+    DOIT_S(TreeType, "1,2,3,4,5,6,7,", "0,") \
+    \
     DOIT_I(Anarchy, 50, 50)                                                    \
     DOIT_I(AttrFactor, 100, 100)                                               \
     DOIT_I(BirdsScale, 100, 100)                                               \
