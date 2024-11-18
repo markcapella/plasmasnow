@@ -674,8 +674,6 @@ void createFallenSnowDisplayArea(FallenSnow* fsnow) {
 
     cairo_set_antialias(cr, CAIRO_ANTIALIAS_DEFAULT);
     cairo_set_operator(cr, CAIRO_OPERATOR_SOURCE);
-    cairo_set_source_rgb(cr, fsnow->columnColor[0].red,
-        fsnow->columnColor[0].green, fsnow->columnColor[0].blue);
 
     // Clear surface1.
     cairo_save(cr);
@@ -755,9 +753,13 @@ void createFallenSnowDisplayArea(FallenSnow* fsnow) {
 
     enum { SEARCHING, drawing };
     int state = SEARCHING;
-
     int foundDrawPosition;
+
+    cairo_set_source_rgb(cr, fsnow->columnColor[0].red,
+        fsnow->columnColor[0].green, fsnow->columnColor[0].blue);
+
     for (int i = 0; i < fallenSnowItemWidth; ++i) {
+
         int nextValue = gsl_spline_eval(spline, i, accelerator);
 
         switch (state) {
@@ -787,8 +789,10 @@ void createFallenSnowDisplayArea(FallenSnow* fsnow) {
 
     gsl_spline_free(spline);
     gsl_interp_accel_free(accelerator);
+
     free(averageXPosList);
     free(averageHeightList);
+
     cairo_destroy(cr);
 }
 

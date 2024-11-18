@@ -111,7 +111,7 @@ void setActiveAppDragWindowCandidate(Window);
 Window getDragWindowOf(Window);
 
 void getWinInfoList();
-WinInfo* findWinInfoByWindowId(Window);
+WinInfo* findWinInfoByWindowId(Window id);
 
 //**
 // Debug methods.

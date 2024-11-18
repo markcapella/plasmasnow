@@ -30,33 +30,21 @@
 /***********************************************************
  * Module Method stubs.
  */
-extern long int getCurrentWorkspace();
-long int getWindowWorkspace(Window window);
-
-extern WinInfo* findWinInfoByWindowId(Window id);
-
-extern void logAllWinInfoStructs(Display *dpy, WinInfo *windows, int nwin);
-
-extern void doRaiseWindow(char* argString);
-extern void doLowerWindow(char* argString);
-
-Window getWindowMatchName(char* name);
-unsigned long getX11StackedWindowsList(Window** wins);
-
-extern void logWindow(Window);
-extern void logAllWindowsStackedTopToBottom();
-
-unsigned long getRootWindowProperty(Atom prop, Window **wins);
 extern void getX11WindowsList(WinInfo** winInfolist, int *listCount);
-
 void getRawWindowsList(WinInfo** winInfolist, int *listCount);
 void getFinishedWindowsList(WinInfo** winInfolist, int *listCount);
 
+long int getWindowWorkspace(Window window);
+extern long int getCurrentWorkspace();
+
+bool isDesktop_Visible();
 bool isWindow_Hidden(Window window, int windowMapState);
+
 extern bool is_NET_WM_STATE_Hidden(Window window);
 extern bool is_WM_STATE_Hidden(Window window);
 
-bool isDesktop_Visible();
-
 bool isWindow_Sticky(long workSpace, WinInfo*);
 bool isWindow_Dock(WinInfo*);
+
+extern void logAllWinInfoStructs(Display *dpy, WinInfo *windows, int nwin);
+extern void logWindow(Window);

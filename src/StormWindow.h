@@ -35,8 +35,3 @@ int setStormWindowAttributes(
 
 void setTransparentWindowBelow(GtkWindow* window);
 void setTransparentWindowAbove(GtkWindow* window);
-
-void logAllWindowsStackedTopToBottom();
-
-void doRaiseWindow(char* argString);
-void doLowerWindow(char* argString);

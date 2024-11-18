@@ -248,5 +248,4 @@ void setTransparentWindowBelow(__attribute__((unused)) GtkWindow *window) {
 void setTransparentWindowAbove(__attribute__((unused)) GtkWindow *window) {
     gtk_window_set_keep_below(GTK_WINDOW(window), false);
     gtk_window_set_keep_above(GTK_WINDOW(window), true);
-    doRaiseWindow(mGlobal.mPlasmaWindowTitle);
 }

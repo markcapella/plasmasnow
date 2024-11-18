@@ -238,7 +238,7 @@ typedef struct _StarCoordinate {
 
 
 /***********************************************************
- * App Window helper objects.
+ * App WinInfo helper objects.
  */
 typedef struct _WinInfo {
         Window window;

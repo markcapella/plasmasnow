@@ -26,6 +26,7 @@
 // Std C Lib headers.
 #include <ctype.h>
 #include <fcntl.h>
+#include <malloc.h>
 #include <math.h>
 #include <pthread.h>
 #include <signal.h>
@@ -90,9 +91,6 @@
  */
 
 // Windows:
-void setAppBelowAllWindows();
-void setAppAboveAllWindows();
-
 Window getActiveX11Window();
 Window getActiveAppWindow();
 
@@ -145,15 +143,11 @@ static int handlePendingX11Events();
 static int onTimerEventDisplayChanged();
 
 static void mybindtestdomain();
-extern void setAppAboveOrBelowAllWindows();
 
 char* getDesktopSession();
 static void respondToWorkspaceSettingsChange();
 extern void setTransparentWindowAbove(GtkWindow* window);
 extern int updateWindowsList();
-
-extern void doRaiseWindow(char* argString);
-extern void doLowerWindow(char* argString);
 
 static int doAllUISettingsUpdates();
 static int do_stopafter();
@@ -208,6 +202,14 @@ int mX11LastErrorCode = 0;
  ** main.c: 
  **/
 int startApplication(int argc, char *argv[]) {
+    struct mallinfo2 m2InfoS = mallinfo2();
+    printf("%splasmasnow: Total arena bytes @start    : %li.%s\n",
+        COLOR_YELLOW, m2InfoS.arena, COLOR_NORMAL);
+    printf("%splasmasnow: Total allocated bytes @start: %li.%s\n",
+        COLOR_YELLOW, m2InfoS.uordblks, COLOR_NORMAL);
+    printf("%splasmasnow: Total free bytes @start     : %li.%s\n",
+        COLOR_YELLOW, m2InfoS.fordblks, COLOR_NORMAL);
+
     signal(SIGINT, appShutdownHook);
     signal(SIGTERM, appShutdownHook);
     signal(SIGHUP, appShutdownHook);
@@ -260,15 +262,11 @@ int startApplication(int argc, char *argv[]) {
     mGlobal.moonX = 1000;
     mGlobal.moonY = 80;
 
+    // Inits.
     XInitThreads();
-
     initFallenSnowSemaphores();
     aurora_sem_init();
     birds_sem_init();
-
-    // we search for flags that only produce output to stdout,
-    // to enable to run in a non-X environment, in which case
-    // gtk_init() would fail.
     InitFlags();
 
     for (int i = 0; i < argc; i++) {
@@ -325,6 +323,7 @@ int startApplication(int argc, char *argv[]) {
     // We need this at app refresh. remove: -screen n -lang c.
     Argv = (char **) malloc((argc + 1) * sizeof(char **));
     Argc = 0;
+
     for (int i = 0; i < argc; i++) {
         if ((strcmp("-screen", argv[i]) == 0) ||
             (strcmp("-lang", argv[i]) == 0)) {
@@ -554,6 +553,14 @@ int startApplication(int argc, char *argv[]) {
     printf("\n%splasmasnow: gtk_main() Starts.%s\n",
         COLOR_BLUE, COLOR_NORMAL);
 
+    struct mallinfo2 m2InfoR = mallinfo2();
+    printf("%splasmasnow: Total arena bytes @run      : %li.%s\n",
+        COLOR_YELLOW, m2InfoR.arena, COLOR_NORMAL);
+    printf("%splasmasnow: Total allocated bytes @run  : %li.%s\n",
+        COLOR_YELLOW, m2InfoR.uordblks, COLOR_NORMAL);
+    printf("%splasmasnow: Total free bytes @run       : %li.%s\n",
+        COLOR_YELLOW, m2InfoR.fordblks, COLOR_NORMAL);
+
     gtk_main();
 
     printf("\n%splasmasnow: gtk_main() Finishes.%s\n",
@@ -582,13 +589,6 @@ int startApplication(int argc, char *argv[]) {
     }
 
     return 0;
-}
-
-/** *********************************************************************
- ** Set the app x11 window order based on user pref.
- **/
-void setAppAboveOrBelowAllWindows() {
-    setAppBelowAllWindows();
 }
 
 /** *********************************************************************
@@ -1437,13 +1437,3 @@ void mybindtestdomain() {
 #endif
 
 }
-
-/** *********************************************************************
- ** Set BelowAll. To be sure, we push down the Transparent GTK Window
- **               and our actual app Snow Window.
- **/
-void setAppBelowAllWindows() {
-    doLowerWindow(mGlobal.mPlasmaWindowTitle);
-    logAllWindowsStackedTopToBottom();
-}
-

@@ -196,13 +196,8 @@ static void handleFileChooserPreview(
     GtkFileChooser *file_chooser, gpointer data);
 static void setLabelText(GtkLabel *label, const gchar *str);
 
-extern void logAllWindowsStackedTopToBottom();
-
-extern void doRaiseWindow(char* argString);
-extern void doLowerWindow(char* argString);
-
-static gboolean handleMainWindowStateEvents(
-    GtkWidget *widget, GdkEventWindowState *event, gpointer user_data);
+static gboolean handleMainWindowStateEvents(GtkWidget* widget,
+    GdkEventWindowState* event, gpointer user_data);
 
 bool startQPickerDialog(char* callerTag, char* colorAsString);
 int getQPickerRed();

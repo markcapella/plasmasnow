@@ -1699,11 +1699,11 @@ Flag: -snowspeedfactor</property>
             </child>
             <child>
               <object class="GtkToggleButton" id="id-ShowLights">
-                <property name="label" translatable="yes">Show Green Lights</property>
+                <property name="label" translatable="yes">Show Xmas Lights</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">Turns on or off the Green Lights strand.</property>
+                <property name="tooltip-text" translatable="yes">Turns on or off the Xmas Lights strand.</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">center</property>
                 <property name="valign">center</property>
