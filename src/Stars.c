@@ -40,7 +40,7 @@
 
 #define STARANIMATIONS 4
 
-const int STAR_SIZE = 9;
+const int STAR_SIZE = 8;
 const float LOCAL_SCALE = 0.8;
 
 int mNumberOfStars;

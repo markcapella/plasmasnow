@@ -132,7 +132,8 @@ bool createStormWindow(Display* display,
     for (char* eachChar = desktop; *eachChar; ++eachChar) {
         *eachChar = tolower(*eachChar);
     }
-    if (strstr(desktop, "gnome")) {
+    if (strstr(desktop, "gnome") ||
+        strstr(desktop, "ubuntu")) {
         gdk_window_set_type_hint(gdkwin,
             GDK_WINDOW_TYPE_HINT_DOCK);
     }
