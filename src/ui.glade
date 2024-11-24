@@ -674,7 +674,7 @@
           </packing>
         </child>
         <child>
-          <!-- n-columns=4 n-rows=19 -->
+          <!-- n-columns=4 n-rows=18 -->
           <object class="GtkGrid" id="grid_snow">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
@@ -689,7 +689,7 @@
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">If set, show snowflakes.
-Flags: -snow, -nosnow</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="margin-bottom">5</property>
@@ -706,7 +706,7 @@ Flags: -snow, -nosnow</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">The color of the snow.
-                        Flag: -sc</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">start</property>
                 <property name="valign">center</property>
@@ -723,7 +723,7 @@ Flags: -snow, -nosnow</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">2nd color of the snow.
-                      Flag: -sc2</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">end</property>
                 <property name="valign">center</property>
@@ -738,29 +738,10 @@ Flags: -snow, -nosnow</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">The higher this setting, the more snow will collect on the trees.
-Flag: -maxontrees</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="adjustment">snow-on-trees-adjustment</property>
-                <property name="round-digits">1</property>
-                <property name="digits">0</property>
-                <property name="draw-value">False</property>
-                <property name="value-pos">left</property>
-              </object>
-              <packing>
-                <property name="left-attach">3</property>
-                <property name="top-attach">17</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkScale" id="id-MaxScrSnowDepth">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">The higher this setting, the more snow will collect on the  bottom of the desktop.
-Flag: -ssnowdepth</property>
-                <property name="double-buffered">False</property>
-                <property name="valign">center</property>
-                <property name="adjustment">snow-on-screen-adjustment</property>
                 <property name="round-digits">1</property>
                 <property name="digits">0</property>
                 <property name="draw-value">False</property>
@@ -772,15 +753,14 @@ Flag: -ssnowdepth</property>
               </packing>
             </child>
             <child>
-              <object class="GtkScale" id="id-MaxWinSnowDepth">
+              <object class="GtkScale" id="id-MaxScrSnowDepth">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">The higher this setting, the more snow will collect on the windows. 
-Note: in Wayland, there is no snow on the windows. 
-Flag: -wsnowdepth</property>
+                <property name="tooltip-text" translatable="yes">The higher this setting, the more snow will collect on the  bottom of the desktop.
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
-                <property name="adjustment">snow-on-windows-adjustment</property>
+                <property name="adjustment">snow-on-screen-adjustment</property>
                 <property name="round-digits">1</property>
                 <property name="digits">0</property>
                 <property name="draw-value">False</property>
@@ -792,11 +772,31 @@ Flag: -wsnowdepth</property>
               </packing>
             </child>
             <child>
+              <object class="GtkScale" id="id-MaxWinSnowDepth">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">The higher this setting, the more snow will collect on the windows. 
+Note: in Wayland, there is no snow on the windows. 
+</property>
+                <property name="double-buffered">False</property>
+                <property name="valign">center</property>
+                <property name="adjustment">snow-on-windows-adjustment</property>
+                <property name="round-digits">1</property>
+                <property name="digits">0</property>
+                <property name="draw-value">False</property>
+                <property name="value-pos">left</property>
+              </object>
+              <packing>
+                <property name="left-attach">3</property>
+                <property name="top-attach">14</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkScale" id="id-BlowOffFactor">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">The higher this setting, the more snow will be generated  because of Santa ploughing, wind or disappearing windows. 
-Flag: -blowofffactor</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="adjustment">snow-blow-adjustment</property>
@@ -807,7 +807,7 @@ Flag: -blowofffactor</property>
               </object>
               <packing>
                 <property name="left-attach">3</property>
-                <property name="top-attach">14</property>
+                <property name="top-attach">13</property>
               </packing>
             </child>
             <child>
@@ -821,7 +821,7 @@ Flag: -blowofffactor</property>
               </object>
               <packing>
                 <property name="left-attach">2</property>
-                <property name="top-attach">17</property>
+                <property name="top-attach">16</property>
               </packing>
             </child>
             <child>
@@ -835,7 +835,7 @@ Flag: -blowofffactor</property>
               </object>
               <packing>
                 <property name="left-attach">2</property>
-                <property name="top-attach">16</property>
+                <property name="top-attach">15</property>
               </packing>
             </child>
             <child>
@@ -849,7 +849,7 @@ Flag: -blowofffactor</property>
               </object>
               <packing>
                 <property name="left-attach">2</property>
-                <property name="top-attach">15</property>
+                <property name="top-attach">14</property>
               </packing>
             </child>
             <child>
@@ -863,7 +863,7 @@ Flag: -blowofffactor</property>
               </object>
               <packing>
                 <property name="left-attach">2</property>
-                <property name="top-attach">14</property>
+                <property name="top-attach">13</property>
               </packing>
             </child>
             <child>
@@ -873,13 +873,13 @@ Flag: -blowofffactor</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">If set, snow will collect on the trees.
-Flags: -keepsnowontrees, -nokeepsnowontrees</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
               </object>
               <packing>
                 <property name="left-attach">1</property>
-                <property name="top-attach">17</property>
+                <property name="top-attach">16</property>
               </packing>
             </child>
             <child>
@@ -889,24 +889,7 @@ Flags: -keepsnowontrees, -nokeepsnowontrees</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">If set, show fallen snow on bottom of the desktop.
-Flags: -keepsnowonscreen, -nokeepsnowonscreen</property>
-                <property name="double-buffered">False</property>
-                <property name="valign">center</property>
-                <property name="margin-bottom">5</property>
-              </object>
-              <packing>
-                <property name="left-attach">1</property>
-                <property name="top-attach">16</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToggleButton" id="id-NoKeepSnowOnWindows">
-                <property name="label" translatable="yes">Show</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">If set, show fallen snow on windows.
-Flags: -keepsnowonwindows, -nokeepsnowonwindows</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="margin-bottom">5</property>
@@ -917,13 +900,13 @@ Flags: -keepsnowonwindows, -nokeepsnowonwindows</property>
               </packing>
             </child>
             <child>
-              <object class="GtkToggleButton" id="id-BlowSnow">
+              <object class="GtkToggleButton" id="id-NoKeepSnowOnWindows">
                 <property name="label" translatable="yes">Show</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">If set, show snow blowing away.
-Flags: -blowsnow, -noblowsnow</property>
+                <property name="tooltip-text" translatable="yes">If set, show fallen snow on windows.
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="margin-bottom">5</property>
@@ -931,6 +914,23 @@ Flags: -blowsnow, -noblowsnow</property>
               <packing>
                 <property name="left-attach">1</property>
                 <property name="top-attach">14</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToggleButton" id="id-BlowSnow">
+                <property name="label" translatable="yes">Show</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="tooltip-text" translatable="yes">If set, show snow blowing away.
+</property>
+                <property name="double-buffered">False</property>
+                <property name="valign">center</property>
+                <property name="margin-bottom">5</property>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">13</property>
               </packing>
             </child>
             <child>
@@ -1014,7 +1014,7 @@ Flags: -blowsnow, -noblowsnow</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">If set, there will be wind.
-Flags: -wind, -nowind</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
               </object>
@@ -1043,7 +1043,7 @@ Flags: -wind, -nowind</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">The higher this setting, the more the wind will whirl.
-Flag: -whirlfactor</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="adjustment">whirl-adjustment</property>
@@ -1057,32 +1057,11 @@ Flag: -whirlfactor</property>
               </packing>
             </child>
             <child>
-              <object class="GtkButton">
-                <property name="label" translatable="yes">Test Whirl</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">Force a gust of wind immediately.</property>
-                <property name="double-buffered">False</property>
-                <property name="halign">end</property>
-                <property name="valign">center</property>
-                <property name="margin-left">35</property>
-                <property name="margin-right">33</property>
-                <property name="margin-end">38</property>
-                <signal name="clicked" handler="onClickedActivateWind" swapped="no"/>
-              </object>
-              <packing>
-                <property name="left-attach">2</property>
-                <property name="top-attach">11</property>
-                <property name="width">2</property>
-              </packing>
-            </child>
-            <child>
               <object class="GtkScale" id="id-WhirlTimer">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">This setting determines how many seconds pass between  two  gusts of wind.
-Flag: -whirltimer</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="margin-top">7</property>
                 <property name="margin-bottom">7</property>
@@ -1120,7 +1099,7 @@ Flag: -whirltimer</property>
               </object>
               <packing>
                 <property name="left-attach">0</property>
-                <property name="top-attach">12</property>
+                <property name="top-attach">11</property>
               </packing>
             </child>
             <child>
@@ -1153,7 +1132,7 @@ Flag: -whirltimer</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">The higher, the more snowflakes.
-Flag: -snowflakes</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="adjustment">snow-intensity-adjustment</property>
@@ -1191,7 +1170,7 @@ Flag: -snowflakes</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">Maximum amount of snowflakes.
-Flag: -flakecountmax</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="margin-bottom">10</property>
@@ -1228,7 +1207,7 @@ Flag: -flakecountmax</property>
               </object>
               <packing>
                 <property name="left-attach">0</property>
-                <property name="top-attach">13</property>
+                <property name="top-attach">12</property>
               </packing>
             </child>
             <child>
@@ -1266,7 +1245,7 @@ Flag: -flakecountmax</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">Size of snowflakes, works only for non-vintage snow flakes.
-Flag: -snowsize</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="adjustment">snow-size-adjustment</property>
@@ -1285,7 +1264,7 @@ Flag: -snowsize</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">Speed of the snowflakes.
-Flag: -snowspeedfactor</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="adjustment">snow-speed-adjustment</property>
@@ -1318,14 +1297,8 @@ Flag: -snowspeedfactor</property>
               </object>
               <packing>
                 <property name="left-attach">0</property>
-                <property name="top-attach">18</property>
+                <property name="top-attach">17</property>
               </packing>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
             </child>
             <child>
               <placeholder/>
@@ -1551,8 +1524,8 @@ Flag: -snowspeedfactor</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="tooltip-text" translatable="yes">The color of the snow.
-                        Flag: -sc</property>
+                    <property name="tooltip-text" translatable="yes">Click to select color.
+</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
@@ -1571,8 +1544,7 @@ Flag: -snowspeedfactor</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="tooltip-text" translatable="yes">The color of the snow.
-                        Flag: -sc</property>
+                    <property name="tooltip-text" translatable="yes">Click to select color.</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
@@ -1589,8 +1561,7 @@ Flag: -snowspeedfactor</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="tooltip-text" translatable="yes">The color of the snow.
-                        Flag: -sc</property>
+                    <property name="tooltip-text" translatable="yes">Click to select color.</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
@@ -1607,8 +1578,7 @@ Flag: -snowspeedfactor</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="tooltip-text" translatable="yes">The color of the snow.
-                        Flag: -sc</property>
+                    <property name="tooltip-text" translatable="yes">Click to select color.</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
@@ -1625,8 +1595,7 @@ Flag: -snowspeedfactor</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="tooltip-text" translatable="yes">The color of the snow.
-                        Flag: -sc</property>
+                    <property name="tooltip-text" translatable="yes">Click to select color.</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
@@ -1643,8 +1612,7 @@ Flag: -snowspeedfactor</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="tooltip-text" translatable="yes">The color of the snow.
-                        Flag: -sc</property>
+                    <property name="tooltip-text" translatable="yes">Click to select color.</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
@@ -1661,8 +1629,7 @@ Flag: -snowspeedfactor</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="tooltip-text" translatable="yes">The color of the snow.
-                        Flag: -sc</property>
+                    <property name="tooltip-text" translatable="yes">Click to select color.</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
@@ -1679,8 +1646,7 @@ Flag: -snowspeedfactor</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="tooltip-text" translatable="yes">The color of the snow.
-                        Flag: -sc</property>
+                    <property name="tooltip-text" translatable="yes">Click to select color.</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
@@ -1703,7 +1669,7 @@ Flag: -snowspeedfactor</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">Turns on or off the Xmas Lights strand.</property>
+                <property name="tooltip-text" translatable="yes">Toggle on or off the Xmas Lights strand.</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">center</property>
                 <property name="valign">center</property>
@@ -1739,7 +1705,7 @@ Flag: -snowspeedfactor</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="tooltip-text" translatable="yes">Santa's speed.
-Flag: -santaspeedfactor</property>
+</property>
                     <property name="double-buffered">False</property>
                     <property name="valign">center</property>
                     <property name="margin-left">8</property>
@@ -1817,7 +1783,7 @@ Flag: -santaspeedfactor</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
                     <property name="tooltip-text" translatable="yes">Tiny Santa with three reindeers.
-Flags: -santa 0 -norudolph</property>
+</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="margin-right">8</property>
@@ -1848,7 +1814,7 @@ Flags: -santa 0 -norudolph</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
                     <property name="tooltip-text" translatable="yes">Tiny Santa with two reindeers and Rudolph.
-Flags: -santa 0 -showrudolph</property>
+</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="margin-left">8</property>
@@ -1892,7 +1858,7 @@ Flags: -santa 0 -showrudolph</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
                     <property name="tooltip-text" translatable="yes">Small Santa with three reindeers.
-Flags: -santa 1 -norudolph</property>
+</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="margin-right">8</property>
@@ -1923,7 +1889,7 @@ Flags: -santa 1 -norudolph</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
                     <property name="tooltip-text" translatable="yes">Small Santa with two reindeers and Rudolph.
-Flags: -santa 1 -showrudolph</property>
+</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="margin-left">8</property>
@@ -1965,7 +1931,7 @@ Flags: -santa 1 -showrudolph</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
                     <property name="tooltip-text" translatable="yes">Santa with three reindeers.
-Flags: -santa 2 -norudolph</property>
+</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="margin-right">8</property>
@@ -1996,7 +1962,7 @@ Flags: -santa 2 -norudolph</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
                     <property name="tooltip-text" translatable="yes">Santa with two reindeers and Rudolph.
-Flags: -santa 2 -showrudolph</property>
+</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="margin-left">8</property>
@@ -2038,7 +2004,7 @@ Flags: -santa 2 -showrudolph</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
                     <property name="tooltip-text" translatable="yes">Santa with Dasher, Dancer, Prancer, Vixen, Comet, Cupid, Dunder and Blixem.
-Flags: -santa 3 -norudolph</property>
+</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="margin-right">8</property>
@@ -2069,7 +2035,7 @@ Flags: -santa 3 -norudolph</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
                     <property name="tooltip-text" translatable="yes">Santa with Dasher, Dancer, Prancer, Vixen, Comet, Cupid,  Dunder,  Blixem and  Rudolph.
-Flags: -santa 3 -showrudolph</property>
+</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="margin-left">8</property>
@@ -2111,7 +2077,7 @@ Flags: -santa 3 -showrudolph</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
                     <property name="tooltip-text" translatable="yes">Santa using the train with two reindeers.
-Flags: -santa 4 -norudolph</property>
+</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="margin-right">8</property>
@@ -2142,7 +2108,7 @@ Flags: -santa 4 -norudolph</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
                     <property name="tooltip-text" translatable="yes">Santa using the train with one reindeer and Rudolph.
-Flags: -santa 4 -showrudolph</property>
+</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="margin-left">8</property>
@@ -2187,8 +2153,7 @@ Flags: -santa 4 -showrudolph</property>
                     <property name="can-focus">False</property>
                     <property name="focus-on-click">False</property>
                     <property name="receives-default">False</property>
-                    <property name="tooltip-text" translatable="yes">The color of the snow.
-                        Flag: -sc</property>
+                    <property name="tooltip-text" translatable="yes">Indicates if button clicked.</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
@@ -2206,8 +2171,7 @@ Flags: -santa 4 -showrudolph</property>
                     <property name="can-focus">True</property>
                     <property name="focus-on-click">False</property>
                     <property name="receives-default">False</property>
-                    <property name="tooltip-text" translatable="yes">The color of the snow.
-                        Flag: -sc</property>
+                    <property name="tooltip-text" translatable="yes">Indicates if button clicked.</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
@@ -2225,8 +2189,7 @@ Flags: -santa 4 -showrudolph</property>
                     <property name="can-focus">True</property>
                     <property name="focus-on-click">False</property>
                     <property name="receives-default">False</property>
-                    <property name="tooltip-text" translatable="yes">The color of the snow.
-                        Flag: -sc</property>
+                    <property name="tooltip-text" translatable="yes">Indicates if button clicked.</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
@@ -2244,8 +2207,7 @@ Flags: -santa 4 -showrudolph</property>
                     <property name="can-focus">True</property>
                     <property name="focus-on-click">False</property>
                     <property name="receives-default">False</property>
-                    <property name="tooltip-text" translatable="yes">The color of the snow.
-                        Flag: -sc</property>
+                    <property name="tooltip-text" translatable="yes">Indicates if button clicked.</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
@@ -2263,8 +2225,7 @@ Flags: -santa 4 -showrudolph</property>
                     <property name="can-focus">True</property>
                     <property name="focus-on-click">False</property>
                     <property name="receives-default">False</property>
-                    <property name="tooltip-text" translatable="yes">The color of the snow.
-                        Flag: -sc</property>
+                    <property name="tooltip-text" translatable="yes">Indicates if button clicked.</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
@@ -2282,8 +2243,7 @@ Flags: -santa 4 -showrudolph</property>
                     <property name="can-focus">True</property>
                     <property name="focus-on-click">False</property>
                     <property name="receives-default">False</property>
-                    <property name="tooltip-text" translatable="yes">The color of the snow.
-                        Flag: -sc</property>
+                    <property name="tooltip-text" translatable="yes">Indicates if button clicked.</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
@@ -2301,8 +2261,7 @@ Flags: -santa 4 -showrudolph</property>
                     <property name="can-focus">True</property>
                     <property name="focus-on-click">False</property>
                     <property name="receives-default">False</property>
-                    <property name="tooltip-text" translatable="yes">The color of the snow.
-                        Flag: -sc</property>
+                    <property name="tooltip-text" translatable="yes">Indicates if button clicked.</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
@@ -2320,8 +2279,7 @@ Flags: -santa 4 -showrudolph</property>
                     <property name="can-focus">True</property>
                     <property name="focus-on-click">False</property>
                     <property name="receives-default">False</property>
-                    <property name="tooltip-text" translatable="yes">The color of the snow.
-                        Flag: -sc</property>
+                    <property name="tooltip-text" translatable="yes">Indicates if button clicked.</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
@@ -2345,7 +2303,7 @@ Flags: -santa 4 -showrudolph</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">To show or not to show Santa.
-Flags: -showsanta, -nosanta</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">center</property>
                 <property name="valign">center</property>
@@ -2381,7 +2339,7 @@ Flags: -showsanta, -nosanta</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="tooltip-text" translatable="yes">Scale of Santa.
-Flags: -santascale &lt;n&gt;</property>
+</property>
                     <property name="double-buffered">False</property>
                     <property name="valign">center</property>
                     <property name="margin-left">8</property>
@@ -2750,8 +2708,7 @@ Flags: -santascale &lt;n&gt;</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">To allow overlap or not when placing scenery.
-Flags: -treeoverlap, -notreeoverlap</property>
+                <property name="tooltip-text" translatable="yes">To allow overlap or not when placing scenery.</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">center</property>
                 <property name="valign">start</property>
@@ -2768,8 +2725,7 @@ Flags: -treeoverlap, -notreeoverlap</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">To show or not to show scenery.
-Flags: -showtrees, -notrees</property>
+                <property name="tooltip-text" translatable="yes">To show or not to show scenery.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
               </object>
@@ -2802,8 +2758,8 @@ Flags: -showtrees, -notrees</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="tooltip-text" translatable="yes">Vintage tree, you can set the color.
-Flag: -treetype 0</property>
+                    <property name="tooltip-text" translatable="yes">Tree, you can set the color.
+</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
@@ -2834,8 +2790,8 @@ Flag: -treetype 0</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="tooltip-text" translatable="yes">Set color of vintage tree.
-                        Flag: -tc</property>
+                    <property name="tooltip-text" translatable="yes">Set color of tree.
+</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
@@ -2978,8 +2934,8 @@ Flag: -treetype 0</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">Woody tree.
-Flags: -treetype 1 or: -treetype all</property>
+                <property name="tooltip-text" translatable="yes">Pine trees.
+</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">end</property>
                 <property name="valign">center</property>
@@ -3006,7 +2962,7 @@ Flags: -treetype 1 or: -treetype all</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">Snowy tree.
-Flags: -treetype 6 or: -treetype all</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">center</property>
                 <property name="valign">center</property>
@@ -3032,8 +2988,8 @@ Flags: -treetype 6 or: -treetype all</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">Leavy tree.
-Flags: -treetype 2 or: -treetype all</property>
+                <property name="tooltip-text" translatable="yes">Bare tree.
+</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">start</property>
                 <property name="valign">center</property>
@@ -3059,8 +3015,7 @@ Flags: -treetype 2 or: -treetype all</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">Small house.
-Flags: -treetype 3 or: -treetype all</property>
+                <property name="tooltip-text" translatable="yes">Xmas ornament.</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">end</property>
                 <property name="valign">center</property>
@@ -3086,8 +3041,7 @@ Flags: -treetype 3 or: -treetype all</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">Small house.
-Flags: -treetype 3 or: -treetype all</property>
+                <property name="tooltip-text" translatable="yes">Candy cane.</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">center</property>
                 <property name="valign">center</property>
@@ -3113,8 +3067,7 @@ Flags: -treetype 3 or: -treetype all</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">Small house.
-Flags: -treetype 3 or: -treetype all</property>
+                <property name="tooltip-text" translatable="yes">Pine bough.</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">start</property>
                 <property name="valign">center</property>
@@ -3141,7 +3094,7 @@ Flags: -treetype 3 or: -treetype all</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">Reindeer.
-Flags: -treetype 4 or: -treetype all</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">end</property>
                 <property name="valign">center</property>
@@ -3168,7 +3121,7 @@ Flags: -treetype 4 or: -treetype all</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">Moose.
-Flags: -treetype 5 or: -treetype all</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">center</property>
                 <property name="valign">center</property>
@@ -3195,7 +3148,7 @@ Flags: -treetype 5 or: -treetype all</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">Polar bear.
-Flags: -treetype 7 or: -treetype all</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">start</property>
                 <property name="valign">center</property>
@@ -3349,7 +3302,7 @@ Flags: -treetype 7 or: -treetype all</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">If set: show birds.
-Flags: -showbirds 1, -showbirds 0</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="margin-bottom">5</property>
@@ -3435,7 +3388,7 @@ Flags: -showbirds 1, -showbirds 0</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">Give the birds a fancy color.
-                        Flag: -birdscolor</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">center</property>
                 <property name="valign">center</property>
@@ -3455,7 +3408,7 @@ Flags: -showbirds 1, -showbirds 0</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">Show the point where the birds want to go.
-Flags: -showattr 0, -showattr 1</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">center</property>
                 <property name="valign">center</property>
@@ -3505,7 +3458,7 @@ Flags: -showattr 0, -showattr 1</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">Birds are attracted by an attraction point. Here you can choose to follow Santa.
-Flags: -followsanta 0, -followsanta 1</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">center</property>
                 <property name="valign">center</property>
@@ -3542,7 +3495,7 @@ Flags: -followsanta 0, -followsanta 1</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">Influence the size of the birds.
-Flag: -birdsscale
+
 </property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
@@ -3562,7 +3515,7 @@ Flag: -birdsscale
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">Speed of birds in arbitrary units.
-Flag: -birdsspeed</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="adjustment">birds-speed-adjustment</property>
@@ -3581,7 +3534,7 @@ Flag: -birdsspeed</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">Desired number of birds. If zero, no birds are shown.
-Flag: -nbirds</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="margin-top">7</property>
@@ -3604,7 +3557,7 @@ Flag: -nbirds</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">Number of nearest neighbours the birds should look at.
-Flag: -neighbours</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="margin-bottom">10</property>
@@ -3624,7 +3577,7 @@ Flag: -neighbours</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">Anarchy level: the higher, the more anarchy.
-Flag: -anarchy</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="margin-bottom">10</property>
@@ -3644,7 +3597,7 @@ Flag: -anarchy</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">Tendency to adjust speed to neighbours.
-Flag: -followneighbours</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="adjustment">birds-follow-adjustment</property>
@@ -3663,7 +3616,7 @@ Flag: -followneighbours</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">Preferred distance from other birds.
-Flag: -prefdistance</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="margin-bottom">11</property>
@@ -3683,7 +3636,7 @@ Flag: -prefdistance</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">Tendency to keep desired distance to neighbours.
-Flag: -disweight</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="adjustment">birds-distance-weight-adjustment</property>
@@ -3703,7 +3656,7 @@ Flag: -disweight</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">Viewing distance.
 NOTE: Santa has no knowledge of viewing distance, so when birds are following Santa, the relative positions of Santa and birds will be temporarely out of sync when you change the viewing distance. This is only noticeable when the birds are following Santa.
-Flag: -viewingdistance</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="adjustment">birds-vd-adjustment</property>
@@ -3722,7 +3675,7 @@ Flag: -viewingdistance</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">Percentage of screen to be used for the attraction point.
-Flag: -attrspace</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="adjustment">attr-space-adjustment</property>
@@ -3741,7 +3694,7 @@ Flag: -attrspace</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">Tendency to concentrate on the attraction point.
-Flag: -focuscentre</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="margin-top">7</property>
@@ -4239,7 +4192,7 @@ Flag: -focuscentre</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">To show or not show stars.
-Flag: -stars  (0 means: no stars)</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="margin-bottom">5</property>
@@ -4257,7 +4210,7 @@ Flag: -stars  (0 means: no stars)</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">To show or not show moon.
-Flags: -moon 1, -moon 0</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="margin-bottom">5</property>
@@ -4276,7 +4229,7 @@ Flags: -moon 1, -moon 0</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">To show or not show aurora.
 Note: the aurora is best viewed using a dark background.
-Flags: -aurora 1, -aurora 0</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
               </object>
@@ -4290,7 +4243,7 @@ Flags: -aurora 1, -aurora 0</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">Number of twinkling stars.
-Flag: -stars</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="adjustment">staradjustment</property>
@@ -4429,7 +4382,7 @@ Flag: -stars</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
                     <property name="tooltip-text" translatable="yes">Place aurora left on the screen.
-Flag: -auroraleft</property>
+</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="active">True</property>
@@ -4447,7 +4400,7 @@ Flag: -auroraleft</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
                     <property name="tooltip-text" translatable="yes">Place aurora in the middle of the screen.
-Flag: -auroramiddle</property>
+</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="active">True</property>
@@ -4466,7 +4419,7 @@ Flag: -auroramiddle</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
                     <property name="tooltip-text" translatable="yes">Place aurora in the right of the screen.
-Flag: -auroraright</property>
+</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="active">True</property>
@@ -4528,7 +4481,7 @@ Flag: -auroraright</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">Brightness of moon's halo.
-Flag: -halobrightness</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="adjustment">halobrightadjustment</property>
@@ -4550,7 +4503,7 @@ Flag: -halobrightness</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">To show or not to show meteors.
-Flags: -meteors, -nometeors</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
               </object>
@@ -4579,7 +4532,7 @@ Flags: -meteors, -nometeors</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">Frequency of meteors to appear.
-Flags: -meteorfrequency</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="adjustment">meteorfreqadjustment</property>
@@ -4600,7 +4553,7 @@ Flags: -meteorfrequency</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">Choose between yellow-ish and white-ish moon.
-                            Flag: -mooncolor [0,1]</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">center</property>
                 <property name="valign">center</property>
@@ -4646,7 +4599,7 @@ Flags: -meteorfrequency</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">Relative size of the moon.
-Flag: -moonsize</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="adjustment">moonsizeadjustment</property>
@@ -4665,7 +4618,7 @@ Flag: -moonsize</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">Speed of moon in pixels/minute.
-Flag: -moonspeed</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="adjustment">moonspeedadjustment</property>
@@ -4744,7 +4697,7 @@ Flag: -moonspeed</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">To show or not to show halo around moon.
-Flags: -halo 1, -halo 0</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
               </object>
@@ -5028,7 +4981,7 @@ Flags: -halo 1, -halo 0</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">When activated, the background will be black.
-Flag: -bg  (this button will be automatically deactivated when -bg is given)</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">center</property>
               </object>
@@ -5043,7 +4996,7 @@ Flag: -bg  (this button will be automatically deactivated when -bg is given)</pr
                 <property name="can-focus">False</property>
                 <property name="tooltip-text" translatable="yes">If you have more than one monitor, choose where 
 you want snow falling. Choose 'all monitors' if you want snow in all monitors.
-NOTE: when changing monitor, the app will refresh. Flag: -screen</property>
+NOTE: when changing monitor, the app will refresh.</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">center</property>
                 <property name="valign">center</property>
@@ -5066,7 +5019,7 @@ NOTE: when changing monitor, the app will refresh. Flag: -screen</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">Use all workspaces to snow in.
 NOTE: this doesn't work properly in enlightenment.
-Flags: -allworkspaces 1, -allworkspaces 0</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">center</property>
                 <property name="valign">center</property>
@@ -5085,7 +5038,7 @@ Flags: -allworkspaces 1, -allworkspaces 0</property>
                 <property name="tooltip-text" translatable="yes">Toggle between plasmasnow's own menu colors and standard menu colors.
 Activated: use plasmasnow colors.
 Deactivated: use default colors.
-Flags: -theme 1, -theme 0</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
               </object>
@@ -5101,7 +5054,7 @@ Flags: -theme 1, -theme 0</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">To draw an outline around the snow window.
-Flag: -outline 1/0</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
               </object>
@@ -5132,7 +5085,7 @@ Click and don't touch mouse and keyboard for a few seconds...</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="tooltip-text" translatable="yes">Choose here the picture you want as background when  xscreensaver is active.
-Flag: -bg</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="filter">backgroundchooserfilter</property>
                 <property name="title" translatable="yes">Choose background</property>
@@ -5209,7 +5162,7 @@ Flag: -bg</property>
                 <property name="tooltip-text" translatable="yes">Transparency of painted items:
 0: no transparency.
 100: fully transparent, you will see nothing!
-Flag: -transparency</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="margin-bottom">7</property>
@@ -5231,7 +5184,7 @@ Flag: -transparency</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">Overall drawing scale.
-Flag: -scale</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="hexpand">True</property>
@@ -5251,7 +5204,7 @@ Flag: -scale</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">Use this if snow falls below the bottom of your screen, or  fallen snow hides something that should not be hidden.
-Flag: -offsets</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="margin-bottom">10</property>
                 <property name="adjustment">lift-window-adjustment</property>
@@ -5271,7 +5224,7 @@ Flag: -offsets</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">Use this if no snow collects on your windows, or if snow  collects separated from your windows. 
 Some basic window managers need this setting (e.g. TWM  needs in general a value of 25 .. 28).
-Flag: -offsety</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="margin-bottom">7</property>
                 <property name="adjustment">lift-windows-adjustment</property>
@@ -5291,7 +5244,7 @@ Flag: -offsety</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">Windows wider than 80 percent of the screen and closer to the top  than the number in this widget will not collect snow.
 In some cases, there are invisible windows near the top of the screen, which are handled by plasmasnow as normal windows: snow is collected upon them. By entering a suitable number here, this undesired behaviour can be avoided.
-Flag: -ignoretop
+
 
 </property>
                 <property name="double-buffered">False</property>
@@ -5314,7 +5267,7 @@ Flag: -ignoretop
                 <property name="tooltip-text" translatable="yes">Windows wider than 80 percent of the screen and closer to the  bottom than the number in this widget will not collect snow.
 
 In some cases, there are invisible windows near the bottom  of  the screen, which are handled by plasmasnow as normal windows: snow is collected upon them. By entering a suitable  number here, this undesired behaviour can be avoided.
-Flag: -ignorebottom</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="adjustment">ignorebottomadjustment</property>
                 <property name="restrict-to-fill-level">False</property>
@@ -5467,7 +5420,7 @@ Flag: -ignorebottom</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">The higher, the smoother plasmasnow will run, but will also use  more cpu power.
-Flag: -cpuload</property>
+</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="margin-bottom">7</property>
