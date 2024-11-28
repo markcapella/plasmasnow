@@ -688,8 +688,7 @@
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">If set, show snowflakes.
-</property>
+                <property name="tooltip-text" translatable="yes">If set, show snowflakes.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="margin-bottom">5</property>
@@ -705,8 +704,7 @@
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">The color of the snow.
-</property>
+                <property name="tooltip-text" translatable="yes">The color of the snow.</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">start</property>
                 <property name="valign">center</property>
@@ -722,8 +720,7 @@
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">2nd color of the snow.
-</property>
+                <property name="tooltip-text" translatable="yes">2nd color of the snow.</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">end</property>
                 <property name="valign">center</property>
@@ -737,8 +734,7 @@
               <object class="GtkScale" id="id-MaxOnTrees">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">The higher this setting, the more snow will collect on the trees.
-</property>
+                <property name="tooltip-text" translatable="yes">The higher this setting, the more snow will collect on the trees.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="adjustment">snow-on-trees-adjustment</property>
@@ -756,8 +752,7 @@
               <object class="GtkScale" id="id-MaxScrSnowDepth">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">The higher this setting, the more snow will collect on the  bottom of the desktop.
-</property>
+                <property name="tooltip-text" translatable="yes">The higher this setting, the more snow will collect on the  bottom of the desktop.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="adjustment">snow-on-screen-adjustment</property>
@@ -776,8 +771,7 @@
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">The higher this setting, the more snow will collect on the windows. 
-Note: in Wayland, there is no snow on the windows. 
-</property>
+Note: in Wayland, there is no snow on the windows. </property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="adjustment">snow-on-windows-adjustment</property>
@@ -795,8 +789,7 @@ Note: in Wayland, there is no snow on the windows.
               <object class="GtkScale" id="id-BlowOffFactor">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">The higher this setting, the more snow will be generated  because of Santa ploughing, wind or disappearing windows. 
-</property>
+                <property name="tooltip-text" translatable="yes">The higher this setting, the more snow will be generated  because of Santa ploughing, wind or disappearing windows. </property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="adjustment">snow-blow-adjustment</property>
@@ -872,8 +865,7 @@ Note: in Wayland, there is no snow on the windows.
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">If set, snow will collect on the trees.
-</property>
+                <property name="tooltip-text" translatable="yes">If set, snow will collect on the trees.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
               </object>
@@ -888,8 +880,7 @@ Note: in Wayland, there is no snow on the windows.
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">If set, show fallen snow on bottom of the desktop.
-</property>
+                <property name="tooltip-text" translatable="yes">If set, show fallen snow on bottom of the desktop.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="margin-bottom">5</property>
@@ -905,8 +896,7 @@ Note: in Wayland, there is no snow on the windows.
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">If set, show fallen snow on windows.
-</property>
+                <property name="tooltip-text" translatable="yes">If set, show fallen snow on windows.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="margin-bottom">5</property>
@@ -922,8 +912,7 @@ Note: in Wayland, there is no snow on the windows.
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">If set, show snow blowing away.
-</property>
+                <property name="tooltip-text" translatable="yes">If set, show snow blowing away.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="margin-bottom">5</property>
@@ -976,8 +965,7 @@ Note: in Wayland, there is no snow on the windows.
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="tooltip-text" translatable="yes">Apply default values for the preferences in this tab.
-</property>
+                    <property name="tooltip-text" translatable="yes">Apply default values for the preferences in this tab.</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">end</property>
                     <property name="valign">center</property>
@@ -1013,8 +1001,7 @@ Note: in Wayland, there is no snow on the windows.
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">If set, there will be wind.
-</property>
+                <property name="tooltip-text" translatable="yes">If set, there will be wind.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
               </object>
@@ -1042,8 +1029,7 @@ Note: in Wayland, there is no snow on the windows.
               <object class="GtkScale" id="id-WhirlFactor">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">The higher this setting, the more the wind will whirl.
-</property>
+                <property name="tooltip-text" translatable="yes">The higher this setting, the more the wind will whirl.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="adjustment">whirl-adjustment</property>
@@ -1060,8 +1046,7 @@ Note: in Wayland, there is no snow on the windows.
               <object class="GtkScale" id="id-WhirlTimer">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">This setting determines how many seconds pass between  two  gusts of wind.
-</property>
+                <property name="tooltip-text" translatable="yes">This setting determines how many seconds pass between  two  gusts of wind.</property>
                 <property name="double-buffered">False</property>
                 <property name="margin-top">7</property>
                 <property name="margin-bottom">7</property>
@@ -1131,8 +1116,7 @@ Note: in Wayland, there is no snow on the windows.
               <object class="GtkScale" id="id-SnowFlakesFactor">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">The higher, the more snowflakes.
-</property>
+                <property name="tooltip-text" translatable="yes">The higher, the more snowflakes.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="adjustment">snow-intensity-adjustment</property>
@@ -1169,8 +1153,7 @@ Note: in Wayland, there is no snow on the windows.
               <object class="GtkScale" id="id-FlakeCountMax">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">Maximum amount of snowflakes.
-</property>
+                <property name="tooltip-text" translatable="yes">Maximum amount of snowflakes.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="margin-bottom">10</property>
@@ -1244,8 +1227,7 @@ Note: in Wayland, there is no snow on the windows.
               <object class="GtkScale" id="id-SnowSize">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">Size of snowflakes, works only for non-vintage snow flakes.
-</property>
+                <property name="tooltip-text" translatable="yes">Size of snowflakes.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="adjustment">snow-size-adjustment</property>
@@ -1263,8 +1245,7 @@ Note: in Wayland, there is no snow on the windows.
               <object class="GtkScale" id="id-SnowSpeedFactor">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">Speed of the snowflakes.
-</property>
+                <property name="tooltip-text" translatable="yes">Speed of the snowflakes.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="adjustment">snow-speed-adjustment</property>
@@ -1524,8 +1505,7 @@ Note: in Wayland, there is no snow on the windows.
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="tooltip-text" translatable="yes">Click to select color.
-</property>
+                    <property name="tooltip-text" translatable="yes">Click to select color.</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
@@ -1704,8 +1684,7 @@ Note: in Wayland, there is no snow on the windows.
                   <object class="GtkScale" id="id-SantaSpeedFactor">
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
-                    <property name="tooltip-text" translatable="yes">Santa's speed.
-</property>
+                    <property name="tooltip-text" translatable="yes">Santa's speed.</property>
                     <property name="double-buffered">False</property>
                     <property name="valign">center</property>
                     <property name="margin-left">8</property>
@@ -1782,8 +1761,7 @@ Note: in Wayland, there is no snow on the windows.
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
-                    <property name="tooltip-text" translatable="yes">Tiny Santa with three reindeers.
-</property>
+                    <property name="tooltip-text" translatable="yes">Tiny Santa with three reindeers.</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="margin-right">8</property>
@@ -1813,8 +1791,7 @@ Note: in Wayland, there is no snow on the windows.
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
-                    <property name="tooltip-text" translatable="yes">Tiny Santa with two reindeers and Rudolph.
-</property>
+                    <property name="tooltip-text" translatable="yes">Tiny Santa with two reindeers and Rudolph.</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="margin-left">8</property>
@@ -1857,8 +1834,7 @@ Note: in Wayland, there is no snow on the windows.
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
-                    <property name="tooltip-text" translatable="yes">Small Santa with three reindeers.
-</property>
+                    <property name="tooltip-text" translatable="yes">Small Santa with three reindeers.</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="margin-right">8</property>
@@ -1888,8 +1864,7 @@ Note: in Wayland, there is no snow on the windows.
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
-                    <property name="tooltip-text" translatable="yes">Small Santa with two reindeers and Rudolph.
-</property>
+                    <property name="tooltip-text" translatable="yes">Small Santa with two reindeers and Rudolph.</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="margin-left">8</property>
@@ -1930,8 +1905,7 @@ Note: in Wayland, there is no snow on the windows.
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
-                    <property name="tooltip-text" translatable="yes">Santa with three reindeers.
-</property>
+                    <property name="tooltip-text" translatable="yes">Santa with three reindeers.</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="margin-right">8</property>
@@ -1961,8 +1935,7 @@ Note: in Wayland, there is no snow on the windows.
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
-                    <property name="tooltip-text" translatable="yes">Santa with two reindeers and Rudolph.
-</property>
+                    <property name="tooltip-text" translatable="yes">Santa with two reindeers and Rudolph.</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="margin-left">8</property>
@@ -2003,8 +1976,7 @@ Note: in Wayland, there is no snow on the windows.
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
-                    <property name="tooltip-text" translatable="yes">Santa with Dasher, Dancer, Prancer, Vixen, Comet, Cupid, Dunder and Blixem.
-</property>
+                    <property name="tooltip-text" translatable="yes">Santa with Dasher, Dancer, Prancer, Vixen, Comet, Cupid, Dunder and Blixem.</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="margin-right">8</property>
@@ -2034,8 +2006,7 @@ Note: in Wayland, there is no snow on the windows.
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
-                    <property name="tooltip-text" translatable="yes">Santa with Dasher, Dancer, Prancer, Vixen, Comet, Cupid,  Dunder,  Blixem and  Rudolph.
-</property>
+                    <property name="tooltip-text" translatable="yes">Santa with Dasher, Dancer, Prancer, Vixen, Comet, Cupid,  Dunder,  Blixem and  Rudolph.</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="margin-left">8</property>
@@ -2076,8 +2047,7 @@ Note: in Wayland, there is no snow on the windows.
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
-                    <property name="tooltip-text" translatable="yes">Santa using the train with two reindeers.
-</property>
+                    <property name="tooltip-text" translatable="yes">Santa using the train with two reindeers.</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="margin-right">8</property>
@@ -2107,8 +2077,7 @@ Note: in Wayland, there is no snow on the windows.
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
-                    <property name="tooltip-text" translatable="yes">Santa using the train with one reindeer and Rudolph.
-</property>
+                    <property name="tooltip-text" translatable="yes">Santa using the train with one reindeer and Rudolph.</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="margin-left">8</property>
@@ -2302,8 +2271,7 @@ Note: in Wayland, there is no snow on the windows.
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">To show or not to show Santa.
-</property>
+                <property name="tooltip-text" translatable="yes">To show or not to show Santa.</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">center</property>
                 <property name="valign">center</property>
@@ -2338,8 +2306,7 @@ Note: in Wayland, there is no snow on the windows.
                   <object class="GtkScale" id="id-SantaScale">
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
-                    <property name="tooltip-text" translatable="yes">Scale of Santa.
-</property>
+                    <property name="tooltip-text" translatable="yes">Scale of Santa.</property>
                     <property name="double-buffered">False</property>
                     <property name="valign">center</property>
                     <property name="margin-left">8</property>
@@ -2758,8 +2725,7 @@ Note: in Wayland, there is no snow on the windows.
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="tooltip-text" translatable="yes">Tree, you can set the color.
-</property>
+                    <property name="tooltip-text" translatable="yes">Tree, you can set the color.</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
@@ -2790,8 +2756,7 @@ Note: in Wayland, there is no snow on the windows.
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="tooltip-text" translatable="yes">Set color of tree.
-</property>
+                    <property name="tooltip-text" translatable="yes">Set color of tree.</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
@@ -2934,8 +2899,7 @@ Note: in Wayland, there is no snow on the windows.
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">Pine trees.
-</property>
+                <property name="tooltip-text" translatable="yes">Pine trees.</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">end</property>
                 <property name="valign">center</property>
@@ -2961,8 +2925,7 @@ Note: in Wayland, there is no snow on the windows.
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">Snowy tree.
-</property>
+                <property name="tooltip-text" translatable="yes">Snowy tree.</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">center</property>
                 <property name="valign">center</property>
@@ -2988,8 +2951,7 @@ Note: in Wayland, there is no snow on the windows.
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">Bare tree.
-</property>
+                <property name="tooltip-text" translatable="yes">Bare tree.</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">start</property>
                 <property name="valign">center</property>
@@ -3093,8 +3055,7 @@ Note: in Wayland, there is no snow on the windows.
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">Reindeer.
-</property>
+                <property name="tooltip-text" translatable="yes">Reindeer.</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">end</property>
                 <property name="valign">center</property>
@@ -3120,8 +3081,7 @@ Note: in Wayland, there is no snow on the windows.
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">Moose.
-</property>
+                <property name="tooltip-text" translatable="yes">Moose.</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">center</property>
                 <property name="valign">center</property>
@@ -3147,8 +3107,7 @@ Note: in Wayland, there is no snow on the windows.
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">Polar bear.
-</property>
+                <property name="tooltip-text" translatable="yes">Polar bear.</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">start</property>
                 <property name="valign">center</property>
@@ -3301,8 +3260,7 @@ Note: in Wayland, there is no snow on the windows.
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">If set: show birds.
-</property>
+                <property name="tooltip-text" translatable="yes">If set: show birds.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="margin-bottom">5</property>
@@ -3387,8 +3345,7 @@ Note: in Wayland, there is no snow on the windows.
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">Give the birds a fancy color.
-</property>
+                <property name="tooltip-text" translatable="yes">Give the birds a fancy color.</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">center</property>
                 <property name="valign">center</property>
@@ -3407,8 +3364,7 @@ Note: in Wayland, there is no snow on the windows.
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">Show the point where the birds want to go.
-</property>
+                <property name="tooltip-text" translatable="yes">Show the point where the birds want to go.</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">center</property>
                 <property name="valign">center</property>
@@ -3457,8 +3413,7 @@ Note: in Wayland, there is no snow on the windows.
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">Birds are attracted by an attraction point. Here you can choose to follow Santa.
-</property>
+                <property name="tooltip-text" translatable="yes">Birds are attracted by an attraction point. Here you can choose to follow Santa.</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">center</property>
                 <property name="valign">center</property>
@@ -3495,7 +3450,6 @@ Note: in Wayland, there is no snow on the windows.
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">Influence the size of the birds.
-
 </property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
@@ -3514,8 +3468,7 @@ Note: in Wayland, there is no snow on the windows.
               <object class="GtkScale" id="id-BirdsSpeed">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">Speed of birds in arbitrary units.
-</property>
+                <property name="tooltip-text" translatable="yes">Speed of birds in arbitrary units.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="adjustment">birds-speed-adjustment</property>
@@ -3533,8 +3486,7 @@ Note: in Wayland, there is no snow on the windows.
               <object class="GtkScale" id="id-Nbirds">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">Desired number of birds. If zero, no birds are shown.
-</property>
+                <property name="tooltip-text" translatable="yes">Desired number of birds. If zero, no birds are shown.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="margin-top">7</property>
@@ -3556,8 +3508,7 @@ Note: in Wayland, there is no snow on the windows.
               <object class="GtkScale" id="id-Neighbours">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">Number of nearest neighbours the birds should look at.
-</property>
+                <property name="tooltip-text" translatable="yes">Number of nearest neighbours the birds should look at.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="margin-bottom">10</property>
@@ -3576,8 +3527,7 @@ Note: in Wayland, there is no snow on the windows.
               <object class="GtkScale" id="id-Anarchy">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">Anarchy level: the higher, the more anarchy.
-</property>
+                <property name="tooltip-text" translatable="yes">Anarchy level: the higher, the more anarchy.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="margin-bottom">10</property>
@@ -3596,8 +3546,7 @@ Note: in Wayland, there is no snow on the windows.
               <object class="GtkScale" id="id-FollowWeight">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">Tendency to adjust speed to neighbours.
-</property>
+                <property name="tooltip-text" translatable="yes">Tendency to adjust speed to neighbours.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="adjustment">birds-follow-adjustment</property>
@@ -3615,8 +3564,7 @@ Note: in Wayland, there is no snow on the windows.
               <object class="GtkScale" id="id-PrefDistance">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">Preferred distance from other birds.
-</property>
+                <property name="tooltip-text" translatable="yes">Preferred distance from other birds.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="margin-bottom">11</property>
@@ -3635,8 +3583,7 @@ Note: in Wayland, there is no snow on the windows.
               <object class="GtkScale" id="id-DisWeight">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">Tendency to keep desired distance to neighbours.
-</property>
+                <property name="tooltip-text" translatable="yes">Tendency to keep desired distance to neighbours.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="adjustment">birds-distance-weight-adjustment</property>
@@ -3655,8 +3602,7 @@ Note: in Wayland, there is no snow on the windows.
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">Viewing distance.
-NOTE: Santa has no knowledge of viewing distance, so when birds are following Santa, the relative positions of Santa and birds will be temporarely out of sync when you change the viewing distance. This is only noticeable when the birds are following Santa.
-</property>
+NOTE: Santa has no knowledge of viewing distance, so when birds are following Santa, the relative positions of Santa and birds will be temporarely out of sync when you change the viewing distance. This is only noticeable when the birds are following Santa.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="adjustment">birds-vd-adjustment</property>
@@ -3674,8 +3620,7 @@ NOTE: Santa has no knowledge of viewing distance, so when birds are following Sa
               <object class="GtkScale" id="id-AttrSpace">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">Percentage of screen to be used for the attraction point.
-</property>
+                <property name="tooltip-text" translatable="yes">Percentage of screen to be used for the attraction point.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="adjustment">attr-space-adjustment</property>
@@ -3693,8 +3638,7 @@ NOTE: Santa has no knowledge of viewing distance, so when birds are following Sa
               <object class="GtkScale" id="id-AttrFactor">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">Tendency to concentrate on the attraction point.
-</property>
+                <property name="tooltip-text" translatable="yes">Tendency to concentrate on the attraction point.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="margin-top">7</property>
@@ -4191,8 +4135,7 @@ NOTE: Santa has no knowledge of viewing distance, so when birds are following Sa
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">To show or not show stars.
-</property>
+                <property name="tooltip-text" translatable="yes">To show or not show stars.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="margin-bottom">5</property>
@@ -4209,8 +4152,7 @@ NOTE: Santa has no knowledge of viewing distance, so when birds are following Sa
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">To show or not show moon.
-</property>
+                <property name="tooltip-text" translatable="yes">To show or not show moon.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="margin-bottom">5</property>
@@ -4228,8 +4170,7 @@ NOTE: Santa has no knowledge of viewing distance, so when birds are following Sa
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">To show or not show aurora.
-Note: the aurora is best viewed using a dark background.
-</property>
+Note: the aurora is best viewed using a dark background.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
               </object>
@@ -4242,8 +4183,7 @@ Note: the aurora is best viewed using a dark background.
               <object class="GtkScale" id="id-NStars">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">Number of twinkling stars.
-</property>
+                <property name="tooltip-text" translatable="yes">Number of twinkling stars.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="adjustment">staradjustment</property>
@@ -4298,8 +4238,7 @@ Note: the aurora is best viewed using a dark background.
               <object class="GtkScale" id="id-AuroraWidth">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">Width of aurora.
-</property>
+                <property name="tooltip-text" translatable="yes">Width of aurora.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="adjustment">aurorawidthadjustment</property>
@@ -4381,8 +4320,7 @@ Note: the aurora is best viewed using a dark background.
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="tooltip-text" translatable="yes">Place aurora left on the screen.
-</property>
+                    <property name="tooltip-text" translatable="yes">Place aurora left on the screen.</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="active">True</property>
@@ -4399,8 +4337,7 @@ Note: the aurora is best viewed using a dark background.
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="tooltip-text" translatable="yes">Place aurora in the middle of the screen.
-</property>
+                    <property name="tooltip-text" translatable="yes">Place aurora in the middle of the screen.</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="active">True</property>
@@ -4418,8 +4355,7 @@ Note: the aurora is best viewed using a dark background.
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="tooltip-text" translatable="yes">Place aurora in the right of the screen.
-</property>
+                    <property name="tooltip-text" translatable="yes">Place aurora in the right of the screen.</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">center</property>
                     <property name="active">True</property>
@@ -4480,8 +4416,7 @@ Note: the aurora is best viewed using a dark background.
               <object class="GtkScale" id="id-HaloBright">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">Brightness of moon's halo.
-</property>
+                <property name="tooltip-text" translatable="yes">Brightness of moon's halo.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="adjustment">halobrightadjustment</property>
@@ -4502,8 +4437,7 @@ Note: the aurora is best viewed using a dark background.
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">To show or not to show meteors.
-</property>
+                <property name="tooltip-text" translatable="yes">To show or not to show meteors.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
               </object>
@@ -4531,8 +4465,7 @@ Note: the aurora is best viewed using a dark background.
               <object class="GtkScale" id="id-MeteorFrequency">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">Frequency of meteors to appear.
-</property>
+                <property name="tooltip-text" translatable="yes">Frequency of meteors to appear.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="adjustment">meteorfreqadjustment</property>
@@ -4552,8 +4485,7 @@ Note: the aurora is best viewed using a dark background.
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">Choose between yellow-ish and white-ish moon.
-</property>
+                <property name="tooltip-text" translatable="yes">Choose between yellow-ish and white-ish moon.</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">center</property>
                 <property name="valign">center</property>
@@ -4598,8 +4530,7 @@ Note: the aurora is best viewed using a dark background.
               <object class="GtkScale" id="id-MoonSize">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">Relative size of the moon.
-</property>
+                <property name="tooltip-text" translatable="yes">Relative size of the moon.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="adjustment">moonsizeadjustment</property>
@@ -4617,8 +4548,7 @@ Note: the aurora is best viewed using a dark background.
               <object class="GtkScale" id="id-MoonSpeed">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">Speed of moon in pixels/minute.
-</property>
+                <property name="tooltip-text" translatable="yes">Speed of moon in pixels/minute.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="adjustment">moonspeedadjustment</property>
@@ -4696,8 +4626,7 @@ Note: the aurora is best viewed using a dark background.
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">To show or not to show halo around moon.
-</property>
+                <property name="tooltip-text" translatable="yes">To show or not to show halo around moon.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
               </object>
@@ -4980,8 +4909,7 @@ Note: the aurora is best viewed using a dark background.
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">When activated, the background will be black.
-</property>
+                <property name="tooltip-text" translatable="yes">When activated, the background will be black.</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">center</property>
               </object>
@@ -5018,8 +4946,7 @@ NOTE: when changing monitor, the app will refresh.</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">Use all workspaces to snow in.
-NOTE: this doesn't work properly in enlightenment.
-</property>
+NOTE: this doesn't work properly in enlightenment.</property>
                 <property name="double-buffered">False</property>
                 <property name="halign">center</property>
                 <property name="valign">center</property>
@@ -5037,8 +4964,7 @@ NOTE: this doesn't work properly in enlightenment.
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">Toggle between plasmasnow's own menu colors and standard menu colors.
 Activated: use plasmasnow colors.
-Deactivated: use default colors.
-</property>
+Deactivated: use default colors.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
               </object>
@@ -5053,8 +4979,7 @@ Deactivated: use default colors.
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">To draw an outline around the snow window.
-</property>
+                <property name="tooltip-text" translatable="yes">To draw an outline around the snow window.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
               </object>
@@ -5084,8 +5009,7 @@ Click and don't touch mouse and keyboard for a few seconds...</property>
               <object class="GtkFileChooserButton" id="id-BackgroundFile">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="tooltip-text" translatable="yes">Choose here the picture you want as background when  xscreensaver is active.
-</property>
+                <property name="tooltip-text" translatable="yes">Choose here the picture you want as background when  xscreensaver is active.</property>
                 <property name="double-buffered">False</property>
                 <property name="filter">backgroundchooserfilter</property>
                 <property name="title" translatable="yes">Choose background</property>
@@ -5161,8 +5085,7 @@ Click and don't touch mouse and keyboard for a few seconds...</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">Transparency of painted items:
 0: no transparency.
-100: fully transparent, you will see nothing!
-</property>
+100: fully transparent, you will see nothing!</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="margin-bottom">7</property>
@@ -5183,8 +5106,7 @@ Click and don't touch mouse and keyboard for a few seconds...</property>
                 <property name="name">general-scale</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">Overall drawing scale.
-</property>
+                <property name="tooltip-text" translatable="yes">Overall drawing scale.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="hexpand">True</property>
@@ -5203,8 +5125,7 @@ Click and don't touch mouse and keyboard for a few seconds...</property>
               <object class="GtkScale" id="id-OffsetS">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">Use this if snow falls below the bottom of your screen, or  fallen snow hides something that should not be hidden.
-</property>
+                <property name="tooltip-text" translatable="yes">Use this if snow falls below the bottom of your screen, or  fallen snow hides something that should not be hidden.</property>
                 <property name="double-buffered">False</property>
                 <property name="margin-bottom">10</property>
                 <property name="adjustment">lift-window-adjustment</property>
@@ -5223,8 +5144,7 @@ Click and don't touch mouse and keyboard for a few seconds...</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">Use this if no snow collects on your windows, or if snow  collects separated from your windows. 
-Some basic window managers need this setting (e.g. TWM  needs in general a value of 25 .. 28).
-</property>
+Some basic window managers need this setting (e.g. TWM  needs in general a value of 25 .. 28).</property>
                 <property name="double-buffered">False</property>
                 <property name="margin-bottom">7</property>
                 <property name="adjustment">lift-windows-adjustment</property>
@@ -5244,7 +5164,6 @@ Some basic window managers need this setting (e.g. TWM  needs in general a value
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">Windows wider than 80 percent of the screen and closer to the top  than the number in this widget will not collect snow.
 In some cases, there are invisible windows near the top of the screen, which are handled by plasmasnow as normal windows: snow is collected upon them. By entering a suitable number here, this undesired behaviour can be avoided.
-
 
 </property>
                 <property name="double-buffered">False</property>
@@ -5266,8 +5185,7 @@ In some cases, there are invisible windows near the top of the screen, which are
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">Windows wider than 80 percent of the screen and closer to the  bottom than the number in this widget will not collect snow.
 
-In some cases, there are invisible windows near the bottom  of  the screen, which are handled by plasmasnow as normal windows: snow is collected upon them. By entering a suitable  number here, this undesired behaviour can be avoided.
-</property>
+In some cases, there are invisible windows near the bottom  of  the screen, which are handled by plasmasnow as normal windows: snow is collected upon them. By entering a suitable  number here, this undesired behaviour can be avoided.</property>
                 <property name="double-buffered">False</property>
                 <property name="adjustment">ignorebottomadjustment</property>
                 <property name="restrict-to-fill-level">False</property>
@@ -5419,8 +5337,7 @@ In some cases, there are invisible windows near the bottom  of  the screen, whic
                 <property name="name">general-cpuload</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">The higher, the smoother plasmasnow will run, but will also use  more cpu power.
-</property>
+                <property name="tooltip-text" translatable="yes">The higher, the smoother plasmasnow will run, but will also use  more cpu power.</property>
                 <property name="double-buffered">False</property>
                 <property name="valign">center</property>
                 <property name="margin-bottom">7</property>
@@ -5737,5 +5654,4 @@ In some cases, there are invisible windows near the bottom  of  the screen, whic
         </child>
       </object>
     </child>
-  </object>
-</interface>
+  </object></interface>
