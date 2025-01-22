@@ -18,33 +18,15 @@
 #-# You should have received a copy of the GNU General Public License
 #-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-# 
-*/
+ */
 #pragma once
 
 #include <stdbool.h>
 
-#include <X11/Xlib.h>
+extern void startLoadMeasureBackgroundThread(void);
+int  execLoadMeasureBackgroundThread();
 
-#include "plasmasnow.h"
-
-/***********************************************************
- * Module Method stubs.
- */
-extern void getX11WindowsList(WinInfo** winInfolist, int *listCount);
-void getRawWindowsList(WinInfo** winInfolist, int *listCount);
-void getFinishedWindowsList(WinInfo** winInfolist, int *listCount);
-
-long int getWindowWorkspace(Window window);
-extern long int getCurrentWorkspace();
-
-bool isDesktop_Visible();
-bool isWindow_Hidden(Window window, int windowMapState);
-
-extern bool is_NET_WM_STATE_Hidden(Window window);
-extern bool is_WM_STATE_Hidden(Window window);
-
-bool isWindow_Sticky(long workSpace, WinInfo*);
-bool isWindow_Dock(WinInfo*);
-
-extern void logAllWinInfoStructs(Display *dpy, WinInfo *windows, int nwin);
-extern void logWindow(Window);
+static const int   LOAD_PRESSURE_LOW  = -10;
+static const int   LOAD_PRESSURE_HIGH =  10;
+static const int   WARNING_COUNT_MAX = 3;
+static const float EXCESSIVE_LOAD_MONITOR_TIME_PCT = 1.2;

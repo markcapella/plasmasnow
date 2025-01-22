@@ -359,7 +359,7 @@ void docs_usage(int man) {
     manout("-halobrightness <n>", "Brightness of halo (default: %d).",
         F(HaloBright));
     manout("-aurora <n>", "To show (1) or not to show(0) aurora (default: %d).",
-        F(Aurora));
+        F(ShowAurora));
     manout(".", "  On most desktops aurora works, but not on all. Try!");
     manout("-auroraleft", "Place aurora in top left of screen.");
     manout("-auroramiddle", "Place aurora in top middle of screen.");

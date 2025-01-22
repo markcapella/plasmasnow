@@ -21,6 +21,8 @@
 */
 #pragma once
 
+#include <stdbool.h>
+
 // XDO Lib.
 #include "xdo.h"
 
@@ -61,8 +63,9 @@
 #define time_aurora 1.0 // time between update of aurora
 
 // Time user is allowed to confirm app goes below all windows.
+#define TIME_BETWEEN_BLOWOFF_FRAMES 0.50
+
 #define CONFIRM_BELOW_ALL_WINDOWS_EVENT_TIME 1.0
-#define time_blowoff 0.50           // time between blow snow off windows
 #define time_change_attr 60.0       // time between changing attraction point
 #define time_clean 1.00             // time between cleaning desktop
 #define time_desktop_type 2.0       // time between showing desktop type
@@ -88,15 +91,12 @@
 #define time_show_range_etc 0.50    // time between showing range etc.
 #define time_snow_on_trees 0.50     // time between redrawings of snow on trees
 
-// time between checks if flakes should be switched beteen default and
-// vintage
-#define time_switchflakes 0.2
 #define time_testing 2.10  // time between testing code
 #define TIME_BETWEEEN_UI_SETTINGS_UPDATES 0.25 // time between checking values from ui
 #define time_umoon 0.04    // time between update position of moon
 #define time_usanta 0.04   // time between update of santa position
 #define time_ustar 2.00    // time between updating stars
-#define TIME_BETWEEN_LIGHTS_UPDATES 0.5 // time between updating xmas Lights.
+#define TIME_BETWEEN_LIGHTS_FRAMES 0.5 // time between updating xmas Lights.
 #define time_wind 0.10     // time between starting or ending wind
 #define time_wupdate 0.02  // time between getting windows information
 #define time_change_bottom 300.0 // time between changing desired heights
@@ -125,7 +125,6 @@
 #define MAXYSTEP          10 // falling speed max
 #define MAXWSENS         0.4 // sensibility of flakes for wind
 
-#define SNOWFREE          25 // Must stay snowfree on display :)
 #define SNOWSPEED        0.7 // the higher, the speedier the snow
 #define WHIRL            150
 #define MAXVISWORKSPACES 100 // should be enough...
@@ -261,8 +260,8 @@ typedef struct _FallenSnow {
         WinInfo winInfo;          // winInfo None == bottom.
         struct _FallenSnow* next; // pointer to next item.
 
-        cairo_surface_t* surface;
-        cairo_surface_t* surface1;
+        cairo_surface_t* renderedSurfaceA;
+        cairo_surface_t* renderedSurfaceB;
 
         short int x, y;           // X, Y array.
         short int w, h;           // W, H array.
@@ -325,7 +324,7 @@ extern struct _mGlobal {
         unsigned int Hroot;
 
         // Workspace defs.
-        long CWorkSpace;
+        long currentWorkspace;
         long VisWorkSpaces[MAXVISWORKSPACES];
         int NVisWorkSpaces;
         long ChosenWorkSpace;
@@ -378,10 +377,10 @@ extern struct _mGlobal {
 
         // Fallensnow defs.
         // Main WinInfo (Windows) list & helpers.
-        int mWinInfoListLength;
-        WinInfo* mWinInfoList;
+        int winInfoListLength;
+        WinInfo* winInfoList;
 
-        FallenSnow *FsnowFirst;
+        FallenSnow* FsnowFirst;
         int MaxScrSnowDepth;
         int RemoveFluff;
 } mGlobal;

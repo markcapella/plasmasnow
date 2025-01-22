@@ -18,15 +18,42 @@
 #-# You should have received a copy of the GNU General Public License
 #-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-# 
- */
+*/
 #pragma once
 
 #include <stdbool.h>
 
-extern void addLoadMonitorToMainloop(void);
-int  updateLoadMonitor();
+#include <X11/Xlib.h>
 
-static const int   LOAD_PRESSURE_LOW  = -10;
-static const int   LOAD_PRESSURE_HIGH =  10;
-static const int   WARNING_COUNT_MAX = 3;
-static const float EXCESSIVE_LOAD_MONITOR_TIME_PCT = 1.2;
+#include "plasmasnow.h"
+
+
+/***********************************************************
+ * Module Method stubs.
+ */
+WinInfo* getWinInfoForWindow(Window id);
+
+void getWinInfoForAllWindows();
+void getInitialWinInfoList(WinInfo** winInfolist, int* listCount);
+void getFinalWinInfoList(WinInfo** winInfolist, int* listCount);
+
+long int getWorkspaceOfWindow(Window window);
+long int getCurrentWorkspaceNumber();
+
+bool isWindowHidden(Window window, int windowMapState);
+bool isDesktopVisible();
+bool isWindowHiddenByNetWMState(Window window);
+bool isWindowHiddenByWMState(Window window);
+
+bool isWindowSticky(long workSpace, WinInfo*);
+bool isWindowDock(WinInfo*);
+
+char* getWinInfoTitleOfWindow();
+void setWinInfoTitleOfWindow(Window);
+
+// Debug.
+void logWinInfoStructColumns();
+void logAllWinInfoStructs();
+
+void logWinInfoForWindow(Window);
+void logWinAttrForWindow(Window);

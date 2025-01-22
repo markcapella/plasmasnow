@@ -51,18 +51,19 @@
 // Plasmasnow headers.
 #include "plasmasnow.h"
 
-#include "aurora.h"
+#include "Application.h"
+#include "Aurora.h"
 #include "birds.h"
-#include "blowoff.h"
+#include "Blowoff.h"
 #include "clocks.h"
 #include "ColorCodes.h"
 #include "debug.h"
 #include "docs.h"
 #include "dsimple.h"
-#include "fallensnow.h"
+#include "FallenSnow.h"
 #include "Flags.h"
 #include "Lights.h"
-#include "loadmeasure.h"
+#include "LoadMeasure.h"
 #include "mainstub.h"
 #include "MainWindow.h"
 #include "meteor.h"
@@ -77,7 +78,7 @@
 #include "Stars.h"
 #include "StormWindow.h"
 #include "treesnow.h"
-#include "wmctrl.h"
+#include "WinInfo.h"
 #include "version.h"
 #include "wind.h"
 #include "windows.h"
@@ -86,77 +87,9 @@
 #include "xdo.h"
 
 
-/***********************************************************
- * Externally provided to this Module.
- */
-
-// Windows:
-Window getActiveX11Window();
-Window getActiveAppWindow();
-
-void onCursorChange(XEvent*);
-void onAppWindowChange(Window);
-
-void onWindowCreated(XEvent*);
-void onWindowReparent(XEvent*);
-void onWindowChanged(XEvent*);
-
-void onWindowMapped(XEvent*);
-void onWindowFocused(XEvent*);
-void onWindowBlurred(XEvent*);
-void onWindowUnmapped(XEvent*);
-
-void onWindowDestroyed(XEvent*);
-
-bool isWindowBeingDragged();
-
-// Snow:
-// Flake color helper methods.
-void setGlobalFlakeColor(GdkRGBA);
-GdkRGBA getRGBFromString(char* colorString);
-
-
-/***********************************************************
- * Module Method stubs.
- */
-
-static void HandleCpuFactor();
-static void RestartDisplay();
-static void appShutdownHook(int);
-
-static int handleX11ErrorEvent(Display*, XErrorEvent*);
-static void getX11Window(Window*);
-static int drawCairoWindow(void*);
-static void handleX11CairoDisplayChange();
-
-static void drawCairoWindowInternal(cairo_t* cc);
-static int drawTransparentWindow(gpointer);
-static void addWindowDrawMethodToMainloop();
-static gboolean handleTransparentWindowDrawEvents(
-    GtkWidget*, cairo_t*, gpointer);
-static void rectangle_draw(cairo_t*);
-
-static int StartWindow();
-
-static void SetWindowScale();
-static int handlePendingX11Events();
-static int onTimerEventDisplayChanged();
-
-static void mybindtestdomain();
-
-char* getDesktopSession();
-static void respondToWorkspaceSettingsChange();
-extern void setTransparentWindowAbove(GtkWindow* window);
-extern int updateWindowsList();
-
-static int doAllUISettingsUpdates();
-static int do_stopafter();
-static int handleDisplayConfigurationChange();
-
-extern void getWinInfoList();
-
 // ColorPicker methods.
 void uninitQPickerDialog();
+
 
 /** *********************************************************************
  ** Module globals and consts.
@@ -166,48 +99,49 @@ void uninitQPickerDialog();
 #define DO_SYNCH_DEBUG 0
 
 struct _mGlobal mGlobal;
-static char **Argv;
-static int Argc;
+char **Argv;
+int Argc;
 
 Bool mMainWindowNeedsReconfiguration = true;
-static Bool mDoRestartDueToDisplayChange = 0;
+Bool mDoRestartDueToDisplayChange = 0;
 
-static char* mSnowWindowTitlebarName = NULL;
+char* mSnowWindowTitlebarName = NULL;
 
-static guint mTransparentWindowGUID = 0;
-static guint mCairoWindowGUID = 0;
+guint mTransparentWindowGUID = 0;
+guint mCairoWindowGUID = 0;
 
-static GtkWidget *mTransparentWindow = NULL;
+GtkWidget *mTransparentWindow = NULL;
 
-static bool mX11CairoEnabled = false;
+bool mX11CairoEnabled = false;
 cairo_t *mCairoWindow = NULL;
 cairo_surface_t *mCairoSurface = NULL;
 
 int xfixes_event_base_ = -1;
 
-static int mIsSticky = 0;
+int mIsSticky = 0;
 
-static int wantx = 0;
-static int wanty = 0;
+int wantx = 0;
+int wanty = 0;
 
-static int mPrevSnowWinWidth = 0;
-static int mPrevSnowWinHeight = 0;
+int mPrevSnowWinWidth = 0;
+int mPrevSnowWinHeight = 0;
 
-const int mX11MaxErrorCount = 500;
-static int mX11ErrorCount = 0;
+int mX11MaxErrorCount = 500;
+int mX11ErrorCount = 0;
 
 int mX11LastErrorCode = 0;
+
 
 /** *********************************************************************
  ** main.c: 
  **/
 int startApplication(int argc, char *argv[]) {
     struct mallinfo2 m2InfoS = mallinfo2();
-    printf("%splasmasnow: Total arena bytes @start    : %li.%s\n",
+    printf("\n%splasmasnow: Total arena bytes @start     : %li.%s\n",
         COLOR_YELLOW, m2InfoS.arena, COLOR_NORMAL);
-    printf("%splasmasnow: Total allocated bytes @start: %li.%s\n",
+    printf("%splasmasnow: Total allocated bytes @start : %li.%s\n",
         COLOR_YELLOW, m2InfoS.uordblks, COLOR_NORMAL);
-    printf("%splasmasnow: Total free bytes @start     : %li.%s\n",
+    printf("%splasmasnow: Total free bytes @start      : %li.%s\n",
         COLOR_YELLOW, m2InfoS.fordblks, COLOR_NORMAL);
 
     signal(SIGINT, appShutdownHook);
@@ -236,7 +170,7 @@ int startApplication(int argc, char *argv[]) {
     mGlobal.WindowOffsetX = 0;
     mGlobal.WindowOffsetY = 0;
 
-    mGlobal.CWorkSpace = 0;
+    mGlobal.currentWorkspace = 0;
     mGlobal.ChosenWorkSpace = 0;
     mGlobal.NVisWorkSpaces = 1;
     mGlobal.VisWorkSpaces[0] = 0;
@@ -244,8 +178,8 @@ int startApplication(int argc, char *argv[]) {
     mGlobal.ForceRestart = 0;
     mGlobal.MaxScrSnowDepth = 0;
 
-    mGlobal.mWinInfoListLength = 0;
-    mGlobal.mWinInfoList = NULL;
+    mGlobal.winInfoListLength = 0;
+    mGlobal.winInfoList = NULL;
 
     mGlobal.Wind = 0;
     mGlobal.Direction = 0;
@@ -466,7 +400,7 @@ int startApplication(int argc, char *argv[]) {
     InitSnowOnTrees();
 
     updateWindowsList();
-    getWinInfoList();
+    getWinInfoForAllWindows();
 
     if (!StartWindow()) {
         return 1;
@@ -504,23 +438,32 @@ int startApplication(int argc, char *argv[]) {
 
     addWindowsModuleToMainloop();
 
-    // Init app modules.
+    // Init app modules & log window status.
     snow_init();
+    printf("%splasmasnow: It\'s Snowing in: [0x%08lx]%s\n",
+        COLOR_CYAN, mGlobal.SnowWin, COLOR_NORMAL);
+
+    // Init global wininfo list, and further log snow window.
+    logWinInfoStructColumns();
+    logWinInfoForWindow(mGlobal.SnowWin);
+
+    fflush(stdout);
+
+    // Init other modules.
     initFallenSnowModule();
-    blowoff_init();
+    initBlowoffModule();
     wind_init();
     Santa_init();
+    initLightsModule();
     initSceneryModule();
     treesnow_init();
     birds_init();
     initStarsModule();
-    initLightsModule();
     initMeteorModule();
-
-    aurora_init();
+    lazyInitAuroraModule();
     moon_init();
 
-    addLoadMonitorToMainloop();
+    startLoadMeasureBackgroundThread();
 
     addMethodToMainloop(PRIORITY_DEFAULT, time_displaychanged,
         onTimerEventDisplayChanged);
@@ -539,13 +482,6 @@ int startApplication(int argc, char *argv[]) {
     HandleCpuFactor();
     respondToWorkspaceSettingsChange();
 
-    // Log Storming window status.
-    printf("%splasmasnow: It\'s Snowing in: [0x%08lx]%s\n",
-        COLOR_CYAN, mGlobal.SnowWin, COLOR_NORMAL);
-
-    logWindow(mGlobal.SnowWin);
-    fflush(stdout);
-
     //***************************************************
     // Bring it all up !
     //***************************************************
@@ -554,7 +490,7 @@ int startApplication(int argc, char *argv[]) {
         COLOR_BLUE, COLOR_NORMAL);
 
     struct mallinfo2 m2InfoR = mallinfo2();
-    printf("%splasmasnow: Total arena bytes @run      : %li.%s\n",
+    printf("\n%splasmasnow: Total arena bytes @run      : %li.%s\n",
         COLOR_YELLOW, m2InfoR.arena, COLOR_NORMAL);
     printf("%splasmasnow: Total allocated bytes @run  : %li.%s\n",
         COLOR_YELLOW, m2InfoR.uordblks, COLOR_NORMAL);
@@ -905,8 +841,8 @@ int doAllUISettingsUpdates() {
     wind_ui();
     updateStarsUserSettings();
     updateLightsUserSettings();
-    doFallenSnowUserSettingUpdates();
-    blowoff_ui();
+    updateFallenSnowUserSettings();
+    updateBlowoffUserSettings();
     treesnow_ui();
     moon_ui();
     aurora_ui();
@@ -917,9 +853,10 @@ int doAllUISettingsUpdates() {
     UIDO(Transparency, );
     UIDO(Scale, );
     UIDO(OffsetS, updateDisplayDimensions(););
-    UIDO(OffsetY, updateFallenSnowRegionsWithLock(););
+    UIDO(OffsetY, lockFallenSnowSemaphore();
+        doAllFallenSnowWinInfoUpdates();
+        unlockFallenSnowSemaphore(););
     UIDO(AllWorkspaces, respondToWorkspaceSettingsChange(););
-
     UIDOS(BackgroundFile, );
     UIDO(BlackBackground, );
 
@@ -1165,8 +1102,8 @@ void drawCairoWindowInternal(cairo_t* cc) {
         eraseStarsFrame();
         eraseLightsFrame();
         birds_erase(0);
-        snow_erase(1);
-        aurora_erase();
+        removeAllStormItemsInItemset();
+        eraseAuroraFrame();
         XFlush(mGlobal.display);
     }
 
@@ -1190,7 +1127,7 @@ void drawCairoWindowInternal(cairo_t* cc) {
         drawMeteorFrame(cc);
         drawSceneryFrame(cc);
         birds_draw(cc);
-        cairoDrawAllFallenSnowItems(cc);
+        drawFallenSnowFrame(cc);
         if (!Flags.ShowBirds || !Flags.FollowSanta) {
             // If Flags.FollowSanta, drawing of Santa
             // is done in Birds module.

@@ -18,11 +18,34 @@
 #-# You should have received a copy of the GNU General Public License
 #-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-# 
- */
+*/
 #pragma once
 
-extern void blowoff_init(void);
-extern void blowoff_draw(void);
-extern void blowoff_ui(void);
 
-extern int getNumberOfFlakesToBlowoff(void);
+/***********************************************************
+ * Module Method stubs.
+ */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+     bool startQPickerDialog(char* colorTAG,
+          char* colorAsString);
+
+     void endQPickerDialog();
+     void uninitQPickerDialog();
+
+     char* getQPickerColorTAG();
+
+     bool isQPickerActive();
+     bool isQPickerVisible();
+     bool isQPickerTerminated();
+
+     int getQPickerRed();
+     int getQPickerGreen();
+     int getQPickerBlue();
+
+#ifdef __cplusplus
+}
+#endif

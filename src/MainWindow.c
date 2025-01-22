@@ -162,6 +162,7 @@
 #include "birds.h"
 #include "clocks.h"
 #include "ColorCodes.h"
+#include "ColorPicker.h"
 #include "csvpos.h"
 #include "Flags.h"
 #include "MainWindow.h"
@@ -198,11 +199,6 @@ static void setLabelText(GtkLabel *label, const gchar *str);
 
 static gboolean handleMainWindowStateEvents(GtkWidget* widget,
     GdkEventWindowState* event, gpointer user_data);
-
-bool startQPickerDialog(char* callerTag, char* colorAsString);
-int getQPickerRed();
-int getQPickerGreen();
-int getQPickerBlue();
 
 
 /***********************************************************
@@ -266,7 +262,7 @@ static char *lang[100];
 static int nlang;
 
 
-/** *********************************************************************
+/***********************************************************
  ** UI Main Methods.
  **/
 void updateMainWindowUI() {
@@ -307,7 +303,7 @@ void handle_language(int restart) {
     }
 }
 
-/** *********************************************************************
+/***********************************************************
  ** Main WindowState event handler.
  **/
 gboolean handleMainWindowStateEvents(
@@ -324,7 +320,7 @@ gboolean handleMainWindowStateEvents(
     return false;
 }
 
-/** *********************************************************************
+/***********************************************************
  ** Santa helpers.
  **/
 
@@ -397,7 +393,7 @@ void button_santa(GtkWidget *w) {
     SantaVisible();
 }
 
-/** *********************************************************************
+/***********************************************************
  ** Tree helpers.
  **/
 
@@ -417,7 +413,7 @@ static struct _tree_buttons {
 
 #include "undefall.inc"
 
-/** *********************************************************************
+/***********************************************************
  ** Create all button stubs.
  **/
 
@@ -458,7 +454,7 @@ static struct _button {
 
 #include "undefall.inc"
 
-/** *********************************************************************
+/***********************************************************
  ** Get all button form ID & accessors.
  **/
 
@@ -523,7 +519,7 @@ static void getAllButtonFormIDs() {
 
 #include "undefall.inc"
 
-/** *********************************************************************
+/***********************************************************
  ** Define all button SET methods.
  **/
 
@@ -579,7 +575,7 @@ static void getAllButtonFormIDs() {
 
 ALL_BUTTONS
 
-/** *********************************************************************
+/***********************************************************
  ** Helpers for LightColors Control Panel settings.
  **/
 void onClickedSnowColor() {
@@ -651,7 +647,7 @@ void onClickedLightColorPink() {
     }
 }
 
-/** *********************************************************************
+/***********************************************************
  ** Helper for ...
  **/
 bool shouldShowLightColorRed() {
@@ -682,7 +678,7 @@ bool shouldShowLightColorPink() {
 #pragma GCC diagnostic pop
 #include "undefall.inc"
 
-/** *********************************************************************
+/***********************************************************
  ** Init all buttons values.
  **/
 #define togglecode(type, name, m)                                              \
@@ -810,7 +806,7 @@ static void initAllButtonValues() {
 
 #include "undefall.inc"
 
-/** *********************************************************************
+/***********************************************************
  ** Hook all buttons to their action methods.
  **/
 
@@ -865,7 +861,7 @@ static void connectAllButtonSignals() {
 
 #include "undefall.inc"
 
-/** *********************************************************************
+/***********************************************************
  ** Tree helpers.
  **/
 
@@ -887,7 +883,7 @@ static void initTreeButtons() {
 #include "undefall.inc"
 }
 
-/** *********************************************************************
+/***********************************************************
  ** Pixmap helpers.
  **/
 
@@ -947,7 +943,7 @@ static void init_pixmaps() {
     init_tree_pixmaps();
 }
 
-/** *********************************************************************
+/***********************************************************
  ** Helpers.
  **/
 
@@ -979,7 +975,7 @@ static void set_tree_buttons() {
     free(a);
 }
 
-/** *********************************************************************
+/***********************************************************
  ** Helpers.
  **/
 
@@ -999,7 +995,7 @@ void onSelectedLanguageButton(GtkComboBoxText *combo, gpointer data) {
     Flags.Language = strdup(lang[num]);
 }
 
-/** *********************************************************************
+/***********************************************************
  ** Helpers.
  **/
 static void init_general_buttons() {
@@ -1007,14 +1003,14 @@ static void init_general_buttons() {
         "id-version")), "plasmasnow-" VERSION);
 }
 
-/** *********************************************************************
+/***********************************************************
  ** Helpers.
  **/
 typedef struct _snow_button {
         GtkWidget *button;
 } snow_button;
 
-/** *********************************************************************
+/***********************************************************
  ** Helpers.
  **/
 
@@ -1042,7 +1038,7 @@ void ui_set_celestials_header(const char *text) {
     free(a);
 }
 
-/** *********************************************************************
+/***********************************************************
  ** Set default tabs.
  **/
 
@@ -1180,7 +1176,7 @@ void setTabDefaults(int tab) {
     free(background);
 }
 
-/** *********************************************************************
+/***********************************************************
  ** Helpers.
  **/
 
@@ -1204,7 +1200,7 @@ void set_buttons() {
     human_interaction = 1;
 }
 
-/** *********************************************************************
+/***********************************************************
  ** Set the UI Main Window Sticky Flag.
  **/
 void ui_set_sticky(int stickyFlag) {
@@ -1218,7 +1214,7 @@ void ui_set_sticky(int stickyFlag) {
     }
 }
 
-/** *********************************************************************
+/***********************************************************
  ** https://docs.gtk.org/gtk3/iface.FileChooser.html
  **/
 
@@ -1251,7 +1247,7 @@ void handleFileChooserPreview(GtkFileChooser *file_chooser, gpointer data) {
     gtk_file_chooser_set_preview_widget_active(file_chooser, have_preview);
 }
 
-/** *********************************************************************
+/***********************************************************
  ** Main UI Form control.
  **/
 void createMainWindow() {
@@ -1405,7 +1401,7 @@ void createMainWindow() {
     }
 }
 
-/** *********************************************************************
+/***********************************************************
  ** CSS related code for MainWindow styling.
  **/
 
@@ -1475,7 +1471,7 @@ void applyMainWindowCSSTheme() {
     updateMainWindowTheme();
 }
 
-/** *********************************************************************
+/***********************************************************
  ** "Busy" Style class getter / setters.
  **/
 void addBusyStyleClass() {
@@ -1492,14 +1488,14 @@ void removeBusyStyleClass() {
     gtk_style_context_remove_class(mStyleContext, "mAppBusy");
 }
 
-/** *********************************************************************
+/***********************************************************
  **
  **/
 void birdscb(GtkWidget *w, void *m) {
     gtk_widget_set_sensitive(w, !(int *) m);
 }
 
-/** *********************************************************************
+/***********************************************************
  **
  **/
 void ui_gray_birds(int m) {
@@ -1510,11 +1506,11 @@ void ui_gray_birds(int m) {
     gtk_container_foreach(moonbox, birdscb, &m);
 }
 
-/** *********************************************************************
+/***********************************************************
  ** Helpers.
  **/
 
-/** *********************************************************************
+/***********************************************************
  ** ... .
  **/
 char *ui_gtk_version() {
@@ -1524,7 +1520,7 @@ char *ui_gtk_version() {
     return s;
 }
 
-/** *********************************************************************
+/***********************************************************
  ** ... .
  **/
 char *ui_gtk_required() {
@@ -1537,7 +1533,7 @@ char *ui_gtk_required() {
 // 0: gtk version in use too low
 // 1: gtk version in use OK
 
-/** *********************************************************************
+/***********************************************************
  ** ... .
  **/
 int isGtkVersionValid() {
@@ -1560,7 +1556,7 @@ int isGtkVersionValid() {
     return 0;
 }
 
-/** *********************************************************************
+/***********************************************************
  ** ... .
  **/
 void setLabelText(GtkLabel *label, const gchar *str) {
@@ -1569,7 +1565,7 @@ void setLabelText(GtkLabel *label, const gchar *str) {
     }
 }
 
-/** *********************************************************************
+/***********************************************************
  ** ui.glade Form Helpers - All button actions.
  **/
 
@@ -1645,7 +1641,7 @@ void onClickedActivateScreensaver() {
     (void)rc;
 }
 
-/** *********************************************************************
+/***********************************************************
  ** ui.glade Form Helpers - All DEFAULT button actions.
  **/
 

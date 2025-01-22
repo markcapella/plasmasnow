@@ -30,10 +30,11 @@
 #include <gdk/gdkx.h>
 #include <gtk/gtk.h>
 
-#include "debug.h"
+#include "ColorCodes.h"
 #include "dsimple.h"
-#include "fallensnow.h"
+#include "FallenSnow.h"
 #include "Flags.h"
+#include "MsgBox.h"
 #include "mygettext.h"
 #include "plasmasnow.h"
 #include "safe_malloc.h"
@@ -41,45 +42,46 @@
 #include "StormWindow.h"
 #include "Utils.h"
 #include "windows.h"
-#include "wmctrl.h"
+#include "WinInfo.h"
 #include "xdo.h"
 
 
 /***********************************************************
  * Externally provided to this Module.
  */
-bool is_NET_WM_STATE_Hidden(Window window);
-bool is_WM_STATE_Hidden(Window window);
-
 void uninitQPickerDialog();
+
 
 /** *********************************************************************
  ** Module globals and consts.
  **/
-
 bool mIsWindowBeingDragged;
 Window mWindowBeingDragged = None;
 Window mActiveAppDragWindowCandidate = None;
+
+int mUpdateWindowsLockCounter = 0;
 
 Window mActiveAppWindow = None;
 const int mINVALID_POSITION = -1;
 int mActiveAppXPos = mINVALID_POSITION;
 int mActiveAppYPos = mINVALID_POSITION;
 
-// Workspace on which transparent window is placed.
-static long TransWorkSpace = -SOMENUMBER;
 
 /** *********************************************************************
  ** This method ...
  **/
 void addWindowsModuleToMainloop() {
     if (mGlobal.hasDestopWindow) {
-        DetermineVisualWorkspaces();
-        addMethodToMainloop(PRIORITY_DEFAULT, time_wupdate, updateWindowsList);
+        mGlobal.currentWorkspace = getCurrentWorkspaceNumber();
+        getCurrentWorkspaceData();
+
+        addMethodToMainloop(PRIORITY_DEFAULT, time_wupdate,
+            updateWindowsList);
     }
 
     if (!mGlobal.isDoubleBuffered) {
-        addMethodToMainloop(PRIORITY_DEFAULT, time_sendevent, do_sendevent);
+        addMethodToMainloop(PRIORITY_DEFAULT, time_sendevent,
+            do_sendevent);
     }
 }
 
@@ -124,7 +126,7 @@ int do_sendevent() {
 /** *********************************************************************
  ** This method ...
  **/
-void DetermineVisualWorkspaces() {
+void getCurrentWorkspaceData() {
     static XClassHint class_hints;
     static XSetWindowAttributes attr;
     static long valuemask;
@@ -134,7 +136,7 @@ void DetermineVisualWorkspaces() {
 
     if (!mGlobal.hasDestopWindow) {
         mGlobal.NVisWorkSpaces = 1;
-        mGlobal.VisWorkSpaces[0] = mGlobal.CWorkSpace;
+        mGlobal.VisWorkSpaces[0] = mGlobal.currentWorkspace;
         return;
     }
 
@@ -157,7 +159,7 @@ void DetermineVisualWorkspaces() {
     XineramaScreenInfo *info = XineramaQueryScreens(mGlobal.display, &number);
     if (number == 1 || info == NULL) {
         mGlobal.NVisWorkSpaces = 1;
-        mGlobal.VisWorkSpaces[0] = mGlobal.CWorkSpace;
+        mGlobal.VisWorkSpaces[0] = mGlobal.currentWorkspace;
         return;
     }
 
@@ -199,7 +201,7 @@ void DetermineVisualWorkspaces() {
         int rc = xdo_get_desktop_for_window(mGlobal.xdo,
             probeWindow, &desktop);
         if (rc == XDO_ERROR) {
-            desktop = mGlobal.CWorkSpace;
+            desktop = mGlobal.currentWorkspace;
         }
         mGlobal.VisWorkSpaces[i] = desktop;
 
@@ -310,10 +312,10 @@ void updateDisplayDimensions() {
     mGlobal.SnowWinHeight = h + Flags.OffsetS;
     mGlobal.SnowWinBorderWidth = b;
     mGlobal.SnowWinDepth = d;
-    updateFallenSnowAtBottom();
 
+    updateFallenSnowDesktopItemHeight();
     clearAndRedrawScenery();
-    setMaxScreenSnowDepth();
+    updateFallenSnowDesktopItemDepth();
 
     if (!mGlobal.isDoubleBuffered) {
         clearGlobalSnowWindow();
@@ -323,7 +325,7 @@ void updateDisplayDimensions() {
 }
 
 /** *********************************************************************
- ** This method ...
+ ** This method sets OS desktop background
  **/
 void SetBackground() {
     char *f = Flags.BackgroundFile;
@@ -350,14 +352,11 @@ void SetBackground() {
     unsigned char* pixels1 = (unsigned char *)
         malloc(w * h * 4 * sizeof(unsigned char));
 
-    int rowstride = gdk_pixbuf_get_rowstride(pixbuf);
-    P("rowstride: %d\n", rowstride);
-    int i, j;
-    int k = 0;
+    const int ROW_STRIDE = gdk_pixbuf_get_rowstride(pixbuf);
     if (is_little_endian()) {
-        for (i = 0; i < h; i++) {
-            for (j = 0; j < w; j++) {
-                guchar *p = &pixels[i * rowstride + j * n_channels];
+        for (int k = 0, i = 0; i < h; i++) {
+            for (int j = 0; j < w; j++) {
+                guchar *p = &pixels[i * ROW_STRIDE + j * n_channels];
                 pixels1[k++] = p[2];
                 pixels1[k++] = p[1];
                 pixels1[k++] = p[0];
@@ -365,11 +364,9 @@ void SetBackground() {
             }
         }
     } else {
-        I("Big endian system, swapping bytes in background.\n");
-        I("Let me know if this is not OK.\n");
-        for (i = 0; i < h; i++) {
-            for (j = 0; j < w; j++) {
-                guchar *p = &pixels[i * rowstride + j * n_channels];
+        for (int k = 0, i = 0; i < h; i++) {
+            for (int j = 0; j < w; j++) {
+                guchar *p = &pixels[i * ROW_STRIDE + j * n_channels];
                 pixels1[k++] = 0xff;
                 pixels1[k++] = p[0];
                 pixels1[k++] = p[1];
@@ -399,23 +396,21 @@ void SetBackground() {
 
 /** *********************************************************************
  ** Module MAINLOOP methods.
- **/
-/** *********************************************************************
+ **
  ** This method is called periodically from the UI mainloop to update
  ** our internal X11 Windows array. (Laggy huh).
  **/
 int updateWindowsList() {
-    static long PrevWorkSpace = -123;
     if (Flags.shutdownRequested) {
-        return FALSE;
+        return false;
     }
     if (Flags.NoKeepSnowOnWindows) {
-        return TRUE;
+        return true;
     }
 
-    static int lockcounter = 0;
-    if (softLockFallenSnowBaseSemaphore(3, &lockcounter)) {
-        return TRUE;
+    if (softLockFallenSnowBaseSemaphore(3,
+        &mUpdateWindowsLockCounter)) {
+        return true;
     }
 
     // Once in a while, we force updating windows.
@@ -427,57 +422,60 @@ int updateWindowsList() {
     }
     if (!mGlobal.WindowsChanged) {
         unlockFallenSnowSemaphore();
-        return TRUE;
+        return true;
     }
     mGlobal.WindowsChanged = 0;
 
-    // Get current workspace.
-    long currentWorkSpace = getCurrentWorkspace();
-    if (currentWorkSpace < 0) {
-        Flags.shutdownRequested = 1;
+    // Get current workspace number & sanity check.
+    const long WORKSPACE = getCurrentWorkspaceNumber();
+    if (WORKSPACE < 0) {
         unlockFallenSnowSemaphore();
-        return TRUE;
+        printf("%splasmasnow: Virtual workspace has been lost - FATAL.%s\n",
+            COLOR_RED, COLOR_NORMAL);
+        displayMessageBox(100, 200, 355, 66, "plasmasnow",
+            "Virtual workspace has been lost - FATAL.");
+        Flags.shutdownRequested = 1;
+        return true;
     }
 
-    // Update on Workspace change.
-    mGlobal.CWorkSpace = currentWorkSpace;
-    if (currentWorkSpace != PrevWorkSpace) {
-        PrevWorkSpace = currentWorkSpace;
-        DetermineVisualWorkspaces();
+    // Get current workspace data on workspace number change.
+    if (mGlobal.currentWorkspace != WORKSPACE) {
+        mGlobal.currentWorkspace = WORKSPACE;
+        getCurrentWorkspaceData();
     }
 
+    // Don't update windows list until drag stops.
     if (isWindowBeingDragged()) {
-        updateFallenSnowRegions();
+        doAllFallenSnowWinInfoUpdates();
         unlockFallenSnowSemaphore();
         return true;
     }
 
-    // Update windows list. Free any current.
-    // Get new list, error if none.
-    getWinInfoList();
-
-    for (int i = 0; i < mGlobal.mWinInfoListLength; i++) {
-        mGlobal.mWinInfoList[i].x += mGlobal.WindowOffsetX - mGlobal.SnowWinX;
-        mGlobal.mWinInfoList[i].y += mGlobal.WindowOffsetY - mGlobal.SnowWinY;
+    // Update windows list.
+    getWinInfoForAllWindows();
+    for (int i = 0; i < mGlobal.winInfoListLength; i++) {
+        mGlobal.winInfoList[i].x += mGlobal.WindowOffsetX - mGlobal.SnowWinX;
+        mGlobal.winInfoList[i].y += mGlobal.WindowOffsetY - mGlobal.SnowWinY;
     }
 
-    WinInfo* winInfo = findWinInfoByWindowId(mGlobal.SnowWin);
-    if (mGlobal.hasTransparentWindow && winInfo) {
-        if (winInfo->ws > 0) {
-            TransWorkSpace = winInfo->ws;
-        }
-    }
-
+    // Sanity check Snow window every time.
     if (mGlobal.SnowWin != mGlobal.Rootwindow) {
-        if (!mGlobal.hasTransparentWindow && !winInfo) {
+        WinInfo* winInfo = getWinInfoForWindow(mGlobal.SnowWin);
+        if (!winInfo && !mGlobal.hasTransparentWindow) {
+            printf("%splasmasnow: SnowWindow has been lost - FATAL.%s\n",
+                COLOR_RED, COLOR_NORMAL);
+            displayMessageBox(100, 200, 310, 66, "plasmasnow",
+                "SnowWindow has been lost - FATAL.");
             Flags.shutdownRequested = 1;
         }
     }
 
-    updateFallenSnowRegions();
-    unlockFallenSnowSemaphore();
+    // Resolve fallensnow surfaces states with
+    // new windows WinInfo surfaces list.
+    doAllFallenSnowWinInfoUpdates();
 
-    return TRUE;
+    unlockFallenSnowSemaphore();
+    return true;
 }
 
 /** *********************************************************************
@@ -509,14 +507,14 @@ Window getFocusedX11Window() {
  **/
 int getFocusedX11XPos() {
     const WinInfo* focusedWinInfo =
-        findWinInfoByWindowId(getFocusedX11Window());
+        getWinInfoForWindow(getFocusedX11Window());
     return focusedWinInfo ?
         focusedWinInfo->x : mINVALID_POSITION;
 }
 
 int getFocusedX11YPos() {
     const WinInfo* focusedWinInfo =
-        findWinInfoByWindowId(getFocusedX11Window());
+        getWinInfoForWindow(getFocusedX11Window());
     return focusedWinInfo ?
         focusedWinInfo->y : mINVALID_POSITION;
 }
@@ -593,7 +591,7 @@ void onAppWindowChange(Window window) {
     setActiveAppWindow(window);
 
     const WinInfo* activeAppWinInfo =
-        findWinInfoByWindowId(getActiveAppWindow());
+        getWinInfoForWindow(getActiveAppWindow());
     if (activeAppWinInfo) {
         setActiveAppXPos(activeAppWinInfo->x);
         setActiveAppYPos(activeAppWinInfo->y);
@@ -605,7 +603,7 @@ void onAppWindowChange(Window window) {
  **/
 void onWindowCreated(XEvent* event) {
     // Update our list to include the created one.
-    getWinInfoList();
+    getWinInfoForAllWindows();
 
     // Is this a signature of a transient Plasma DRAG Window
     // being created? If not, early exit.
@@ -658,7 +656,7 @@ void onWindowChanged(__attribute__((unused)) XEvent* event) {
  **/
 void onWindowMapped(XEvent* event) {
     // Update our list for visibility change.
-    getWinInfoList();
+    getWinInfoForAllWindows();
 
     // Determine window drag state.
     if (!isWindowBeingDragged()) {
@@ -707,7 +705,7 @@ void onWindowMapped(XEvent* event) {
             // New Plasma "keyboard" DRAG method, we can't determine which
             // visible window (window neither focused nor active),
             // so we shake all free to avoid magically hanging snow.
-            removeAllFallenSnowWindows();
+            removeFallenSnowFromAllWindows();
         }
     }
 }
@@ -731,7 +729,7 @@ void onWindowBlurred(__attribute__((unused)) XEvent* event) {
  **/
 void onWindowUnmapped(__attribute__((unused)) XEvent* event) {
     // Update our list for visibility change.
-    getWinInfoList();
+    getWinInfoForAllWindows();
 
     // Clear window drag state.
     if (isWindowBeingDragged()) {
@@ -744,7 +742,7 @@ void onWindowUnmapped(__attribute__((unused)) XEvent* event) {
  **/
 void onWindowDestroyed(__attribute__((unused)) XEvent* event) {
     // Update our list to reflect the destroyed one.
-    getWinInfoList();
+    getWinInfoForAllWindows();
 
     // Clear window drag state.
     if (isWindowBeingDragged()) {
@@ -809,15 +807,15 @@ void setActiveAppDragWindowCandidate(Window candidate) {
 /** *********************************************************************
  ** This method determines which window is being dragged on user
  ** click and hold window. Returns self or ancestor whose Window
- ** is in mGlobal.mWinInfoList (visible window on screen).
+ ** is in mGlobal.winInfoList (visible window on screen).
  **/
 Window getDragWindowOf(Window window) {
     Window windowNode = window;
 
     while (true) {
         // Is current node in windows list?
-        WinInfo* windowListItem = mGlobal.mWinInfoList;
-        for (int i = 0; i < mGlobal.mWinInfoListLength; i++) {
+        WinInfo* windowListItem = mGlobal.winInfoList;
+        for (int i = 0; i < mGlobal.winInfoListLength; i++) {
             if (windowNode == windowListItem->window) {
                 return windowNode;
             }
@@ -897,30 +895,4 @@ void logWindowAndAllParents(Window window) {
 
     // Terminate the log line.
     fprintf(stdout, "\n");
-}
-
-/** *********************************************************************
- ** This method frees existing list, and refreshes it.
- **/
-void getWinInfoList() {
-    if (mGlobal.mWinInfoList) {
-        free(mGlobal.mWinInfoList);
-    }
-
-    getX11WindowsList(&mGlobal.mWinInfoList, &mGlobal.mWinInfoListLength);
-}
-
-/** *********************************************************************
- ** This method scans all WinInfos for a requested ID.
- **/
-WinInfo* findWinInfoByWindowId(Window window) {
-    WinInfo* winInfoItem = mGlobal.mWinInfoList;
-    for (int i = 0; i < mGlobal.mWinInfoListLength; i++) {
-        if (winInfoItem->window == window) {
-            return winInfoItem;
-        }
-        winInfoItem++;
-    }
-
-    return NULL;
 }

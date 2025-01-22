@@ -21,6 +21,8 @@
 */
 #pragma once
 
+#include <semaphore.h>
+
 #include <gtk/gtk.h>
 
 #define AURORA_POINTS 8                // shape
@@ -81,8 +83,31 @@ typedef struct _AuroraMap {
 
 } AuroraMap;
 
-extern void aurora_init(void);
-extern void aurora_ui(void);
-extern void aurora_draw(cairo_t *cr);
-extern void aurora_erase(void);
-extern void aurora_sem_init(void);
+
+void lazyInitAuroraModule();
+
+void aurora_ui();
+void aurora_draw(cairo_t* cr);
+void eraseAuroraFrame();
+
+void* do_aurora(void*);
+
+
+void aurora_setparms(AuroraMap* a);
+void aurora_changeparms(AuroraMap* a);
+void aurora_computeparms(AuroraMap* a);
+
+void create_aurora_base(const double* y, int n, double* slant,
+    int nslant, double theta, int nw, int np, aurora_t** z, int* nz);
+
+double cscale(double d, int scaleMax, float ah, double az, double h);
+
+// Locks used by Aurora.
+void aurora_sem_init();
+
+int lock_comp();
+int unlock_comp();
+int lock_init();
+int unlock_init();
+int lock_copy();
+int unlock_copy();

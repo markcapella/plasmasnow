@@ -29,6 +29,7 @@
  * __E_WINDOW_MAPPED
  */
 
+#include <ctype.h>
 #include <pthread.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -40,31 +41,54 @@
 #include <X11/Xutil.h>
 
 #include "ColorCodes.h"
-#include "debug.h"
 #include "dsimple.h"
 #include "safe_malloc.h"
 #include "windows.h"
-#include "wmctrl.h"
+#include "WinInfo.h"
 #include "vroot.h"
 
 
 /** *********************************************************************
- ** This method ...
+ ** Module globals and consts.
  **/
-void getX11WindowsList(WinInfo** winInfoList, int* numberOfWindows) {
-    (*numberOfWindows) = 0;
-    (*winInfoList) = NULL;
+#define MAX_TITLE_STRING_LENGTH 40
+char mWinInfoTitleOfWindow[MAX_TITLE_STRING_LENGTH + 1];
 
-    getRawWindowsList(winInfoList, numberOfWindows);
-    getFinishedWindowsList(winInfoList, numberOfWindows);
 
-    return;
+/** *********************************************************************
+ ** This method scans all WinInfos for a requested ID.
+ **/
+WinInfo* getWinInfoForWindow(Window window) {
+    WinInfo* winInfoItem = mGlobal.winInfoList;
+    for (int i = 0; i < mGlobal.winInfoListLength; i++) {
+        if (winInfoItem->window == window) {
+            return winInfoItem;
+        }
+        winInfoItem++;
+    }
+
+    return NULL;
+}
+
+/** *********************************************************************
+ ** This method populates the global WinInfo list.
+ **/
+void getWinInfoForAllWindows() {
+    if (mGlobal.winInfoList) {
+        free(mGlobal.winInfoList);
+    }
+
+    getInitialWinInfoList(&mGlobal.winInfoList,
+        &mGlobal.winInfoListLength);
+    getFinalWinInfoList(&mGlobal.winInfoList,
+        &mGlobal.winInfoListLength);
 }
 
 /** *********************************************************************
  ** This method gets our initial winInfoList list from 1 of 3 places.
  **/
-void getRawWindowsList(WinInfo** winInfoList, int* numberOfWindows) {
+void getInitialWinInfoList(WinInfo** winInfoList,
+    int* numberOfWindows) {
 
     // #1 Look for list in NET_CLIENT.
     Atom type;
@@ -91,13 +115,12 @@ void getRawWindowsList(WinInfo** winInfoList, int* numberOfWindows) {
         }
 
         XFree(children);
-        children = NULL;
         return;
     }
     XFree(children);
-    children = NULL;
 
     // #2, Else look for list in WIN_CLIENT.
+    children = NULL;
     XGetWindowProperty(mGlobal.display, DefaultRootWindow(mGlobal.display),
         XInternAtom(mGlobal.display, "_WIN_CLIENT_LIST", False),
         0, 1000000, False, AnyPropertyType, &type,
@@ -116,13 +139,12 @@ void getRawWindowsList(WinInfo** winInfoList, int* numberOfWindows) {
         }
 
         XFree(children);
-        children = NULL;
         return;
     }
     XFree(children);
-    children = NULL;
 
     // #3, Finally, use Query tree.
+    children = NULL;
     Window unused;
     unsigned int queryChildrenCount;
 
@@ -143,22 +165,21 @@ void getRawWindowsList(WinInfo** winInfoList, int* numberOfWindows) {
         }
     }
     XFree(children);
-    children = NULL;
 }
 
 /** *********************************************************************
- ** This method ...
+ ** This method completes population of our winInfoList.
  **/
-void getFinishedWindowsList(WinInfo** winInfoList,
+void getFinalWinInfoList(WinInfo** winInfoList,
     int* numberOfWindows) {
 
     WinInfo *winInfoItem = (*winInfoList);
     for (int i = 0; i < *numberOfWindows; i++) {
         // Set WinInfo "workspace", "sticky", and "dock" attributes.
-        winInfoItem->ws = getWindowWorkspace(winInfoItem->window);
-        winInfoItem->sticky = isWindow_Sticky(winInfoItem->ws,
+        winInfoItem->ws = getWorkspaceOfWindow(winInfoItem->window);
+        winInfoItem->sticky = isWindowSticky(winInfoItem->ws,
             winInfoItem);
-        winInfoItem->dock = isWindow_Dock(winInfoItem);
+        winInfoItem->dock = isWindowDock(winInfoItem);
 
         // Set WinInfo "X pos", "Y pos", and "hidden" attribute.
         XWindowAttributes windowAttributes;
@@ -166,7 +187,7 @@ void getFinishedWindowsList(WinInfo** winInfoList,
             &windowAttributes);
         winInfoItem->w = windowAttributes.width;
         winInfoItem->h = windowAttributes.height;
-        winInfoItem->hidden = isWindow_Hidden(winInfoItem->window,
+        winInfoItem->hidden = isWindowHidden(winInfoItem->window,
             windowAttributes.map_state);
 
         // Save for later frame extent calculations.
@@ -245,7 +266,7 @@ void getFinishedWindowsList(WinInfo** winInfoList,
 /** *********************************************************************
  ** This method determines if a window is visible on a workspace.
  **/
-long int getWindowWorkspace(Window window) {
+long int getWorkspaceOfWindow(Window window) {
     long int result = 0;
 
     Atom type;
@@ -277,9 +298,10 @@ long int getWindowWorkspace(Window window) {
 }
 
 /** *********************************************************************
- ** This method ...
+ ** This method returns the number of the current workspace,
+ ** where the OS allows multiple / virtual workspaces.
  **/
-long int getCurrentWorkspace() {
+long int getCurrentWorkspaceNumber() {
     Atom type;
     int format;
     unsigned long nitems, unusedBytes;
@@ -293,17 +315,20 @@ long int getCurrentWorkspace() {
             0, 2, False, AnyPropertyType, &type,
             &format, &nitems, &unusedBytes, &properties);
 
-        // We have the x-y coordinates of the workspace, we hussle this
-        // into one long number and return as the result.
+        // Set result code.
         int resultCode = -1;
         if (type == XA_CARDINAL && nitems == 2) {
             resultCode = ((long *) (void *) properties)[0] +
                 (((long *) (void *) properties)[1] << 16);
         }
+
         XFree(properties);
         return resultCode;
     }
 
+    // In Wayland, the actual number of current workspace can only
+    // be obtained if user has done some workspace-switching
+    // we return zero if the workspace number cannot be determined.
     XGetWindowProperty(mGlobal.display,
         DefaultRootWindow(mGlobal.display),
         XInternAtom(mGlobal.display, "_NET_CURRENT_DESKTOP", False),
@@ -312,7 +337,6 @@ long int getCurrentWorkspace() {
 
     if (type != XA_CARDINAL) {
         XFree(properties);
-
         XGetWindowProperty(mGlobal.display,
             DefaultRootWindow(mGlobal.display),
             XInternAtom(mGlobal.display, "_WIN_WORKSPACE", False),
@@ -320,26 +344,46 @@ long int getCurrentWorkspace() {
             &unusedBytes, &properties);
     }
 
-    // In Wayland, the actual number of current workspace can only
-    // be obtained if user has done some workspace-switching
-    // we return zero if the workspace number cannot be determined.
+    // Set result code.
     int resultCode = -1;
     if (type == XA_CARDINAL) {
         resultCode = *(long *) (void *) properties;
     } else {
         if (mGlobal.IsWayland) {
-            resultCode = -0;
+            resultCode = 0;
         }
     }
-    XFree(properties);
 
+    XFree(properties);
     return resultCode;
 }
 
 /** *********************************************************************
- ** This method ...
+ ** This method checks if a window is hidden.
  **/
-bool isDesktop_Visible() {
+bool isWindowHidden(Window window, int windowMapState) {
+    // If desktop isn't visible, all windows are hidden.
+    if (!isDesktopVisible()) {
+        return true;
+    }
+
+    if (windowMapState != IsViewable) {
+        return true;
+    }
+    if (isWindowHiddenByNetWMState(window)) {
+        return true;
+    }
+    if (isWindowHiddenByWMState(window)) {
+        return true;
+    }
+
+    return false;
+}
+
+/** *********************************************************************
+ ** This method checks if the desktop is currently visible.
+ **/
+bool isDesktopVisible() {
     bool result = true;
 
     Atom type;
@@ -363,30 +407,9 @@ bool isDesktop_Visible() {
 }
 
 /** *********************************************************************
- ** This method determines if a window state is hidden.
- **/
-bool isWindow_Hidden(Window window, int windowMapState) {
-    if (!isDesktop_Visible()) {
-        return true;
-    }
-    if (windowMapState != IsViewable) {
-        return true;
-    }
-
-    if (is_NET_WM_STATE_Hidden(window)) {
-        return true;
-    }
-    if (is_WM_STATE_Hidden(window)) {
-        return true;
-    }
-
-    return false;
-}
-
-/** *********************************************************************
  ** This method checks "_NET_WM_STATE" for window HIDDEN attribute.
  **/
-bool is_NET_WM_STATE_Hidden(Window window) {
+bool isWindowHiddenByNetWMState(Window window) {
     bool result = false;
 
     Atom type;
@@ -419,7 +442,7 @@ bool is_NET_WM_STATE_Hidden(Window window) {
 /** *********************************************************************
  ** This method checks "WM_STATE" for window HIDDEN attribute.
  **/
-bool is_WM_STATE_Hidden(Window window) {
+bool isWindowHiddenByWMState(Window window) {
     bool result = false;
 
     Atom type;
@@ -443,9 +466,9 @@ bool is_WM_STATE_Hidden(Window window) {
 }
 
 /** *********************************************************************
- ** This method determines if a window state is sticky.
+ ** This method checks if a window is sticky.
  **/
-bool isWindow_Sticky(long workSpace, WinInfo* winInfoItem) {
+bool isWindowSticky(long workSpace, WinInfo* winInfoItem) {
     // Needed in KDE and LXDE.
     if (workSpace == -1) {
         return true;
@@ -481,9 +504,9 @@ bool isWindow_Sticky(long workSpace, WinInfo* winInfoItem) {
 }
 
 /** *********************************************************************
- ** This method ...
+ ** This method checks is a window is a dock.
  **/
-bool isWindow_Dock(WinInfo* winInfoItem) {
+bool isWindowDock(WinInfo* winInfoItem) {
     bool result = false;
 
     Atom type;
@@ -514,105 +537,118 @@ bool isWindow_Dock(WinInfo* winInfoItem) {
 }
 
 /** *********************************************************************
- ** This method ...
+ ** This method prints column headings for WinInfo structs.
  **/
-void logAllWinInfoStructs(Display *dpy, WinInfo *winInfoList,
-    int nWindows) {
-    fprintf(stdout, "\n\n");
+void logWinInfoStructColumns() {
+    printf("%s---window---  Titlebar Name"
+        "                             WS   "
+        "---Position-- -----Size----  Attributes%s\n",
+        COLOR_GREEN, COLOR_NORMAL);
+}
 
-    WinInfo* winInfoItem = winInfoList;
-    for (int i = 0; i < nWindows; i++) {
-        char* name;
-        XFetchName(dpy, winInfoItem->window, &name);
-        if (!name) {
-            name = strdup("No name");
-        }
-        if (strlen(name) > 60) {
-            name[60] = '\0';
-        }
-        if (findWinInfoByWindowId(mGlobal.SnowWin) == winInfoItem) {
-            name = strdup("SNOW !!");
-        }
+/** *********************************************************************
+ ** This method prints all WinInfo structs.
+ **/
+void logAllWinInfoStructs() {
+    logWinInfoStructColumns();
 
-        printf("logAllWinInfoStructs() id:%#10lx ws:%3ld "
-            "x:%6d y:%6d xa:%6d ya:%6d w:%6d h:%6d "
-            "sticky:%d dock:%d hidden:%d name:%s\n",
-            winInfoItem->window, winInfoItem->ws,
-            winInfoItem->x, winInfoItem->y,
-            winInfoItem->xa, winInfoItem->ya,
-            winInfoItem->w, winInfoItem->h,
-            winInfoItem->sticky, winInfoItem->dock,
-            winInfoItem->hidden, name);
-
-        XFree(name);
+    WinInfo* winInfoItem = mGlobal.winInfoList;
+    for (int i = 0; i < mGlobal.winInfoListLength; i++) {
+        logWinInfoForWindow(winInfoItem->window);
         winInfoItem++;
     }
+}
 
-    return;
+/** *********************************************************************
+ ** This method prints a requested windows WinInfo struct.
+ **/
+void logWinInfoForWindow(Window window) {
+    // Normal case, get WinInfo item and log it.
+    WinInfo* winInfoItem = getWinInfoForWindow(window);
+    if (!winInfoItem) {
+        printf("[0x%08lx]  X11 winInfo not found.\n", window);
+        return;
+    }
+
+    // Get printable title.
+    setWinInfoTitleOfWindow(window);
+
+    // Print it.
+    printf("[0x%08lx]  %s  %2li  "
+        " %5d , %-5d %5d x %-5d  %s%s%s\n",
+        winInfoItem->window,
+        getWinInfoTitleOfWindow(),
+        winInfoItem->ws,
+        winInfoItem->xa, winInfoItem->ya,
+        winInfoItem->w, winInfoItem->h,
+        winInfoItem->dock ? "dock " : "",
+        winInfoItem->sticky ? "sticky " : "",
+        winInfoItem->hidden ? "hidden" : "");
+}
+
+/** *********************************************************************
+ ** Getter for mWinInfoTitleOfWindow.
+ **/
+char* getWinInfoTitleOfWindow() {
+    return mWinInfoTitleOfWindow;
+}
+
+/** *********************************************************************
+ ** Setter for mWinInfoTitleOfWindow.
+ **
+ ** Set mWinInfoTitleOfWindow. Create a 40-char formatted
+ ** title (name) c-string with a hard length, replacing
+ ** unprintables with SPACE, padding right with SPACE,
+ ** and preserving null terminator.
+ **/
+void setWinInfoTitleOfWindow(Window window) {
+    XTextProperty titleBarName;
+
+    int outP = 0;
+    if (XGetWMName(mGlobal.display, window, &titleBarName)) {
+        const char* NAME_PTR = (char*) titleBarName.value;
+        const int NAME_LEN = strlen(NAME_PTR);
+
+        for (; outP < NAME_LEN && outP < MAX_TITLE_STRING_LENGTH; outP++) {
+            mWinInfoTitleOfWindow[outP] = isprint(*(NAME_PTR + outP)) ?
+                *(NAME_PTR + outP) : ' ';
+        }
+        XFree(titleBarName.value);
+    }
+
+    for (; outP < MAX_TITLE_STRING_LENGTH; outP++) {
+        mWinInfoTitleOfWindow[outP] = ' ';
+    }
+    mWinInfoTitleOfWindow[outP] = '\0';
 }
 
 /** *********************************************************************
  ** This is a helper method for debugging.
  **/
-void
-logWindow(Window window) {
-    getWinInfoList();
-
-    // Normal case, get WinInfo item and log it.
-    WinInfo* winInfoItem = findWinInfoByWindowId(window);
-    if (winInfoItem) {
-        XTextProperty titleBarName;
-        XGetWMName(mGlobal.display, window, &titleBarName);
-
-        Window rootWindow, parentWindow;
-        Window* childrenWindow = NULL;
-        unsigned int windowChildCount;
-        XQueryTree(mGlobal.display, window,
-            &rootWindow, &parentWindow, &childrenWindow, &windowChildCount);
-
-        char resultMsg[1024];
-        snprintf(resultMsg, sizeof(resultMsg),
-            "[0x%08lx par: 0x%08lx] ws:%3ld w:%6d h:%6d   "
-            "st:%d dk:%d hd:%d  %s\n",
-            window, parentWindow, winInfoItem->ws,
-            winInfoItem->w, winInfoItem->h,
-            winInfoItem->sticky, winInfoItem->dock,
-            winInfoItem->hidden, titleBarName.value);
-        fprintf(stdout, "%s", resultMsg);
-
-        if (childrenWindow) {
-            XFree((char*) childrenWindow);
-        }
-        XFree(titleBarName.value);
-
+void logWinAttrForWindow(Window window) {
+    WinInfo* winInfoItem = getWinInfoForWindow(window);
+    if (!winInfoItem) {
+        printf("[0x%08lx]  X11 winInfo not found.\n", window);
         return;
     }
 
-    // Backup case, what can we tell?
-    Window rootWindow, parentWindow;
-    Window* childrenWindow = NULL;
-    unsigned int windowChildCount;
-    XQueryTree(mGlobal.display, window,
-            &rootWindow, &parentWindow,
-            &childrenWindow, &windowChildCount);
+    // Get printable title & attributes.
+    setWinInfoTitleOfWindow(window);
+    XWindowAttributes attr;
+    XGetWindowAttributes(mGlobal.display, window, &attr);
 
-    Window grandRootWindow, grandParentWindow;
-    Window* grandChildrenWindow = NULL;
-    unsigned int windowGrandChildCount;
-    if (parentWindow)  {
-        XQueryTree(mGlobal.display, parentWindow,
-            &grandRootWindow, &grandParentWindow,
-            &grandChildrenWindow, &windowGrandChildCount);
-    }
-
-    printf("%s[0x%08lx par: 0x%08lx, grandParent: 0x%08lx].%s\n",
-        COLOR_YELLOW, window, parentWindow,
-        grandParentWindow, COLOR_NORMAL);
-
-    if (grandChildrenWindow) {
-        XFree((char*) grandChildrenWindow);
-    }
-    if (childrenWindow) {
-        XFree((char*) childrenWindow);
-    }
+    // Print it.
+    printf("[0x%08lx]  %s       %5d , %-5d %5d x %-5d  "
+        "Bw: %5d  Dp: %5d  Map: %5d  Vi: %s  Sc: %s  Bs: %5d  "
+         "MI? %s  Pl: %s  Pi: %s\n",
+        winInfoItem->window, getWinInfoTitleOfWindow(),
+        attr.x, attr.y, attr.width, attr.height,
+        attr.border_width, attr.depth, attr.map_state,
+        attr.visual ? "YES" : "NO ",
+        attr.screen ? "YES" : "NO ",
+        attr.backing_store,
+        attr.map_installed ? "YES" : "NO ",
+        attr.backing_planes ? "YES" : "NO ",
+        attr.backing_pixel ? "YES" : "NO "
+    );
 }

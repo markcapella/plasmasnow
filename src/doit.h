@@ -55,7 +55,7 @@
 // line parameters at refresh
 
 #define DOIT                                                                   \
-    DOIT_I(Aurora, 1, 0)                                                       \
+    DOIT_I(ShowAurora, 1, 0) \
     DOIT_I(AuroraSpeed, 50, 50)                                                \
     DOIT_I(AuroraBrightness, 65, 65)                                           \
     DOIT_I(AuroraWidth, 60, 60)                                                \

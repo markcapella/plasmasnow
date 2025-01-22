@@ -26,9 +26,8 @@
 #include <gtk/gtk.h>
 
 #include "clocks.h"
-#include "debug.h"
 #include "Flags.h"
-#include "loadmeasure.h"
+#include "LoadMeasure.h"
 #include "MainWindow.h"
 #include "plasmasnow.h"
 #include "Utils.h"
@@ -38,32 +37,35 @@
  * Module consts.
  */
 bool mIsSystemBusy = false;
+
 int mWarningCount = 0;
 int mLoadPressure = 0;
-double mPreviousTime = 0;
+
+double mLoadMeasurePrevThreadStart = 0;
 
 
 /** *********************************************************************
  ** Add update method to mainloop.
  **/
-void addLoadMonitorToMainloop() {
-    addMethodToMainloop(PRIORITY_DEFAULT, TIME_BETWEEN_LOAD_MONITOR_EVENTS, updateLoadMonitor);
+void startLoadMeasureBackgroundThread() {
+    addMethodToMainloop(PRIORITY_DEFAULT, TIME_BETWEEN_LOAD_MONITOR_EVENTS,
+        execLoadMeasureBackgroundThread);
 }
 
 /** *********************************************************************
- ** Periodically heck app performance.
+ ** Periodically check app performance.
  **
- ** ) Enable or disable CSS "Busy" Style
+ ** Enable or disable CSS "Busy" Style.
  **/
-int updateLoadMonitor() {
+int execLoadMeasureBackgroundThread() {
     double tnow = wallclock();
-    if ((tnow - mPreviousTime) >
+    if ((tnow - mLoadMeasurePrevThreadStart) >
         (TIME_BETWEEN_LOAD_MONITOR_EVENTS * EXCESSIVE_LOAD_MONITOR_TIME_PCT)) {
         mLoadPressure++;
     } else {
         mLoadPressure--;
     }
-    mPreviousTime = tnow;
+    mLoadMeasurePrevThreadStart = tnow;
 
     if (mLoadPressure > LOAD_PRESSURE_HIGH) {
         if (!mIsSystemBusy) {

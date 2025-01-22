@@ -29,7 +29,6 @@
 /***********************************************************
  * Module Method stubs.
  */
-
 typedef int BULB_COLOR_TYPE;
 
 #ifdef __cplusplus
@@ -50,12 +49,19 @@ extern "C" {
      int getFirstBulbXPos();
      int getYPosForBulbNumber(int bulbNumber);
 
-     bool areThereAvailableColorTypes();
-     BULB_COLOR_TYPE getFirstAvailableColorType();
-     BULB_COLOR_TYPE getNextAvailableColorType(
-          BULB_COLOR_TYPE startFrom);
-     bool getColorTypeAvailabilityAt(int index);
+     bool hasTheUserSelectedAnyColors();
+     bool hasUserSelectedColor(BULB_COLOR_TYPE colorType);
 
+     BULB_COLOR_TYPE getFirstUserSelectedColor();
+     BULB_COLOR_TYPE getNextUserSelectedColorAfter(
+          BULB_COLOR_TYPE thisColor);
+
+     void createColoredBulb(GdkRGBA bright,
+          GdkRGBA normal, GdkRGBA dark,
+          char*** targetXPM, int* targetLineCount);
+     void destroyColoredBulb(char** xpmStrings);
+
+     // Routine helpers.
      GdkRGBA getTwinklingBright(BULB_COLOR_TYPE colorType);
      GdkRGBA getTwinklingNormal(BULB_COLOR_TYPE colorType);
      GdkRGBA getTwinklingDark(BULB_COLOR_TYPE colorType);
@@ -95,11 +101,6 @@ extern "C" {
      GdkRGBA getTwinkledColorTypeFrom(GdkRGBA seed);
 
      int getFuzzyRGBInt(int color);
-
-     void createColoredBulb(GdkRGBA bright,
-          GdkRGBA normal, GdkRGBA dark,
-          char*** targetXPM, int* targetLineCount);
-     void destroyColoredBulb(char** xpmStrings);
 
 #ifdef __cplusplus
 }

@@ -4163,7 +4163,7 @@ NOTE: Santa has no knowledge of viewing distance, so when birds are following Sa
               </packing>
             </child>
             <child>
-              <object class="GtkToggleButton" id="id-Aurora">
+              <object class="GtkToggleButton" id="id-ShowAurora">
                 <property name="label" translatable="yes">Aurora</property>
                 <property name="width-request">80</property>
                 <property name="visible">True</property>

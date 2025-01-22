@@ -28,7 +28,7 @@
 
 #include <gtk/gtk.h>
 
-#include "blowoff.h"
+#include "Blowoff.h"
 #include "debug.h"
 #include "Flags.h"
 #include "plasmasnow.h"

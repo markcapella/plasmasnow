@@ -30,9 +30,9 @@
 
 #include "plasmasnow.h"
 
-#include "blowoff.h"
+#include "Blowoff.h"
 #include "clocks.h"
-#include "fallensnow.h"
+#include "FallenSnow.h"
 #include "Flags.h"
 #include "hashtable.h"
 #include "ixpm.h"
@@ -53,7 +53,7 @@
 
 // Color Picker methods.
 bool isQPickerActive();
-char* getQPickerCallerName();
+char* getQPickerColorTAG();
 bool isQPickerVisible();
 bool isQPickerTerminated();
 
@@ -65,67 +65,37 @@ void endQPickerDialog();
 
 
 /***********************************************************
- * Module Method stubs.
- */
-
-static int do_genflakes();
-
-static void InitFlake(SnowFlake *flake);
-static void InitFlakesPerSecond();
-static void InitSnowColor();
-static void InitSnowSpeedFactor();
-
-static void init_snow_pix();
-
-static void genxpmflake(char ***xpm, int w, int h);
-static void add_random_flakes(int n);
-static int  do_SwitchFlakes();
-
-static void DelFlake(SnowFlake* flake);
-static void EraseSnowFlake1(SnowFlake* flake);
-
-static void SetSnowSize();
-
-static void checkIfFlakeCollectsInFallenSnow(SnowFlake* flake,
-    int xPosition, int yPosition, int flakeWidth);
-
-static int do_UpdateSnowFlake(SnowFlake* flake);
-
-
-/** *********************************************************************
  ** Module globals and consts.
  **/
+const int EXTRA_FLAKES = 300;
 
-#define NOTACTIVE (!WorkspaceActive() || Flags.NoSnowFlakes)
-#define EXTRA_FLAKES 300
+int first_run = 1;
+int mKillFlakes = 0;
 
-static const float LocalScale = 0.8;
+double mStormBackgroundPrevThreadStart = 0;
+double sumdt = 0;
 
-static float FlakesPerSecond;
+const float mStormScale = 0.8;
 
-// 1: signal to flakes to kill themselves,
-// & do not generate flakes.
-static int mKillFlakes = 0;
+float FlakesPerSecond = 0.0;
+float SnowSpeedFactor = 0.0;
 
-static float SnowSpeedFactor;
+const float mSpeedMaxValues[] = {
+    100.0, 300.0, 600.0
+};
 
-static SnowMap* snowPix;
+SnowMap* snowPix = NULL;
+char*** plasmasnow_xpm = NULL;
 
-static char ***plasmasnow_xpm = NULL;
-
-static int MaxFlakeTypes;
-static int NFlakeTypesVintage;
+int MaxFlakeTypes = 0;
+int NFlakeTypesVintage = 0;
 
 // Flake color helper methods.
 GdkRGBA mFlakeColor;
 int mFlakeColorToggle = 0;
 
-float mSpeedMaxValues[] = {
-    100.0, 300.0, 600.0
-};
 
-
-/** *********************************************************************
+/***********************************************************
  ** Init.
  **/
 void snow_init() {
@@ -151,12 +121,10 @@ void snow_init() {
     InitSnowSpeedFactor();
 
     addMethodToMainloop(PRIORITY_DEFAULT,
-        time_genflakes, do_genflakes);
-    addMethodToMainloop(PRIORITY_DEFAULT,
-        time_switchflakes, do_SwitchFlakes);
+        time_genflakes, execStormBackgroundThread);
 }
 
-/** *********************************************************************
+/***********************************************************
  ** This method ...
  **/
 void SetSnowSize() {
@@ -168,7 +136,7 @@ void SetSnowSize() {
     }
 }
 
-/** *********************************************************************
+/***********************************************************
  ** This method ...
  **/
 void snow_ui() {
@@ -181,7 +149,7 @@ void snow_ui() {
     UIDO(SnowFlakesFactor, InitFlakesPerSecond(););
 
     UIDOS(SnowColor, InitSnowColor(); clearGlobalSnowWindow(););
-    if (isQPickerActive() && !strcmp(getQPickerCallerName(), "SnowColorTAG") &&
+    if (isQPickerActive() && !strcmp(getQPickerColorTAG(), "SnowColorTAG") &&
         !isQPickerVisible()) {
         static char cbuffer[16];
         snprintf(cbuffer, 16, "#%02x%02x%02x", getQPickerRed(),
@@ -198,7 +166,7 @@ void snow_ui() {
     }
 
     UIDOS(SnowColor2, InitSnowColor(); clearGlobalSnowWindow(););
-    if (isQPickerActive() && !strcmp(getQPickerCallerName(), "SnowColor2TAG") &&
+    if (isQPickerActive() && !strcmp(getQPickerColorTAG(), "SnowColor2TAG") &&
         !isQPickerVisible()) {
         static char cbuffer[16];
         snprintf(cbuffer, 16, "#%02x%02x%02x", getQPickerRed(),
@@ -224,7 +192,7 @@ void snow_ui() {
     }
 }
 
-/** *********************************************************************
+/***********************************************************
  ** This method ...
  **/
 void init_snow_pix() {
@@ -233,8 +201,8 @@ void init_snow_pix() {
         int w, h;
         sscanf(plasmasnow_xpm[flake][0], "%d %d", &w, &h);
 
-        w *= 0.01 * Flags.Scale * LocalScale * mGlobal.WindowScale;
-        h *= 0.01 * Flags.Scale * LocalScale * mGlobal.WindowScale;
+        w *= 0.01 * Flags.Scale * mStormScale * mGlobal.WindowScale;
+        h *= 0.01 * Flags.Scale * mStormScale * mGlobal.WindowScale;
 
         SnowMap* rp = &snowPix[flake];
         rp->width = w;
@@ -279,7 +247,7 @@ void init_snow_pix() {
     mGlobal.fluffpix = &snowPix[MaxFlakeTypes - 1];
 }
 
-/** *********************************************************************
+/***********************************************************
  ** This method is a helper for FlakeColor.
  **/
 void setGlobalFlakeColor(GdkRGBA flakeColor) {
@@ -326,7 +294,7 @@ char* getNextFlakeColorAsString() {
         Flags.SnowColor : Flags.SnowColor2;
 }
 
-/** *********************************************************************
+/***********************************************************
  ** This method ...
  **/
 int snow_draw(cairo_t *cr) {
@@ -361,94 +329,71 @@ int snow_draw(cairo_t *cr) {
     return true;
 }
 
-/** *********************************************************************
- ** This method ...
+/***********************************************************
+ ** This method erases all snow flake Storm Items.
  **/
-int snow_erase(int force) {
-    if (!force && Flags.NoSnowFlakes) {
-        return TRUE;
-    }
-
+int removeAllStormItemsInItemset() {
     set_begin();
 
     SnowFlake* flake;
-    int n = 0;
     while ((flake = (SnowFlake*) set_next())) {
-        EraseSnowFlake1(flake);
-        n++;
+        eraseStormItem(flake);
     }
 
-    return TRUE;
+    return true;
 }
 
-/** *********************************************************************
+/***********************************************************
  ** This method ...
  **/
-int do_genflakes() {
+int execStormBackgroundThread() {
     if (Flags.shutdownRequested) {
-        return FALSE;
+        return false;
     }
-
-    #define RETURN \
-        do { \
-            Prevtime = TNow; \
-            return TRUE; \
-        } while (0)
-
-    static double Prevtime;
-    static double sumdt;
-    static int first_run = 1;
 
     double TNow = wallclock();
-
     if (mKillFlakes) {
-        RETURN;
+        mStormBackgroundPrevThreadStart = TNow;
+        return true;
     }
 
-    if (NOTACTIVE) {
-        RETURN;
+    if (!WorkspaceActive() || Flags.NoSnowFlakes) {
+        mStormBackgroundPrevThreadStart = TNow;
+        return true;
     }
 
     if (first_run) {
         first_run = 0;
-        Prevtime = wallclock();
+        mStormBackgroundPrevThreadStart = wallclock();
         sumdt = 0;
     }
 
-    double dt = TNow - Prevtime;
+    double dt = TNow - mStormBackgroundPrevThreadStart;
 
-    // after suspend or sleep dt could have a strange value
+    // Sanity check. Catches after suspend or sleep.
+    // dt could have a strange value
     if (dt < 0 || dt > 10 * time_genflakes) {
-        RETURN;
-    }
-    int desflakes = lrint((dt + sumdt) * FlakesPerSecond);
-
-    if (desflakes == 0) {
-        sumdt += dt;
-    } else {
-        sumdt = 0;
+        mStormBackgroundPrevThreadStart = TNow;
+        return true;
     }
 
-    for (int i = 0; i < desflakes; i++) {
+    const int DESIRED_FLAKES =
+        lrint((dt + sumdt) * FlakesPerSecond);
+    for (int i = 0; i < DESIRED_FLAKES; i++) {
         MakeFlake(-1);
     }
+    sumdt = (DESIRED_FLAKES == 0) ?
+        sumdt + dt : 0;
 
-    RETURN;
-
-#undef RETURN
+    mStormBackgroundPrevThreadStart = TNow;
+    return true;
 }
 
-/** *********************************************************************
- ** This method ...
- **/
-// if so: make the flake inactive.
-// the bottom pixels of the snowflake are at y = newFlakeYPos + (height of
-// flake) the bottompixels are at x values newFlakeXPos .. newFlakeXPos+(width of
-// flake)-1
-// investigate if flake is in a not-hidden fallensnowarea on current
-// workspace.
-
-void checkIfFlakeCollectsInFallenSnow(SnowFlake* flake,
+/***********************************************************
+ ** This method updates window surfaces and / or desktop bottom
+ ** if flake drops onto it.
+ */
+void updateFallenSurfacesWithFlake(SnowFlake* flake,
     int xPosition, int yPosition, int flakeWidth) {
 
     FallenSnow* fsnow = mGlobal.FsnowFirst;
@@ -457,12 +402,14 @@ void checkIfFlakeCollectsInFallenSnow(SnowFlake* flake,
             fsnow = fsnow->next;
             continue;
         }
+
         if (fsnow->winInfo.window != None &&
-            !isFallenSnowOnVisibleWorkspace(fsnow) &&
+            !isFallenSnowVisibleOnWorkspace(fsnow) &&
             !fsnow->winInfo.sticky) {
             fsnow = fsnow->next;
             continue;
         }
+
         if (xPosition < fsnow->x ||
             xPosition > fsnow->x + fsnow->w ||
             yPosition >= fsnow->y + 2) {
@@ -470,9 +417,7 @@ void checkIfFlakeCollectsInFallenSnow(SnowFlake* flake,
             continue;
         }
 
-        // *******************************
         // Flake hits first FallenSnow & we're done.
-        //
         int istart = xPosition - fsnow->x;
         if (istart < 0) {
             istart = 0;
@@ -485,14 +430,14 @@ void checkIfFlakeCollectsInFallenSnow(SnowFlake* flake,
         for (int i = istart; i < imax; i++) {
             if (yPosition > fsnow->y - fsnow->snowHeight[i] - 1) {
                 if (fsnow->snowHeight[i] < fsnow->maxSnowHeight[i]) {
-                    updateFallenSnowPartial(fsnow,
+                    updateFallenSnowWithSnow(fsnow,
                         xPosition - fsnow->x, flakeWidth);
                 }
 
-                if (canSnowCollectOnWindowOrScreenBottom(fsnow)) {
+                if (canSnowCollectOnFallen(fsnow)) {
                     fluffify(flake, .9);
                     if (!flake->fluff) {
-                        DelFlake(flake);
+                        removeStormItemInItemset(flake);
                     }
                 }
                 return;
@@ -504,25 +449,25 @@ void checkIfFlakeCollectsInFallenSnow(SnowFlake* flake,
     }
 }
 
-/** *********************************************************************
+/***********************************************************
  ** This method ...
  **/
-int do_UpdateSnowFlake(SnowFlake* flake) {
-    if (NOTACTIVE) {
+int execStormItemBackgroundThread(SnowFlake* flake) {
+    if (!WorkspaceActive() || Flags.NoSnowFlakes) {
         return true;
     }
 
     if ((flake->freeze || flake->fluff) && mGlobal.RemoveFluff) {
-        EraseSnowFlake1(flake);
-        DelFlake(flake);
+        eraseStormItem(flake);
+        removeStormItemInItemset(flake);
         return false;
     }
 
     // handle fluff and mKillFlakes
     if (mKillFlakes || (flake->fluff &&
             flake->flufftimer > flake->flufftime)) {
-        EraseSnowFlake1(flake);
-        DelFlake(flake);
+        eraseStormItem(flake);
+        removeStormItemInItemset(flake);
         return false;
     }
 
@@ -592,7 +537,7 @@ int do_UpdateSnowFlake(SnowFlake* flake) {
 
     // If flake is frozen, we're done.
     if (flake->freeze) {
-        return TRUE;
+        return true;
     }
 
     // Flake w/h.
@@ -612,15 +557,15 @@ int do_UpdateSnowFlake(SnowFlake* flake) {
         // goes left or right out of the window.
         if (newFlakeXPos < 0 ||
             newFlakeXPos >= mGlobal.SnowWinWidth) {
-            DelFlake(flake);
-            return FALSE;
+            removeStormItemInItemset(flake);
+            return false;
         }
     }
 
     // Remove flake if it falls below bottom of screen.
     if (newFlakeYPos >= mGlobal.SnowWinHeight) {
-        DelFlake(flake);
-        return FALSE;
+        removeStormItemInItemset(flake);
+        return false;
     }
 
     // Flake nx/ny.
@@ -630,7 +575,7 @@ int do_UpdateSnowFlake(SnowFlake* flake) {
     // Determine if non-fluffy-flake touches the fallen snow.
     if (!flake->fluff) {
         lockFallenSnowSemaphore();
-        checkIfFlakeCollectsInFallenSnow(flake, nx, ny, flakew);
+        updateFallenSurfacesWithFlake(flake, nx, ny, flakew);
         unlockFallenSnowSemaphore();
     }
 
@@ -649,7 +594,7 @@ int do_UpdateSnowFlake(SnowFlake* flake) {
         if (in == CAIRO_REGION_OVERLAP_PART || in == CAIRO_REGION_OVERLAP_IN) {
             fluffify(flake, 0.4);
             flake->freeze = 1;
-            return TRUE;
+            return true;
         }
 
         // check if flake is touching TreeRegion. If so: add snow to
@@ -734,17 +679,17 @@ int do_UpdateSnowFlake(SnowFlake* flake) {
                 newflake->freeze = 1;
                 fluffify(newflake, 8);
 
-                return TRUE;
+                return true;
             }
         }
     }
 
     flake->rx = newFlakeXPos;
     flake->ry = newFlakeYPos;
-    return TRUE;
+    return true;
 }
 
-/** *********************************************************************
+/***********************************************************
  ** This method creates snowflake from type.
  **
  **    0 < type <= SNOWFLAKEMAXTYPE.
@@ -786,15 +731,15 @@ SnowFlake* MakeFlake(int type) {
     InitFlake(flake);
 
     addMethodWithArgToMainloop(PRIORITY_HIGH, time_snowflakes,
-        (GSourceFunc) do_UpdateSnowFlake, flake);
+        (GSourceFunc) execStormItemBackgroundThread, flake);
 
     return flake;
 }
 
-/** *********************************************************************
+/***********************************************************
  ** This method ...
  **/
-void EraseSnowFlake1(SnowFlake *flake) {
+void eraseStormItem(SnowFlake *flake) {
     if (mGlobal.isDoubleBuffered) {
         return;
     }
@@ -808,12 +753,12 @@ void EraseSnowFlake1(SnowFlake *flake) {
         x, y, flakew, flakeh, mGlobal.xxposures);
 }
 
-/** *********************************************************************
+/***********************************************************
  ** This method ...
  **/
-// a call to this function must be followed by 'return FALSE' to remove this
+// a call to this function must be followed by 'return false' to remove this
 // flake from the g_timeout callback
-void DelFlake(SnowFlake *flake) {
+void removeStormItemInItemset(SnowFlake *flake) {
     if (flake->fluff) {
         mGlobal.FluffCount--;
     }
@@ -823,7 +768,7 @@ void DelFlake(SnowFlake *flake) {
     mGlobal.FlakeCount--;
 }
 
-/** *********************************************************************
+/***********************************************************
  ** This method ...
  **/
 void InitFlake(SnowFlake *flake) {
@@ -858,7 +803,7 @@ void InitFlake(SnowFlake *flake) {
     set_insert(flake);
 }
 
-/** *********************************************************************
+/***********************************************************
  ** This method ...
  **/
 void InitFlakesPerSecond() {
@@ -867,14 +812,14 @@ void InitFlakesPerSecond() {
         FLAKES_PER_SEC_PER_PIXEL * SnowSpeedFactor;
 }
 
-/** *********************************************************************
+/***********************************************************
  ** This method ...
  **/
 void InitSnowColor() {
     init_snow_pix();
 }
 
-/** *********************************************************************
+/***********************************************************
  ** This method ...
  **/
 void InitSnowSpeedFactor() {
@@ -886,7 +831,7 @@ void InitSnowSpeedFactor() {
     SnowSpeedFactor *= SNOWSPEED;
 }
 
-/** *********************************************************************
+/***********************************************************
  ** This method ...
  **/
 int setKillFlakes() {
@@ -906,7 +851,7 @@ int setKillFlakes() {
     return false;
 }
 
-/** *********************************************************************
+/***********************************************************
  ** This method ...
  **/
 // generate random xpm for flake with dimensions wxh
@@ -1025,43 +970,45 @@ void genxpmflake(char ***xpm, int w, int h) {
     free(ya);
 }
 
-/** *********************************************************************
+/***********************************************************
  ** This method ...
  **/
 void add_random_flakes(int n) {
-    int i;
+    if (n < 1) {
+        n = 1;
+    }
+
     // create a new array with snow-xpm's:
     if (plasmasnow_xpm) {
-        for (i = 0; i < MaxFlakeTypes; i++) {
+        for (int i = 0; i < MaxFlakeTypes; i++) {
             xpm_destroy(plasmasnow_xpm[i]);
         }
         free(plasmasnow_xpm);
     }
-    if (n < 1) {
-        n = 1;
-    }
+
     char ***x;
-    x = (char ***)malloc((n + NFlakeTypesVintage + 1) * sizeof(char **));
+    x = (char***) malloc((n + NFlakeTypesVintage + 1) * sizeof(char**));
     int lines;
+
     // copy Rick's vintage flakes:
-    for (i = 0; i < NFlakeTypesVintage; i++) {
+    for (int i = 0; i < NFlakeTypesVintage; i++) {
         xpm_set_color((char **)snow_xpm[i], &x[i], &lines, "snow");
-        // xpm_print((char**)snow_xpm[i]);
     }
+
     // add n flakes:
-    for (i = 0; i < n; i++) {
-        int w, h;
+    for (int i = 0; i < n; i++) {
         int m = Flags.SnowSize;
-        w = m + m * drand48();
-        h = m + m * drand48();
+        int w = m + m * drand48();
+        int h = m + m * drand48();
         genxpmflake(&x[i + NFlakeTypesVintage], w, h);
     }
+
     MaxFlakeTypes = n + NFlakeTypesVintage;
     x[MaxFlakeTypes] = NULL;
     plasmasnow_xpm = x;
 }
 
-/** *********************************************************************
+/***********************************************************
  ** This method ...
  **/
 void fluffify(SnowFlake *flake, float t) {
@@ -1080,30 +1027,7 @@ void fluffify(SnowFlake *flake, float t) {
     mGlobal.FluffCount++;
 }
 
-/** *********************************************************************
- ** This method ...
- **/
-int do_SwitchFlakes() {
-    static int prev = 0;
-
-    if (Flags.VintageFlakes != prev) {
-        set_begin();
-        SnowFlake* flake;
-
-        while ((flake = (SnowFlake*) set_next())) {
-            flake->whatFlake = Flags.VintageFlakes ?
-                drand48() * NFlakeTypesVintage :
-                NFlakeTypesVintage + (drand48() *
-                    (MaxFlakeTypes - NFlakeTypesVintage));
-        }
-
-        prev = Flags.VintageFlakes;
-    }
-
-    return TRUE;
-}
-
-/** *********************************************************************
+/***********************************************************
  ** This method ...
  **/
 void printflake(SnowFlake *flake) {

@@ -120,7 +120,7 @@ static BirdType attrbird;
 static sem_t sem;
 
 bool isQPickerActive();
-char* getQPickerCallerName();
+char* getQPickerColorTAG();
 bool isQPickerVisible();
 bool isQPickerTerminated();
 
@@ -152,7 +152,7 @@ void birds_ui() {
         clearGlobalSnowWindow();
     );
 
-    if (isQPickerActive() && !strcmp(getQPickerCallerName(), "BirdsColorTAG") &&
+    if (isQPickerActive() && !strcmp(getQPickerColorTAG(), "BirdsColorTAG") &&
         !isQPickerVisible()) {
         static char cbuffer[16];
         snprintf(cbuffer, 16, "#%02x%02x%02x", getQPickerRed(),
@@ -951,7 +951,7 @@ void show_attr() {
     createAttractionPointSurface();
 }
 
-    /** *********************************************************************
+    /***********************************************************
      ** ... .
      **/
 

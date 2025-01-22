@@ -28,7 +28,10 @@
 #include "plasmasnow.h"
 
 
-extern void addWindowsModuleToMainloop(void);
+/***********************************************************
+ * Module Method stubs.
+ */
+void addWindowsModuleToMainloop(void);
 
 #ifdef __cplusplus
 extern "C" {
@@ -38,34 +41,28 @@ int WorkspaceActive();
 }
 #endif
 
-extern void initDisplayDimensions();
-extern void updateDisplayDimensions(void);
+void initDisplayDimensions();
+void updateDisplayDimensions(void);
 
-extern void SetBackground(void);
-
-extern int getXineramaScreenInfo(Display *display,
+void SetBackground(void);
+int getXineramaScreenInfo(Display *display,
     int xscreen, int *x, int *y, int *w, int *h);
 
-/***********************************************************
- * Module Method stubs.
- */
 // Workspace.
-void DetermineVisualWorkspaces();
+void getCurrentWorkspaceData();
 int do_sendevent();
-extern int updateWindowsList();
+int updateWindowsList();
 
-//**
 // Active & Focused X11 Window Helper methods.
-extern Window getActiveX11Window();
+Window getActiveX11Window();
 Window getFocusedX11Window();
 int getFocusedX11XPos();
 int getFocusedX11YPos();
 
-//**
 // ActiveApp member helper methods.
 void clearAllActiveAppFields();
 
-extern Window getActiveAppWindow();
+Window getActiveAppWindow();
 void setActiveAppWindow(Window);
 Window getParentOfActiveAppWindow();
 
@@ -75,31 +72,28 @@ void setActiveAppXPos(int);
 int getActiveAppYPos();
 void setActiveAppYPos(int);
 
-//**
 // Windows life-cycle methods.
-extern void onCursorChange(XEvent*);
-extern void onAppWindowChange(Window);
+void onCursorChange(XEvent*);
+void onAppWindowChange(Window);
 
-extern void onWindowCreated(XEvent*);
-extern void onWindowReparent(XEvent*);
-extern void onWindowChanged(XEvent*);
+void onWindowCreated(XEvent*);
+void onWindowReparent(XEvent*);
+void onWindowChanged(XEvent*);
 
-extern void onWindowMapped(XEvent*);
-extern void onWindowFocused(XEvent*);
-extern void onWindowBlurred(XEvent*);
-extern void onWindowUnmapped(XEvent*);
+void onWindowMapped(XEvent*);
+void onWindowFocused(XEvent*);
+void onWindowBlurred(XEvent*);
+void onWindowUnmapped(XEvent*);
 
-extern void onWindowDestroyed(XEvent*);
+void onWindowDestroyed(XEvent*);
 
-//**
 // Windows life-cycle helper methods.
 bool isMouseClickedAndHeldInWindow();
 
-//**
 // Window dragging methods.
 void clearAllDragFields();
 
-extern bool isWindowBeingDragged();
+bool isWindowBeingDragged();
 void setIsWindowBeingDragged(bool);
 
 Window getWindowBeingDragged();
@@ -110,10 +104,6 @@ void setActiveAppDragWindowCandidate(Window);
 
 Window getDragWindowOf(Window);
 
-void getWinInfoList();
-WinInfo* findWinInfoByWindowId(Window id);
-
-//**
 // Debug methods.
 void logCurrentTimestamp();
 void logWindowAndAllParents(Window window);

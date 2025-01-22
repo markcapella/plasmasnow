@@ -32,7 +32,7 @@
 
 #include "csvpos.h"
 #include "debug.h"
-#include "fallensnow.h"
+#include "FallenSnow.h"
 #include "Flags.h"
 #include "ixpm.h"
 #include "pixmaps.h"
@@ -47,7 +47,7 @@
  * Externally provided to this Module.
  */
 bool isQPickerActive();
-char* getQPickerCallerName();
+char* getQPickerColorTAG();
 bool isQPickerVisible();
 bool isQPickerTerminated();
 int getQPickerRed();
@@ -514,7 +514,7 @@ void updateSceneryUserSettings() {
     UIDOS(TreeColor, updateColorTree(););
 
     if (isQPickerActive() &&
-        !strcmp(getQPickerCallerName(), "TreeColorTAG") &&
+        !strcmp(getQPickerColorTAG(), "TreeColorTAG") &&
         !isQPickerVisible()) {
         static char cbuffer[16];
         snprintf(cbuffer, 16, "#%02x%02x%02x", getQPickerRed(),

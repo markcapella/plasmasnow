@@ -35,7 +35,7 @@
 
 /*         code           type               name              modifier */
 #define ALL_TOGGLES                                                                 \
-    BUTTON(togglecode, plasmasnow_celestials, Aurora, 1)                            \
+    BUTTON(togglecode, plasmasnow_celestials, ShowAurora, 1) \
     BUTTON(togglecode, plasmasnow_celestials, AuroraLeft, 0)                        \
     BUTTON(togglecode, plasmasnow_celestials, AuroraMiddle, 1)                      \
     BUTTON(togglecode, plasmasnow_celestials, AuroraRight, 0)                       \

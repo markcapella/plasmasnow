@@ -771,11 +771,6 @@ int getActiveWindowFromXDO(const xdo_t* xdo, Window* window_ret) {
         *((Window*) (void*) data) : 0;
     free(data);
 
-    // Quiet message. Active window == null is ok dear.
-    // return printMsgIfConditionTrue("plasmastorm: "
-    //    "getActiveWindowFromXDO() XGetWindowProperty"
-    //    "[_NET_ACTIVE_WINDOW]", *window_ret == 0, xdo);
-
     return *window_ret == 0;
 }
 

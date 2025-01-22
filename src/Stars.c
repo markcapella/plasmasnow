@@ -66,7 +66,8 @@ void initStarsModule() {
     }
     initStarsModuleSurfaces();
 
-    addMethodToMainloop(PRIORITY_DEFAULT, time_ustar, updateStarsFrame);
+    addMethodToMainloop(PRIORITY_DEFAULT, time_ustar,
+        updateStarsFrame);
 }
 
 /** *********************************************************************

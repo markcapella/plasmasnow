@@ -61,14 +61,14 @@ noinst_LIBRARIES = libxdo.a
 libxdo_a_SOURCES = xdo.c xdo_search.c xdo.h xdo_util.h xdo_version.h
 
 plasmasnow_SOURCES = \
-		Application.c aurora.c birds.c blowoff.c clientwin.c \
-		clocks.c colorPicker.cpp csvpos.c docs.c dsimple.c \
-		fallensnow.c Flags.c hashtable.cpp ixpm.c kdtree.c \
-		Lights.cpp loadmeasure.c MainWindow.c mainstub.cpp \
+		Application.c Aurora.c birds.c Blowoff.c clientwin.c \
+		clocks.c ColorPicker.cpp csvpos.c docs.c dsimple.c \
+		FallenSnow.c Flags.c hashtable.cpp ixpm.c kdtree.c \
+		Lights.cpp LoadMeasure.c MainWindow.c mainstub.cpp \
 		meteor.c MsgBox.cpp moon.c pixmaps.c safe_malloc.c \
 		Santa.c scenery.c selfrep.c snow.c spline_interpol.c \
 		Stars.c StormWindow.c treesnow.c ui.glade Utils.c \
-		wind.c windows.c wmctrl.c
+		wind.c windows.c WindowVector.c WinInfo.c
 
 nodist_plasmasnow_SOURCES = ui_xml.h snow_includes.h
 

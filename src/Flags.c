@@ -218,7 +218,7 @@ int HandleFlags(int argc, char *argv[]) {
 
             handle_ia(-allworkspaces, AllWorkspaces);
 
-            handle_ia(-aurora, Aurora);
+            handle_ia(-aurora, ShowAurora);
             handle_ia(-auroraspeed, AuroraSpeed);
             handle_ia(-aurorabrightness, AuroraBrightness);
             handle_ia(-aurorawidth, AuroraWidth);
