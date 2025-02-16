@@ -26,30 +26,27 @@
 
 #include <X11/Intrinsic.h>
 #include <X11/extensions/Xinerama.h>
+#include <X11/Xatom.h>
 
 #include <gdk/gdkx.h>
 #include <gtk/gtk.h>
 
+#include "Application.h"
 #include "ColorCodes.h"
+#include "ColorPicker.h"
 #include "dsimple.h"
 #include "FallenSnow.h"
 #include "Flags.h"
 #include "MsgBox.h"
 #include "mygettext.h"
-#include "plasmasnow.h"
+#include "PlasmaSnow.h"
 #include "safe_malloc.h"
 #include "scenery.h"
 #include "StormWindow.h"
 #include "Utils.h"
-#include "windows.h"
+#include "Windows.h"
 #include "WinInfo.h"
 #include "xdo.h"
-
-
-/***********************************************************
- * Externally provided to this Module.
- */
-void uninitQPickerDialog();
 
 
 /** *********************************************************************
@@ -65,6 +62,9 @@ Window mActiveAppWindow = None;
 const int mINVALID_POSITION = -1;
 int mActiveAppXPos = mINVALID_POSITION;
 int mActiveAppYPos = mINVALID_POSITION;
+
+#define MAX_TITLE_STRING_LENGTH 40
+char mTitleOfWindow[MAX_TITLE_STRING_LENGTH + 1];
 
 
 /** *********************************************************************
@@ -91,16 +91,16 @@ void addWindowsModuleToMainloop() {
 int WorkspaceActive() {
     // ah, so difficult ...
     if (Flags.AllWorkspaces) {
-        return 1;
+        return true;
     }
 
     for (int i = 0; i < mGlobal.NVisWorkSpaces; i++) {
         if (mGlobal.VisWorkSpaces[i] == mGlobal.ChosenWorkSpace) {
-            return 1;
+            return true;
         }
     }
 
-    return 0;
+    return false;
 }
 
 /** *********************************************************************
@@ -327,35 +327,37 @@ void updateDisplayDimensions() {
 /** *********************************************************************
  ** This method sets OS desktop background
  **/
-void SetBackground() {
-    char *f = Flags.BackgroundFile;
-    if (!IsReadableFile(f)) {
+void setWorkspaceBackground() {
+    char* backgroundFile = Flags.BackgroundFile;
+    if (!IsReadableFile(backgroundFile)) {
         return;
     }
 
-    Display *display = mGlobal.display;
+    Display* display = mGlobal.display;
     Window window = mGlobal.SnowWin;
+
     int screen_num = DefaultScreen(display);
     int depth = DefaultDepth(display, screen_num);
 
-    int w = mGlobal.SnowWinWidth;
-    int h = mGlobal.SnowWinHeight;
-    GdkPixbuf* pixbuf = gdk_pixbuf_new_from_file_at_scale(
-        f, w, h, FALSE, NULL);
+    GdkPixbuf* pixbuf = gdk_pixbuf_new_from_file_at_scale(backgroundFile,
+        mGlobal.SnowWinWidth, mGlobal.SnowWinHeight, FALSE, NULL);
     if (!pixbuf) {
         return;
     }
 
-    // pixels1 is freed by XDestroyImage.
+    // 
     int n_channels = gdk_pixbuf_get_n_channels(pixbuf);
     guchar* pixels = gdk_pixbuf_get_pixels(pixbuf);
-    unsigned char* pixels1 = (unsigned char *)
-        malloc(w * h * 4 * sizeof(unsigned char));
-
     const int ROW_STRIDE = gdk_pixbuf_get_rowstride(pixbuf);
+    g_object_unref(pixbuf);
+
+    unsigned char* pixels1 = (unsigned char *) malloc(
+        mGlobal.SnowWinWidth * mGlobal.SnowWinHeight *
+        4 * sizeof(unsigned char));
+
     if (is_little_endian()) {
-        for (int k = 0, i = 0; i < h; i++) {
-            for (int j = 0; j < w; j++) {
+        for (int k = 0, i = 0; i < mGlobal.SnowWinHeight; i++) {
+            for (int j = 0; j < mGlobal.SnowWinWidth; j++) {
                 guchar *p = &pixels[i * ROW_STRIDE + j * n_channels];
                 pixels1[k++] = p[2];
                 pixels1[k++] = p[1];
@@ -364,8 +366,8 @@ void SetBackground() {
             }
         }
     } else {
-        for (int k = 0, i = 0; i < h; i++) {
-            for (int j = 0; j < w; j++) {
+        for (int k = 0, i = 0; i < mGlobal.SnowWinHeight; i++) {
+            for (int j = 0; j < mGlobal.SnowWinWidth; j++) {
                 guchar *p = &pixels[i * ROW_STRIDE + j * n_channels];
                 pixels1[k++] = 0xff;
                 pixels1[k++] = p[0];
@@ -375,19 +377,19 @@ void SetBackground() {
         }
     }
 
-    XImage* ximage = XCreateImage(display,
-        DefaultVisual(display, screen_num),
-        depth, ZPixmap, 0, (char *) pixels1, w, h,
-        XBitmapPad(display), 0);
+    // Create XImage from user background file.
+    XImage* ximage = XCreateImage(display, DefaultVisual(display, screen_num),
+        depth, ZPixmap, 0, (char *) pixels1,
+        mGlobal.SnowWinWidth, mGlobal.SnowWinHeight, XBitmapPad(display), 0);
     XInitImage(ximage);
 
     Pixmap pixmap = XCreatePixmap(display, window,
-        w, h, DefaultDepth(display, screen_num));
+        mGlobal.SnowWinWidth, mGlobal.SnowWinHeight,
+        DefaultDepth(display, screen_num));
     XPutImage(display, pixmap, XCreateGC(display, pixmap, 0, 0),
-        ximage, 0, 0, 0, 0, w, h);
+        ximage, 0, 0, 0, 0, mGlobal.SnowWinWidth, mGlobal.SnowWinHeight);
     XSetWindowBackgroundPixmap(display, window, pixmap);
 
-    g_object_unref(pixbuf);
     XFreePixmap(display, pixmap);
     XDestroyImage(ximage);
 
@@ -571,7 +573,6 @@ void setActiveAppYPos(int yPos) {
     mActiveAppYPos = yPos;
 }
 
-
 /** *********************************************************************
  ** This method handles XFixes XFixesCursorNotify Cursor change events.
  **/
@@ -604,6 +605,9 @@ void onAppWindowChange(Window window) {
 void onWindowCreated(XEvent* event) {
     // Update our list to include the created one.
     getWinInfoForAllWindows();
+
+    // printf("onWindowCreated() : ");
+    // logWinInfoForWindow(event->xcreatewindow.window);
 
     // Is this a signature of a transient Plasma DRAG Window
     // being created? If not, early exit.
@@ -641,12 +645,16 @@ void onWindowCreated(XEvent* event) {
  ** This method handles X11 Windows being reparented.
  **/
 void onWindowReparent(__attribute__((unused)) XEvent* event) {
+    // printf("onWindowReparent(%i) : ", event->xreparent.type);
+    // logWinInfoForWindow(event->xreparent.event);
 }
 
 /** *********************************************************************
  ** This method handles X11 Windows being moved, sized, changed.
  **/
-void onWindowChanged(__attribute__((unused)) XEvent* event) {
+void onConfigureNotify(__attribute__((unused)) XEvent* event) {
+    // printf("onConfigureNotify(%i) : ", event->xconfigure.type);
+    // logWinInfoForWindow(event->xconfigure.event);
 }
 
 /** *********************************************************************
@@ -657,6 +665,9 @@ void onWindowChanged(__attribute__((unused)) XEvent* event) {
 void onWindowMapped(XEvent* event) {
     // Update our list for visibility change.
     getWinInfoForAllWindows();
+
+    // printf("onWindowMapped(%i) : ", event->xmap.type);
+    // logWinInfoForWindow(event->xmap.event);
 
     // Determine window drag state.
     if (!isWindowBeingDragged()) {
@@ -714,12 +725,16 @@ void onWindowMapped(XEvent* event) {
  ** This method handles X11 Windows being focused In.
  **/
 void onWindowFocused(__attribute__((unused)) XEvent* event) {
+    // printf("onWindowFocused() : ");
+    // logWinInfoForWindow(event->xfocus.window);
 }
 
 /** *********************************************************************
  ** This method handles X11 Windows being focused In.
  **/
 void onWindowBlurred(__attribute__((unused)) XEvent* event) {
+    // printf("onWindowBlurred() : ");
+    // logWinInfoForWindow(event->xfocus.window);
 }
 
 /** *********************************************************************
@@ -731,6 +746,9 @@ void onWindowUnmapped(__attribute__((unused)) XEvent* event) {
     // Update our list for visibility change.
     getWinInfoForAllWindows();
 
+    // printf("onWindowUnmapped(%i) : ", event->xunmap.type);
+    // logWinInfoForWindow(event->xunmap.event);
+
     // Clear window drag state.
     if (isWindowBeingDragged()) {
         clearAllDragFields();
@@ -741,6 +759,9 @@ void onWindowUnmapped(__attribute__((unused)) XEvent* event) {
  ** This method handles X11 Windows being destroyed.
  **/
 void onWindowDestroyed(__attribute__((unused)) XEvent* event) {
+    // printf("onWindowDestroyed() : ");
+    // logWinInfoForWindow(event->xdestroywindow.event);
+
     // Update our list to reflect the destroyed one.
     getWinInfoForAllWindows();
 
@@ -751,26 +772,33 @@ void onWindowDestroyed(__attribute__((unused)) XEvent* event) {
 }
 
 /** *********************************************************************
+ ** This method handles all other X11 Windows events.
+ **/
+void onWindowClientMessage(__attribute__((unused)) XEvent* event) {
+    // printf("onWindowClientMessage(%i) : ", event->xany.type);
+    // logWinInfoForWindow(event->xany.window);
+}
+
+/** *********************************************************************
  ** This method decides if the user ia dragging a window via a mouse
  ** click-and-hold on the titlebar.
  **/
 bool isMouseClickedAndHeldInWindow(Window window) {
     //  Find the focused window pointer click state.
+    // If click-state is clicked-down, we're dragging.
     Window root_return, child_return;
     int root_x_return, root_y_return;
-    int win_x_return, win_y_return;
+    int xPosResult, yPosResult;
+
     unsigned int pointerState;
+    if (XQueryPointer(mGlobal.display, window,
+        &root_return, &child_return, &root_x_return, &root_y_return,
+        &xPosResult, &yPosResult, &pointerState)) {
+        const unsigned int POINTER_CLICKDOWN = 256;
+        return (pointerState & POINTER_CLICKDOWN);
+    }
 
-    bool foundPointerState = XQueryPointer(
-        mGlobal.display, window,
-        &root_return, &child_return,
-        &root_x_return, &root_y_return,
-        &win_x_return, &win_y_return,
-        &pointerState);
-
-    // If click-state is clicked-down, we're dragging.
-    const unsigned int POINTER_CLICKDOWN = 256;
-    return foundPointerState && (pointerState & POINTER_CLICKDOWN);
+    return false;
 }
 
 /** *********************************************************************
@@ -837,6 +865,333 @@ Window getDragWindowOf(Window window) {
         windowNode = parent;
     }
 }
+
+/** *********************************************************************
+ ** Getter for mTitleOfWindow.
+ **/
+char* getTitleOfWindow() {
+    return mTitleOfWindow;
+}
+
+/** *********************************************************************
+ ** Setter for mTitleOfWindow.
+ **
+ ** Set mTitleOfWindow. Create a 40-char formatted
+ ** title (name) c-string with a hard length, replacing
+ ** unprintables with SPACE, padding right with SPACE,
+ ** and preserving null terminator.
+ **/
+void setTitleOfWindow(Window window) {
+    XTextProperty titleBarName;
+
+    int outP = 0;
+    if (XGetWMName(mGlobal.display, window, &titleBarName)) {
+        const char* NAME_PTR = (char*) titleBarName.value;
+        const int NAME_LEN = strlen(NAME_PTR);
+
+        for (; outP < NAME_LEN && outP < MAX_TITLE_STRING_LENGTH; outP++) {
+            mTitleOfWindow[outP] = isprint(*(NAME_PTR + outP)) ?
+                *(NAME_PTR + outP) : ' ';
+        }
+        XFree(titleBarName.value);
+    }
+
+    for (; outP < MAX_TITLE_STRING_LENGTH; outP++) {
+        mTitleOfWindow[outP] = ' ';
+    }
+    mTitleOfWindow[outP] = '\0';
+}
+
+/** *********************************************************************
+ ** This method determines if a window is visible on a workspace.
+ **/
+long int isWindowVisibleOnWorkspace(Window window) {
+    long int result = 0;
+
+    Atom type;
+    int format;
+    unsigned long nitems, unusedBytes;
+    unsigned char *properties = NULL;
+
+    XGetWindowProperty(mGlobal.display, window,
+        XInternAtom(mGlobal.display, "_NET_WM_DESKTOP", False),
+        0, 1, False, AnyPropertyType, &type, &format, &nitems,
+        &unusedBytes, &properties);
+
+    if (type != XA_CARDINAL) {
+        XFree(properties);
+        properties = NULL;
+
+        XGetWindowProperty(mGlobal.display, window,
+            XInternAtom(mGlobal.display, "_WIN_WORKSPACE", False),
+            0, 1, False, AnyPropertyType, &type, &format, &nitems,
+            &unusedBytes, &properties);
+    }
+
+    if (properties) {
+        result = *(long*) (void*) properties;
+        XFree(properties);
+    }
+
+    return result;
+}
+
+/** *********************************************************************
+ ** This method checks if a window is hidden.
+ **/
+bool isWindowHidden(Window window, int windowMapState) {
+    // If desktop isn't visible, all windows are hidden.
+    if (!isDesktopVisible()) {
+        return true;
+    }
+
+    if (windowMapState != IsViewable) {
+        return true;
+    }
+
+    if (isWindowHiddenByNetWMState(window)) {
+        return true;
+    }
+    if (isWindowHiddenByWMState(window)) {
+        return true;
+    }
+    //if (!isWindowContentVisible(window)) {
+    //    return true;
+    //}
+
+    return false;
+}
+
+/** *********************************************************************
+ ** This method checks "_NET_WM_STATE" for window HIDDEN attribute.
+ **/
+bool isWindowHiddenByNetWMState(Window window) {
+    bool result = false;
+
+    Atom type;
+    int format;
+    unsigned long nitems, unusedBytes;
+    unsigned char *properties = NULL;
+
+    XGetWindowProperty(mGlobal.display, window,
+        XInternAtom(mGlobal.display, "_NET_WM_STATE", False),
+        0, (~0L), False, AnyPropertyType, &type, &format,
+        &nitems, &unusedBytes, &properties);
+
+    if (format == 32) {
+        for (unsigned long i = 0; i < nitems; i++) {
+            char *nameString = XGetAtomName(mGlobal.display,
+                ((Atom *) (void *) properties) [i]);
+            if (strcmp(nameString, "_NET_WM_STATE_HIDDEN") == 0) {
+                result = true;
+                XFree(nameString);
+                break;
+            }
+            XFree(nameString);
+        }
+    }
+    XFree(properties);
+
+    return result;
+}
+
+/** *********************************************************************
+ ** This method checks "WM_STATE" for window HIDDEN attribute.
+ **/
+bool isWindowHiddenByWMState(Window window) {
+    bool result = false;
+
+    Atom type;
+    int format;
+    unsigned long nitems, unusedBytes;
+    unsigned char *properties = NULL;
+
+    XGetWindowProperty(mGlobal.display, window,
+        XInternAtom(mGlobal.display, "WM_STATE", False),
+        0, (~0L), False, AnyPropertyType, &type, &format,
+        &nitems, &unusedBytes, &properties);
+
+    if (format == 32 && nitems >= 1) {
+        if (* (long*) (void*) properties != NormalState) {
+            result = true;
+        }
+    }
+    XFree(properties);
+
+    return result;
+}
+
+/** *********************************************************************
+ ** This method checks if a window is visible &
+ ** ready to receive click events.
+ **
+ ** Some apps such as Chrome start with a transparent background, which
+ ** causes FallenSnow to provide a "hanging" surface and collect snow,
+ ** apparantly to the user with no window.
+ **/
+bool isWindowContentVisible(Window window) {
+
+    // Desktop always visible.
+    if (window == None) {
+        printf("iwcv() Desktop T: ");
+        logWinInfoForWindow(window);
+        return true;
+    }
+
+    Window root_return, child_return;
+    int root_x_return, root_y_return;
+    int xPosResult, yPosResult;
+    unsigned int pointerState;
+
+    if (!XQueryPointer(mGlobal.display, window, &root_return,
+        &child_return, &root_x_return, &root_y_return,
+        &xPosResult, &yPosResult, &pointerState)) {
+        printf("iwcv() !XQuery F: ");
+        logWinInfoForWindow(window);
+        return false;
+    }
+
+    if (child_return != window) {
+        printf("iwcv() MISMATCH T: ");
+        logWinInfoForWindow(window);
+        return false;
+    }
+
+    printf("iwcv() MATCH    T: ");
+    logWinInfoForWindow(window);
+    return TRUE;
+}
+
+/** *********************************************************************
+ ** This method checks if a window is sticky.
+ **/
+bool isWindowSticky(Window window, long workSpace) {
+    // Needed in KDE and LXDE.
+    if (workSpace == -1) {
+        return true;
+    }
+
+    bool result = false;
+
+    Atom type;
+    int format;
+    unsigned long nitems, unusedBytes;
+    unsigned char *properties = NULL;
+
+    XGetWindowProperty(mGlobal.display, window,
+        XInternAtom(mGlobal.display, "_NET_WM_STATE", False),
+        0, (~0L), False, AnyPropertyType, &type, &format,
+        &nitems, &unusedBytes, &properties);
+
+    if (type == XA_ATOM) {
+        for (unsigned long int i = 0; i < nitems; i++) {
+            char *nameString = XGetAtomName(mGlobal.display,
+                ((Atom *) (void *) properties) [i]);
+            if (strcmp(nameString, "_NET_WM_STATE_STICKY") == 0) {
+                result = true;
+                XFree(nameString);
+                break;
+            }
+            XFree(nameString);
+        }
+    }
+    XFree(properties);
+
+    return result;
+}
+
+/** *********************************************************************
+ ** This method checks is a window is a dock.
+ **/
+bool isWindowDock(Window window) {
+    bool result = false;
+
+    Atom type;
+    int format;
+    unsigned long nitems, unusedBytes;
+    unsigned char *properties = NULL;
+
+    XGetWindowProperty(mGlobal.display, window,
+        XInternAtom(mGlobal.display, "_NET_WM_WINDOW_TYPE", False),
+        0, (~0L), False, AnyPropertyType, &type, &format,
+        &nitems, &unusedBytes, &properties);
+
+    if (format == 32) {
+        for (int i = 0; (unsigned long)i < nitems; i++) {
+            char *nameString = XGetAtomName(mGlobal.display,
+                ((Atom *) (void *) properties) [i]);
+            if (strcmp(nameString, "_NET_WM_WINDOW_TYPE_DOCK") == 0) {
+                result = true;
+                XFree(nameString);
+                break;
+            }
+            XFree(nameString);
+        }
+    }
+    XFree(properties);
+
+    return result;
+}
+
+/** *********************************************************************
+ ** This method prints a requested windows WinInfo struct.
+ **/
+void logWinInfoForWindow(Window window) {
+    // Normal case, get WinInfo item and log it.
+    WinInfo* winInfoItem = getWinInfoForWindow(window);
+    if (!winInfoItem) {
+        printf("[0x%08lx]\n", window);
+        return;
+    }
+
+    // Get printable title.
+    setTitleOfWindow(window);
+
+    // Print it.
+    printf("[0x%08lx]  %s  %2li  "
+        " %5d , %-5d %5d x %-5d  %s%s%s\n",
+        winInfoItem->window,
+        getTitleOfWindow(),
+        winInfoItem->ws,
+        winInfoItem->xa, winInfoItem->ya,
+        winInfoItem->w, winInfoItem->h,
+        winInfoItem->dock ? "dock " : "",
+        winInfoItem->sticky ? "sticky " : "",
+        winInfoItem->hidden ? "hidden" : "");
+}
+
+/** *********************************************************************
+ ** This is a helper method for debugging.
+ **/
+void logWinAttrForWindow(Window window) {
+    WinInfo* winInfoItem = getWinInfoForWindow(window);
+    if (!winInfoItem) {
+        printf("[0x%08lx]  X11 winInfo not found.\n", window);
+        return;
+    }
+
+    // Get printable title & attributes.
+    setTitleOfWindow(window);
+    XWindowAttributes attr;
+    XGetWindowAttributes(mGlobal.display, window, &attr);
+
+    // Print it.
+    printf("[0x%08lx]  %s       %5d , %-5d %5d x %-5d  "
+        "Bw: %5d  Dp: %5d  Map: %5d  Vi: %s  Sc: %s  Bs: %5d  "
+         "MI? %s  Pl: %s  Pi: %s\n",
+        winInfoItem->window, getTitleOfWindow(),
+        attr.x, attr.y, attr.width, attr.height,
+
+        attr.border_width, attr.depth, attr.map_state,
+        attr.visual ? "YES" : "NO ",
+        attr.screen ? "YES" : "NO ",
+        attr.backing_store,
+        attr.map_installed ? "YES" : "NO ",
+        attr.backing_planes ? "YES" : "NO ",
+        attr.backing_pixel ? "YES" : "NO "
+    );
+}
+
 /** *********************************************************************
  ** This method logs a timestamp in seconds & milliseconds.
  **/

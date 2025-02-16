@@ -23,11 +23,13 @@
 #include <pthread.h>
 
 #include "pixmaps.h"
-#include "plasmasnow.h" // definition of SNOW_ALL
 
-#include "snow.h"
-#include "snow_includes.h" // a generated file,
-// containing #includes for snow xbm's and xpm's
+#include "PlasmaSnow.h"
+#include "Storm.h"
+
+#include "Pixmaps/plasmasnow.xpm"
+XPM_TYPE **plasmasnow_logo = (XPM_TYPE **) plasmasnow_xpm;
+
 
 #include "Pixmaps/BigSanta1.xpm"
 #include "Pixmaps/BigSanta2.xpm"
@@ -134,8 +136,6 @@ XPM_TYPE **xpmtrees[NUM_ALL_SCENE_TYPES] = {
     candycane_xpm, garland_xpm, extratree_xpm };
 
 
-#include "Pixmaps/plasmasnow.xpm"
-XPM_TYPE **plasmasnow_logo = (XPM_TYPE **) plasmasnow_xpm;
 
 /* front bird */
 #include "Pixmaps/bird1.xpm"
@@ -176,9 +176,3 @@ XPM_TYPE **birds_xpm[] = {bird1_xpm, bird2_xpm, bird3_xpm, bird4_xpm, bird5_xpm,
 #include "Pixmaps/moon1.xpm"
 #include "Pixmaps/moon2.xpm"
 XPM_TYPE **moons_xpm[] = {moon1_xpm, moon2_xpm};
-
-// Snow defs.
-#define SNOW(x) snow##x##_xpm,
-XPM_TYPE **snow_xpm[] = {SNOW_ALL NULL};
-
-#include "undefall.inc"

@@ -31,7 +31,7 @@
 #include "safe_malloc.h"
 #include "Stars.h"
 #include "Utils.h"
-#include "windows.h"
+#include "Windows.h"
 
 
 /** *********************************************************************
@@ -52,6 +52,8 @@ char* mStarColorArray[STARANIMATIONS] =
       (char*) "gold4", (char*) "orange"};
 
 cairo_surface_t* mStarSurfaceArray[STARANIMATIONS];
+
+int mPreviousStarsScale = 100;
 
 
 /** *********************************************************************
@@ -183,7 +185,7 @@ int updateStarsFrame() {
 /** *********************************************************************
  ** This method draws a single Stars frame.
  **/
-void drawStarsFrame(cairo_t *cr) {
+void drawStarsFrame(cairo_t* cr) {
     if (!Flags.Stars) {
         return;
     }
@@ -209,12 +211,11 @@ void drawStarsFrame(cairo_t *cr) {
  ** This method updates the Stars module with
  ** refreshed user settings.
  **/
-void updateStarsUserSettings() {
+void respondToStarsSettingsChanges() {
     UIDO(NStars, initStarsModuleArrays(); clearGlobalSnowWindow(););
     UIDO(Stars, clearGlobalSnowWindow(););
 
-    static int prev = 100;
-    if (appScalesHaveChanged(&prev)) {
+    if (appScalesHaveChanged(&mPreviousStarsScale)) {
         initStarsModuleSurfaces();
         initStarsModuleArrays();
     }

@@ -23,7 +23,9 @@
 
 #include <X11/Intrinsic.h>
 #include <gtk/gtk.h>
-#include "plasmasnow.h"
+
+#include "PlasmaSnow.h"
+
 
 bool createStormWindow(Display* display,
     GtkWidget* transparentGTKWindow, int xscreen,

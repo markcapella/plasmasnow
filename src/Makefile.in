@@ -137,11 +137,12 @@ am_plasmasnow_OBJECTS = plasmasnow-Application.$(OBJEXT) \
 	plasmasnow-moon.$(OBJEXT) plasmasnow-pixmaps.$(OBJEXT) \
 	plasmasnow-safe_malloc.$(OBJEXT) plasmasnow-Santa.$(OBJEXT) \
 	plasmasnow-scenery.$(OBJEXT) plasmasnow-selfrep.$(OBJEXT) \
-	plasmasnow-snow.$(OBJEXT) plasmasnow-spline_interpol.$(OBJEXT) \
-	plasmasnow-Stars.$(OBJEXT) plasmasnow-StormWindow.$(OBJEXT) \
-	plasmasnow-treesnow.$(OBJEXT) plasmasnow-Utils.$(OBJEXT) \
-	plasmasnow-wind.$(OBJEXT) plasmasnow-windows.$(OBJEXT) \
-	plasmasnow-WindowVector.$(OBJEXT) plasmasnow-WinInfo.$(OBJEXT)
+	plasmasnow-spline_interpol.$(OBJEXT) \
+	plasmasnow-Stars.$(OBJEXT) plasmasnow-Storm.$(OBJEXT) \
+	plasmasnow-StormWindow.$(OBJEXT) plasmasnow-treesnow.$(OBJEXT) \
+	plasmasnow-Utils.$(OBJEXT) plasmasnow-wind.$(OBJEXT) \
+	plasmasnow-Windows.$(OBJEXT) plasmasnow-WindowVector.$(OBJEXT) \
+	plasmasnow-WinInfo.$(OBJEXT)
 nodist_plasmasnow_OBJECTS =
 plasmasnow_OBJECTS = $(am_plasmasnow_OBJECTS) \
 	$(nodist_plasmasnow_OBJECTS)
@@ -178,10 +179,12 @@ am__depfiles_remade = ./$(DEPDIR)/libxdo_a-xdo.Po \
 	./$(DEPDIR)/plasmasnow-MsgBox.Po \
 	./$(DEPDIR)/plasmasnow-Santa.Po \
 	./$(DEPDIR)/plasmasnow-Stars.Po \
+	./$(DEPDIR)/plasmasnow-Storm.Po \
 	./$(DEPDIR)/plasmasnow-StormWindow.Po \
 	./$(DEPDIR)/plasmasnow-Utils.Po \
 	./$(DEPDIR)/plasmasnow-WinInfo.Po \
 	./$(DEPDIR)/plasmasnow-WindowVector.Po \
+	./$(DEPDIR)/plasmasnow-Windows.Po \
 	./$(DEPDIR)/plasmasnow-birds.Po \
 	./$(DEPDIR)/plasmasnow-clientwin.Po \
 	./$(DEPDIR)/plasmasnow-clocks.Po \
@@ -198,11 +201,9 @@ am__depfiles_remade = ./$(DEPDIR)/libxdo_a-xdo.Po \
 	./$(DEPDIR)/plasmasnow-safe_malloc.Po \
 	./$(DEPDIR)/plasmasnow-scenery.Po \
 	./$(DEPDIR)/plasmasnow-selfrep.Po \
-	./$(DEPDIR)/plasmasnow-snow.Po \
 	./$(DEPDIR)/plasmasnow-spline_interpol.Po \
 	./$(DEPDIR)/plasmasnow-treesnow.Po \
-	./$(DEPDIR)/plasmasnow-wind.Po \
-	./$(DEPDIR)/plasmasnow-windows.Po
+	./$(DEPDIR)/plasmasnow-wind.Po
 am__mv = mv -f
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -708,9 +709,9 @@ plasmasnow_SOURCES = \
 		FallenSnow.c Flags.c hashtable.cpp ixpm.c kdtree.c \
 		Lights.cpp LoadMeasure.c MainWindow.c mainstub.cpp \
 		meteor.c MsgBox.cpp moon.c pixmaps.c safe_malloc.c \
-		Santa.c scenery.c selfrep.c snow.c spline_interpol.c \
-		Stars.c StormWindow.c treesnow.c ui.glade Utils.c \
-		wind.c windows.c WindowVector.c WinInfo.c
+		Santa.c scenery.c selfrep.c spline_interpol.c \
+		Stars.c Storm.c StormWindow.c treesnow.c ui.glade \
+		Utils.c wind.c Windows.c WindowVector.c WinInfo.c
 
 nodist_plasmasnow_SOURCES = ui_xml.h snow_includes.h
 @MAKESELFREP_FALSE@tarfile_inc = 
@@ -839,10 +840,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-MsgBox.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-Santa.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-Stars.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-Storm.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-StormWindow.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-Utils.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-WinInfo.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-WindowVector.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-Windows.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-birds.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-clientwin.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-clocks.Po@am__quote@ # am--include-marker
@@ -859,11 +862,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-safe_malloc.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-scenery.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-selfrep.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-snow.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-spline_interpol.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-treesnow.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-wind.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-windows.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -1221,20 +1222,6 @@ plasmasnow-selfrep.obj: selfrep.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o plasmasnow-selfrep.obj `if test -f 'selfrep.c'; then $(CYGPATH_W) 'selfrep.c'; else $(CYGPATH_W) '$(srcdir)/selfrep.c'; fi`
 
-plasmasnow-snow.o: snow.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT plasmasnow-snow.o -MD -MP -MF $(DEPDIR)/plasmasnow-snow.Tpo -c -o plasmasnow-snow.o `test -f 'snow.c' || echo '$(srcdir)/'`snow.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/plasmasnow-snow.Tpo $(DEPDIR)/plasmasnow-snow.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='snow.c' object='plasmasnow-snow.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o plasmasnow-snow.o `test -f 'snow.c' || echo '$(srcdir)/'`snow.c
-
-plasmasnow-snow.obj: snow.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT plasmasnow-snow.obj -MD -MP -MF $(DEPDIR)/plasmasnow-snow.Tpo -c -o plasmasnow-snow.obj `if test -f 'snow.c'; then $(CYGPATH_W) 'snow.c'; else $(CYGPATH_W) '$(srcdir)/snow.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/plasmasnow-snow.Tpo $(DEPDIR)/plasmasnow-snow.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='snow.c' object='plasmasnow-snow.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o plasmasnow-snow.obj `if test -f 'snow.c'; then $(CYGPATH_W) 'snow.c'; else $(CYGPATH_W) '$(srcdir)/snow.c'; fi`
-
 plasmasnow-spline_interpol.o: spline_interpol.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT plasmasnow-spline_interpol.o -MD -MP -MF $(DEPDIR)/plasmasnow-spline_interpol.Tpo -c -o plasmasnow-spline_interpol.o `test -f 'spline_interpol.c' || echo '$(srcdir)/'`spline_interpol.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/plasmasnow-spline_interpol.Tpo $(DEPDIR)/plasmasnow-spline_interpol.Po
@@ -1262,6 +1249,20 @@ plasmasnow-Stars.obj: Stars.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='Stars.c' object='plasmasnow-Stars.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o plasmasnow-Stars.obj `if test -f 'Stars.c'; then $(CYGPATH_W) 'Stars.c'; else $(CYGPATH_W) '$(srcdir)/Stars.c'; fi`
+
+plasmasnow-Storm.o: Storm.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT plasmasnow-Storm.o -MD -MP -MF $(DEPDIR)/plasmasnow-Storm.Tpo -c -o plasmasnow-Storm.o `test -f 'Storm.c' || echo '$(srcdir)/'`Storm.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/plasmasnow-Storm.Tpo $(DEPDIR)/plasmasnow-Storm.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='Storm.c' object='plasmasnow-Storm.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o plasmasnow-Storm.o `test -f 'Storm.c' || echo '$(srcdir)/'`Storm.c
+
+plasmasnow-Storm.obj: Storm.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT plasmasnow-Storm.obj -MD -MP -MF $(DEPDIR)/plasmasnow-Storm.Tpo -c -o plasmasnow-Storm.obj `if test -f 'Storm.c'; then $(CYGPATH_W) 'Storm.c'; else $(CYGPATH_W) '$(srcdir)/Storm.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/plasmasnow-Storm.Tpo $(DEPDIR)/plasmasnow-Storm.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='Storm.c' object='plasmasnow-Storm.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o plasmasnow-Storm.obj `if test -f 'Storm.c'; then $(CYGPATH_W) 'Storm.c'; else $(CYGPATH_W) '$(srcdir)/Storm.c'; fi`
 
 plasmasnow-StormWindow.o: StormWindow.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT plasmasnow-StormWindow.o -MD -MP -MF $(DEPDIR)/plasmasnow-StormWindow.Tpo -c -o plasmasnow-StormWindow.o `test -f 'StormWindow.c' || echo '$(srcdir)/'`StormWindow.c
@@ -1319,19 +1320,19 @@ plasmasnow-wind.obj: wind.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o plasmasnow-wind.obj `if test -f 'wind.c'; then $(CYGPATH_W) 'wind.c'; else $(CYGPATH_W) '$(srcdir)/wind.c'; fi`
 
-plasmasnow-windows.o: windows.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT plasmasnow-windows.o -MD -MP -MF $(DEPDIR)/plasmasnow-windows.Tpo -c -o plasmasnow-windows.o `test -f 'windows.c' || echo '$(srcdir)/'`windows.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/plasmasnow-windows.Tpo $(DEPDIR)/plasmasnow-windows.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='windows.c' object='plasmasnow-windows.o' libtool=no @AMDEPBACKSLASH@
+plasmasnow-Windows.o: Windows.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT plasmasnow-Windows.o -MD -MP -MF $(DEPDIR)/plasmasnow-Windows.Tpo -c -o plasmasnow-Windows.o `test -f 'Windows.c' || echo '$(srcdir)/'`Windows.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/plasmasnow-Windows.Tpo $(DEPDIR)/plasmasnow-Windows.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='Windows.c' object='plasmasnow-Windows.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o plasmasnow-windows.o `test -f 'windows.c' || echo '$(srcdir)/'`windows.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o plasmasnow-Windows.o `test -f 'Windows.c' || echo '$(srcdir)/'`Windows.c
 
-plasmasnow-windows.obj: windows.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT plasmasnow-windows.obj -MD -MP -MF $(DEPDIR)/plasmasnow-windows.Tpo -c -o plasmasnow-windows.obj `if test -f 'windows.c'; then $(CYGPATH_W) 'windows.c'; else $(CYGPATH_W) '$(srcdir)/windows.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/plasmasnow-windows.Tpo $(DEPDIR)/plasmasnow-windows.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='windows.c' object='plasmasnow-windows.obj' libtool=no @AMDEPBACKSLASH@
+plasmasnow-Windows.obj: Windows.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT plasmasnow-Windows.obj -MD -MP -MF $(DEPDIR)/plasmasnow-Windows.Tpo -c -o plasmasnow-Windows.obj `if test -f 'Windows.c'; then $(CYGPATH_W) 'Windows.c'; else $(CYGPATH_W) '$(srcdir)/Windows.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/plasmasnow-Windows.Tpo $(DEPDIR)/plasmasnow-Windows.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='Windows.c' object='plasmasnow-Windows.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o plasmasnow-windows.obj `if test -f 'windows.c'; then $(CYGPATH_W) 'windows.c'; else $(CYGPATH_W) '$(srcdir)/windows.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o plasmasnow-Windows.obj `if test -f 'Windows.c'; then $(CYGPATH_W) 'Windows.c'; else $(CYGPATH_W) '$(srcdir)/Windows.c'; fi`
 
 plasmasnow-WindowVector.o: WindowVector.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT plasmasnow-WindowVector.o -MD -MP -MF $(DEPDIR)/plasmasnow-WindowVector.Tpo -c -o plasmasnow-WindowVector.o `test -f 'WindowVector.c' || echo '$(srcdir)/'`WindowVector.c
@@ -1893,10 +1894,12 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/plasmasnow-MsgBox.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-Santa.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-Stars.Po
+	-rm -f ./$(DEPDIR)/plasmasnow-Storm.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-StormWindow.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-Utils.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-WinInfo.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-WindowVector.Po
+	-rm -f ./$(DEPDIR)/plasmasnow-Windows.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-birds.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-clientwin.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-clocks.Po
@@ -1913,11 +1916,9 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/plasmasnow-safe_malloc.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-scenery.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-selfrep.Po
-	-rm -f ./$(DEPDIR)/plasmasnow-snow.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-spline_interpol.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-treesnow.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-wind.Po
-	-rm -f ./$(DEPDIR)/plasmasnow-windows.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -1978,10 +1979,12 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/plasmasnow-MsgBox.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-Santa.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-Stars.Po
+	-rm -f ./$(DEPDIR)/plasmasnow-Storm.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-StormWindow.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-Utils.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-WinInfo.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-WindowVector.Po
+	-rm -f ./$(DEPDIR)/plasmasnow-Windows.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-birds.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-clientwin.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-clocks.Po
@@ -1998,11 +2001,9 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/plasmasnow-safe_malloc.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-scenery.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-selfrep.Po
-	-rm -f ./$(DEPDIR)/plasmasnow-snow.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-spline_interpol.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-treesnow.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-wind.Po
-	-rm -f ./$(DEPDIR)/plasmasnow-windows.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

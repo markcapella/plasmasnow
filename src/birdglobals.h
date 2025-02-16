@@ -22,7 +22,7 @@
 #pragma once
 
 #include "doitb.h"
-#include "plasmasnow.h"
+#include "PlasmaSnow.h"
 
 extern struct _blobals {
         int maxix, maxiy, maxiz; // [pixels]

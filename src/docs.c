@@ -24,7 +24,7 @@
 #include "safe_malloc.h"
 #include "Utils.h"
 #include "version.h"
-#include "plasmasnow.h"
+#include "PlasmaSnow.h"
 #include <pthread.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -241,15 +241,15 @@ void docs_usage(int man) {
     manout("-noblowsnow", "Do not animate blowing snow from trees or windows");
     manout("-sc <c>  ",
         "Use the given string as color for the flakes (default: %s).",
-        F(SnowColor));
+        F(StormItemColor1));
     manout("-sc2 <c>  ",
         "Use the given string as 2nd color for the flakes (default: %s).",
-        F(SnowColor2));
+        F(StormItemColor2));
     manout("-snowspeedfactor <n>",
         "Multiply the speed of snow with this number/100 (default: %d).",
-        F(SnowSpeedFactor));
+        F(mStormItemsSpeedFactor));
     manout("-snowsize <n>",
-        "Set size of (non-vintage) snow flakes (default: %d).", F(SnowSize));
+        "Set size of (non-vintage) snow flakes (default: %d).", F(ShapeSizeFactor));
     manout("-snow       ", "(Default) Show snow.");
     manout("-nosnow -nosnowflakes", "Do not show snow.");
     manout("-flakecountmax <n>",

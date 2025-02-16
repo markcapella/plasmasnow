@@ -23,9 +23,6 @@
 
 #include <stdbool.h>
 
-// XDO Lib.
-#include "xdo.h"
-
 // X11 Libs.
 #include <X11/Intrinsic.h>
 #include <X11/Xlib.h>
@@ -34,9 +31,8 @@
 // Gtk Libs.
 #include <gtk/gtk.h>
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+// XDO Lib.
+#include "xdo.h"
 
 
 /***********************************************************
@@ -63,9 +59,17 @@
 #define time_aurora 1.0 // time between update of aurora
 
 // Time user is allowed to confirm app goes below all windows.
-#define TIME_BETWEEN_BLOWOFF_FRAMES 0.50
+#define TIME_BETWEEEN_UI_SETTINGS_UPDATES  0.25
+
+#define TIME_BETWEEN_STORM_THREAD_UPDATES 0.10         // time between generation of flakes
+#define TIME_BETWEEN_BLOWOFF_FRAME_UPDATES 0.5
+#define TIME_BETWEEN_LIGHTS_FRAME_UPDATES  0.5
+#define TIME_BETWEEN_LOADMEASURE_UPDATES   0.1
+#define TIME_BETWEEN_STORMITEM_THREAD_UPDATES    (0.02 * mGlobal.cpufactor)
+
 
 #define CONFIRM_BELOW_ALL_WINDOWS_EVENT_TIME 1.0
+
 #define time_change_attr 60.0       // time between changing attraction point
 #define time_clean 1.00             // time between cleaning desktop
 #define time_desktop_type 2.0       // time between showing desktop type
@@ -77,13 +81,11 @@
 #define CONFIGURE_WINDOW_EVENT_TIME 0.1
 #define time_flakecount 1.00        // time between updates of show flakecount
 #define time_fuse 1.00              // time between testing on too much flakes
-#define time_genflakes 0.10         // time between generation of flakes
 
 // time between killing flakes (used in emergency only)
 #define time_init_snow  0.2
 #define time_initbaum 0.30          // time between check for (re)create trees
 #define time_main_window 0.5        // time between checks for birds window
-#define TIME_BETWEEN_LOAD_MONITOR_EVENTS  0.1  // time between cpu load measurements
 #define time_meteor 3.00            // time between meteors
 #define time_newwind 1.00           // time between changing wind
 #define time_sendevent 0.5          // time between sendEvent() calls
@@ -92,11 +94,9 @@
 #define time_snow_on_trees 0.50     // time between redrawings of snow on trees
 
 #define time_testing 2.10  // time between testing code
-#define TIME_BETWEEEN_UI_SETTINGS_UPDATES 0.25 // time between checking values from ui
 #define time_umoon 0.04    // time between update position of moon
 #define time_usanta 0.04   // time between update of santa position
 #define time_ustar 2.00    // time between updating stars
-#define TIME_BETWEEN_LIGHTS_FRAMES 0.5 // time between updating xmas Lights.
 #define time_wind 0.10     // time between starting or ending wind
 #define time_wupdate 0.02  // time between getting windows information
 #define time_change_bottom 300.0 // time between changing desired heights
@@ -106,62 +106,47 @@
 // time between recompute fallen snow surfaces
 #define TIME_BETWWEEN_FALLENSNOW_THREADS 0.01
 
-// time between updates of snowflakes positions etc
-#define time_snowflakes    (0.02 * mGlobal.cpufactor)
 
 // time between updates of screen
 #define time_draw_all      (0.04 * mGlobal.cpufactor)
 
 
 /***********************************************************
- * SnowFlake consts.
+ * StormItem consts.
  */
-#define FLAKES_PER_SEC_PER_PIXEL 30
 #define INITIALSCRPAINTSNOWDEPTH  8 // Painted in advance
-#define INITIALYSPEED           120 // has to do with vertical flake speed
 #define MAXBLOWOFFFACTOR        100
 
-#define MAXXSTEP           2 // drift speed max
-#define MAXYSTEP          10 // falling speed max
-#define MAXWSENS         0.4 // sensibility of flakes for wind
-
-#define SNOWSPEED        0.7 // the higher, the speedier the snow
 #define WHIRL            150
 #define MAXVISWORKSPACES 100 // should be enough...
 
-typedef struct _Snow {
-        float rx; // x position
-        float ry; // y position
-
+typedef struct {
+        unsigned int shapeType;
         GdkRGBA color;
 
-        int ix;
-        int iy;                       // position after draw
+        bool survivesScreenEdges;
+        bool isFrozen;
 
-        float vx;                     // speed in x-direction, pixels/second
-        float vy;                     // speed in y-direction, pixels/second
+        unsigned int fluff;
+        float flufftimer;
+        float flufftime;
 
-        float m;                      // mass of flake
-        float ivy;                    // initial speed in y direction
-        float wsens;                  // wind dependency factor
-        float flufftimer;             // fluff timeout timer
-        float flufftime;              // fluff timeout
+        // Position values.
+        float xRealPosition;
+        float yRealPosition;
 
-        unsigned int whatFlake;       // snowflake index
-        unsigned int cyclic BITS(1);  // flake is cyclic
-        unsigned int fluff BITS(1);   // flake is in fluff state
-        unsigned int freeze BITS(1);  // flake does not move
-        unsigned int testing BITS(2); // for testing purposes
-} SnowFlake;
+        // Ater draw.
+        int xIntPosition;
+        int yIntPosition;
 
-typedef struct _SnowMap {
-        // Pixmap pixmap;
-        cairo_surface_t* surface;
+        // Physics.
+        float massValue;
+        float windSensitivity;
+        float initialYVelocity;
 
-        unsigned int width;
-        unsigned int height;
-} SnowMap;
-
+        float xVelocity;
+        float yVelocity;
+} StormItem;
 
 /***********************************************************
  * Xmas consts.
@@ -333,12 +318,11 @@ extern struct _mGlobal {
         Window SnowWin;
         int SnowWinX;
         int SnowWinY;
-        SnowMap* fluffpix;
 
         unsigned int MaxFlakeHeight;      /* Biggest flake */
         unsigned int MaxFlakeWidth;       /* Biggest flake */
 
-        int FlakeCount;                  /* number of flakes */
+        int stormItemCount;                  /* number of flakes */
         int FluffCount;                  /* number of fluff flakes */
 
         int SnowWinBorderWidth;

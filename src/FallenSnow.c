@@ -20,10 +20,6 @@
 #-# 
 */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include <ctype.h>
 #include <math.h>
 #include <pthread.h>
@@ -47,12 +43,12 @@
 #include "Flags.h"
 #include "safe_malloc.h"
 #include "Santa.h"
-#include "snow.h"
+#include "Storm.h"
 #include "spline_interpol.h"
 #include "Utils.h"
 #include "WindowVector.h"
 #include "wind.h"
-#include "windows.h"
+#include "Windows.h"
 #include "WinInfo.h"
 
 
@@ -60,7 +56,7 @@
  ** Module globals and consts.
  **/
 
-// Must stay snowfree area on display :)
+// Must stay snowfree area xIntPosition display :)
 const int MAX_DESKTOP_SNOWFREE_HEIGHT = 25;
 const int MINIMUM_SPLINE_WIDTH = 3;
 
@@ -131,7 +127,7 @@ int execFallenSnowBackgroundThread() {
     FallenSnow* fallenSnowItem = mGlobal.FsnowFirst;
     while (fallenSnowItem) {
         if (canSnowCollectOnFallen(fallenSnowItem)) {
-            collectSnowOnFallen(fallenSnowItem);
+            canSantaPlowSnowOnFallen(fallenSnowItem);
         }
         fallenSnowItem = fallenSnowItem->next;
     }
@@ -164,7 +160,7 @@ void swapFallenSnowRenderedSurfacesBToA() {
  ** This method checks for & performs user changes of
  ** FallenSnow module settings.
  **/
-void updateFallenSnowUserSettings() {
+void respondToFallenSnowSettingsChanges() {
     UIDO(MaxWinSnowDepth,
         clearAllFallenSnowItems();
         clearGlobalSnowWindow();
@@ -324,7 +320,7 @@ int canSnowCollectOnFallen(FallenSnow* fsnow) {
 
 /** *********************************************************************
  ** This method determines if the fallensnow item is
- ** visible on the current workspace.
+ ** visible xIntPosition the current workspace.
  **/
 int isFallenSnowVisibleOnWorkspace(FallenSnow* fsnow) {
     if (fsnow) {
@@ -342,18 +338,90 @@ int isFallenSnowVisibleOnWorkspace(FallenSnow* fsnow) {
  ** This method collects a fallen snow item from the display &
  ** performs Santa collision detection & actions.
  **/
-void collectSnowOnFallen(FallenSnow* fsnow) {
+void canSantaPlowSnowOnFallen(FallenSnow* fsnow) {
     if (fsnow->winInfo.window == None ||
         (!fsnow->winInfo.hidden && (fsnow->winInfo.sticky ||
         isFallenSnowVisibleOnWorkspace(fsnow)))) {
 
         // Check for Santa interaction.
         if (!Flags.NoSanta && mGlobal.SantaPlowRegion) {
-            updateFallenSnowWithSanta(fsnow);
+            const bool IS_IT_IN = XRectInRegion(mGlobal.SantaPlowRegion,
+                fsnow->x, fsnow->y - fsnow->h, fsnow->w, fsnow->h);
+            if (IS_IT_IN == RectangleIn || IS_IT_IN == RectanglePart) {
+                updateFallenSnowWithSanta(fsnow);
+            }
         }
 
         renderFallenSnowSurfaceB(fsnow);
     }
+}
+
+/** *********************************************************************
+ ** This method updates fallensnow items with impact
+ ** of Santas sled ploughing. Santa plows facing forward.
+ **/
+void updateFallenSnowWithSanta(FallenSnow* fsnow) {
+    if (mGlobal.ActualSantaSpeed <= 0) {
+        XFlush(mGlobal.display);
+        return;
+    }
+
+    float yVelocity = -1.5 * mGlobal.ActualSantaSpeed;
+    if (yVelocity > 0) {
+        yVelocity = -yVelocity;
+    }
+    if (yVelocity < -100.0) {
+        yVelocity = -100;
+    }
+
+    // Santa facing right.
+    if (mGlobal.SantaDirection == 0) {
+        const int SNOW_TO_PLOW = 10;
+
+        const int SANTA_FRONT = mGlobal.SantaX - fsnow->x +
+            mGlobal.SantaWidth;
+        const int SANTA_REAR = SANTA_FRONT - mGlobal.SantaWidth;
+
+        //generateFallenSnowFlakes(fsnow,
+        //    SANTA_FRONT, SNOW_TO_PLOW, yVelocity, true);
+
+        eraseFallenSnowPartial(fsnow, SANTA_REAR -
+            SNOW_TO_PLOW, mGlobal.SantaWidth + 2 *
+            SNOW_TO_PLOW);
+
+        for (int i = 0; i < fsnow->w; i++) {
+            if (i < SANTA_FRONT + SNOW_TO_PLOW &&
+                i >= SANTA_REAR - SNOW_TO_PLOW) {
+                fsnow->snowHeight[i] = 0;
+            }
+        }
+
+        //XFlush(mGlobal.display);
+        return;
+    }
+
+    // Santa facing left.
+    const int SNOW_TO_PLOW = 5;
+
+    const int SANTA_FRONT = mGlobal.SantaX - fsnow->x -
+        SNOW_TO_PLOW;
+    const int SANTA_REAR = SANTA_FRONT + mGlobal.SantaWidth;
+
+    //generateFallenSnowFlakes(fsnow,
+    //    SANTA_FRONT, SNOW_TO_PLOW, yVelocity, true);
+
+    eraseFallenSnowPartial(fsnow, SANTA_REAR +
+        SNOW_TO_PLOW, mGlobal.SantaWidth + 2 *
+        SNOW_TO_PLOW);
+
+    for (int i = 0; i < fsnow->w; i++) {
+        if (i > SANTA_FRONT - SNOW_TO_PLOW &&
+            i <= SANTA_REAR + SNOW_TO_PLOW) {
+           fsnow->snowHeight[i] = 0;
+        }
+    }
+
+    //XFlush(mGlobal.display);
 }
 
 /** *********************************************************************
@@ -492,69 +560,9 @@ void renderFallenSnowSurfaceB(FallenSnow* fsnow) {
 
 /** *********************************************************************
  ** This method updates fallensnow items with impact
- ** of Santas sled ploughing.
- **/
-void updateFallenSnowWithSanta(FallenSnow* fsnow) {
-    const int SNOW_TO_PLOW = 5;
-
-    const bool IS_IT_IN = XRectInRegion(mGlobal.SantaPlowRegion,
-        fsnow->x, fsnow->y - fsnow->h, fsnow->w, fsnow->h);
-    if (IS_IT_IN != RectangleIn && IS_IT_IN != RectanglePart) {
-        return;
-    }
-
-    const int SANTA_FRONT = (mGlobal.SantaDirection == 0) ?
-        mGlobal.SantaX + mGlobal.SantaWidth - fsnow->x :
-        mGlobal.SantaX - fsnow->x;
-    const int SANTA_REAR = (mGlobal.SantaDirection == 0) ?
-        SANTA_FRONT - mGlobal.SantaWidth :
-        SANTA_FRONT + mGlobal.SantaWidth;
-
-    float vy = -1.5 * mGlobal.ActualSantaSpeed;
-    if (vy > 0) {
-        vy = -vy;
-    }
-    if (vy < -100.0) {
-        vy = -100;
-    }
-
-    // Santa plows facing forward.
-    if (mGlobal.ActualSantaSpeed > 0) {
-        if (mGlobal.SantaDirection == 0) {
-            generateFallenSnowFlakes(fsnow, SANTA_FRONT,
-                SNOW_TO_PLOW, vy, true);
-            eraseFallenSnowPartial(fsnow, SANTA_REAR -
-                SNOW_TO_PLOW, mGlobal.SantaWidth + 2 *
-                SNOW_TO_PLOW);
-            for (int i = 0; i < fsnow->w; i++) {
-                if (i < SANTA_FRONT + SNOW_TO_PLOW &&
-                    i >= SANTA_REAR - SNOW_TO_PLOW) {
-                    fsnow->snowHeight[i] = 0;
-                }
-            }
-        } else {
-            generateFallenSnowFlakes(fsnow, SANTA_FRONT -
-                SNOW_TO_PLOW, SNOW_TO_PLOW, vy, true);
-            eraseFallenSnowPartial(fsnow, SANTA_REAR +
-                SNOW_TO_PLOW, mGlobal.SantaWidth + 2 *
-                SNOW_TO_PLOW);
-            for (int i = 0; i < fsnow->w; i++) {
-                if (i > SANTA_FRONT - SNOW_TO_PLOW &&
-                    i <= SANTA_REAR + SNOW_TO_PLOW) {
-                    fsnow->snowHeight[i] = 0;
-                }
-            }
-        }
-    }
-
-    XFlush(mGlobal.display);
-}
-
-/** *********************************************************************
- ** This method updates fallensnow items with impact
  ** of wind.
  **/
-void updateFallenSnowWithWind(FallenSnow* fsnow,
+void updateFallenSnowWithBlowoff(FallenSnow* fsnow,
     int w, int h) {
     const int x = randint(fsnow->w - w);
 
@@ -562,17 +570,19 @@ void updateFallenSnowWithWind(FallenSnow* fsnow,
         if (fsnow->snowHeight[i] > h) {
 
             if (!Flags.NoWind && mGlobal.Wind != 0 && drand48() > 0.5) {
-                const int numberOfFlakesToMake = getNumberOfFlakesToBlowoff();
+                const int numberOfFlakesToMake =
+                    getNumberOfFlakesToBlowoff();
                 for (int j = 0; j < numberOfFlakesToMake; j++) {
-                    SnowFlake* flake = MakeFlake(-1);
+                    StormItem* flake = createStormItem(-1);
 
-                    flake->rx = fsnow->x + i;
-                    flake->ry = fsnow->y - fsnow->snowHeight[i] - drand48() * 4;
-                    flake->vx = 0.25 * fsignf(mGlobal.NewWind) * mGlobal.WindMax;
-                    flake->vy = -10;
-
-                    // Not cyclic for Windows, cyclic for bottom.
-                    flake->cyclic = (fsnow->winInfo.window == 0);
+                    flake->xRealPosition = fsnow->x + i;
+                    flake->yRealPosition = fsnow->y - fsnow->snowHeight[i] -
+                        drand48() * 4;
+                    flake->xVelocity = 0.25 * fsignf(mGlobal.NewWind) *
+                        mGlobal.WindMax;
+                    flake->yVelocity = -10;
+                    flake->survivesScreenEdges =
+                        (fsnow->winInfo.window == 0);
                 }
                 eraseFallenSnowWindPixel(fsnow, i);
             }
@@ -700,7 +710,7 @@ void pushFallenSnowItem(FallenSnow** fallenSnowArray,
     // Fill arrays.
     for (int i = 0; i < w; i++) {
         fallenSnowListItem->columnColor[i] =
-            getNextFlakeColorAsRGB();
+            getNextStormShapeColorAsRGB();
         fallenSnowListItem->snowHeight[i] = 0;
         fallenSnowListItem->maxSnowHeight[i] = h;
     }
@@ -869,10 +879,10 @@ void removeFallenSnowFromWindow(Window window) {
 
     lockFallenSnowSemaphore();
 
-    generateFallenSnowFlakes(fallenListItem, 0,
-        fallenListItem->w, -15.0, false);
     eraseFallenSnowPartial(fallenListItem, 0,
         fallenListItem->w);
+    generateFallenSnowFlakes(fallenListItem, 0,
+        fallenListItem->w, -15.0, false);
     removeAndFreeFallenSnowForWindow(&mGlobal.FsnowFirst,
         fallenListItem->winInfo.window);
 
@@ -978,6 +988,11 @@ void doWinInfoInitialAdds() {
             if (addedWinInfo->window != mGlobal.SnowWin &&
                 addedWinInfo->y > 0 && !addedWinInfo->dock &&
                 !isWindowBeingDragged()) {
+
+                // Debugging for Chrome empty window bug.
+                // printf("doWinInfoInitialAdds() : ");
+                // logWinInfoForWindow(addedWinInfo->window);
+                // logWinAttrForWindow(addedWinInfo->window);
 
                 pushFallenSnowItem(&mGlobal.FsnowFirst,
                     addedWinInfo, addedWinInfo->x + Flags.OffsetX,
@@ -1114,21 +1129,24 @@ void doWinInfoProgrammaticRemoves() {
  ** threads: locking by caller
  **/
 void generateFallenSnowFlakes(FallenSnow* fsnow,
-    int xPos, int xWidth, float vy, bool limitToMax) {
+    int xPos, int xWidth, float yVelocity, bool limitToMax) {
     if (!Flags.BlowSnow || Flags.NoSnowFlakes) {
         return;
     }
 
-    const int xLeftPos = MIN(MAX(0, xPos), fsnow->w);
-    const int xRightPos = MIN(MAX(0, xPos + xWidth), fsnow->w);
+    const int X_LEFT  = MIN(MAX(0, xPos), fsnow->w);
+    const int X_RIGHT = MIN(MAX(0, xPos + xWidth), fsnow->w);
 
+    // 90% of hard limit.
     const int MAX_FLAKES_TO_GENERATE =
         (int) ((float) Flags.FlakeCountMax * 0.9);
 
-    for (int i = xLeftPos; i < xRightPos; i++) {
-        for (int j = 0; j < fsnow->snowHeight[i]; j++) {
+    for (int i = X_LEFT; i < X_RIGHT; i++) {
+        const int J_MAX = fsnow->snowHeight[i];
 
+        for (int j = 0; j < J_MAX; j++) {
             const int kMax = getNumberOfFlakesToBlowoff();
+
             for (int k = 0; k < kMax; k++) {
                 if (drand48() >= 0.15) {
                     continue;
@@ -1136,17 +1154,18 @@ void generateFallenSnowFlakes(FallenSnow* fsnow,
 
                 // Avoid runaway flake generation during plowing.
                 if (limitToMax &&
-                    mGlobal.FlakeCount >= MAX_FLAKES_TO_GENERATE) {
+                    mGlobal.stormItemCount >= MAX_FLAKES_TO_GENERATE) {
                     return;
                 }
 
-                SnowFlake* flake = MakeFlake(-1);
-                flake->cyclic = 0;
-                flake->rx = fsnow->x + i + 16 * (drand48() - 0.5);
-                flake->ry = fsnow->y - j - 8;
-                flake->vx = (Flags.NoWind) ?
+                StormItem* flake = createStormItem(-1);
+                flake->survivesScreenEdges = false;
+                flake->xRealPosition = fsnow->x + i +
+                    16 * (drand48() - 0.5);
+                flake->yRealPosition = fsnow->y - j - 8;
+                flake->xVelocity = (Flags.NoWind) ?
                     0 : mGlobal.NewWind / 8;
-                flake->vy = vy;
+                flake->yVelocity = yVelocity;
             }
         }
     }
@@ -1179,7 +1198,7 @@ void drawFallenSnowFrame(cairo_t* cr) {
 
     lockFallenSnowSwapSemaphore();
 
-    FallenSnow *fsnow = mGlobal.FsnowFirst;
+    FallenSnow* fsnow = mGlobal.FsnowFirst;
     while (fsnow) {
         if (canSnowCollectOnFallen(fsnow)) {
             cairo_set_source_surface(cr, fsnow->renderedSurfaceA,

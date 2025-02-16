@@ -29,8 +29,8 @@
 #include "Flags.h"
 #include "Utils.h"
 #include "wind.h"
-#include "windows.h"
-#include "plasmasnow.h"
+#include "Windows.h"
+#include "PlasmaSnow.h"
 
 
 static void SetWhirl(void);
@@ -119,9 +119,9 @@ int do_wind() {
     static int first = 1;
     static double prevtime;
 
-    double TNow = wallclock();
+    double NOW = wallclock();
     if (first) {
-        prevtime = TNow;
+        prevtime = NOW;
         ;
         first = 0;
     }
@@ -129,11 +129,11 @@ int do_wind() {
     // on the average, this function will do something
     // after WhirlTimer secs
 
-    if ((TNow - prevtime) < 2 * mGlobal.WhirlTimer * drand48()) {
+    if ((NOW - prevtime) < 2 * mGlobal.WhirlTimer * drand48()) {
         return TRUE;
     }
 
-    prevtime = TNow;
+    prevtime = NOW;
 
     if (drand48() > 0.65) // Now for some of Rick's magic:
     {

@@ -23,7 +23,7 @@
 
 void initBlowoffModule();
 
-void updateBlowoffUserSettings();
+void respondToBlowoffSettingsChanges();
 
 int updateBlowoffFrame();
 int getNumberOfFlakesToBlowoff();

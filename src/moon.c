@@ -25,7 +25,7 @@
 #include "Flags.h"
 #include "pixmaps.h"
 #include "Utils.h"
-#include "windows.h"
+#include "Windows.h"
 #include <gtk/gtk.h>
 #include <math.h>
 #include <pthread.h>

@@ -103,8 +103,8 @@
     DOIT_I(SantaSpeedFactor, 100, 100)                                         \
     DOIT_I(SantaScale, 100, 100)                                               \
     DOIT_I(SnowFlakesFactor, 100, 15)                                          \
-    DOIT_I(SnowSize, 8, 8)                                                     \
-    DOIT_I(SnowSpeedFactor, 100, 100)                                          \
+    DOIT_I(ShapeSizeFactor, 8, 8)                                                     \
+    DOIT_I(mStormItemsSpeedFactor, 100, 100)                                          \
     DOIT_I(Stars, 1, 0) \
     DOIT_I(mAppTheme, 1, 1)                                                    \
     DOIT_I(Outline, 0, 0)                                                      \
@@ -116,8 +116,8 @@
     DOIT_I(IgnoreTop, 0, 0)                                                    \
     DOIT_I(IgnoreBottom, 0, 0)                                                 \
     \
-    DOIT_S(SnowColor, "white", "white") \
-    DOIT_S(SnowColor2, "cyan", "cyan") \
+    DOIT_S(StormItemColor1, "white", "white") \
+    DOIT_S(StormItemColor2, "cyan", "cyan") \
     DOIT_S(BirdsColor, "blue", "blue") \
     DOIT_S(TreeColor, "red", "red") \
     \

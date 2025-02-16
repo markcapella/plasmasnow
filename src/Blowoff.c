@@ -27,10 +27,10 @@
 
 #include "Blowoff.h"
 #include "FallenSnow.h"
-#include "plasmasnow.h"
 #include "Flags.h"
+#include "PlasmaSnow.h"
 #include "Utils.h"
-#include "windows.h"
+#include "Windows.h"
 
 
 /** *********************************************************************
@@ -44,7 +44,7 @@ int mBlowOffLockCounter = 0;
  **/
 void initBlowoffModule() {
     addMethodToMainloop(PRIORITY_DEFAULT,
-        TIME_BETWEEN_BLOWOFF_FRAMES,
+        TIME_BETWEEN_BLOWOFF_FRAME_UPDATES,
         updateBlowoffFrame);
 }
 
@@ -52,7 +52,7 @@ void initBlowoffModule() {
  ** This method checks for & performs user changes of
  ** Blowoff module settings.
  **/
-void updateBlowoffUserSettings() {
+void respondToBlowoffSettingsChanges() {
     UIDO(BlowSnow, );
     UIDO(BlowOffFactor, );
 }
@@ -94,7 +94,7 @@ int updateBlowoffFrame() {
             if (fsnow->winInfo.window == 0 ||
                 (!fsnow->winInfo.hidden &&
                 (isFallenSnowVisibleOnWorkspace(fsnow) || fsnow->winInfo.sticky))) {
-                updateFallenSnowWithWind(fsnow, fsnow->w / 4, fsnow->h / 4);
+                updateFallenSnowWithBlowoff(fsnow, fsnow->w / 4, fsnow->h / 4);
             }
         }
         fsnow = fsnow->next;

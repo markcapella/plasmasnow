@@ -21,18 +21,6 @@
 */
 #pragma once
 
-// VERSION is defined via the AC_INIT line in configure.ac
-
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#else
-#ifndef VERSION
-#define VERSION "unknown"
-#endif
-#ifndef PACKAGE_STRING
-#define PACKAGE_STRING "plasmasnow " VERSION
-#endif
-#endif
 
-#define VERSIONBY \
-    "October 2023 by Mark Capella\n"
+#define VERSIONBY "October 2023 by Mark Capella\n"

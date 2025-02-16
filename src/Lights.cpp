@@ -34,7 +34,7 @@
 #include "Lights.h"
 #include "MainWindow.h"
 #include "Utils.h"
-#include "windows.h"
+#include "Windows.h"
 
 using namespace std;
 
@@ -107,8 +107,8 @@ void initLightsModule() {
     setAllBulbColors();
 
     addMethodToMainloop(PRIORITY_DEFAULT,
-        TIME_BETWEEN_LIGHTS_FRAMES,
-        twinkleLightsFrame);
+        TIME_BETWEEN_LIGHTS_FRAME_UPDATES,
+        updateLightsFrame);
 }
 
 /** ***********************************************************
@@ -157,7 +157,7 @@ void setAllBulbColors() {
  ** This method checks for & performs user changes of
  ** Lights module settings.
  **/
-void updateLightsUserSettings() {
+void respondToLightsSettingsChanges() {
     // Update pref.
     UIDO(ShowLights,);
 
@@ -228,10 +228,10 @@ void drawLightsFrame(cairo_t* cc) {
 }
 
 /** ***********************************************************
- ** This method changes the bulbs randomly to produce
- ** blinking effect.
+ ** This method updates the bulbs randomly to produce
+ ** Twinkling effect.
  **/
-gboolean twinkleLightsFrame(__attribute__
+gboolean updateLightsFrame(__attribute__
     ((unused)) void* data) {
     if (Flags.shutdownRequested) {
         return false;
@@ -760,15 +760,15 @@ GdkRGBA getTwinkledColorTypeFrom(GdkRGBA seed) {
         .red =
             seed.red == 0x00 ? 0x00 :
             seed.red == 0xff ? 0xff :
-            (gdouble) getFuzzyRGBInt(seed.red),
+            getFuzzyRGBInt(seed.red),
         .green =
             seed.green == 0x00 ? 0x00 :
             seed.green == 0xff ? 0xff :
-            (gdouble) getFuzzyRGBInt(seed.green),
+            getFuzzyRGBInt(seed.green),
         .blue =
             seed.blue == 0x00 ? 0x00 :
             seed.blue == 0xff ? 0xff :
-            (gdouble) getFuzzyRGBInt(seed.blue),
+            getFuzzyRGBInt(seed.blue),
         .alpha = 0x0
     };
 }
@@ -776,7 +776,7 @@ GdkRGBA getTwinkledColorTypeFrom(GdkRGBA seed) {
 /** ***********************************************************
  ** Slightly randomize an R / G / B int from a GdkRGBA.
  **/
-int getFuzzyRGBInt(int color) {
+double getFuzzyRGBInt(double color) {
     const int RANGE_ABOVE_AND_BELOW = 45;
 
     const int newColor = randint(2) == 0 ?

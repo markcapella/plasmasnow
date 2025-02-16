@@ -49,7 +49,7 @@
 #include <cairo-xlib.h>
 
 // Plasmasnow headers.
-#include "plasmasnow.h"
+#include "PlasmaSnow.h"
 
 #include "Application.h"
 #include "Aurora.h"
@@ -57,6 +57,7 @@
 #include "Blowoff.h"
 #include "clocks.h"
 #include "ColorCodes.h"
+#include "ColorPicker.h"
 #include "debug.h"
 #include "docs.h"
 #include "dsimple.h"
@@ -74,21 +75,17 @@
 #include "Santa.h"
 #include "scenery.h"
 #include "selfrep.h"
-#include "snow.h"
+#include "Storm.h"
 #include "Stars.h"
 #include "StormWindow.h"
 #include "treesnow.h"
 #include "WinInfo.h"
 #include "version.h"
 #include "wind.h"
-#include "windows.h"
+#include "Windows.h"
 #include "Utils.h"
 #include "vroot.h"
 #include "xdo.h"
-
-
-// ColorPicker methods.
-void uninitQPickerDialog();
 
 
 /** *********************************************************************
@@ -163,7 +160,7 @@ int startApplication(int argc, char *argv[]) {
     mGlobal.MaxFlakeHeight = 0;
     mGlobal.MaxFlakeWidth = 0;
 
-    mGlobal.FlakeCount = 0; /* # active flakes */
+    mGlobal.stormItemCount = 0; /* # active flakes */
     mGlobal.FluffCount = 0;
 
     mGlobal.SnowWin = 0;
@@ -340,12 +337,12 @@ int startApplication(int argc, char *argv[]) {
     // Default any colors a user may have set in .plasmasnowrc.
     int wasThereAnInvalidColor = false;
 
-    if (!ValidColor(Flags.SnowColor)) {
-        Flags.SnowColor = strdup(DefaultFlags.SnowColor);
+    if (!ValidColor(Flags.StormItemColor1)) {
+        Flags.StormItemColor1 = strdup(DefaultFlags.StormItemColor1);
         wasThereAnInvalidColor = true;
     }
-    if (!ValidColor(Flags.SnowColor2)) {
-        Flags.SnowColor2 = strdup(DefaultFlags.SnowColor2);
+    if (!ValidColor(Flags.StormItemColor2)) {
+        Flags.StormItemColor2 = strdup(DefaultFlags.StormItemColor2);
         wasThereAnInvalidColor = true;
     }
     if (!ValidColor(Flags.BirdsColor)) {
@@ -394,13 +391,12 @@ int startApplication(int argc, char *argv[]) {
         WriteFlags();
     }
 
-    setGlobalFlakeColor(getRGBFromString(Flags.SnowColor));
+    setStormShapeColor(getRGBStormShapeColorFromString(Flags.StormItemColor1));
 
     // Start Main GUI Window.
     InitSnowOnTrees();
 
     updateWindowsList();
-    getWinInfoForAllWindows();
 
     if (!StartWindow()) {
         return 1;
@@ -439,7 +435,9 @@ int startApplication(int argc, char *argv[]) {
     addWindowsModuleToMainloop();
 
     // Init app modules & log window status.
-    snow_init();
+    initStormModule();
+
+    getWinInfoForAllWindows();
     printf("%splasmasnow: It\'s Snowing in: [0x%08lx]%s\n",
         COLOR_CYAN, mGlobal.SnowWin, COLOR_NORMAL);
 
@@ -709,7 +707,7 @@ int StartWindow() {
 
     SetWindowScale();
     if (mGlobal.XscreensaverMode && !Flags.BlackBackground) {
-        SetBackground();
+        setWorkspaceBackground();
     }
 
     return TRUE;
@@ -833,16 +831,17 @@ int doAllUISettingsUpdates() {
         return TRUE;
     }
 
+    respondToStormSettingsChanges();
+    respondToBlowoffSettingsChanges();
+    respondToFallenSnowSettingsChanges();
+    respondToLightsSettingsChanges();
+    respondToScenerySettingsChanges();
+    respondToStarsSettingsChanges();
+    respondToMeteorSettingsChanges();
+
     Santa_ui();
-    updateSceneryUserSettings();
     birds_ui();
-    snow_ui();
-    updateMeteorUserSettings();
     wind_ui();
-    updateStarsUserSettings();
-    updateLightsUserSettings();
-    updateFallenSnowUserSettings();
-    updateBlowoffUserSettings();
     treesnow_ui();
     moon_ui();
     aurora_ui();
@@ -937,7 +936,7 @@ int handlePendingX11Events() {
                 break;
 
             case ConfigureNotify:
-                onWindowChanged(&event);
+                onConfigureNotify(&event);
                 if (!isWindowBeingDragged()) {
                     mGlobal.WindowsChanged++;
                     if (event.xconfigure.window == mGlobal.SnowWin) {
@@ -966,6 +965,10 @@ int handlePendingX11Events() {
 
             case DestroyNotify:
                 onWindowDestroyed(&event);
+                break;
+
+            case ClientMessage:
+                onWindowClientMessage(&event);
                 break;
 
             default:
@@ -1121,20 +1124,20 @@ void drawCairoWindowInternal(cairo_t* cc) {
     // Do all module draws.
     if (WorkspaceActive()) {
         drawStarsFrame(cc);
-        drawLightsFrame(cc);
         moon_draw(cc);
         aurora_draw(cc);
         drawMeteorFrame(cc);
         drawSceneryFrame(cc);
         birds_draw(cc);
-        drawFallenSnowFrame(cc);
         if (!Flags.ShowBirds || !Flags.FollowSanta) {
             // If Flags.FollowSanta, drawing of Santa
             // is done in Birds module.
             Santa_draw(cc);
         }
         treesnow_draw(cc);
-        snow_draw(cc);
+        drawAllStormItemsInItemset(cc);
+        drawFallenSnowFrame(cc);
+        drawLightsFrame(cc);
     }
 
     // Draw app window outline.
@@ -1216,7 +1219,8 @@ void HandleCpuFactor() {
         mGlobal.cpufactor = 100.0 / Flags.CpuLoad;
     }
 
-    addMethodToMainloop(PRIORITY_HIGH, time_init_snow, setKillFlakes);
+    addMethodToMainloop(PRIORITY_HIGH, time_init_snow,
+        stallCreatingStormItems);
 
     addWindowDrawMethodToMainloop();
 }
@@ -1373,4 +1377,91 @@ void mybindtestdomain() {
     }
 #endif
 
+}
+
+/** *********************************************************************
+ ** This method checks if the desktop is currently visible.
+ **/
+bool isDesktopVisible() {
+    bool result = true;
+
+    Atom type;
+    int format;
+    unsigned long nitems, unusedBytes;
+    unsigned char *properties = NULL;
+
+    XGetWindowProperty(mGlobal.display, mGlobal.Rootwindow,
+        XInternAtom(mGlobal.display, "_NET_SHOWING_DESKTOP", False),
+        0, (~0L), False, AnyPropertyType, &type, &format,
+        &nitems, &unusedBytes, &properties);
+
+    if (format == 32 && nitems >= 1) {
+        if (*(long *) (void *) properties == 1) {
+            result = false;
+        }
+    }
+    XFree(properties);
+
+    return result;
+}
+
+/** *********************************************************************
+ ** This method returns the number of the current workspace,
+ ** where the OS allows multiple / virtual workspaces.
+ **/
+long int getCurrentWorkspaceNumber() {
+    Atom type;
+    int format;
+    unsigned long nitems, unusedBytes;
+    unsigned char *properties;
+
+    if (mGlobal.IsCompiz) {
+        properties = NULL;
+        XGetWindowProperty(mGlobal.display,
+            DefaultRootWindow(mGlobal.display),
+            XInternAtom(mGlobal.display, "_NET_DESKTOP_VIEWPORT", False),
+            0, 2, False, AnyPropertyType, &type,
+            &format, &nitems, &unusedBytes, &properties);
+
+        // Set result code.
+        int resultCode = -1;
+        if (type == XA_CARDINAL && nitems == 2) {
+            resultCode = ((long *) (void *) properties)[0] +
+                (((long *) (void *) properties)[1] << 16);
+        }
+
+        XFree(properties);
+        return resultCode;
+    }
+
+    // In Wayland, the actual number of current workspace can only
+    // be obtained if user has done some workspace-switching
+    // we return zero if the workspace number cannot be determined.
+    XGetWindowProperty(mGlobal.display,
+        DefaultRootWindow(mGlobal.display),
+        XInternAtom(mGlobal.display, "_NET_CURRENT_DESKTOP", False),
+        0, 1, False, AnyPropertyType, &type, &format, &nitems,
+        &unusedBytes, &properties);
+
+    if (type != XA_CARDINAL) {
+        XFree(properties);
+        XGetWindowProperty(mGlobal.display,
+            DefaultRootWindow(mGlobal.display),
+            XInternAtom(mGlobal.display, "_WIN_WORKSPACE", False),
+            0, 1, False, AnyPropertyType, &type, &format, &nitems,
+            &unusedBytes, &properties);
+    }
+
+    // Set result code.
+    int resultCode = -1;
+    if (type == XA_CARDINAL) {
+        resultCode = *(long *) (void *) properties;
+    } else {
+        if (mGlobal.IsWayland) {
+            resultCode = 0;
+        }
+    }
+
+    XFree(properties);
+    return resultCode;
 }

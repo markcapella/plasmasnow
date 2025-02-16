@@ -31,10 +31,10 @@
 #include "Flags.h"
 #include "MainWindow.h"
 #include "meteor.h"
-#include "plasmasnow.h"
-#include "snow.h"
+#include "PlasmaSnow.h"
+#include "Storm.h"
 #include "Utils.h"
-#include "windows.h"
+#include "Windows.h"
 
 
 /** *********************************************************************
@@ -173,7 +173,7 @@ void drawMeteorFrame(cairo_t *cr) {
  ** This method updates the Meteor module with
  ** refreshed user settings.
  **/
-void updateMeteorUserSettings() {
+void respondToMeteorSettingsChanges() {
     UIDO(NoMeteors, );
     UIDO(MeteorFrequency, );
 }

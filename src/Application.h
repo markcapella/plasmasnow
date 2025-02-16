@@ -32,7 +32,7 @@ void onAppWindowChange(Window);
 
 void onWindowCreated(XEvent*);
 void onWindowReparent(XEvent*);
-void onWindowChanged(XEvent*);
+void onConfigureNotify(XEvent*);
 
 void onWindowMapped(XEvent*);
 void onWindowFocused(XEvent*);
@@ -40,12 +40,13 @@ void onWindowBlurred(XEvent*);
 void onWindowUnmapped(XEvent*);
 
 void onWindowDestroyed(XEvent*);
+void onWindowClientMessage(XEvent*);
 
 bool isWindowBeingDragged();
 
 // Flake color helper methods.
-void setGlobalFlakeColor(GdkRGBA);
-GdkRGBA getRGBFromString(char* colorString);
+void setStormShapeColor(GdkRGBA);
+GdkRGBA getRGBStormShapeColorFromString(char* colorString);
 
 void HandleCpuFactor();
 void RestartDisplay();
@@ -80,4 +81,5 @@ int doAllUISettingsUpdates();
 int do_stopafter();
 int handleDisplayConfigurationChange();
 
-void getWinInfoForAllWindows();
+bool isDesktopVisible();
+long int getCurrentWorkspaceNumber();

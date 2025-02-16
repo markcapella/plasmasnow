@@ -28,5 +28,5 @@
 #undef DOIT_L
 #undef DOIT_S
 #undef SANTA
-#undef SNOW
+#undef STORM_SHAPE_FILENAME
 #undef TREE

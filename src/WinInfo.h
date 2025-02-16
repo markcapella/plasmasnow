@@ -25,7 +25,7 @@
 
 #include <X11/Xlib.h>
 
-#include "plasmasnow.h"
+#include "PlasmaSnow.h"
 
 
 /***********************************************************
@@ -34,26 +34,11 @@
 WinInfo* getWinInfoForWindow(Window id);
 
 void getWinInfoForAllWindows();
-void getInitialWinInfoList(WinInfo** winInfolist, int* listCount);
-void getFinalWinInfoList(WinInfo** winInfolist, int* listCount);
-
-long int getWorkspaceOfWindow(Window window);
-long int getCurrentWorkspaceNumber();
-
-bool isWindowHidden(Window window, int windowMapState);
-bool isDesktopVisible();
-bool isWindowHiddenByNetWMState(Window window);
-bool isWindowHiddenByWMState(Window window);
-
-bool isWindowSticky(long workSpace, WinInfo*);
-bool isWindowDock(WinInfo*);
-
-char* getWinInfoTitleOfWindow();
-void setWinInfoTitleOfWindow(Window);
+void getInitialWinInfoList(WinInfo** winInfolist,
+    int* listCount);
+void getFinalWinInfoList(WinInfo** winInfolist,
+    int* listCount);
 
 // Debug.
 void logWinInfoStructColumns();
 void logAllWinInfoStructs();
-
-void logWinInfoForWindow(Window);
-void logWinAttrForWindow(Window);

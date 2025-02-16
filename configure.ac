@@ -24,8 +24,8 @@
 #-# 
 
 AC_PREREQ([2.69])
-AC_INIT([plasmasnow], [2025.01.22.02], [markcapella@twcny.rr.com])
-AC_CONFIG_SRCDIR([src/plasmasnow.h])
+AC_INIT([plasmasnow], [2025.02.16], [markcapella@twcny.rr.com])
+AC_CONFIG_SRCDIR([src/PlasmaSnow.h])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])

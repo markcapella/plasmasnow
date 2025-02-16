@@ -11,7 +11,7 @@
 void windowVectorInit(WindowVector* v) {
     v->mCapacity = WINDOWVECTOR_INIT_CAPACITY;
     v->mItemSize = 0;
-    v->mWindowList = malloc(sizeof(Window) * v->mCapacity);
+    v->mWindowList = malloc(sizeof(VECTOR_TYPE) * v->mCapacity);
 }
 
 int windowVectorSize(WindowVector* v) {
@@ -19,8 +19,8 @@ int windowVectorSize(WindowVector* v) {
 }
 
 void windowVectorResize(WindowVector* v, int newCapacity) {
-    Window* newWindowList = realloc(v->mWindowList,
-        sizeof(Window) * newCapacity);
+    VECTOR_TYPE* newWindowList = realloc(v->mWindowList,
+        sizeof(VECTOR_TYPE) * newCapacity);
 
     if (newWindowList) {
         v->mWindowList = newWindowList;
@@ -35,7 +35,7 @@ void windowVectorFree(WindowVector* v) {
 /** *********************************************************************
  ** WindowVector Getters / Setters / Helper methods.
  **/
-bool windowVectorExists(WindowVector* v, Window window) {
+bool windowVectorExists(WindowVector* v, VECTOR_TYPE window) {
     for (int i = 0; i < v->mItemSize; i++) {
         if (v->mWindowList[i] == window) {
             return true;
@@ -44,7 +44,7 @@ bool windowVectorExists(WindowVector* v, Window window) {
     return false;
 }
 
-bool windowVectorAdd(WindowVector* v, Window window) {
+bool windowVectorAdd(WindowVector* v, VECTOR_TYPE window) {
     if (windowVectorExists(v, window)) {
         return false;
     }
@@ -77,14 +77,14 @@ void windowVectorDelete(WindowVector* v, int index) {
     }
 }
 
-Window windowVectorGet(WindowVector* v, int index) {
+VECTOR_TYPE windowVectorGet(WindowVector* v, int index) {
     if (index >= 0 && index < v->mItemSize) {
         return v->mWindowList[index];
     }
     return None;
 }
 
-bool windowVectorSet(WindowVector* v, int index, Window window) {
+bool windowVectorSet(WindowVector* v, int index, VECTOR_TYPE window) {
     if (windowVectorExists(v, window)) {
         return false;
     }

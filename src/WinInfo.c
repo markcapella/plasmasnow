@@ -36,23 +36,22 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+// X11 headers.
 #include <X11/Xatom.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
+// Other library headers.
+#include <gtk/gtk.h>
+
+// Plasmasnow headers.
+#include "Application.h"
 #include "ColorCodes.h"
 #include "dsimple.h"
 #include "safe_malloc.h"
-#include "windows.h"
+#include "Windows.h"
 #include "WinInfo.h"
 #include "vroot.h"
-
-
-/** *********************************************************************
- ** Module globals and consts.
- **/
-#define MAX_TITLE_STRING_LENGTH 40
-char mWinInfoTitleOfWindow[MAX_TITLE_STRING_LENGTH + 1];
 
 
 /** *********************************************************************
@@ -176,10 +175,10 @@ void getFinalWinInfoList(WinInfo** winInfoList,
     WinInfo *winInfoItem = (*winInfoList);
     for (int i = 0; i < *numberOfWindows; i++) {
         // Set WinInfo "workspace", "sticky", and "dock" attributes.
-        winInfoItem->ws = getWorkspaceOfWindow(winInfoItem->window);
-        winInfoItem->sticky = isWindowSticky(winInfoItem->ws,
-            winInfoItem);
-        winInfoItem->dock = isWindowDock(winInfoItem);
+        winInfoItem->ws = isWindowVisibleOnWorkspace(winInfoItem->window);
+        winInfoItem->sticky = isWindowSticky(winInfoItem->window,
+            winInfoItem->ws);
+        winInfoItem->dock = isWindowDock(winInfoItem->window);
 
         // Set WinInfo "X pos", "Y pos", and "hidden" attribute.
         XWindowAttributes windowAttributes;
@@ -264,279 +263,6 @@ void getFinalWinInfoList(WinInfo** winInfoList,
 }
 
 /** *********************************************************************
- ** This method determines if a window is visible on a workspace.
- **/
-long int getWorkspaceOfWindow(Window window) {
-    long int result = 0;
-
-    Atom type;
-    int format;
-    unsigned long nitems, unusedBytes;
-    unsigned char *properties = NULL;
-
-    XGetWindowProperty(mGlobal.display, window,
-        XInternAtom(mGlobal.display, "_NET_WM_DESKTOP", False),
-        0, 1, False, AnyPropertyType, &type, &format, &nitems,
-        &unusedBytes, &properties);
-
-    if (type != XA_CARDINAL) {
-        XFree(properties);
-        properties = NULL;
-
-        XGetWindowProperty(mGlobal.display, window,
-            XInternAtom(mGlobal.display, "_WIN_WORKSPACE", False),
-            0, 1, False, AnyPropertyType, &type, &format, &nitems,
-            &unusedBytes, &properties);
-    }
-
-    if (properties) {
-        result = *(long*) (void*) properties;
-        XFree(properties);
-    }
-
-    return result;
-}
-
-/** *********************************************************************
- ** This method returns the number of the current workspace,
- ** where the OS allows multiple / virtual workspaces.
- **/
-long int getCurrentWorkspaceNumber() {
-    Atom type;
-    int format;
-    unsigned long nitems, unusedBytes;
-    unsigned char *properties;
-
-    if (mGlobal.IsCompiz) {
-        properties = NULL;
-        XGetWindowProperty(mGlobal.display,
-            DefaultRootWindow(mGlobal.display),
-            XInternAtom(mGlobal.display, "_NET_DESKTOP_VIEWPORT", False),
-            0, 2, False, AnyPropertyType, &type,
-            &format, &nitems, &unusedBytes, &properties);
-
-        // Set result code.
-        int resultCode = -1;
-        if (type == XA_CARDINAL && nitems == 2) {
-            resultCode = ((long *) (void *) properties)[0] +
-                (((long *) (void *) properties)[1] << 16);
-        }
-
-        XFree(properties);
-        return resultCode;
-    }
-
-    // In Wayland, the actual number of current workspace can only
-    // be obtained if user has done some workspace-switching
-    // we return zero if the workspace number cannot be determined.
-    XGetWindowProperty(mGlobal.display,
-        DefaultRootWindow(mGlobal.display),
-        XInternAtom(mGlobal.display, "_NET_CURRENT_DESKTOP", False),
-        0, 1, False, AnyPropertyType, &type, &format, &nitems,
-        &unusedBytes, &properties);
-
-    if (type != XA_CARDINAL) {
-        XFree(properties);
-        XGetWindowProperty(mGlobal.display,
-            DefaultRootWindow(mGlobal.display),
-            XInternAtom(mGlobal.display, "_WIN_WORKSPACE", False),
-            0, 1, False, AnyPropertyType, &type, &format, &nitems,
-            &unusedBytes, &properties);
-    }
-
-    // Set result code.
-    int resultCode = -1;
-    if (type == XA_CARDINAL) {
-        resultCode = *(long *) (void *) properties;
-    } else {
-        if (mGlobal.IsWayland) {
-            resultCode = 0;
-        }
-    }
-
-    XFree(properties);
-    return resultCode;
-}
-
-/** *********************************************************************
- ** This method checks if a window is hidden.
- **/
-bool isWindowHidden(Window window, int windowMapState) {
-    // If desktop isn't visible, all windows are hidden.
-    if (!isDesktopVisible()) {
-        return true;
-    }
-
-    if (windowMapState != IsViewable) {
-        return true;
-    }
-    if (isWindowHiddenByNetWMState(window)) {
-        return true;
-    }
-    if (isWindowHiddenByWMState(window)) {
-        return true;
-    }
-
-    return false;
-}
-
-/** *********************************************************************
- ** This method checks if the desktop is currently visible.
- **/
-bool isDesktopVisible() {
-    bool result = true;
-
-    Atom type;
-    int format;
-    unsigned long nitems, unusedBytes;
-    unsigned char *properties = NULL;
-
-    XGetWindowProperty(mGlobal.display, mGlobal.Rootwindow,
-        XInternAtom(mGlobal.display, "_NET_SHOWING_DESKTOP", False),
-        0, (~0L), False, AnyPropertyType, &type, &format,
-        &nitems, &unusedBytes, &properties);
-
-    if (format == 32 && nitems >= 1) {
-        if (*(long *) (void *) properties == 1) {
-            result = false;
-        }
-    }
-    XFree(properties);
-
-    return result;
-}
-
-/** *********************************************************************
- ** This method checks "_NET_WM_STATE" for window HIDDEN attribute.
- **/
-bool isWindowHiddenByNetWMState(Window window) {
-    bool result = false;
-
-    Atom type;
-    int format;
-    unsigned long nitems, unusedBytes;
-    unsigned char *properties = NULL;
-
-    XGetWindowProperty(mGlobal.display, window,
-        XInternAtom(mGlobal.display, "_NET_WM_STATE", False),
-        0, (~0L), False, AnyPropertyType, &type, &format,
-        &nitems, &unusedBytes, &properties);
-
-    if (format == 32) {
-        for (unsigned long i = 0; i < nitems; i++) {
-            char *nameString = XGetAtomName(mGlobal.display,
-                ((Atom *) (void *) properties) [i]);
-            if (strcmp(nameString, "_NET_WM_STATE_HIDDEN") == 0) {
-                result = true;
-                XFree(nameString);
-                break;
-            }
-            XFree(nameString);
-        }
-    }
-    XFree(properties);
-
-    return result;
-}
-
-/** *********************************************************************
- ** This method checks "WM_STATE" for window HIDDEN attribute.
- **/
-bool isWindowHiddenByWMState(Window window) {
-    bool result = false;
-
-    Atom type;
-    int format;
-    unsigned long nitems, unusedBytes;
-    unsigned char *properties = NULL;
-
-    XGetWindowProperty(mGlobal.display, window,
-        XInternAtom(mGlobal.display, "WM_STATE", False),
-        0, (~0L), False, AnyPropertyType, &type, &format,
-        &nitems, &unusedBytes, &properties);
-
-    if (format == 32 && nitems >= 1) {
-        if (* (long*) (void*) properties != NormalState) {
-            result = true;
-        }
-    }
-    XFree(properties);
-
-    return result;
-}
-
-/** *********************************************************************
- ** This method checks if a window is sticky.
- **/
-bool isWindowSticky(long workSpace, WinInfo* winInfoItem) {
-    // Needed in KDE and LXDE.
-    if (workSpace == -1) {
-        return true;
-    }
-
-    bool result = false;
-
-    Atom type;
-    int format;
-    unsigned long nitems, unusedBytes;
-    unsigned char *properties = NULL;
-
-    XGetWindowProperty(mGlobal.display, winInfoItem->window,
-        XInternAtom(mGlobal.display, "_NET_WM_STATE", False),
-        0, (~0L), False, AnyPropertyType, &type, &format,
-        &nitems, &unusedBytes, &properties);
-
-    if (type == XA_ATOM) {
-        for (unsigned long int i = 0; i < nitems; i++) {
-            char *nameString = XGetAtomName(mGlobal.display,
-                ((Atom *) (void *) properties) [i]);
-            if (strcmp(nameString, "_NET_WM_STATE_STICKY") == 0) {
-                result = true;
-                XFree(nameString);
-                break;
-            }
-            XFree(nameString);
-        }
-    }
-    XFree(properties);
-
-    return result;
-}
-
-/** *********************************************************************
- ** This method checks is a window is a dock.
- **/
-bool isWindowDock(WinInfo* winInfoItem) {
-    bool result = false;
-
-    Atom type;
-    int format;
-    unsigned long nitems, unusedBytes;
-    unsigned char *properties = NULL;
-
-    XGetWindowProperty(mGlobal.display, winInfoItem->window,
-        XInternAtom(mGlobal.display, "_NET_WM_WINDOW_TYPE", False),
-        0, (~0L), False, AnyPropertyType, &type, &format,
-        &nitems, &unusedBytes, &properties);
-
-    if (format == 32) {
-        for (int i = 0; (unsigned long)i < nitems; i++) {
-            char *nameString = XGetAtomName(mGlobal.display,
-                ((Atom *) (void *) properties) [i]);
-            if (strcmp(nameString, "_NET_WM_WINDOW_TYPE_DOCK") == 0) {
-                result = true;
-                XFree(nameString);
-                break;
-            }
-            XFree(nameString);
-        }
-    }
-    XFree(properties);
-
-    return result;
-}
-
-/** *********************************************************************
  ** This method prints column headings for WinInfo structs.
  **/
 void logWinInfoStructColumns() {
@@ -557,98 +283,4 @@ void logAllWinInfoStructs() {
         logWinInfoForWindow(winInfoItem->window);
         winInfoItem++;
     }
-}
-
-/** *********************************************************************
- ** This method prints a requested windows WinInfo struct.
- **/
-void logWinInfoForWindow(Window window) {
-    // Normal case, get WinInfo item and log it.
-    WinInfo* winInfoItem = getWinInfoForWindow(window);
-    if (!winInfoItem) {
-        printf("[0x%08lx]  X11 winInfo not found.\n", window);
-        return;
-    }
-
-    // Get printable title.
-    setWinInfoTitleOfWindow(window);
-
-    // Print it.
-    printf("[0x%08lx]  %s  %2li  "
-        " %5d , %-5d %5d x %-5d  %s%s%s\n",
-        winInfoItem->window,
-        getWinInfoTitleOfWindow(),
-        winInfoItem->ws,
-        winInfoItem->xa, winInfoItem->ya,
-        winInfoItem->w, winInfoItem->h,
-        winInfoItem->dock ? "dock " : "",
-        winInfoItem->sticky ? "sticky " : "",
-        winInfoItem->hidden ? "hidden" : "");
-}
-
-/** *********************************************************************
- ** Getter for mWinInfoTitleOfWindow.
- **/
-char* getWinInfoTitleOfWindow() {
-    return mWinInfoTitleOfWindow;
-}
-
-/** *********************************************************************
- ** Setter for mWinInfoTitleOfWindow.
- **
- ** Set mWinInfoTitleOfWindow. Create a 40-char formatted
- ** title (name) c-string with a hard length, replacing
- ** unprintables with SPACE, padding right with SPACE,
- ** and preserving null terminator.
- **/
-void setWinInfoTitleOfWindow(Window window) {
-    XTextProperty titleBarName;
-
-    int outP = 0;
-    if (XGetWMName(mGlobal.display, window, &titleBarName)) {
-        const char* NAME_PTR = (char*) titleBarName.value;
-        const int NAME_LEN = strlen(NAME_PTR);
-
-        for (; outP < NAME_LEN && outP < MAX_TITLE_STRING_LENGTH; outP++) {
-            mWinInfoTitleOfWindow[outP] = isprint(*(NAME_PTR + outP)) ?
-                *(NAME_PTR + outP) : ' ';
-        }
-        XFree(titleBarName.value);
-    }
-
-    for (; outP < MAX_TITLE_STRING_LENGTH; outP++) {
-        mWinInfoTitleOfWindow[outP] = ' ';
-    }
-    mWinInfoTitleOfWindow[outP] = '\0';
-}
-
-/** *********************************************************************
- ** This is a helper method for debugging.
- **/
-void logWinAttrForWindow(Window window) {
-    WinInfo* winInfoItem = getWinInfoForWindow(window);
-    if (!winInfoItem) {
-        printf("[0x%08lx]  X11 winInfo not found.\n", window);
-        return;
-    }
-
-    // Get printable title & attributes.
-    setWinInfoTitleOfWindow(window);
-    XWindowAttributes attr;
-    XGetWindowAttributes(mGlobal.display, window, &attr);
-
-    // Print it.
-    printf("[0x%08lx]  %s       %5d , %-5d %5d x %-5d  "
-        "Bw: %5d  Dp: %5d  Map: %5d  Vi: %s  Sc: %s  Bs: %5d  "
-         "MI? %s  Pl: %s  Pi: %s\n",
-        winInfoItem->window, getWinInfoTitleOfWindow(),
-        attr.x, attr.y, attr.width, attr.height,
-        attr.border_width, attr.depth, attr.map_state,
-        attr.visual ? "YES" : "NO ",
-        attr.screen ? "YES" : "NO ",
-        attr.backing_store,
-        attr.map_installed ? "YES" : "NO ",
-        attr.backing_planes ? "YES" : "NO ",
-        attr.backing_pixel ? "YES" : "NO "
-    );
 }

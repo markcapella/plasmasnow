@@ -29,13 +29,18 @@
 #include "Flags.h"
 #include "LoadMeasure.h"
 #include "MainWindow.h"
-#include "plasmasnow.h"
+#include "PlasmaSnow.h"
 #include "Utils.h"
 
 
 /***********************************************************
  * Module consts.
  */
+const int LOAD_PRESSURE_LOW  = -10;
+const int LOAD_PRESSURE_HIGH =  10;
+const int WARNING_COUNT_MAX = 3;
+const float EXCESSIVE_LOAD_MONITOR_TIME_PCT = 1.2;
+
 bool mIsSystemBusy = false;
 
 int mWarningCount = 0;
@@ -48,8 +53,9 @@ double mLoadMeasurePrevThreadStart = 0;
  ** Add update method to mainloop.
  **/
 void startLoadMeasureBackgroundThread() {
-    addMethodToMainloop(PRIORITY_DEFAULT, TIME_BETWEEN_LOAD_MONITOR_EVENTS,
-        execLoadMeasureBackgroundThread);
+    addMethodToMainloop(PRIORITY_DEFAULT,
+        TIME_BETWEEN_LOADMEASURE_UPDATES,
+        updateLoadMeasureThread);
 }
 
 /** *********************************************************************
@@ -57,10 +63,10 @@ void startLoadMeasureBackgroundThread() {
  **
  ** Enable or disable CSS "Busy" Style.
  **/
-int execLoadMeasureBackgroundThread() {
+int updateLoadMeasureThread() {
     double tnow = wallclock();
     if ((tnow - mLoadMeasurePrevThreadStart) >
-        (TIME_BETWEEN_LOAD_MONITOR_EVENTS * EXCESSIVE_LOAD_MONITOR_TIME_PCT)) {
+        (TIME_BETWEEN_LOADMEASURE_UPDATES * EXCESSIVE_LOAD_MONITOR_TIME_PCT)) {
         mLoadPressure++;
     } else {
         mLoadPressure--;

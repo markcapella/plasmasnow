@@ -812,16 +812,17 @@ int xdo_select_window_with_click(const xdo_t *xdo, Window *window_ret) {
         return XDO_ERROR;
     }
 
-    /* If there is no subwindow, then we clicked on the root window */
+    // If there is no subwindow, we clicked on root window.
     if (e.xbutton.subwindow == 0) {
         *window_ret = e.xbutton.root;
     } else {
-        /* Random testing showed that 'root' always is the same as 'window'
-         * while 'subwindow' is the actual window we clicked on. Confusing... */
+        // 'root' always is the same as 'window', while
+        // 'subwindow' is the actual window we clicked on.
         *window_ret = e.xbutton.subwindow;
         _xdo_debug(xdo, "Click on window %lu foo", *window_ret);
         xdo_find_window_client(xdo, *window_ret, window_ret, XDO_FIND_CHILDREN);
     }
+
     return XDO_SUCCESS;
 }
 

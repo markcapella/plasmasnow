@@ -34,4 +34,4 @@ int eraseMeteorFrame();
 int updateMeteorFrame();
 void drawMeteorFrame(cairo_t*);
 
-void updateMeteorUserSettings();
+void respondToMeteorSettingsChanges();

@@ -2,7 +2,11 @@
 # plasmasnow
 
 !['plasmasnow'](https://github.com/markcapella/plasmasnow/blob/main/assets/images/screenshot.png)
-!['plasmasnowLights'](https://github.com/markcapella/plasmasnow/blob/main/assets/images/screenshotLights.png)
+
+
+## NEW !!! Lights Module !
+
+!['plasmasnowLights'](https://github.com/markcapella/plasmasnow/blob/main/assets/images/plasmasnowLights.png)
 
 &nbsp;
 

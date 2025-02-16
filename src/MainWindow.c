@@ -124,7 +124,7 @@
  *     - C-code to execute if the value of the flag has been changed.
  *
  *     In main.c the flags in the 'settings' tab are handled, and calls are
- *     made to for example updateSceneryUserSettings() which is supposed to handle flags
+ *     made to for example respondToScenerySettingsChanges() which is supposed to handle flags
  *     related with the 'scenery' tab. If Flags.Changes > 0, the flags are
  * written to .plasmasnowrc.
  *
@@ -168,14 +168,14 @@
 #include "MainWindow.h"
 #include "mygettext.h"
 #include "pixmaps.h"
-#include "plasmasnow.h"
+#include "PlasmaSnow.h"
 #include "safe_malloc.h"
 #include "Santa.h"
-#include "snow.h"
+#include "Storm.h"
 #include "ui_xml.h"
 #include "Utils.h"
 #include "version.h"
-#include "windows.h"
+#include "Windows.h"
 
 
 /***********************************************************
@@ -427,8 +427,8 @@ static struct _button {
         ALL_BUTTONS
 
         // QColorDialog "Widgets".
-        GtkWidget* SnowColor;
-        GtkWidget* SnowColor2;
+        GtkWidget* StormItemColor1;
+        GtkWidget* StormItemColor2;
 
         GtkWidget* BirdsColor;
         GtkWidget* TreeColor;
@@ -472,10 +472,10 @@ static void getAllButtonFormIDs() {
     ALL_BUTTONS
 
     // QColorDialog "Widgets".
-    Button.SnowColor = (GtkWidget*)
-        gtk_builder_get_object(builder, "id-SnowColor");
-    Button.SnowColor2 = (GtkWidget*)
-        gtk_builder_get_object(builder, "id-SnowColor2");
+    Button.StormItemColor1 = (GtkWidget*)
+        gtk_builder_get_object(builder, "id-StormItemColor1");
+    Button.StormItemColor2 = (GtkWidget*)
+        gtk_builder_get_object(builder, "id-StormItemColor2");
 
     Button.BirdsColor = (GtkWidget*)
         gtk_builder_get_object(builder, "id-BirdsColor");
@@ -582,14 +582,14 @@ void onClickedSnowColor() {
     if (!human_interaction) {
         return;
     }
-    startQPickerDialog("SnowColorTAG", Flags.SnowColor);
+    startQPickerDialog("SnowColorTAG", Flags.StormItemColor1);
 }
 
 void onClickedSnowColor2() {
     if (!human_interaction) {
         return;
     }
-    startQPickerDialog("SnowColor2TAG", Flags.SnowColor2);
+    startQPickerDialog("SnowColor2TAG", Flags.StormItemColor2);
 }
 
 void onClickedBirdsColor() {
@@ -720,13 +720,13 @@ static void initAllButtonValues() {
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
-    gdk_rgba_parse(&color, Flags.SnowColor);
+    gdk_rgba_parse(&color, Flags.StormItemColor1);
     gtk_widget_override_background_color(
-        Button.SnowColor, GTK_STATE_FLAG_NORMAL, &color);
+        Button.StormItemColor1, GTK_STATE_FLAG_NORMAL, &color);
 
-    gdk_rgba_parse(&color, Flags.SnowColor2);
+    gdk_rgba_parse(&color, Flags.StormItemColor2);
     gtk_widget_override_background_color(
-        Button.SnowColor2, GTK_STATE_FLAG_NORMAL, &color);
+        Button.StormItemColor2, GTK_STATE_FLAG_NORMAL, &color);
 
     gdk_rgba_parse(&color, Flags.BirdsColor);
     gtk_widget_override_background_color(
@@ -832,9 +832,9 @@ static void connectAllButtonSignals() {
     ALL_BUTTONS
 
     // QColorDialog "Widgets".
-    g_signal_connect(G_OBJECT(Button.SnowColor), "toggled",
+    g_signal_connect(G_OBJECT(Button.StormItemColor1), "toggled",
         G_CALLBACK(onClickedSnowColor), NULL);
-    g_signal_connect(G_OBJECT(Button.SnowColor2), "toggled",
+    g_signal_connect(G_OBJECT(Button.StormItemColor2), "toggled",
         G_CALLBACK(onClickedSnowColor2), NULL);
     g_signal_connect(G_OBJECT(Button.BirdsColor), "toggled",
         G_CALLBACK(onClickedBirdsColor), NULL);
@@ -1063,8 +1063,8 @@ void setTabDefaults(int tab) {
 #include "undefall.inc"
 
     if (tab == 1) {
-        Flags.SnowColor = DefaultFlags.SnowColor;
-        Flags.SnowColor2 = DefaultFlags.SnowColor2;
+        Flags.StormItemColor1 = DefaultFlags.StormItemColor1;
+        Flags.StormItemColor2 = DefaultFlags.StormItemColor2;
     }
 
     // Lights module on Tab #2 (Xmas/Santa).

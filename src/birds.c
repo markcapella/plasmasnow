@@ -34,7 +34,6 @@
 #include "birdglobals.h"
 #include "birds.h"
 #include "clocks.h"
-#include "debug.h"
 #include "doitb.h"
 #include "Flags.h"
 #include "hashtable.h"
@@ -44,16 +43,11 @@
 #include "pixmaps.h"
 #include "Santa.h"
 #include "Utils.h"
-#include "windows.h"
+#include "Windows.h"
 
 #define NWINGS 8
 #define NBIRDPIXBUFS (3 * NWINGS)
 
-#define INACTIVE (!Flags.ShowBirds || blobals.freeze || !WorkspaceActive())
-
-#define LEAVE_IF_INACTIVE                                                      \
-    if INACTIVE                                                                \
-    return TRUE
 
 /* Surface to store current scribbles */
 
@@ -201,7 +195,7 @@ static float scale(float y) {
     } else {
         s = 1.0e6;
     }
-    P("scale:%f\n", s);
+
     return s;
 }
 
@@ -211,7 +205,7 @@ void r2i(BirdType *bird) {
     if (bird->y > Flags.ViewingDistance / 8) {
         bird->drawable = 1;
         float f = scale(bird->y);
-        P("%f %d %f\n", blobals.maxy, Flags.ViewingDistance, f);
+
 #ifdef CO_REAL
         // classical camera obscura, inverted image:
         float x = f * (blobals.xc - bird->x) + blobals.xc;
@@ -221,13 +215,13 @@ void r2i(BirdType *bird) {
         float x = f * (bird->x - blobals.xc) + blobals.xc;
         float z = f * (bird->z - blobals.zc) + blobals.zc;
 #endif
+
         bird->ix = blobals.ax * x;
         bird->iy = blobals.ay * bird->y;
         bird->iz = blobals.az * z;
     } else {
         bird->drawable = 0;
     }
-    P("r2i %d %d\n", counter++, bird->drawable);
 }
 
 // compute bird(x,iy, z) given bird(ix, y, iz)
@@ -258,8 +252,6 @@ void prefxyz(BirdType *bird, float d, float e, float x, float y, float z,
     *prefx = e * (bird->x - x) / d + x;
     *prefy = e * (bird->y - y) / d + y;
     *prefz = e * (bird->z - z) / d + z;
-    P("%f %f - %f %f %f, %f %f %f, %f %f %f\n", d, e, bird->x, bird->y, bird->z,
-        x, y, z, *prefx, *prefy, *prefz);
 }
 
 // create a attraction point surface in attrsurface
@@ -272,7 +264,7 @@ void createAttractionPointSurface() {
     r2i(&attrbird);
     float f = scale(attrbird.y) * 4.0e-6 * blobals.bird_scale *
               Flags.BirdsScale * blobals.maxix;
-    P("createAttractionPointSurface %d %f\n", counter++, f);
+
     attrsurface =
         cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 2 * f + 2, 2 * f + 2);
     cairo_t *cr = cairo_create(attrsurface);
@@ -286,7 +278,7 @@ void birds_set_scale() { createAttractionPointSurface(); }
 
 void *updateBirdSpeed() {
     while (1) {
-        if (!(Flags.shutdownRequested || INACTIVE)) {
+        if (!(Flags.shutdownRequested || (!Flags.ShowBirds || blobals.freeze || !WorkspaceActive()))) {
 
             lock();
             kd_free(kd);
@@ -337,7 +329,7 @@ void *updateBirdSpeed() {
                                        (bird->z - z) * (bird->z - z));
 
                     float prefx = 0, prefy = 0, prefz = 0;
-                    P("prefxyz %f\n", dist);
+
                     if (dist > 1e-6) {
                         prefxyz(bird, dist, Flags.PrefDistance, x, y, z, &prefx,
                             &prefy, &prefz);
@@ -352,15 +344,13 @@ void *updateBirdSpeed() {
                 // meanprefx,y,z: mean optimal coordinates with respect to other
                 // birds
                 float meanprefx, meanprefy, meanprefz, meandist;
-                P("num: %d\n", num);
+
                 if (num > 0) {
                     meanprefx = sumprefx / num;
                     meanprefy = sumprefy / num;
                     meanprefz = sumprefz / num;
                     meandist = sumdist / num;
                     summeandist += meandist;
-                    P("prefx - x ... %f %f %f %f\n", meanprefx - bird->x,
-                        meanprefy - bird->y, meanprefz - bird->z, meandist);
                 }
                 sumnum += num;
                 // adjust speed to other birds, p is weight for own speed
@@ -376,8 +366,6 @@ void *updateBirdSpeed() {
                     bird->sx += q * (meanprefx - bird->x);
                     bird->sy += q * (meanprefy - bird->y);
                     bird->sz += q * (meanprefz - bird->z);
-                    P("%d %f %f %f, %f %f %f\n", i, meanprefx, meanprefy,
-                        meanprefz, bird->x, bird->y, bird->z);
                 }
 
                 // attraction of center:
@@ -413,7 +401,6 @@ void *updateBirdSpeed() {
             }
             float meannum = (float)sumnum / (float)Nbirds;
             blobals.mean_distance = summeandist / Nbirds;
-            P("meannum %f %f\n", meannum, blobals.range);
 
             if (meannum < Flags.Neighbours) {
                 if (blobals.range < 0.1) {
@@ -439,17 +426,16 @@ void *updateBirdSpeed() {
 
 int do_update_pos_birds() {
     if (Flags.shutdownRequested) {
-        return FALSE;
+        return false;
     }
-    LEAVE_IF_INACTIVE;
+    if (!Flags.ShowBirds || blobals.freeze || !WorkspaceActive()) {
+        return true;
+    }
 
     lock();
 
-    P("do_update_pos_birds %d %d\n", Nbirds, counter++);
     double dt;
     dt = time_update_pos_birds;
-
-    P("%f\n", dt);
 
     int i;
     for (i = 0; i < Nbirds; i++) {
@@ -467,9 +453,9 @@ int do_update_pos_birds() {
 }
 
 int birds_draw(cairo_t *cr) {
-    P("birds_draw %d\n", counter++);
-    LEAVE_IF_INACTIVE;
-    P("drawing birds %d\n", counter++);
+    if (!Flags.ShowBirds || blobals.freeze || !WorkspaceActive()) {
+        return true;
+    }
 
     int before;
     int i;
@@ -494,21 +480,17 @@ int birds_draw(cairo_t *cr) {
                 break;
             }
             i2r(&attrbird);
-            P("santasize: %d %d %d %f\n", prevSantasize, Flags.SantaSize,
-                Flags.ViewingDistance, scale(attrbird.y));
             if (prevSantasize != Flags.SantaSize) {
-                P("iy: %d %d\n", prevSantasize, Flags.SantaSize);
                 prevSantasize = Flags.SantaSize;
                 createAttractionPointSurface();
             }
         }
         if (before && Flags.ShowAttrPoint) {
             r2i(&attrbird);
-            P("attrbird %f %f %f %d %d %d\n", attrbird.x, attrbird.y,
-                attrbird.z, attrbird.ix, attrbird.iy, attrbird.iz);
+
             int mx = cairo_image_surface_get_width(attrsurface);
             int mz = cairo_image_surface_get_height(attrsurface);
-            P("mx: %d mz: %d\n", mx, mz);
+
             if (attrbird.drawable) {
                 cairo_set_source_surface(cr, attrsurface, attrbird.ix - mx / 2,
                     attrbird.iz - mz / 2);
@@ -576,8 +558,7 @@ int birds_draw(cairo_t *cr) {
             // draw:
 
             r2i(bird);
-            P("%d %f %f %f %d %d %d %d\n", i, bird->x, bird->y, bird->z,
-                bird->ix, bird->iy, bird->iz, bird->drawable);
+
             bird->prevdrawable = bird->drawable;
             if (bird->drawable) {
                 float p = scale(bird->y);
@@ -622,11 +603,10 @@ int birds_draw(cairo_t *cr) {
                 //                             ***
                 //
 
-                P("%f %f %d\n", sxz, bird->sy, orient);
                 GdkPixbuf *bird_pixbuf = bird_pixbufs[nw + orient];
                 iw = p * blobals.bird_scale * Flags.BirdsScale * 6.0e-6 *
                      blobals.maxix;
-                P("%d %d\n", Flags.BirdsScale, blobals.maxix);
+
                 ih = (float)iw * gdk_pixbuf_get_height(bird_pixbuf) /
                      (float)gdk_pixbuf_get_width(bird_pixbuf);
                 // do not draw very large birds (would be bad for cache use)
@@ -635,7 +615,6 @@ int birds_draw(cairo_t *cr) {
                     ih <= 0) // iw is always larger than ih, we don't have to
                              // check iw
                 {
-                    P("ih: %d %d\n", ih, blobals.maxiz);
                     continue;
                 }
 
@@ -655,9 +634,7 @@ int birds_draw(cairo_t *cr) {
                     static double cache = 0;
                     table_counter++;
                     cache += iw * ih;
-                    P("Entries: %d Cache: %.0f MB width: %d Wing: %d orient: "
-                      "%d\n",
-                        table_counter, cache * 4.0e-6, iw, nw, orient / 8);
+
                     if (iw < 1) {
                         iw = 1;
                     }
@@ -681,11 +658,9 @@ int birds_draw(cairo_t *cr) {
                 bird->prevy = bird->iz - mz / 2;
                 bird->prevw = mx;
                 bird->prevh = mz;
-                P("draw: %d %d\n", bird->ix - mx / 2, bird->iz - mz / 2);
             } else {
                 static int skipped = 0;
                 skipped++;
-                P("skipped: %d %d\n", skipped, bird->drawable);
             }
         } // i-loop
     }     // before-loop
@@ -701,21 +676,19 @@ int birds_erase(int force) {
         return TRUE;
     }
     if (!force) {
-        LEAVE_IF_INACTIVE;
+        if (!Flags.ShowBirds || blobals.freeze || !WorkspaceActive()) {
+            return true;
+        }
     }
 
-    P("birds_erase %d\n", counter++);
     int i;
     for (i = 0; i < Nbirds; i++) {
         BirdType *bird = &birds[i];
         if (bird->prevdrawable && bird->prevw != 0 && bird->prevh != 0) {
-            P("birds_erase xclear %d\n", counter++);
             clearDisplayArea(mGlobal.display, mGlobal.SnowWin, bird->prevx,
                 bird->prevy, bird->prevw, bird->prevh, mGlobal.xxposures);
         }
     }
-    P("clearattr: %d %d %d %d\n", attrbird.prevx, attrbird.prevy,
-        attrbird.prevw, attrbird.prevh);
 
     attrbird_erase(0);
 
@@ -727,8 +700,11 @@ int attrbird_erase(int force) {
         return TRUE;
     }
     if (!force) {
-        LEAVE_IF_INACTIVE;
+        if (!Flags.ShowBirds || blobals.freeze || !WorkspaceActive()) {
+            return true;
+        }
     }
+
     static int px = -10000;
     static int py = -10000;
     static int pw = -10000;
@@ -736,7 +712,6 @@ int attrbird_erase(int force) {
     if (force ||
         (attrbird.prevw && (attrbird.prevx != px || attrbird.prevy != py ||
                                attrbird.prevw != pw))) {
-        P("erase attrbird\n");
         px = attrbird.prevx;
         py = attrbird.prevy;
         pw = attrbird.prevw;
@@ -753,7 +728,7 @@ void init_birds(int start) {
     if (!mGlobal.isDoubleBuffered) {
         birds_erase(1);
     }
-    P("nbirds: %d %d\n", start, Flags.Nbirds);
+
     // Bbirds+1 to prevent allocating zero bytes:
     birds = (BirdType *)realloc(birds, sizeof(BirdType) * (Flags.Nbirds + 1));
     REALLOC_CHECK(birds);
@@ -784,11 +759,9 @@ void init_birds(int start) {
         r2i(bird);
 
         bird->sx = (0.5 - drand48());
-        P("init %f\n", bird->sx);
         bird->sy = (0.5 - drand48());
         bird->sz = (0.5 - drand48());
         normalize_speed(bird, blobals.meanspeed);
-        P("speed1: %d %f\n", i, sqrtf(sq3(bird->sx, bird->sy, bird->sz)));
         bird->drawable = 1;
         bird->wingstate = drand48() * NWINGS;
         bird->prevdrawable = 0;
@@ -807,7 +780,9 @@ static int do_wings() {
     if (Flags.shutdownRequested) {
         return FALSE;
     }
-    LEAVE_IF_INACTIVE;
+    if (!Flags.ShowBirds || blobals.freeze || !WorkspaceActive()) {
+        return true;
+    }
 
     lock();
 
@@ -844,18 +819,13 @@ void clear_flags() {
 
 void birds_set_speed() {
     blobals.meanspeed = Flags.BirdsSpeed * 0.01 * blobals.maxx * 0.05;
-    P("%f\n", blobals.meanspeed);
 }
 
 int do_main_window() {
     // (void) d;
 
-    P("do_main_window: %d %d %d %d\n", blobals.maxix, mGlobal.SnowWinWidth,
-        blobals.maxiz, mGlobal.SnowWinHeight);
-
     if (blobals.maxix != (int)mGlobal.SnowWinWidth ||
         blobals.maxiz != (int)mGlobal.SnowWinHeight) {
-        P("do_main_window\n");
         main_window();
         randomlyChangeAttractionPoint(NULL);
     }
@@ -868,9 +838,6 @@ static void main_window() {
     blobals.maxiz = mGlobal.SnowWinHeight;
     blobals.maxiy = (blobals.maxix + blobals.maxiz) / 2;
 
-    P("in main_window: %d %d %d\n", blobals.maxix, blobals.maxiy,
-        blobals.maxiz);
-
     blobals.maxz = blobals.maxx * (float)blobals.maxiz / (float)blobals.maxix;
     blobals.maxy = blobals.maxx * (float)blobals.maxiy / (float)blobals.maxix;
     blobals.xc = (blobals.maxx - blobals.ox) / 2;
@@ -879,9 +846,6 @@ static void main_window() {
     blobals.ax = blobals.maxix / blobals.maxx;
     blobals.ay = blobals.maxiy / blobals.maxy;
     blobals.az = blobals.maxiz / blobals.maxz;
-
-    P("drawing window: %d %d %d %f %f %f\n", blobals.maxix, blobals.maxiy,
-        blobals.maxiz, blobals.maxx, blobals.maxy, blobals.maxz);
 }
 
 void birds_init_color() {
@@ -943,10 +907,9 @@ void show_attr() {
     // used during update AttrSpace
     attrbird_erase(1);
 
-    P("bird.z: %d %d %f %f\n", blobals.maxiz, bird.iz, bird.z,
-        bird.z / blobals.maxz);
     birds_set_attraction_point_relative(
         0.5, 0.5, attr_maxz(0.5 * blobals.maxy) / blobals.maxz);
+
     r2i(&attrbird);
     createAttractionPointSurface();
 }
@@ -984,12 +947,11 @@ int randomlyChangeAttractionPoint() {
     i2r(&attrbird);
 
     float x = attrbird.x / blobals.maxx;
-    P("attrbird.x: %f\n", attrbird.x / blobals.maxx);
 
     attrbird_erase(1);
     birds_set_attraction_point_relative(x, y, z);
     r2i(&attrbird);
-    P("change attr %f %f %f , %d %d\n", x, y, z, attrbird.ix, attrbird.iz);
+
     createAttractionPointSurface();
     return TRUE;
 }
@@ -1004,7 +966,7 @@ void birds_init() {
         return;
     } else {
         running = 1;
-        P("%d\n", counter++);
+
         blobals.neighbours_max = 100;
         blobals.range = 20;
         blobals.freeze = 0;
@@ -1014,14 +976,17 @@ void birds_init() {
         blobals.prefdweight = 1;
 
         clear_flags();
-        addMethodToMainloop(
-            PRIORITY_HIGH, time_update_pos_birds, do_update_pos_birds);
-        addMethodToMainloop(PRIORITY_HIGH, time_wings, do_wings);
-        addMethodToMainloop(PRIORITY_DEFAULT, time_change_attr, randomlyChangeAttractionPoint);
-        addMethodToMainloop(PRIORITY_DEFAULT, time_main_window, do_main_window);
+        addMethodToMainloop(PRIORITY_HIGH, time_update_pos_birds,
+            do_update_pos_birds);
+        addMethodToMainloop(PRIORITY_HIGH, time_wings,
+            do_wings);
+        addMethodToMainloop(PRIORITY_DEFAULT, time_change_attr,
+            randomlyChangeAttractionPoint);
+        addMethodToMainloop(PRIORITY_DEFAULT, time_main_window,
+            do_main_window);
 
         static pthread_t thread;
-        P("birds speed thread start\n");
+
         pthread_create(&thread, NULL, updateBirdSpeed, NULL);
         main_window();
     }

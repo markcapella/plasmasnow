@@ -24,17 +24,19 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern void table_insert(unsigned int key, void *value);
-extern void *table_get(unsigned int key);
-extern void table_clear(void (*destroy)(void *p));
+    void table_insert(unsigned int key, void *value);
+    void* table_get(unsigned int key);
+    void table_clear(void (*destroy)(void *p));
 
-extern void set_insert(void *key);
-extern void set_erase(void *key);
-extern int set_count(void *key);
-extern void set_clear(void);
-extern void set_begin(void);
-extern void *set_next(void);
-extern unsigned int set_size(void);
+    int set_count(void *key);
+
+    void set_insert(void *key);
+    void set_erase(void *key);
+    void set_clear(void);
+
+    void set_begin(void);
+    void* set_next(void);
+    unsigned int set_size(void);
 #ifdef __cplusplus
 }
 #endif

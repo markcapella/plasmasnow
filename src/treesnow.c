@@ -31,14 +31,14 @@
 #include "Blowoff.h"
 #include "debug.h"
 #include "Flags.h"
-#include "plasmasnow.h"
+#include "PlasmaSnow.h"
 #include "safe_malloc.h"
 #include "scenery.h"
-#include "snow.h"
+#include "Storm.h"
 #include "treesnow.h"
 #include "Utils.h"
 #include "wind.h"
-#include "windows.h"
+#include "Windows.h"
 
 
 static int do_snow_on_trees();
@@ -55,7 +55,7 @@ void treesnow_draw(cairo_t *cr) {
         return;
     }
     GdkRGBA color;
-    gdk_rgba_parse(&color, Flags.SnowColor);
+    gdk_rgba_parse(&color, Flags.StormItemColor1);
     cairo_set_source_rgba(cr, color.red, color.green, color.blue, ALPHA);
     gdk_cairo_region(cr, mGlobal.gSnowOnTreesRegion);
     cairo_fill(cr);
@@ -89,12 +89,12 @@ void ConvertOnTreeToFlakes() {
         for (int j = 0; j < 2; j++) {
             int numberOfFlakesToMake = getNumberOfFlakesToBlowoff();
             for (int k = 0; k < numberOfFlakesToMake; k++) {
-                SnowFlake* flake = MakeFlake(-1);
-                flake->rx = mGlobal.SnowOnTrees[i].x;
-                flake->ry = mGlobal.SnowOnTrees[i].y - 5 * j;
-                flake->vx = mGlobal.NewWind / 2;
-                flake->vy = 0;
-                flake->cyclic = 0;
+                StormItem* flake = createStormItem(-1);
+                flake->xRealPosition = mGlobal.SnowOnTrees[i].x;
+                flake->yRealPosition = mGlobal.SnowOnTrees[i].y - 5 * j;
+                flake->xVelocity = mGlobal.NewWind / 2;
+                flake->yVelocity = 0;
+                flake->survivesScreenEdges = false;
             }
         }
     }

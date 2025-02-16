@@ -98,8 +98,8 @@
     BUTTON(scalecode, plasmasnow_snow, MaxScrSnowDepth, 1)                          \
     BUTTON(scalecode, plasmasnow_snow, MaxWinSnowDepth, 1)                          \
     BUTTON(scalecode, plasmasnow_snow, SnowFlakesFactor, 1)                         \
-    BUTTON(scalecode, plasmasnow_snow, SnowSize, 1)                                 \
-    BUTTON(scalecode, plasmasnow_snow, SnowSpeedFactor, 1)                          \
+    BUTTON(scalecode, plasmasnow_snow, ShapeSizeFactor, 1)                                 \
+    BUTTON(scalecode, plasmasnow_snow, mStormItemsSpeedFactor, 1)                          \
     BUTTON(scalecode, plasmasnow_snow, WhirlFactor, 1)                              \
     BUTTON(scalecode, plasmasnow_snow, WhirlTimer, 1)                               \
     BUTTON(scalecode, plasmasnow_celestials, NStars, 1)                             \

@@ -25,9 +25,9 @@ echo "#pragma once" > "$out"
 echo "/* -""copyright-" >> "$out"
 echo "*/" >> "$out"
 ls "$root/src/Pixmaps"/flake*.xpm | sed "s/^/#include \"/;s/$/\"/" >> "$out"
-echo "#define SNOW_ALL \\" >> "$out"
+echo "#define ALL_STORM_FILENAMES \\" >> "$out"
 for i in $(seq `ls "$root/src/Pixmaps"/flake*.xpm | wc -l`) ; do 
-   printf 'SNOW(%d) \\\n' `expr $i - 1` ;
+   printf 'STORM_SHAPE_FILENAME(%d) \\\n' `expr $i - 1` ;
 done >> "$out"
 echo >> "$out"
 if [ -x "$root/addcopyright.sh" ] ; then "$root/addcopyright.sh" "$out"  ; fi

@@ -25,10 +25,6 @@
 #define PRIORITY_DEFAULT G_PRIORITY_LOW
 #define PRIORITY_HIGH G_PRIORITY_DEFAULT
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include <X11/Intrinsic.h>
 #include <gtk/gtk.h>
 #include <math.h>

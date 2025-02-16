@@ -40,7 +40,7 @@
 #include "scenery.h"
 #include "treesnow.h"
 #include "Utils.h"
-#include "windows.h"
+#include "Windows.h"
 
 
 /***********************************************************
@@ -504,7 +504,7 @@ int drawSceneryFrame(cairo_t *cr) {
 /***********************************************************
  * This method ...
  */
-void updateSceneryUserSettings() {
+void respondToScenerySettingsChanges() {
     UIDOS(TreeType, clearAndRedrawScenery(););
     UIDO(DesiredNumberOfTrees, clearAndRedrawScenery(););
     UIDO(TreeFill, clearAndRedrawScenery(););

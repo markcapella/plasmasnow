@@ -31,7 +31,7 @@
 
 #include <gtk/gtk.h>
 
-#include "plasmasnow.h"
+#include "PlasmaSnow.h"
 
 
 // Fallensnow lifecycle helpers.
@@ -42,7 +42,7 @@ int execFallenSnowBackgroundThread();
 void swapFallenSnowRenderedSurfacesBToA();
 
 // User settings hleprs.
-void updateFallenSnowUserSettings();
+void respondToFallenSnowSettingsChanges();
 void updateFallenSnowDesktopItemDepth();
 void updateFallenSnowDesktopItemHeight();
 
@@ -50,14 +50,14 @@ void updateFallenSnowDesktopItemHeight();
 void updateFallenSnowWithSnow(FallenSnow*, int x, int w);
 int canSnowCollectOnFallen(FallenSnow*);
 int isFallenSnowVisibleOnWorkspace(FallenSnow*);
-void collectSnowOnFallen(FallenSnow*);
+void canSantaPlowSnowOnFallen(FallenSnow*);
 void renderFallenSnowSurfaceB(FallenSnow*);
 
 // Santa interactions.
 void updateFallenSnowWithSanta(FallenSnow*);
 
 // Wind interactions.
-void updateFallenSnowWithWind(FallenSnow*, int w, int h);
+void updateFallenSnowWithBlowoff(FallenSnow*, int w, int h);
 void eraseFallenSnowWindPixel(FallenSnow*, int x);
 
 // FallenSnow Linked list Helpers.
@@ -83,6 +83,7 @@ void removeFallenSnowFromWindow(Window);
 int removeAndFreeFallenSnowForWindow(FallenSnow**,
     Window);
 
+
 // WinInfo change watchers.
 void doAllFallenSnowWinInfoUpdates();
 void doWinInfoWSHides();
@@ -97,20 +98,25 @@ void generateFallenSnowFlakes(FallenSnow* fsnow,
 // Main "draw frame" routine for fallen snow.
 void drawFallenSnowFrame(cairo_t*);
 
-// Semaphore helpers.
+
+// Technical lock & Semaphore helpers.
 void initFallenSnowSemaphores();
+
 int lockFallenSnowBaseSemaphore();
-int softLockFallenSnowBaseSemaphore(
-    int maxSoftTries, int* tryCount);
+int softLockFallenSnowBaseSemaphore(int softTrys, int* tryCount);
 int unlockFallenSnowBaseSemaphore();
+
+int lockFallenSnowSwapSemaphore();
+int unlockFallenSnowSwapSemaphore();
+
 
 #ifndef __GNUC__
     #define lockFallenSnowSemaphore() \
         lockFallenSnowBaseSemaphore()
     #define unlockFallenSnowSemaphore() \
         unlockFallenSnowBaseSemaphore()
-    #define softLockFallenSnowSemaphore(maxSoftTries,tryCount) \
-        softLockFallenSnowBaseSemaphore(maxSoftTries,tryCount)
+    #define softLockFallenSnowSemaphore(softTrys,tryCount) \
+        softLockFallenSnowBaseSemaphore(softTrys,tryCount)
 #else
     #define lockFallenSnowSemaphore() __extension__({ \
         int retval = lockFallenSnowBaseSemaphore(); \
@@ -119,11 +125,9 @@ int unlockFallenSnowBaseSemaphore();
         int retval = unlockFallenSnowBaseSemaphore(); \
         retval; })
     #define softLockFallenSnowSemaphore( \
-        maxSoftTries,tryCount) __extension__({ \
+        softTrys,tryCount) __extension__({ \
         int retval = softLockFallenSnowBaseSemaphore( \
-            maxSoftTries,tryCount); \
+            softTrys,tryCount); \
         retval; })
 #endif
 
-int unlockFallenSnowSwapSemaphore();
-int lockFallenSnowSwapSemaphore();

@@ -37,11 +37,11 @@
 #include "Flags.h"
 #include "meteor.h"
 #include "mygettext.h"
-#include "plasmasnow.h"
+#include "PlasmaSnow.h"
 #include "safe_malloc.h"
 #include "Utils.h"
 #include "version.h"
-#include "windows.h"
+#include "Windows.h"
 #include "xdo.h"
 
 void traceback()
@@ -252,11 +252,11 @@ void rgba2color(GdkRGBA *c, char **s) {
  ** This method ...
  **/
 int appScalesHaveChanged(int* prevscale) {
-    const int newscale = (const int)
+    const int NEW_SCALE = (const int)
         (Flags.Scale * mGlobal.WindowScale);
 
-    if (*prevscale != (newscale)) {
-        *prevscale = newscale;
+    if (*prevscale != NEW_SCALE) {
+        *prevscale = NEW_SCALE;
         return true;
     }
     return false;

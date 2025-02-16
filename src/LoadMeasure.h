@@ -23,10 +23,6 @@
 
 #include <stdbool.h>
 
-extern void startLoadMeasureBackgroundThread(void);
-int  execLoadMeasureBackgroundThread();
+void startLoadMeasureBackgroundThread();
 
-static const int   LOAD_PRESSURE_LOW  = -10;
-static const int   LOAD_PRESSURE_HIGH =  10;
-static const int   WARNING_COUNT_MAX = 3;
-static const float EXCESSIVE_LOAD_MONITOR_TIME_PCT = 1.2;
+int  updateLoadMeasureThread();

@@ -38,12 +38,12 @@
 #include "Aurora.h"
 #include "clocks.h"
 #include "Flags.h"
-#include "plasmasnow.h"
+#include "PlasmaSnow.h"
 #include "safe_malloc.h"
-#include "snow.h"
 #include "spline_interpol.h"
+#include "Storm.h"
 #include "Utils.h"
-#include "windows.h"
+#include "Windows.h"
 
 
 /** *********************************************************************

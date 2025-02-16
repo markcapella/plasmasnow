@@ -21,7 +21,7 @@
 */
 #pragma once
 
-#include "plasmasnow.h"
+#include "PlasmaSnow.h"
 
 extern StarMap starPix;
 extern XPM_TYPE ***Santas[][2];

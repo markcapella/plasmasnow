@@ -38,7 +38,7 @@
 #include "Santa.h"
 #include "Utils.h"
 #include "wind.h"
-#include "windows.h"
+#include "Windows.h"
 
 
 const float LocalScale = 0.6;

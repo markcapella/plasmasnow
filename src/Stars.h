@@ -36,4 +36,4 @@ int updateStarsFrame();
 void eraseStarsFrame();
 void drawStarsFrame(cairo_t *cr);
 
-void updateStarsUserSettings();
+void respondToStarsSettingsChanges();

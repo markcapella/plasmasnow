@@ -23,7 +23,7 @@
 
 #include <gtk/gtk.h>
 
-#include "plasmasnow.h"
+#include "PlasmaSnow.h"
 
 
 /***********************************************************
@@ -39,10 +39,10 @@ extern "C" {
      void setAllBulbPositions();
      void setAllBulbColors();
 
-     void updateLightsUserSettings();
+     void respondToLightsSettingsChanges();
 
      void drawLightsFrame(cairo_t* cc);
-     gboolean twinkleLightsFrame(void*);
+     gboolean updateLightsFrame(void*);
      void eraseLightsFrame();
 
      int getBulbCount();
@@ -100,7 +100,7 @@ extern "C" {
 
      GdkRGBA getTwinkledColorTypeFrom(GdkRGBA seed);
 
-     int getFuzzyRGBInt(int color);
+     double getFuzzyRGBInt(double color);
 
 #ifdef __cplusplus
 }

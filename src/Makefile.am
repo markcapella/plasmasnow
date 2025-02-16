@@ -66,9 +66,9 @@ plasmasnow_SOURCES = \
 		FallenSnow.c Flags.c hashtable.cpp ixpm.c kdtree.c \
 		Lights.cpp LoadMeasure.c MainWindow.c mainstub.cpp \
 		meteor.c MsgBox.cpp moon.c pixmaps.c safe_malloc.c \
-		Santa.c scenery.c selfrep.c snow.c spline_interpol.c \
-		Stars.c StormWindow.c treesnow.c ui.glade Utils.c \
-		wind.c windows.c WindowVector.c WinInfo.c
+		Santa.c scenery.c selfrep.c spline_interpol.c \
+		Stars.c Storm.c StormWindow.c treesnow.c ui.glade \
+		Utils.c wind.c Windows.c WindowVector.c WinInfo.c
 
 nodist_plasmasnow_SOURCES = ui_xml.h snow_includes.h
 

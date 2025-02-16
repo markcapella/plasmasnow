@@ -39,7 +39,7 @@ void updateColorTree();
 
 int drawSceneryFrame(cairo_t *cr);
 
-void updateSceneryUserSettings();
+void respondToScenerySettingsChanges();
 void clearAndRedrawScenery();
 
 int iXpmCreatePixmapFromData(Display* display,

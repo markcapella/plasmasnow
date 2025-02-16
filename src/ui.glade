@@ -699,7 +699,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkToggleButton" id="id-SnowColor">
+              <object class="GtkToggleButton" id="id-StormItemColor1">
                 <property name="label" translatable="yes">     </property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
@@ -715,7 +715,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkToggleButton" id="id-SnowColor2">
+              <object class="GtkToggleButton" id="id-StormItemColor2">
                 <property name="label" translatable="yes">     </property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
@@ -1224,7 +1224,7 @@ Note: in Wayland, there is no snow on the windows. </property>
               </packing>
             </child>
             <child>
-              <object class="GtkScale" id="id-SnowSize">
+              <object class="GtkScale" id="id-ShapeSizeFactor">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">Size of snowflakes.</property>
@@ -1242,7 +1242,7 @@ Note: in Wayland, there is no snow on the windows. </property>
               </packing>
             </child>
             <child>
-              <object class="GtkScale" id="id-SnowSpeedFactor">
+              <object class="GtkScale" id="id-mStormItemsSpeedFactor">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="tooltip-text" translatable="yes">Speed of the snowflakes.</property>

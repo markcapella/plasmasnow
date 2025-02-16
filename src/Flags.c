@@ -19,21 +19,21 @@
 #-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-# 
 */
-#include "Flags.h"
-#include "birds.h"
-#include "docs.h"
-#include "doit.h"
-#include "safe_malloc.h"
-#include "selfrep.h"
-#include "Utils.h"
-#include "windows.h"
-#include "plasmasnow.h"
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "debug.h"
+#include "birds.h"
+#include "docs.h"
+#include "doit.h"
+#include "Flags.h"
+#include "PlasmaSnow.h"
+#include "safe_malloc.h"
+#include "selfrep.h"
+#include "Utils.h"
+#include "Windows.h"
+
 
 FLAGS Flags;
 FLAGS OldFlags;
@@ -249,8 +249,8 @@ int HandleFlags(int argc, char *argv[]) {
             handle_ia(-santascale, SantaScale);
             handle_ia(-scale, Scale);
             handle_ia(-snowflakes, SnowFlakesFactor);
-            handle_ia(-snowspeedfactor, SnowSpeedFactor);
-            handle_ia(-snowsize, SnowSize);
+            handle_ia(-snowspeedfactor, mStormItemsSpeedFactor);
+            handle_ia(-snowsize, ShapeSizeFactor);
             handle_ia(-ssnowdepth, MaxScrSnowDepth);
             handle_ia(-stars, NStars);
             handle_ia(-stopafter, StopAfter);
@@ -269,8 +269,8 @@ int HandleFlags(int argc, char *argv[]) {
             handle_ia(-outline, Outline);
 
             handle_is(display, DisplayName);
-            handle_is(sc, SnowColor);
-            handle_is(sc2, SnowColor2);
+            handle_is(sc, StormItemColor1);
+            handle_is(sc2, StormItemColor2);
 
             handle_is(-birdscolor, BirdsColor);
             handle_is(-tc, TreeColor);
@@ -345,9 +345,9 @@ int HandleFlags(int argc, char *argv[]) {
         Flags.TreeType = strdup("0,");
         strcat(Flags.TreeType, DefaultFlags.TreeType);
     }
-    if (Flags.SnowSize > 40) {
-        printf("snowsize brought back from %d to 40\n", Flags.SnowSize);
-        Flags.SnowSize = 40;
+    if (Flags.ShapeSizeFactor > 40) {
+        printf("snowsize brought back from %d to 40\n", Flags.ShapeSizeFactor);
+        Flags.ShapeSizeFactor = 40;
     }
     return 0;
 }
@@ -372,7 +372,6 @@ static void makeflagsfile() {
         FlagsFile, strlen(FlagsFile) + 1 + strlen(FLAGSFILE) + 1);
     strcat(FlagsFile, "/");
     strcat(FlagsFile, FLAGSFILE);
-    P("FlagsFile: %s\n", FlagsFile);
 }
 
 void findflag(FILE *f, const char *x, char **value) {
@@ -431,15 +430,17 @@ void findflag(FILE *f, const char *x, char **value) {
 void ReadFlags() {
     FILE *f;
     long int intval;
+
     makeflagsfile();
     if (!FlagsFileAvailable) {
         return;
     }
+
     f = fopen(FlagsFile, "r");
     if (f == NULL) {
-        I("Cannot read %s\n", FlagsFile);
         return;
     }
+
     char *value = NULL;
     ;
 #define DOIT_I(x, d, v)                                                        \
@@ -467,20 +468,22 @@ void ReadFlags() {
 }
 
 void WriteFlags() {
-    FILE *f;
     makeflagsfile();
     if (!FlagsFileAvailable) {
         return;
     }
+
+    FILE *f;
     f = fopen(FlagsFile, "w");
     if (f == NULL) {
-        I("Cannot write %s\n", FlagsFile);
         return;
     }
+
 #define DOIT_I(x, d, v) fprintf(f, "%s %d\n", #x, Flags.x);
 #define DOIT_L(x, d, v) fprintf(f, "%s %ld\n", #x, Flags.x);
 #define DOIT_S(x, d, v) fprintf(f, "%s %s\n", #x, Flags.x);
     DOIT;
 #include "undefall.inc"
+
     fclose(f);
 }
