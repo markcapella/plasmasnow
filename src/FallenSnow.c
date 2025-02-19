@@ -362,32 +362,22 @@ void canSantaPlowSnowOnFallen(FallenSnow* fsnow) {
  **/
 void updateFallenSnowWithSanta(FallenSnow* fsnow) {
     if (mGlobal.ActualSantaSpeed <= 0) {
-        XFlush(mGlobal.display);
         return;
-    }
-
-    float yVelocity = -1.5 * mGlobal.ActualSantaSpeed;
-    if (yVelocity > 0) {
-        yVelocity = -yVelocity;
-    }
-    if (yVelocity < -100.0) {
-        yVelocity = -100;
     }
 
     // Santa facing right.
     if (mGlobal.SantaDirection == 0) {
-        const int SNOW_TO_PLOW = 10;
+        generateSantaPlowFlakes(fsnow->surfaceColor,
+            mGlobal.SantaX + mGlobal.SantaWidth,
+            mGlobal.SantaY + mGlobal.SantaHeight, fsnow->y);
 
+        const int SNOW_TO_PLOW = 10;
         const int SANTA_FRONT = mGlobal.SantaX - fsnow->x +
             mGlobal.SantaWidth;
         const int SANTA_REAR = SANTA_FRONT - mGlobal.SantaWidth;
 
-        //generateFallenSnowFlakes(fsnow,
-        //    SANTA_FRONT, SNOW_TO_PLOW, yVelocity, true);
-
-        eraseFallenSnowPartial(fsnow, SANTA_REAR -
-            SNOW_TO_PLOW, mGlobal.SantaWidth + 2 *
-            SNOW_TO_PLOW);
+        eraseFallenSnowPartial(fsnow, SANTA_REAR - SNOW_TO_PLOW,
+            mGlobal.SantaWidth + 2 * SNOW_TO_PLOW);
 
         for (int i = 0; i < fsnow->w; i++) {
             if (i < SANTA_FRONT + SNOW_TO_PLOW &&
@@ -395,24 +385,20 @@ void updateFallenSnowWithSanta(FallenSnow* fsnow) {
                 fsnow->snowHeight[i] = 0;
             }
         }
-
-        //XFlush(mGlobal.display);
         return;
     }
 
     // Santa facing left.
-    const int SNOW_TO_PLOW = 5;
+    generateSantaPlowFlakes(fsnow->surfaceColor, mGlobal.SantaX,
+        mGlobal.SantaY + mGlobal.SantaHeight, fsnow->y);
 
+    const int SNOW_TO_PLOW = 10;
     const int SANTA_FRONT = mGlobal.SantaX - fsnow->x -
         SNOW_TO_PLOW;
     const int SANTA_REAR = SANTA_FRONT + mGlobal.SantaWidth;
 
-    //generateFallenSnowFlakes(fsnow,
-    //    SANTA_FRONT, SNOW_TO_PLOW, yVelocity, true);
-
-    eraseFallenSnowPartial(fsnow, SANTA_REAR +
-        SNOW_TO_PLOW, mGlobal.SantaWidth + 2 *
-        SNOW_TO_PLOW);
+    eraseFallenSnowPartial(fsnow, SANTA_REAR + SNOW_TO_PLOW,
+        mGlobal.SantaWidth + 2 * SNOW_TO_PLOW);
 
     for (int i = 0; i < fsnow->w; i++) {
         if (i > SANTA_FRONT - SNOW_TO_PLOW &&
@@ -420,8 +406,6 @@ void updateFallenSnowWithSanta(FallenSnow* fsnow) {
            fsnow->snowHeight[i] = 0;
         }
     }
-
-    //XFlush(mGlobal.display);
 }
 
 /** *********************************************************************
@@ -513,8 +497,8 @@ void renderFallenSnowSurfaceB(FallenSnow* fsnow) {
     gsl_spline_init(spline, averageXPosList, averageHeightList,
         NUMBER_OF_AVERAGE_POINTS);
 
-    cairo_set_source_rgb(cr, fsnow->columnColor[0].red,
-        fsnow->columnColor[0].green, fsnow->columnColor[0].blue);
+    cairo_set_source_rgb(cr, fsnow->surfaceColor.red,
+        fsnow->surfaceColor.green, fsnow->surfaceColor.blue);
 
     enum { SEARCHING, DRAWING };
     int state = SEARCHING;
@@ -583,6 +567,8 @@ void updateFallenSnowWithBlowoff(FallenSnow* fsnow,
                     flake->yVelocity = -10;
                     flake->survivesScreenEdges =
                         (fsnow->winInfo.window == 0);
+
+                    addStormItemToItemset(flake);
                 }
                 eraseFallenSnowWindPixel(fsnow, i);
             }
@@ -693,6 +679,8 @@ void pushFallenSnowItem(FallenSnow** fallenSnowArray,
     fallenSnowListItem->prevw = 10;
     fallenSnowListItem->prevh = 10;
 
+    fallenSnowListItem->surfaceColor = getNextStormShapeColorAsRGB();
+
     fallenSnowListItem->renderedSurfaceA =
         cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w, h);
     fallenSnowListItem->renderedSurfaceB =
@@ -700,8 +688,6 @@ void pushFallenSnowItem(FallenSnow** fallenSnowArray,
         CAIRO_CONTENT_COLOR_ALPHA, w, h);
 
     // Allocate arrays.
-    fallenSnowListItem->columnColor   = (GdkRGBA *)
-        malloc(sizeof(*(fallenSnowListItem->columnColor)) * w);
     fallenSnowListItem->snowHeight    = (short int *)
         malloc(sizeof(*(fallenSnowListItem->snowHeight)) * w);
     fallenSnowListItem->maxSnowHeight = (short int *)
@@ -709,8 +695,6 @@ void pushFallenSnowItem(FallenSnow** fallenSnowArray,
 
     // Fill arrays.
     for (int i = 0; i < w; i++) {
-        fallenSnowListItem->columnColor[i] =
-            getNextStormShapeColorAsRGB();
         fallenSnowListItem->snowHeight[i] = 0;
         fallenSnowListItem->maxSnowHeight[i] = h;
     }
@@ -738,7 +722,6 @@ void popAndFreeFallenSnowItem(FallenSnow** list) {
  ** This method frees all of a fallensnows memory allocations.
  **/
 void freeFallenSnowItem(FallenSnow* fallen) {
-    free(fallen->columnColor);
     free(fallen->snowHeight);
     free(fallen->maxSnowHeight);
 
@@ -989,11 +972,24 @@ void doWinInfoInitialAdds() {
                 addedWinInfo->y > 0 && !addedWinInfo->dock &&
                 !isWindowBeingDragged()) {
 
-                // Debugging for Chrome empty window bug.
-                // printf("doWinInfoInitialAdds() : ");
-                // logWinInfoForWindow(addedWinInfo->window);
-                // logWinAttrForWindow(addedWinInfo->window);
+                // When Chrome starts, it has a transparent window for
+                // several seconds. This causes a fallensnow to collect
+                // snow above a seemingly missing window. To fix, we'll
+                // delay the fallensnow item add until Chrome actually
+                // provides (draws) any window data.
+                XClassHint classHints;
+                XGetClassHint(mGlobal.display, addedWinInfo->window,
+                    &classHints);
+                if (strcmp(classHints.res_name, "google-chrome") == 0 &&
+                    strcmp(classHints.res_class, "Google-chrome") == 0) {
+                    // Bypass if transparent (matches background).
+                    if (windowIsTransparent(addedWinInfo->window)) {
+                        addedWinInfo++;
+                        continue;
+                    }
+                }
 
+                // Add new item.
                 pushFallenSnowItem(&mGlobal.FsnowFirst,
                     addedWinInfo, addedWinInfo->x + Flags.OffsetX,
                     addedWinInfo->y + Flags.OffsetY,
@@ -1004,6 +1000,40 @@ void doWinInfoInitialAdds() {
 
         addedWinInfo++;
     }
+}
+
+/** *********************************************************************
+ ** This method determines if a window is transparent to the user to help
+ ** with a Chrome startup bug.
+ **
+ ** The window is transparent if a representative block of data
+ ** at a certain window position is all zeros.
+ **
+ ** You can check the whole window size, I prefer this
+ ** shorter / faster version.
+ **/
+bool windowIsTransparent(Window window) {
+    const int BLOCK_SIZE = 3;
+
+    const int XPOS = 100;
+    const int YPOS = 100;
+
+    // If there is no window, it's transparent.
+    XImage* windowImage = XGetImage(mGlobal.display, window,
+        XPOS, YPOS, BLOCK_SIZE, BLOCK_SIZE, XAllPlanes(), ZPixmap);
+    if (!windowImage) {
+        return true;
+    }
+
+    // If any data item isn't zero, it's not transparent.
+    for (int i = 0; i < BLOCK_SIZE * BLOCK_SIZE; i++) {
+        const unsigned int DATA =
+            *((windowImage->data) + i);
+        if (DATA) {
+            return false;
+        }
+    }
+    return true;
 }
 
 /** *********************************************************************
@@ -1166,9 +1196,49 @@ void generateFallenSnowFlakes(FallenSnow* fsnow,
                 flake->xVelocity = (Flags.NoWind) ?
                     0 : mGlobal.NewWind / 8;
                 flake->yVelocity = yVelocity;
+                addStormItemToItemset(flake);
             }
         }
     }
+}
+
+/** *********************************************************************
+ ** This method generates two streams of blowoff
+ ** for Santa plowing animation. threads: locking by caller
+ **/
+void generateSantaPlowFlakes(GdkRGBA fallenColor, int xPos,
+    int yPos1, int yPos2) {
+    if (!Flags.BlowSnow || Flags.NoSnowFlakes) {
+        return;
+    }
+
+    // Marks magic constant.
+    if (drand48() >= 0.008) {
+        return;
+    }
+
+    const float Y_VELOCITY = MAX(fabs(
+        mGlobal.ActualSantaSpeed) * -1.5, -100.0);
+    const float X_VELOCITY = (Flags.NoWind) ? 0 :
+        mGlobal.NewWind / 16;
+
+    // Create flake @ Pos1.
+    StormItem* flake1 = createStormItem(-1);
+    flake1->survivesScreenEdges = false;
+    flake1->xRealPosition = xPos;
+    flake1->yRealPosition = yPos1;
+    flake1->xVelocity = X_VELOCITY;
+    flake1->yVelocity = Y_VELOCITY;
+    addStormItemToItemset(flake1);
+
+    // Create flake @ Pos2.
+    StormItem* flake2 = createStormItem(-1);
+    flake2->survivesScreenEdges = false;
+    flake2->xRealPosition = xPos;
+    flake2->yRealPosition = yPos2;
+    flake2->xVelocity = X_VELOCITY;
+    flake2->yVelocity = Y_VELOCITY;
+    addStormItemToItemset(flake2);
 }
 
 /** *********************************************************************

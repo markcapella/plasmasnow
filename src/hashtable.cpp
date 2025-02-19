@@ -28,6 +28,7 @@
 
 #define MAP std::map
 MAP<unsigned int, void*> table;
+
 #define SET std::unordered_set
 
 extern "C" {

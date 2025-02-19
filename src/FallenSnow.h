@@ -83,17 +83,19 @@ void removeFallenSnowFromWindow(Window);
 int removeAndFreeFallenSnowForWindow(FallenSnow**,
     Window);
 
-
 // WinInfo change watchers.
 void doAllFallenSnowWinInfoUpdates();
 void doWinInfoWSHides();
 void doWinInfoInitialAdds();
+bool windowIsTransparent(Window chromeWindow);
 void doWinInfoRemoves();
 void doWinInfoProgrammaticRemoves();
 
 // Helper for Blown, Dropped, and Plowed Snow.
 void generateFallenSnowFlakes(FallenSnow* fsnow,
     int xPos, int xWidth, float vy, bool limitToMax);
+void generateSantaPlowFlakes(GdkRGBA fallenColor, int xPos,
+    int yPos1, int yPos2);
 
 // Main "draw frame" routine for fallen snow.
 void drawFallenSnowFrame(cairo_t*);
@@ -108,7 +110,6 @@ int unlockFallenSnowBaseSemaphore();
 
 int lockFallenSnowSwapSemaphore();
 int unlockFallenSnowSwapSemaphore();
-
 
 #ifndef __GNUC__
     #define lockFallenSnowSemaphore() \

@@ -500,8 +500,8 @@ int updateStormOnThread() {
     if (UPDATE_ELAPSED_TIME < 0 ||
         UPDATE_ELAPSED_TIME > 10 * TIME_BETWEEN_STORM_THREAD_UPDATES) {
         mUpdateStormThreadPrevTime = NOW;
-        printf("plasmasnow: Storm.c: Sanity check fails "
-            "for updateStormOnThread().\n");
+        printf("plasmasnow: Storm.c: updateStormOnThread() "
+            "detected a thread stall (?).\n");
         return true;
     }
 
@@ -510,7 +510,8 @@ int updateStormOnThread() {
         mUpdateStormThreadStartTime) * mStormItemsPerSecond);
     if (DESIRED_FLAKES != 0) {
         for (int i = 0; i < DESIRED_FLAKES; i++) {
-            createStormItem(-1);
+            StormItem* flake = createStormItem(-1);
+            addStormItemToItemset(flake);
         }
         mUpdateStormThreadPrevTime = NOW;
         mUpdateStormThreadStartTime = 0;
@@ -524,10 +525,9 @@ int updateStormOnThread() {
 }
 
 /***********************************************************
- ** This method creates a StormItem from itemType.
+ ** This method creates a basic StormItem from itemType.
  **/
 StormItem* createStormItem(int itemType) {
-    mGlobal.stormItemCount++;
 
     // If itemType < 0, create random itemType.
     const int RESOURCES_SHAPE_COUNT =
@@ -539,8 +539,7 @@ StormItem* createStormItem(int itemType) {
                 (mAllStormItemsShapeCount - RESOURCES_SHAPE_COUNT);
     }
 
-    StormItem* stormItem = (StormItem*) malloc(
-        sizeof(StormItem));
+    StormItem* stormItem = (StormItem*) malloc(sizeof(StormItem));
     stormItem->shapeType = itemType;
 
     // DEBUG Crashes this way
@@ -548,7 +547,7 @@ StormItem* createStormItem(int itemType) {
     if ((int) stormItem->shapeType < 0) {
         if (mDebugSnowWhatFlake-- > 0) {
             printf("plasmasnow: Storm.c: createStormItem(%lu) "
-                "Has invalid negative itemType : %i.\n",
+                "BAD !!! Invalid negative itemType : %i.\n",
                 (unsigned long) pthread_self(),
                 (int) stormItem->shapeType);
         }
@@ -556,19 +555,54 @@ StormItem* createStormItem(int itemType) {
     if ((int) stormItem->shapeType >= mAllStormItemsShapeCount) {
         if (mDebugSnowWhatFlake-- > 0) {
             printf("plasmasnow: Storm.c: createStormItem(%lu) "
-                "Has invalid positive itemType : %i.\n",
+                "BAD !!! Invalid positive itemType : %i.\n",
                 (unsigned long) pthread_self(),
                 (int) stormItem->shapeType);
         }
     }
 
-    pushStormItemIntoItemset(stormItem);
+    const int ITEM_WIDTH = mAllStormItemSurfacesList
+        [stormItem->shapeType].width;
+    const int ITEM_HEIGHT = mAllStormItemSurfacesList
+        [stormItem->shapeType].height;
+
+    stormItem->xRealPosition = randint(
+        mGlobal.SnowWinWidth - ITEM_WIDTH);
+    stormItem->yRealPosition = -randint(
+        mGlobal.SnowWinHeight / 10) - ITEM_HEIGHT;
+
+    stormItem->color = mStormItemColor;
+    stormItem->survivesScreenEdges = true;
+    stormItem->isFrozen = 0;
+
+    stormItem->fluff = 0;
+    stormItem->flufftimer = 0;
+    stormItem->flufftime = 0;
+
+    stormItem->xVelocity = (Flags.NoWind) ?
+        0 : randint(mGlobal.NewWind) / 2;
+    stormItem->yVelocity = stormItem->initialYVelocity;
+
+    stormItem->massValue = drand48() + 0.1;
+    stormItem->initialYVelocity = INITIAL_Y_SPEED *
+        sqrt(stormItem->massValue);
+    stormItem->windSensitivity = drand48() *
+        MAX_WIND_SENSITIVITY;
+
+    return stormItem;
+}
+
+/***********************************************************
+ ** Itemset hashtable helper - Add new all items.
+ **/
+void addStormItemToItemset(StormItem* stormItem) {
+    set_insert(stormItem);
 
     addMethodWithArgToMainloop(PRIORITY_HIGH,
         TIME_BETWEEN_STORMITEM_THREAD_UPDATES,
         (GSourceFunc) updateStormItemOnThread, stormItem);
 
-    return stormItem;
+    mGlobal.stormItemCount++;
 }
 
 /***********************************************************
@@ -730,7 +764,8 @@ int updateStormItemOnThread(StormItem* stormItem) {
     if (mGlobal.Wind != 2 &&
         !Flags.NoKeepSnowOnTrees &&
         !Flags.NoTrees) {
-        cairo_rectangle_int_t grec = {NEW_STORMITEM_REAL_X_POS, NEW_STORMITEM_REAL_Y_POS, ITEM_WIDTH, ITEM_HEIGHT};
+        cairo_rectangle_int_t grec = {NEW_STORMITEM_REAL_X_POS,
+            NEW_STORMITEM_REAL_Y_POS, ITEM_WIDTH, ITEM_HEIGHT};
         cairo_region_overlap_t in = cairo_region_contains_rectangle(
             mGlobal.gSnowOnTreesRegion, &grec);
         if (in == CAIRO_REGION_OVERLAP_PART ||
@@ -742,32 +777,6 @@ int updateStormItemOnThread(StormItem* stormItem) {
 
         // check if stormItem is touching TreeRegion. If so: add snow to
         // gSnowOnTreesRegion.
-
-
-
-
-/*
-
-
-
-
-
-
-
-
-  NEW 
-
-
-
-
-
-
-
-
-
-
-
-*/
         cairo_rectangle_int_t grect = {
             NEW_STORMITEM_REAL_X_POS, NEW_STORMITEM_REAL_Y_POS,
             ITEM_WIDTH, ITEM_HEIGHT};
@@ -838,18 +847,16 @@ int updateStormItemOnThread(StormItem* stormItem) {
                 stormItem->isFrozen = 1;
                 setStormItemFluffState(stormItem, 0.6);
 
-                StormItem* newflake;
-                if (Flags.VintageFlakes) {
-                    newflake = createStormItem(0);
-                } else {
-                    newflake = createStormItem(-1);
-                }
+                StormItem* newflake = (Flags.VintageFlakes) ?
+                    createStormItem(0) : createStormItem(-1);
 
                 newflake->xRealPosition = xfound;
-                newflake->yRealPosition = yfound - mAllStormItemSurfacesList[1].height * 0.3f;
+                newflake->yRealPosition = yfound -
+                    mAllStormItemSurfacesList[1].height * 0.3f;
                 newflake->isFrozen = 1;
                 setStormItemFluffState(newflake, 8);
 
+                addStormItemToItemset(newflake);
                 return true;
             }
         }
@@ -870,41 +877,6 @@ int stallCreatingStormItems() {
 
     mStallingNewStormItems = (mGlobal.stormItemCount > 0);
     return mStallingNewStormItems;
-}
-
-/***********************************************************
- ** Itemset hashtable helper - Push a new item into the list.
- **/
-void pushStormItemIntoItemset(StormItem* stormItem) {
-    const int ITEM_WIDTH = mAllStormItemSurfacesList
-        [stormItem->shapeType].width;
-    const int ITEM_HEIGHT = mAllStormItemSurfacesList
-        [stormItem->shapeType].height;
-
-    stormItem->xRealPosition = randint(
-        mGlobal.SnowWinWidth - ITEM_WIDTH);
-    stormItem->yRealPosition = -randint(
-        mGlobal.SnowWinHeight / 10) - ITEM_HEIGHT;
-
-    stormItem->color = mStormItemColor;
-    stormItem->survivesScreenEdges = true;
-    stormItem->isFrozen = 0;
-
-    stormItem->fluff = 0;
-    stormItem->flufftimer = 0;
-    stormItem->flufftime = 0;
-
-    stormItem->xVelocity = (Flags.NoWind) ?
-        0 : randint(mGlobal.NewWind) / 2;
-    stormItem->yVelocity = stormItem->initialYVelocity;
-
-    stormItem->massValue = drand48() + 0.1;
-    stormItem->initialYVelocity = INITIAL_Y_SPEED *
-        sqrt(stormItem->massValue);
-    stormItem->windSensitivity = drand48() *
-        MAX_WIND_SENSITIVITY;
-
-    set_insert(stormItem);
 }
 
 /***********************************************************

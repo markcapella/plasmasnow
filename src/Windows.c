@@ -911,7 +911,7 @@ long int isWindowVisibleOnWorkspace(Window window) {
     Atom type;
     int format;
     unsigned long nitems, unusedBytes;
-    unsigned char *properties = NULL;
+    unsigned char* properties = NULL;
 
     XGetWindowProperty(mGlobal.display, window,
         XInternAtom(mGlobal.display, "_NET_WM_DESKTOP", False),

@@ -50,7 +50,7 @@ Pixmap SantaPixmap[PIXINANIMATION];
 
 Region SantaRegion = 0;
 
-float SantaSpeed;
+float mSantaSpeed;
 float SantaXr;
 float SantaYr;
 
@@ -283,13 +283,13 @@ void init_Santa_surfaces() {
  ** This method ...
  **/
 void SetSantaSizeSpeed() {
-    SantaSpeed = Speed[Flags.SantaSize];
+    mSantaSpeed = Speed[Flags.SantaSize];
     if (Flags.SantaSpeedFactor < 10) {
-        SantaSpeed = 0.1 * SantaSpeed;
+        mSantaSpeed = 0.1 * mSantaSpeed;
     } else {
-        SantaSpeed = 0.01 * Flags.SantaSpeedFactor * SantaSpeed;
+        mSantaSpeed = 0.01 * Flags.SantaSpeedFactor * mSantaSpeed;
     }
-    mGlobal.ActualSantaSpeed = SantaSpeed;
+    mGlobal.ActualSantaSpeed = mSantaSpeed;
     // init_Santa_surfaces();
     cairo_surface_t *surface =
         Santa_surfaces[Flags.SantaSize][Flags.Rudolf][mGlobal.SantaDirection]
@@ -335,19 +335,19 @@ int do_usanta() {
 
 
     // mGlobal.ActualSantaSpeed is the absolute value
-    // of Santa's speed as is SantaSpeed.
+    // of Santa's speed as is mSantaSpeed.
     if (mGlobal.SantaDirection == 0) {
         mGlobal.ActualSantaSpeed += dt * (SANTASENS * mGlobal.NewWind +
-            SantaSpeed - mGlobal.ActualSantaSpeed);
+            mSantaSpeed - mGlobal.ActualSantaSpeed);
     } else {
         mGlobal.ActualSantaSpeed += dt * ((-SANTASENS) * mGlobal.NewWind +
-            SantaSpeed - mGlobal.ActualSantaSpeed);
+            mSantaSpeed - mGlobal.ActualSantaSpeed);
     }
 
-    if (mGlobal.ActualSantaSpeed > 3 * SantaSpeed) {
-        mGlobal.ActualSantaSpeed = 3 * SantaSpeed;
-    } else if (mGlobal.ActualSantaSpeed < -2 * SantaSpeed) {
-        mGlobal.ActualSantaSpeed = -2 * SantaSpeed;
+    if (mGlobal.ActualSantaSpeed > 3 * mSantaSpeed) {
+        mGlobal.ActualSantaSpeed = 3 * mSantaSpeed;
+    } else if (mGlobal.ActualSantaSpeed < -2 * mSantaSpeed) {
+        mGlobal.ActualSantaSpeed = -2 * mSantaSpeed;
     }
 
     if (mGlobal.SantaDirection == 0) {
@@ -374,7 +374,7 @@ int do_usanta() {
 
     yspeed = mGlobal.ActualSantaSpeed / 4;
     sdt += dt;
-    if (sdt > 2.0 * 50.0 / SantaSpeed || sdt > 2.0) {
+    if (sdt > 2.0 * 50.0 / mSantaSpeed || sdt > 2.0) {
         // time to change yspeed
         sdt = 0;
         yspeeddir = randint(3) - 1; //  -1, 0, 1

@@ -85,6 +85,7 @@ extern "C" {
     void onWindowUnmapped(XEvent*);
 
     void onWindowDestroyed(XEvent*);
+    void onWindowClientMessage(XEvent*);
 
     // Windows life-cycle helper methods.
     bool isMouseClickedAndHeldInWindow();

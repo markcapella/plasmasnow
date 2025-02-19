@@ -245,16 +245,17 @@ typedef struct _FallenSnow {
         WinInfo winInfo;          // winInfo None == bottom.
         struct _FallenSnow* next; // pointer to next item.
 
-        cairo_surface_t* renderedSurfaceA;
-        cairo_surface_t* renderedSurfaceB;
-
         short int x, y;           // X, Y array.
         short int w, h;           // W, H array.
 
         int prevx, prevy;         // x, y of last draw.
         int prevw, prevh;         // w, h of last draw.
 
-        GdkRGBA* columnColor;     // Color array.
+        GdkRGBA surfaceColor;     // Color array.
+
+        cairo_surface_t* renderedSurfaceA;
+        cairo_surface_t* renderedSurfaceB;
+
         short int* snowHeight;    // actual heights.
         short int* maxSnowHeight; // desired heights.
 

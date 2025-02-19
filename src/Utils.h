@@ -38,26 +38,27 @@
 
 #include "xdo.h"
 
-extern guint addMethodWithArgToMainloop(
-    gint prio, float time, GSourceFunc func, gpointer datap);
+guint addMethodWithArgToMainloop(gint prio,
+    float time, GSourceFunc method, gpointer arg);
 
-extern void remove_from_mainloop(guint *tag);
-extern void clearGlobalSnowWindow(void);
-extern float fsignf(float x);
+FILE *HomeOpen(const char *file, const char *mode, char **path);
 
-extern FILE *HomeOpen(const char *file, const char *mode, char **path);
+void remove_from_mainloop(guint *tag);
+void clearGlobalSnowWindow(void);
+float fsignf(float x);
 
-extern float sq2(float x, float y);
-extern float sq3(float x, float y, float z);
 
-extern Pixel IAllocNamedColor(const char *colorName, Pixel dfltPix);
-extern Pixel AllocNamedColor(const char *colorName, Pixel dfltPix);
+float sq2(float x, float y);
+float sq3(float x, float y, float z);
+
+Pixel IAllocNamedColor(const char *colorName, Pixel dfltPix);
+Pixel AllocNamedColor(const char *colorName, Pixel dfltPix);
 
 #ifdef __cplusplus
 extern "C" {
 #endif
     guint addMethodToMainloop(gint prio, float time,
-        GSourceFunc func);
+        GSourceFunc method);
     int randint(int m);
     void clearDisplayArea(Display* display,
         Window win, int x, int y, int w, int h,
@@ -68,23 +69,24 @@ extern "C" {
 }
 #endif
 
-extern void rgba2color(GdkRGBA* c, char** s);
+void rgba2color(GdkRGBA* c, char** s);
 
 
-extern int ValidColor(const char *color);
-extern ssize_t mywrite(int fd, const void *buf, size_t count);
-extern int IsReadableFile(char *path);
-extern float gaussf(float x, float mu, float sigma);
-extern void traceback(void);
-extern char *guess_language(void);
-extern Window largest_window_with_name(xdo_t *myxdo, const char *name);
-extern void fill_xdo_search(xdo_search_t *search);
+int IsReadableFile(char *path);
+int ValidColor(const char *color);
+ssize_t mywrite(int fd, const void *buf, size_t count);
+float gaussf(float x, float mu, float sigma);
+char *guess_language(void);
+Window largest_window_with_name(xdo_t *myxdo, const char *name);
+void fill_xdo_search(xdo_search_t *search);
 
 // obtain normally distributed number. The number will be between min and max:
-extern double gaussian(
+double gaussian(
     double mean, double standard_deviation, double min, double max);
 
-extern int is_little_endian(void);
-extern void logAppVersion(void);
+int is_little_endian(void);
+void logAppVersion(void);
 
-extern void randomuniqarray(double *a, int n, double d, unsigned short *seed);
+void randomuniqarray(double *a, int n, double d, unsigned short *seed);
+
+void traceback(void);

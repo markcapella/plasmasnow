@@ -23,30 +23,6 @@
 /***********************************************************
  * Module Method stubs.
  */
-// Windows:
-Window getActiveX11Window();
-Window getActiveAppWindow();
-
-void onCursorChange(XEvent*);
-void onAppWindowChange(Window);
-
-void onWindowCreated(XEvent*);
-void onWindowReparent(XEvent*);
-void onConfigureNotify(XEvent*);
-
-void onWindowMapped(XEvent*);
-void onWindowFocused(XEvent*);
-void onWindowBlurred(XEvent*);
-void onWindowUnmapped(XEvent*);
-
-void onWindowDestroyed(XEvent*);
-void onWindowClientMessage(XEvent*);
-
-bool isWindowBeingDragged();
-
-// Flake color helper methods.
-void setStormShapeColor(GdkRGBA);
-GdkRGBA getRGBStormShapeColorFromString(char* colorString);
 
 void HandleCpuFactor();
 void RestartDisplay();

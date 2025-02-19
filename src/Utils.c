@@ -44,39 +44,49 @@
 #include "Windows.h"
 #include "xdo.h"
 
-void traceback()
-#ifdef TRACEBACK_AVAILALBLE
-{
-    // see man backtrace
-#define BT_BUF_SIZE 100
-    void *buffer[BT_BUF_SIZE];
-    int nptrs = backtrace(buffer, BT_BUF_SIZE);
-    backtrace_symbols_fd(buffer, nptrs, STDOUT_FILENO);
-}
-#else
-{
-}
-#endif
 
+/***********************************************************
+ ** Helper methods to schedule threads.
+ **/
+guint addMethodToMainloop(gint prio, float time,
+    GSourceFunc method) {
+
+    return g_timeout_add_full(prio, (int) 1000 * (time *
+        (0.95 + 0.1 * drand48())), method, NULL, NULL);
+}
+
+guint addMethodWithArgToMainloop(gint prio, float time,
+    GSourceFunc method, gpointer arg) {
+
+    return g_timeout_add_full(prio, (int) 1000 * (time) *
+        (0.95 + 0.1 * drand48()), method, arg, NULL);
+}
+
+/***********************************************************
+ ** Helper methods.
+ **/
 int IsReadableFile(char *path) {
     if (!path || access(path, R_OK) != 0) {
         return 0;
     }
+
     struct stat path_stat;
     stat(path, &path_stat);
     return S_ISREG(path_stat.st_mode);
 }
 
-FILE *HomeOpen(const char *file, const char *mode, char **path) {
+FILE* HomeOpen(const char *file, const char *mode, char **path) {
     char *h = getenv("HOME");
     if (h == NULL) {
         return NULL;
     }
+
     char *home = strdup(h);
     (*path) = (char *)malloc(strlen(home) + strlen(file) + 2);
     strcpy(*path, home);
     strcat(*path, "/");
     strcat(*path, file);
+
     FILE *f = fopen(*path, mode);
     free(home);
     return f;
@@ -188,16 +198,6 @@ double gaussian(double mean, double std, double min, double max) {
     return x;
 }
 
-guint addMethodToMainloop(gint prio, float time, GSourceFunc func) {
-    return g_timeout_add_full(prio, (int) 1000 * (time *
-        (0.95 + 0.1 * drand48())), func, NULL, NULL);
-}
-
-guint addMethodWithArgToMainloop(
-    gint prio, float time, GSourceFunc func, gpointer datap) {
-    return g_timeout_add_full(
-        prio, (int)1000 * (time) * (0.95 + 0.1 * drand48()), func, datap, NULL);
-}
 
 void remove_from_mainloop(guint *tag) {
     if (*tag) {
@@ -411,4 +411,17 @@ Window largest_window_with_name(xdo_t *myxdo, const char *name) {
     }
 
     return w;
+}
+
+/***********************************************************
+ ** See man backtrace.
+ **/
+void traceback() {
+    #ifdef TRACEBACK_AVAILALBLE
+        #define BT_BUF_SIZE 100
+        void *buffer[BT_BUF_SIZE];
+
+        int nptrs = backtrace(buffer, BT_BUF_SIZE);
+        backtrace_symbols_fd(buffer, nptrs, STDOUT_FILENO);
+    #endif
 }

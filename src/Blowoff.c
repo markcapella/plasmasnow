@@ -93,7 +93,8 @@ int updateBlowoffFrame() {
         if (canSnowCollectOnFallen(fsnow)) {
             if (fsnow->winInfo.window == 0 ||
                 (!fsnow->winInfo.hidden &&
-                (isFallenSnowVisibleOnWorkspace(fsnow) || fsnow->winInfo.sticky))) {
+                    (isFallenSnowVisibleOnWorkspace(fsnow) ||
+                     fsnow->winInfo.sticky))) {
                 updateFallenSnowWithBlowoff(fsnow, fsnow->w / 4, fsnow->h / 4);
             }
         }

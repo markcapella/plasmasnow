@@ -1035,7 +1035,8 @@ void appShutdownHook(int signalNumber) {
 int handleX11ErrorEvent(Display* dpy, XErrorEvent* event) {
     // Save error & quit early if simply BadWindow.
     mX11LastErrorCode = event->error_code;
-    if (mX11LastErrorCode == BadWindow) {
+    if (mX11LastErrorCode == BadWindow ||
+        mX11LastErrorCode == BadMatch) {
         return 0;
     }
 

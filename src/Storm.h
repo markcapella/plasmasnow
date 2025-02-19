@@ -41,12 +41,13 @@ void resetAllStormItemsShapeSizeAndColor();
 void setAllStormItemsShapeSizeAndColor();
 
 int updateStormOnThread();
+
 StormItem* createStormItem(int type);
+void addStormItemToItemset(StormItem*);
 
 int updateStormItemOnThread(StormItem*);
 int stallCreatingStormItems();
 
-void pushStormItemIntoItemset(StormItem*);
 int drawAllStormItemsInItemset(cairo_t*);
 void eraseStormItemInItemset(StormItem*);
 int removeAllStormItemsInItemset();

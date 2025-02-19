@@ -23,6 +23,12 @@
 -->
 <interface>
   <requires lib="gtk+" version="3.24"/>
+  <object class="GtkWindow">
+    <property name="can-focus">False</property>
+    <child>
+      <placeholder/>
+    </child>
+  </object>
   <object class="GtkAdjustment" id="attr-space-adjustment">
     <property name="upper">100</property>
     <property name="step-increment">1</property>
@@ -810,7 +816,7 @@ Note: in Wayland, there is no snow on the windows. </property>
                 <property name="double-buffered">False</property>
                 <property name="halign">end</property>
                 <property name="margin-right">10</property>
-                <property name="label" translatable="yes">On scenery:</property>
+                <property name="label" translatable="yes">Scenery:</property>
               </object>
               <packing>
                 <property name="left-attach">2</property>
@@ -824,7 +830,7 @@ Note: in Wayland, there is no snow on the windows. </property>
                 <property name="double-buffered">False</property>
                 <property name="halign">end</property>
                 <property name="margin-right">10</property>
-                <property name="label" translatable="yes">On bottom:</property>
+                <property name="label" translatable="yes">Screen Bottom:</property>
               </object>
               <packing>
                 <property name="left-attach">2</property>
@@ -838,7 +844,7 @@ Note: in Wayland, there is no snow on the windows. </property>
                 <property name="double-buffered">False</property>
                 <property name="halign">end</property>
                 <property name="margin-right">10</property>
-                <property name="label" translatable="yes">On windows:</property>
+                <property name="label" translatable="yes">Windows Tops:</property>
               </object>
               <packing>
                 <property name="left-attach">2</property>
@@ -861,7 +867,7 @@ Note: in Wayland, there is no snow on the windows. </property>
             </child>
             <child>
               <object class="GtkToggleButton" id="id-NoKeepSnowOnTrees">
-                <property name="label" translatable="yes">Show</property>
+                <property name="label" translatable="yes">Show on</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
@@ -876,7 +882,7 @@ Note: in Wayland, there is no snow on the windows. </property>
             </child>
             <child>
               <object class="GtkToggleButton" id="id-NoKeepSnowOnBottom">
-                <property name="label" translatable="yes">Show</property>
+                <property name="label" translatable="yes">Show on</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
@@ -892,7 +898,7 @@ Note: in Wayland, there is no snow on the windows. </property>
             </child>
             <child>
               <object class="GtkToggleButton" id="id-NoKeepSnowOnWindows">
-                <property name="label" translatable="yes">Show</property>
+                <property name="label" translatable="yes">Show on</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
@@ -4835,7 +4841,7 @@ Note: the aurora is best viewed using a dark background.</property>
           </packing>
         </child>
         <child>
-          <!-- n-columns=5 n-rows=20 -->
+          <!-- n-columns=4 n-rows=20 -->
           <object class="GtkGrid" id="grid_settings">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
@@ -4900,7 +4906,7 @@ Note: the aurora is best viewed using a dark background.</property>
               <packing>
                 <property name="left-attach">0</property>
                 <property name="top-attach">0</property>
-                <property name="width">5</property>
+                <property name="width">4</property>
               </packing>
             </child>
             <child>
@@ -4935,7 +4941,7 @@ NOTE: when changing monitor, the app will refresh.</property>
                 </items>
               </object>
               <packing>
-                <property name="left-attach">1</property>
+                <property name="left-attach">0</property>
                 <property name="top-attach">2</property>
               </packing>
             </child>
@@ -4952,7 +4958,7 @@ NOTE: this doesn't work properly in enlightenment.</property>
                 <property name="valign">center</property>
               </object>
               <packing>
-                <property name="left-attach">2</property>
+                <property name="left-attach">1</property>
                 <property name="top-attach">2</property>
               </packing>
             </child>
@@ -4966,11 +4972,12 @@ NOTE: this doesn't work properly in enlightenment.</property>
 Activated: use plasmasnow colors.
 Deactivated: use default colors.</property>
                 <property name="double-buffered">False</property>
+                <property name="halign">center</property>
                 <property name="valign">center</property>
               </object>
               <packing>
-                <property name="left-attach">1</property>
-                <property name="top-attach">7</property>
+                <property name="left-attach">2</property>
+                <property name="top-attach">2</property>
               </packing>
             </child>
             <child>
@@ -4981,11 +4988,12 @@ Deactivated: use default colors.</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">To draw an outline around the snow window.</property>
                 <property name="double-buffered">False</property>
+                <property name="halign">center</property>
                 <property name="valign">center</property>
               </object>
               <packing>
-                <property name="left-attach">1</property>
-                <property name="top-attach">8</property>
+                <property name="left-attach">3</property>
+                <property name="top-attach">2</property>
               </packing>
             </child>
             <child>
@@ -5097,7 +5105,7 @@ Click and don't touch mouse and keyboard for a few seconds...</property>
                 <property name="value-pos">bottom</property>
               </object>
               <packing>
-                <property name="left-attach">4</property>
+                <property name="left-attach">3</property>
                 <property name="top-attach">7</property>
               </packing>
             </child>
@@ -5117,45 +5125,8 @@ Click and don't touch mouse and keyboard for a few seconds...</property>
                 <property name="value-pos">bottom</property>
               </object>
               <packing>
-                <property name="left-attach">4</property>
+                <property name="left-attach">3</property>
                 <property name="top-attach">8</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkScale" id="id-OffsetS">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">Use this if snow falls below the bottom of your screen, or  fallen snow hides something that should not be hidden.</property>
-                <property name="double-buffered">False</property>
-                <property name="margin-bottom">10</property>
-                <property name="adjustment">lift-window-adjustment</property>
-                <property name="restrict-to-fill-level">False</property>
-                <property name="digits">0</property>
-                <property name="draw-value">False</property>
-                <property name="value-pos">bottom</property>
-              </object>
-              <packing>
-                <property name="left-attach">4</property>
-                <property name="top-attach">11</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkScale" id="id-OffsetY">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">Use this if no snow collects on your windows, or if snow  collects separated from your windows. 
-Some basic window managers need this setting (e.g. TWM  needs in general a value of 25 .. 28).</property>
-                <property name="double-buffered">False</property>
-                <property name="margin-bottom">7</property>
-                <property name="adjustment">lift-windows-adjustment</property>
-                <property name="restrict-to-fill-level">False</property>
-                <property name="digits">0</property>
-                <property name="draw-value">False</property>
-                <property name="value-pos">bottom</property>
-              </object>
-              <packing>
-                <property name="left-attach">4</property>
-                <property name="top-attach">12</property>
               </packing>
             </child>
             <child>
@@ -5175,7 +5146,7 @@ In some cases, there are invisible windows near the top of the screen, which are
                 <property name="value-pos">bottom</property>
               </object>
               <packing>
-                <property name="left-attach">4</property>
+                <property name="left-attach">3</property>
                 <property name="top-attach">14</property>
               </packing>
             </child>
@@ -5194,21 +5165,6 @@ In some cases, there are invisible windows near the bottom  of  the screen, whic
                 <property name="value-pos">bottom</property>
               </object>
               <packing>
-                <property name="left-attach">4</property>
-                <property name="top-attach">15</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="halign">end</property>
-                <property name="valign">center</property>
-                <property name="label" translatable="yes">Ignore on Bottoms:</property>
-                <property name="justify">right</property>
-                <property name="wrap">True</property>
-              </object>
-              <packing>
                 <property name="left-attach">3</property>
                 <property name="top-attach">15</property>
               </packing>
@@ -5217,48 +5173,30 @@ In some cases, there are invisible windows near the bottom  of  the screen, whic
               <object class="GtkLabel">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="halign">end</property>
-                <property name="valign">center</property>
-                <property name="label" translatable="yes">Ignore on Tops:</property>
-                <property name="justify">right</property>
-                <property name="wrap">True</property>
-              </object>
-              <packing>
-                <property name="left-attach">3</property>
-                <property name="top-attach">14</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="double-buffered">False</property>
-                <property name="halign">end</property>
-                <property name="valign">center</property>
-                <property name="label" translatable="yes">Window Tops:</property>
-                <property name="justify">right</property>
-                <property name="wrap">True</property>
-              </object>
-              <packing>
-                <property name="left-attach">3</property>
-                <property name="top-attach">12</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="double-buffered">False</property>
                 <property name="halign">end</property>
                 <property name="valign">center</property>
                 <property name="label" translatable="yes">Screen Bottom:</property>
-                <property name="justify">center</property>
+                <property name="justify">right</property>
                 <property name="wrap">True</property>
-                <property name="ellipsize">end</property>
               </object>
               <packing>
-                <property name="left-attach">3</property>
-                <property name="top-attach">11</property>
+                <property name="left-attach">2</property>
+                <property name="top-attach">15</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="halign">end</property>
+                <property name="valign">center</property>
+                <property name="label" translatable="yes">Screen Top:</property>
+                <property name="justify">right</property>
+                <property name="wrap">True</property>
+              </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">14</property>
               </packing>
             </child>
             <child>
@@ -5273,8 +5211,9 @@ In some cases, there are invisible windows near the bottom  of  the screen, whic
                 <property name="xalign">0.89999997615814209</property>
               </object>
               <packing>
-                <property name="left-attach">3</property>
+                <property name="left-attach">1</property>
                 <property name="top-attach">8</property>
+                <property name="width">2</property>
               </packing>
             </child>
             <child>
@@ -5288,32 +5227,9 @@ In some cases, there are invisible windows near the bottom  of  the screen, whic
                 <property name="justify">center</property>
               </object>
               <packing>
-                <property name="left-attach">3</property>
+                <property name="left-attach">1</property>
                 <property name="top-attach">7</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="halign">end</property>
-                <property name="label" translatable="yes">Lift Snow:</property>
-              </object>
-              <packing>
-                <property name="left-attach">2</property>
-                <property name="top-attach">11</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="halign">end</property>
-                <property name="label" translatable="yes">Large Windows:</property>
-              </object>
-              <packing>
-                <property name="left-attach">2</property>
-                <property name="top-attach">14</property>
+                <property name="width">2</property>
               </packing>
             </child>
             <child>
@@ -5328,8 +5244,9 @@ In some cases, there are invisible windows near the bottom  of  the screen, whic
                 <property name="xalign">0.89999997615814209</property>
               </object>
               <packing>
-                <property name="left-attach">3</property>
+                <property name="left-attach">1</property>
                 <property name="top-attach">5</property>
+                <property name="width">2</property>
               </packing>
             </child>
             <child>
@@ -5352,7 +5269,7 @@ In some cases, there are invisible windows near the bottom  of  the screen, whic
                 </style>
               </object>
               <packing>
-                <property name="left-attach">4</property>
+                <property name="left-attach">3</property>
                 <property name="top-attach">5</property>
               </packing>
             </child>
@@ -5417,70 +5334,98 @@ In some cases, there are invisible windows near the bottom  of  the screen, whic
               </packing>
             </child>
             <child>
-              <placeholder/>
+              <object class="GtkScale" id="id-OffsetS">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">Use this if snow falls below the bottom of your screen, or  fallen snow hides something that should not be hidden.</property>
+                <property name="double-buffered">False</property>
+                <property name="margin-bottom">10</property>
+                <property name="adjustment">lift-window-adjustment</property>
+                <property name="restrict-to-fill-level">False</property>
+                <property name="digits">0</property>
+                <property name="draw-value">False</property>
+                <property name="value-pos">bottom</property>
+              </object>
+              <packing>
+                <property name="left-attach">3</property>
+                <property name="top-attach">12</property>
+              </packing>
             </child>
             <child>
-              <placeholder/>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="double-buffered">False</property>
+                <property name="halign">end</property>
+                <property name="valign">center</property>
+                <property name="label" translatable="yes">Screen Bottom:</property>
+                <property name="justify">center</property>
+                <property name="wrap">True</property>
+                <property name="ellipsize">end</property>
+              </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">12</property>
+              </packing>
             </child>
             <child>
-              <placeholder/>
+              <object class="GtkScale" id="id-OffsetY">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">Use this if no snow collects on your windows, or if snow  collects separated from your windows. 
+Some basic window managers need this setting (e.g. TWM  needs in general a value of 25 .. 28).</property>
+                <property name="double-buffered">False</property>
+                <property name="margin-bottom">7</property>
+                <property name="adjustment">lift-windows-adjustment</property>
+                <property name="restrict-to-fill-level">False</property>
+                <property name="digits">0</property>
+                <property name="draw-value">False</property>
+                <property name="value-pos">bottom</property>
+              </object>
+              <packing>
+                <property name="left-attach">3</property>
+                <property name="top-attach">11</property>
+              </packing>
             </child>
             <child>
-              <placeholder/>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="double-buffered">False</property>
+                <property name="halign">end</property>
+                <property name="valign">center</property>
+                <property name="label" translatable="yes">Window Tops:</property>
+                <property name="justify">right</property>
+                <property name="wrap">True</property>
+              </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">11</property>
+              </packing>
             </child>
             <child>
-              <placeholder/>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="halign">end</property>
+                <property name="label" translatable="yes">Lift Snow Above:</property>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">11</property>
+              </packing>
             </child>
             <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="halign">end</property>
+                <property name="label" translatable="yes">Ignore Large Windows Near:</property>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">14</property>
+              </packing>
             </child>
             <child>
               <placeholder/>
@@ -5654,4 +5599,5 @@ In some cases, there are invisible windows near the bottom  of  the screen, whic
         </child>
       </object>
     </child>
-  </object></interface>
+  </object>
+</interface>
