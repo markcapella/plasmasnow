@@ -88,6 +88,8 @@ XPM_TYPE** mResourcesShapes[] = {ALL_STORM_FILENAMES NULL};
 int mStormItemColorToggle = 0;
 GdkRGBA mStormItemColor;
 
+bool mStormBackgroundThreadIsActive = false;
+bool mStormItemBackgroundThreadIsActive = false;
 
 /***********************************************************
  ** This method initializes the storm module.
@@ -471,18 +473,23 @@ void setAllStormItemsShapeSizeAndColor() {
  ** This method adds a batch of items to the Storm window.
  **/
 int updateStormOnThread() {
+    mStormBackgroundThreadIsActive = true;
+
     if (Flags.shutdownRequested) {
+        mStormBackgroundThreadIsActive = false;
         return false;
     }
 
     const double NOW = wallclock();
     if (mStallingNewStormItems) {
         mUpdateStormThreadPrevTime = NOW;
+        mStormBackgroundThreadIsActive = false;
         return true;
     }
 
     if (!WorkspaceActive() || Flags.NoSnowFlakes) {
         mUpdateStormThreadPrevTime = NOW;
+        mStormBackgroundThreadIsActive = false;
         return true;
     }
 
@@ -502,6 +509,7 @@ int updateStormOnThread() {
         mUpdateStormThreadPrevTime = NOW;
         printf("plasmasnow: Storm.c: updateStormOnThread() "
             "detected a thread stall (?).\n");
+        mStormBackgroundThreadIsActive = false;
         return true;
     }
 
@@ -515,12 +523,15 @@ int updateStormOnThread() {
         }
         mUpdateStormThreadPrevTime = NOW;
         mUpdateStormThreadStartTime = 0;
+        mStormBackgroundThreadIsActive = false;
         return true;
     }
 
     // Start time when not generating flakes.
     mUpdateStormThreadPrevTime = NOW;
     mUpdateStormThreadStartTime += UPDATE_ELAPSED_TIME;
+
+    mStormBackgroundThreadIsActive = false;
     return true;
 }
 
@@ -609,7 +620,10 @@ void addStormItemToItemset(StormItem* stormItem) {
  ** This method updates a stormItem object.
  **/
 int updateStormItemOnThread(StormItem* stormItem) {
+    mStormItemBackgroundThreadIsActive = true;
+
     if (!WorkspaceActive() || Flags.NoSnowFlakes) {
+        mStormItemBackgroundThreadIsActive = false;
         return true;
     }
 
@@ -618,6 +632,7 @@ int updateStormItemOnThread(StormItem* stormItem) {
         if (stormItem->fluff || stormItem->isFrozen) {
             eraseStormItemInItemset(stormItem);
             removeStormItemInItemset(stormItem);
+            mStormItemBackgroundThreadIsActive = false;
             return false;
         }
     }
@@ -626,6 +641,7 @@ int updateStormItemOnThread(StormItem* stormItem) {
     if (mStallingNewStormItems) {
         eraseStormItemInItemset(stormItem);
         removeStormItemInItemset(stormItem);
+        mStormItemBackgroundThreadIsActive = false;
         return false;
     }
 
@@ -634,6 +650,7 @@ int updateStormItemOnThread(StormItem* stormItem) {
         stormItem->flufftimer > stormItem->flufftime) {
         eraseStormItemInItemset(stormItem);
         removeStormItemInItemset(stormItem);
+        mStormItemBackgroundThreadIsActive = false;
         return false;
     }
 
@@ -655,6 +672,7 @@ int updateStormItemOnThread(StormItem* stormItem) {
             stormItem->yRealPosition = newFlakeYPos;
         }
         stormItem->flufftimer += stormItemUpdateTime;
+        mStormItemBackgroundThreadIsActive = false;
         return true;
     }
 
@@ -668,6 +686,7 @@ int updateStormItemOnThread(StormItem* stormItem) {
         if ((!stormItem->survivesScreenEdges && drand48() > 0.3) ||
             (drand48() > 0.9)) {
             setStormItemFluffState(stormItem, 0.51);
+            mStormItemBackgroundThreadIsActive = false;
             return true;
         }
     }
@@ -706,6 +725,7 @@ int updateStormItemOnThread(StormItem* stormItem) {
 
     // If stormItem is frozen, we're done.
     if (stormItem->isFrozen) {
+        mStormItemBackgroundThreadIsActive = false;
         return true;
     }
 
@@ -729,6 +749,7 @@ int updateStormItemOnThread(StormItem* stormItem) {
         if (newFlakeXPos < 0 ||
             newFlakeXPos >= mGlobal.SnowWinWidth) {
             removeStormItemInItemset(stormItem);
+            mStormItemBackgroundThreadIsActive = false;
             return false;
         }
     }
@@ -736,6 +757,7 @@ int updateStormItemOnThread(StormItem* stormItem) {
     // Remove stormItem if it falls below bottom of screen.
     if (newFlakeYPos >= mGlobal.SnowWinHeight) {
         removeStormItemInItemset(stormItem);
+        mStormItemBackgroundThreadIsActive = false;
         return false;
     }
 
@@ -750,6 +772,7 @@ int updateStormItemOnThread(StormItem* stormItem) {
                 NEW_STORMITEM_INT_Y_POS)) {
             removeStormItemInItemset(stormItem);
             unlockFallenSnowSemaphore();
+            mStormItemBackgroundThreadIsActive = false;
             return false;
         }
         unlockFallenSnowSemaphore();
@@ -772,6 +795,7 @@ int updateStormItemOnThread(StormItem* stormItem) {
             in == CAIRO_REGION_OVERLAP_IN) {
             setStormItemFluffState(stormItem, 0.4);
             stormItem->isFrozen = 1;
+            mStormItemBackgroundThreadIsActive = false;
             return true;
         }
 
@@ -857,6 +881,7 @@ int updateStormItemOnThread(StormItem* stormItem) {
                 setStormItemFluffState(newflake, 8);
 
                 addStormItemToItemset(newflake);
+                mStormItemBackgroundThreadIsActive = false;
                 return true;
             }
         }
@@ -864,6 +889,8 @@ int updateStormItemOnThread(StormItem* stormItem) {
 
     stormItem->xRealPosition = newFlakeXPos;
     stormItem->yRealPosition = newFlakeYPos;
+
+    mStormItemBackgroundThreadIsActive = false;
     return true;
 }
 

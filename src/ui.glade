@@ -844,7 +844,7 @@ Note: in Wayland, there is no snow on the windows. </property>
                 <property name="double-buffered">False</property>
                 <property name="halign">end</property>
                 <property name="margin-right">10</property>
-                <property name="label" translatable="yes">Windows Tops:</property>
+                <property name="label" translatable="yes">Window Tops:</property>
               </object>
               <packing>
                 <property name="left-attach">2</property>

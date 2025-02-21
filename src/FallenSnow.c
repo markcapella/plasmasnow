@@ -43,8 +43,8 @@
 #include "Flags.h"
 #include "safe_malloc.h"
 #include "Santa.h"
-#include "Storm.h"
 #include "spline_interpol.h"
+#include "Storm.h"
 #include "Utils.h"
 #include "WindowVector.h"
 #include "wind.h"
@@ -65,6 +65,7 @@ sem_t mFallenSnowSwapSemaphore;
 sem_t mFallenSnowBaseSemaphore;
 
 pthread_t mFallenSnowBackgroundThread;
+bool mFallenSnowBackgroundThreadIsActive = false;
 
 WindowVector mDeferredWindowRemovesList;
 
@@ -108,16 +109,21 @@ void* startFallenSnowBackgroundThread() {
  ** This method is FallenSnow background thread executor.
  **/
 int execFallenSnowBackgroundThread() {
+    mFallenSnowBackgroundThreadIsActive = true;
+
     if (!WorkspaceActive()) {
+        mFallenSnowBackgroundThreadIsActive = false;
         return 0;
     }
 
     if (Flags.NoSnowFlakes) {
+        mFallenSnowBackgroundThreadIsActive = false;
         return 0;
     }
  
     if (Flags.NoKeepSnowOnWindows &&
         Flags.NoKeepSnowOnBottom) {
+        mFallenSnowBackgroundThreadIsActive = false;
         return 0;
     }
 
@@ -136,6 +142,8 @@ int execFallenSnowBackgroundThread() {
     swapFallenSnowRenderedSurfacesBToA();
 
     unlockFallenSnowSemaphore();
+
+    mFallenSnowBackgroundThread = false;
 }
 
 /** *********************************************************************
@@ -497,8 +505,8 @@ void renderFallenSnowSurfaceB(FallenSnow* fsnow) {
     gsl_spline_init(spline, averageXPosList, averageHeightList,
         NUMBER_OF_AVERAGE_POINTS);
 
-    cairo_set_source_rgb(cr, fsnow->surfaceColor.red,
-        fsnow->surfaceColor.green, fsnow->surfaceColor.blue);
+    cairo_set_line_width(cr, 6);
+    cairo_set_source_rgb(cr, 0xff, 0xff, 0xff);
 
     enum { SEARCHING, DRAWING };
     int state = SEARCHING;
@@ -515,6 +523,7 @@ void renderFallenSnowSurfaceB(FallenSnow* fsnow) {
                     cairo_move_to(cr, i, FALLEN_HEIGHT);
                     cairo_line_to(cr, i, FALLEN_HEIGHT);
                     cairo_line_to(cr, i, FALLEN_HEIGHT - nextValue);
+
                     state = DRAWING;
                 }
                 break;
@@ -526,7 +535,15 @@ void renderFallenSnowSurfaceB(FallenSnow* fsnow) {
                     cairo_line_to(cr, foundDrawPosition, FALLEN_HEIGHT);
                     cairo_close_path(cr);
                     cairo_stroke_preserve(cr);
+
+                    cairo_set_line_width(cr, 1);
+                    cairo_set_source_rgb(cr, fsnow->surfaceColor.red,
+                        fsnow->surfaceColor.green, fsnow->surfaceColor.blue);
                     cairo_fill(cr);
+
+                    cairo_set_line_width(cr, 6);
+                    cairo_set_source_rgb(cr, 0xff, 0xff, 0xff);
+
                     state = SEARCHING;
                 }
                 break;

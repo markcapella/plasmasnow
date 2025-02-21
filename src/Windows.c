@@ -379,7 +379,7 @@ void setWorkspaceBackground() {
 
     // Create XImage from user background file.
     XImage* ximage = XCreateImage(display, DefaultVisual(display, screen_num),
-        depth, ZPixmap, 0, (char *) pixels1,
+        depth, ZPixmap, 0, (char*) pixels1,
         mGlobal.SnowWinWidth, mGlobal.SnowWinHeight, XBitmapPad(display), 0);
     XInitImage(ximage);
 

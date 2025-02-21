@@ -24,8 +24,13 @@
 
 #include <gtk/gtk.h>
 
-extern void reinit_treesnow_region(void);
-extern void InitSnowOnTrees(void);
-extern void treesnow_init(void);
-extern void treesnow_draw(cairo_t *cr);
-extern void treesnow_ui(void);
+void treesnow_init(void);
+void InitSnowOnTrees(void);
+
+void respondToTreesnowSettingsChanges(void);
+
+int execTreesnowBackgroundThread();
+void ConvertOnTreeToFlakes(void);
+void reinit_treesnow_region(void);
+
+void treesnow_draw(cairo_t* cr);

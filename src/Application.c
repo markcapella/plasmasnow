@@ -110,7 +110,8 @@ guint mCairoWindowGUID = 0;
 GtkWidget *mTransparentWindow = NULL;
 
 bool mX11CairoEnabled = false;
-cairo_t *mCairoWindow = NULL;
+
+cairo_t* mCairoWindow = NULL;
 cairo_surface_t *mCairoSurface = NULL;
 
 int xfixes_event_base_ = -1;
@@ -394,10 +395,8 @@ int startApplication(int argc, char *argv[]) {
     setStormShapeColor(getRGBStormShapeColorFromString(Flags.StormItemColor1));
 
     // Start Main GUI Window.
-    InitSnowOnTrees();
 
     updateWindowsList();
-
     if (!StartWindow()) {
         return 1;
     }
@@ -445,16 +444,15 @@ int startApplication(int argc, char *argv[]) {
     logWinInfoStructColumns();
     logWinInfoForWindow(mGlobal.SnowWin);
 
-    fflush(stdout);
-
     // Init other modules.
     initFallenSnowModule();
     initBlowoffModule();
     wind_init();
     Santa_init();
     initLightsModule();
-    initSceneryModule();
+    InitSnowOnTrees();
     treesnow_init();
+    initSceneryModule();
     birds_init();
     initStarsModule();
     initMeteorModule();
@@ -465,10 +463,13 @@ int startApplication(int argc, char *argv[]) {
 
     addMethodToMainloop(PRIORITY_DEFAULT, time_displaychanged,
         onTimerEventDisplayChanged);
-    addMethodToMainloop(PRIORITY_DEFAULT, CONFIGURE_WINDOW_EVENT_TIME,
-        handlePendingX11Events);
+
     addMethodToMainloop(PRIORITY_DEFAULT, time_display_dimensions,
         handleDisplayConfigurationChange);
+
+    addMethodToMainloop(PRIORITY_DEFAULT, CONFIGURE_WINDOW_EVENT_TIME,
+        handlePendingX11Events);
+
     addMethodToMainloop(PRIORITY_HIGH, TIME_BETWEEEN_UI_SETTINGS_UPDATES,
         doAllUISettingsUpdates);
 
@@ -842,8 +843,8 @@ int doAllUISettingsUpdates() {
     Santa_ui();
     birds_ui();
     wind_ui();
-    treesnow_ui();
-    moon_ui();
+    respondToTreesnowSettingsChanges();
+    respondToMoonSettingsChanges();
     aurora_ui();
     updateMainWindowUI();
 

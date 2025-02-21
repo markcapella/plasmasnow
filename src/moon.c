@@ -50,6 +50,10 @@ static double OldmoonY;
 
 static float moonScale;
 
+
+/** *********************************************************************
+ ** This method ...
+ **/
 void moon_init(void) {
     moonScale = (float)Flags.Scale * 0.01 * mGlobal.WindowScale;
 
@@ -94,7 +98,7 @@ int moon_erase(int force) {
     return 0;
 }
 
-void moon_ui() {
+void respondToMoonSettingsChanges() {
     UIDO(MoonSpeed, );
     UIDO(Halo, halo_erase(););
     UIDO(Moon, moon_erase(1););

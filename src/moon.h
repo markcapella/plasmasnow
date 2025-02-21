@@ -23,7 +23,9 @@
 
 #include <gtk/gtk.h>
 
-extern int moon_draw(cairo_t *cr);
 extern void moon_init(void);
-extern void moon_ui(void);
+
+extern void respondToMoonSettingsChanges(void);
+
+extern int moon_draw(cairo_t *cr);
 extern int moon_erase(int force);

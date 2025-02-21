@@ -41,43 +41,67 @@
 #include "Windows.h"
 
 
-static int do_snow_on_trees();
-static void ConvertOnTreeToFlakes(void);
+/** *********************************************************************
+ ** Module globals and consts.
+ **/
+bool mTreesnowBackgroundThreadIsActive = false;
 
+
+/** *********************************************************************
+ ** This method ...
+ **/
 void treesnow_init() {
     mGlobal.gSnowOnTreesRegion = cairo_region_create();
-    addMethodToMainloop(PRIORITY_DEFAULT, time_snow_on_trees, do_snow_on_trees);
+    addMethodToMainloop(PRIORITY_DEFAULT,
+        time_snow_on_trees, execTreesnowBackgroundThread);
 }
 
-void treesnow_draw(cairo_t *cr) {
-    if (!WorkspaceActive() || Flags.NoSnowFlakes ||
-        Flags.NoKeepSnowOnTrees || Flags.NoTrees) {
-        return;
+/** *********************************************************************
+ ** This method ...
+ **/
+void InitSnowOnTrees() {
+    // TODO: Huh?
+    // Flags.MaxOnTrees+1: Avoid allocating zero bytes.
+
+    mGlobal.SnowOnTrees = (XPoint*) realloc(mGlobal.SnowOnTrees,
+        sizeof(*mGlobal.SnowOnTrees) * (Flags.MaxOnTrees + 1));
+
+    if (mGlobal.OnTrees > Flags.MaxOnTrees) {
+        mGlobal.OnTrees = Flags.MaxOnTrees;
     }
-    GdkRGBA color;
-    gdk_rgba_parse(&color, Flags.StormItemColor1);
-    cairo_set_source_rgba(cr, color.red, color.green, color.blue, ALPHA);
-    gdk_cairo_region(cr, mGlobal.gSnowOnTreesRegion);
-    cairo_fill(cr);
 }
 
-void treesnow_ui() {
+/** ***********************************************************
+ ** This method checks for & performs user changes of
+ ** Scenery (Treesnow module) settings.
+ **/
+void respondToTreesnowSettingsChanges() {
     UIDO(MaxOnTrees, clearGlobalSnowWindow(););
     UIDO(NoKeepSnowOnTrees, clearGlobalSnowWindow(););
 }
 
-int do_snow_on_trees() {
+/** *********************************************************************
+ ** This method ...
+ **/
+int execTreesnowBackgroundThread() {
+    mTreesnowBackgroundThreadIsActive = true;
+
     if (Flags.shutdownRequested) {
+        mTreesnowBackgroundThreadIsActive = false;
         return FALSE;
     }
+
     if ((!WorkspaceActive() || Flags.NoSnowFlakes ||
         Flags.NoKeepSnowOnTrees || Flags.NoTrees)) {
+        mTreesnowBackgroundThreadIsActive = false;
         return TRUE;
     }
+
     if (mGlobal.Wind == 2) {
         ConvertOnTreeToFlakes();
     }
 
+    bool mTreesnowBackgroundThreadIsActive = false;
     return TRUE;
 }
 
@@ -104,19 +128,27 @@ void ConvertOnTreeToFlakes() {
     reinit_treesnow_region();
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 void reinit_treesnow_region() {
     cairo_region_destroy(mGlobal.gSnowOnTreesRegion);
     mGlobal.gSnowOnTreesRegion = cairo_region_create();
 }
 
-void InitSnowOnTrees() {
-    // TODO: Huh?
-    // Flags.MaxOnTrees+1: Avoid allocating zero bytes.
-
-    mGlobal.SnowOnTrees = (XPoint*) realloc(mGlobal.SnowOnTrees,
-        sizeof(*mGlobal.SnowOnTrees) * (Flags.MaxOnTrees + 1));
-
-    if (mGlobal.OnTrees > Flags.MaxOnTrees) {
-        mGlobal.OnTrees = Flags.MaxOnTrees;
+/** *********************************************************************
+ ** This method draws the treesnow onto the display screen.
+ **/
+void treesnow_draw(cairo_t* cr) {
+    if (!WorkspaceActive() || Flags.NoSnowFlakes ||
+        Flags.NoKeepSnowOnTrees || Flags.NoTrees) {
+        return;
     }
+    GdkRGBA color;
+
+    gdk_rgba_parse(&color, Flags.StormItemColor1);
+    cairo_set_source_rgba(cr, color.red, color.green,
+        color.blue, ALPHA);
+    gdk_cairo_region(cr, mGlobal.gSnowOnTreesRegion);
+    cairo_fill(cr);
 }
