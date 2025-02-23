@@ -121,8 +121,8 @@ int xfixes_event_base_ = -1;
 
 int mIsSticky = 0;
 
-int wantx = 0;
-int wanty = 0;
+int mWantMoveToX = 0;
+int mWantMoveToY = 0;
 
 int mPrevSnowWinWidth = 0;
 int mPrevSnowWinHeight = 0;
@@ -156,6 +156,7 @@ int startApplication(int argc, char *argv[]) {
     memset(&mGlobal, 0, sizeof(mGlobal));
 
     // Titlebar string, but not one.
+    mGlobal.noSplashScreen = false;
     mGlobal.mPlasmaWindowTitle = "";
 
     mGlobal.cpufactor = 1.0;
@@ -302,12 +303,12 @@ int startApplication(int argc, char *argv[]) {
         return 1;
     }
 
-    // Before starting GTK, ensure x11 backend is used.
+    // Init GTK & x11 backend, ensure valid version.
     setenv("GDK_BACKEND", "x11", 1);
-
-    // Init GTK and ensure valid version.
     gtk_init(&argc, &argv);
 
+    // Write current flags set with any user
+    // changes from this run.
     if (!Flags.NoConfig) {
         WriteFlags();
     }
@@ -401,7 +402,7 @@ int startApplication(int argc, char *argv[]) {
         Flags.StormItemColor1));
     updateWindowsList();
 
-    StartWindow();
+    StartStormWindow();
 
     // Init all Global Flags.
     #define DOIT_I(x, d, v) OldFlags.x = Flags.x;
@@ -576,7 +577,7 @@ char* getDesktopSession() {
 /** *********************************************************************
  ** This method starts / creates the main storm window.
  **/
-int StartWindow() {
+int StartStormWindow() {
     mGlobal.Rootwindow = DefaultRootWindow(mGlobal.display);
 
     mGlobal.hasDestopWindow = false;
@@ -637,7 +638,7 @@ int StartWindow() {
         // xwin might be our transparent window ...
         if (createStormWindow(mGlobal.display, stormWindowWidget,
             Flags.Screen, Flags.AllWorkspaces, true, NULL, &xwin,
-            &wantx, &wanty)) {
+            &mWantMoveToX, &mWantMoveToY)) {
 
             mTransparentWindow = stormWindowWidget;
             mGlobal.SnowWin = xwin;
@@ -665,7 +666,7 @@ int StartWindow() {
 
             if (Flags.Screen >= 0 && mGlobal.hasDestopWindow) {
                 getXineramaScreenInfo(mGlobal.display, Flags.Screen,
-                    &wantx, &wanty, &winw, &winh);
+                    &mWantMoveToX, &mWantMoveToY, &winw, &winh);
             }
         }
     }
@@ -678,8 +679,8 @@ int StartWindow() {
         mGlobal.WindowOffsetX = 0;
         mGlobal.WindowOffsetY = 0;
     } else {
-        mGlobal.WindowOffsetX = wantx;
-        mGlobal.WindowOffsetY = wanty;
+        mGlobal.WindowOffsetX = mWantMoveToX;
+        mGlobal.WindowOffsetY = mWantMoveToY;
     }
 
     mGlobal.isDoubleBuffered = mGlobal.hasTransparentWindow ||
@@ -693,7 +694,8 @@ int StartWindow() {
     XFree(titleBarName.value);
 
     if (!mX11CairoEnabled) {
-        xdo_move_window(mGlobal.xdo, mGlobal.SnowWin, wantx, wanty);
+        xdo_move_window(mGlobal.xdo, mGlobal.SnowWin,
+            mWantMoveToX, mWantMoveToY);
     }
 
     if (!_xdo_is_window_visible(mGlobal.xdo, mGlobal.SnowWin)) {
@@ -705,8 +707,8 @@ int StartWindow() {
     initDisplayDimensions();
 
     // Report log.
-    mGlobal.SnowWinX = wantx;
-    mGlobal.SnowWinY = wanty;
+    mGlobal.SnowWinX = mWantMoveToX;
+    mGlobal.SnowWinY = mWantMoveToY;
 
     mPrevSnowWinWidth = mGlobal.SnowWinWidth;
     mPrevSnowWinHeight = mGlobal.SnowWinHeight;
@@ -1473,4 +1475,18 @@ long int getCurrentWorkspaceNumber() {
 
     XFree(properties);
     return resultCode;
+}
+
+/** *********************************************************************
+ ** This method determines is we're a Gnome session, vs KDE.
+ **/
+bool isThisAGnomeSession() {
+    char* desktop = getenv("XDG_SESSION_DESKTOP");
+    for (char* eachChar = desktop; *eachChar; ++eachChar) {
+        *eachChar = tolower(*eachChar);
+    }
+    if (strstr(desktop, "gnome") ||
+        strstr(desktop, "ubuntu")) {
+        return true;
+    }
 }

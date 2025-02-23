@@ -153,7 +153,6 @@ int HandleFlags(int argc, char *argv[]) {
             }
 
             //  ------------------- handled in main, so not needed here
-            //  --------------------
             if (!strcmp(arg, "-h") || !strcmp(arg, "-help")) {
                 docs_usage(0);
                 return 1;
@@ -167,6 +166,7 @@ int HandleFlags(int argc, char *argv[]) {
                 displayPlasmaSnowDocumentation();
                 return 1;
             }
+
 #ifdef SELFREP
             else if (!strcmp(arg, "-selfrep")) {
                 selfrep();
@@ -174,7 +174,11 @@ int HandleFlags(int argc, char *argv[]) {
             }
 #endif
             //  ------------------- end of handled in main --------------------
-            else if (strcmp(arg, "-nokeepsnow") == 0) {
+
+            else if (strcmp(arg, "-nosplash") == 0) {
+                mGlobal.noSplashScreen = true;
+
+            } else if (strcmp(arg, "-nokeepsnow") == 0) {
                 Flags.NoKeepSnow = 1;
                 Flags.NoKeepSnowOnWindows = 1;
                 Flags.NoKeepSnowOnBottom = 1;
@@ -187,14 +191,14 @@ int HandleFlags(int argc, char *argv[]) {
                 Flags.NoKeepSnowOnTrees = 0;
 
             } else if (strcmp(arg, "-vintage") == 0) {
+
 #define DOIT_I(x, d, v) Flags.x = VintageFlags.x;
 #define DOIT_L DOIT_I
-#define DOIT_S(x, d, v)                                                        \
-    free(Flags.x);                                                             \
+#define DOIT_S(x, d, v) \
+    free(Flags.x); \
     Flags.x = strdup(VintageFlags.x);
 
                 DOITALL
-
 #include "undefall.inc"
 
             } else if (strcmp(arg, "-desktop") == 0) {
@@ -282,6 +286,7 @@ int HandleFlags(int argc, char *argv[]) {
             handle_iv(-noblowsnow, BlowSnow, 0);
             handle_iv(-blowsnow, BlowSnow, 1);
             handle_iv(-noconfig, NoConfig, 1);
+
             handle_iv(-hidemenu, HideMenu, 1);
             handle_iv(-noisy, Noisy, 1);
             handle_iv(-nokeepsnowonscreen, NoKeepSnowOnBottom, 1);

@@ -24,38 +24,47 @@
  * Module Method stubs.
  */
 
-void HandleCpuFactor();
-void RestartDisplay();
-void appShutdownHook(int);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-int handleX11ErrorEvent(Display*, XErrorEvent*);
-void getX11Window(Window*);
-int drawCairoWindow(void*);
-void handleX11CairoDisplayChange();
+    void HandleCpuFactor();
+    void RestartDisplay();
+    void appShutdownHook(int);
 
-void drawCairoWindowInternal(cairo_t* cc);
-int drawTransparentWindow(gpointer);
-void addWindowDrawMethodToMainloop();
-gboolean handleTransparentWindowDrawEvents(
-    GtkWidget*, cairo_t*, gpointer);
-void rectangle_draw(cairo_t*);
+    int handleX11ErrorEvent(Display*, XErrorEvent*);
+    void getX11Window(Window*);
+    int drawCairoWindow(void*);
+    void handleX11CairoDisplayChange();
 
-int StartWindow();
+    void drawCairoWindowInternal(cairo_t* cc);
+    int drawTransparentWindow(gpointer);
+    void addWindowDrawMethodToMainloop();
+    gboolean handleTransparentWindowDrawEvents(
+        GtkWidget*, cairo_t*, gpointer);
+    void rectangle_draw(cairo_t*);
 
-void SetWindowScale();
-int handlePendingX11Events();
-int onTimerEventDisplayChanged();
+    int StartStormWindow();
 
-void mybindtestdomain();
+    void SetWindowScale();
+    int handlePendingX11Events();
+    int onTimerEventDisplayChanged();
 
-char* getDesktopSession();
-void respondToWorkspaceSettingsChange();
-void setTransparentWindowAbove(GtkWindow* window);
-int updateWindowsList();
+    void mybindtestdomain();
 
-int doAllUISettingsUpdates();
-int do_stopafter();
-int handleDisplayConfigurationChange();
+    char* getDesktopSession();
+    void respondToWorkspaceSettingsChange();
+    void setTransparentWindowAbove(GtkWindow* window);
+    int updateWindowsList();
 
-bool isDesktopVisible();
-long int getCurrentWorkspaceNumber();
+    int doAllUISettingsUpdates();
+    int do_stopafter();
+    int handleDisplayConfigurationChange();
+
+    bool isDesktopVisible();
+    long int getCurrentWorkspaceNumber();
+    bool isThisAGnomeSession();
+
+#ifdef __cplusplus
+}
+#endif

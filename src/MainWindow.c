@@ -159,6 +159,7 @@
 
 #include <gtk/gtk.h>
 
+#include "Application.h"
 #include "birds.h"
 #include "clocks.h"
 #include "ColorCodes.h"
@@ -176,29 +177,6 @@
 #include "Utils.h"
 #include "version.h"
 #include "Windows.h"
-
-
-/***********************************************************
- * Module Method stubs.
- */
-static void initAllButtonValues(void);
-static void set_santa_buttons(void);
-static void set_tree_buttons(void);
-
-static void applyMainWindowCSSTheme();
-static void updateMainWindowTheme(void);
-
-static void birdscb(GtkWidget *w, void *m);
-
-static void setTabDefaults(int tab);
-
-static void handle_screen(void);
-static void handleFileChooserPreview(
-    GtkFileChooser *file_chooser, gpointer data);
-static void setLabelText(GtkLabel *label, const gchar *str);
-
-static gboolean handleMainWindowStateEvents(GtkWidget* widget,
-    GdkEventWindowState* event, gpointer user_data);
 
 
 /***********************************************************
@@ -238,28 +216,26 @@ static gboolean handleMainWindowStateEvents(GtkWidget* widget,
 #define DEFAULT(name) DefaultFlags.name
 #define VINTAGE(name) VintageFlags.name
 
-static GtkBuilder *builder;
+GtkBuilder* builder;
+GtkWidget* range;
+GtkContainer* birdsgrid;
+GtkContainer* moonbox;
+GtkImage* preview;
 
-static GtkWidget *range;
-
-static GtkContainer *birdsgrid;
-static GtkContainer *moonbox;
-static GtkImage *preview;
-static int Nscreens;
-static int HaveXinerama;
+int Nscreens;
+int HaveXinerama;
 
 #define nsbuffer 1024
-static char sbuffer[nsbuffer];
+char sbuffer[nsbuffer];
 
-static int ui_running = False;
-static int human_interaction = 1;
+int ui_running = False;
+int human_interaction = 1;
 
+GtkWidget* mMainWindow;
+GtkStyleContext* mStyleContext;
 
-static GtkWidget *mMainWindow;
-static GtkStyleContext *mStyleContext;
-
-static char *lang[100];
-static int nlang;
+char* lang[100];
+int nlang;
 
 
 /***********************************************************
@@ -271,6 +247,7 @@ void updateMainWindowUI() {
     UIDO(Screen, handle_screen(););
     UIDO(mAppTheme, updateMainWindowTheme(););
     UIDO(Outline, clearGlobalSnowWindow(););
+
     UIDO(ShowSplashScreen,);
 }
 
@@ -364,7 +341,7 @@ static void init_santa_buttons() {
 #include "undefall.inc"
 }
 
-static void set_santa_buttons() {
+void set_santa_buttons() {
     int n = 2 * Flags.SantaSize;
     if (Flags.Rudolf) {
         n++;
@@ -713,7 +690,7 @@ bool shouldShowLightColorPink() {
     NEWLINE gtk_file_chooser_set_filename(                                     \
         GTK_FILE_CHOOSER(Button.name), Flags.BackgroundFile);
 
-static void initAllButtonValues() {
+void initAllButtonValues() {
     GdkRGBA color;
 
     ALL_BUTTONS
@@ -829,7 +806,7 @@ static void initAllButtonValues() {
         G_CALLBACK(buttoncb(type, name)), NULL);
 
 
-static void connectAllButtonSignals() {
+void connectAllButtonSignals() {
 
     ALL_BUTTONS
 
@@ -949,7 +926,7 @@ static void init_pixmaps() {
  ** Helpers.
  **/
 
-static void set_tree_buttons() {
+void set_tree_buttons() {
 
 #define TREE(x) \
     NEWLINE gtk_toggle_button_set_active( \
@@ -1182,7 +1159,7 @@ void setTabDefaults(int tab) {
  ** Helpers.
  **/
 
-static void init_buttons() {
+void init_buttons() {
     getAllButtonFormIDs();
 
     init_santa_buttons();
@@ -1256,9 +1233,9 @@ void createMainWindow() {
     ui_running = True;
 
     builder = gtk_builder_new_from_string(plasmasnow_xml, -1);
-#ifdef HAVE_GETTEXT
-    gtk_builder_set_translation_domain(builder, TEXTDOMAIN);
-#endif
+    #ifdef HAVE_GETTEXT
+        gtk_builder_set_translation_domain(builder, TEXTDOMAIN);
+    #endif
     gtk_builder_connect_signals(builder, NULL);
 
     range = GTK_WIDGET(gtk_builder_get_object(builder, "birds-range"));
@@ -1296,14 +1273,25 @@ void createMainWindow() {
             GTK_WIN_POS_CENTER_ALWAYS);
     }
 
+    // Gnome needs to be centered. KDE does
+    // it for you.
+    if (isThisAGnomeSession()) {
+        int mainWindowWidth, mainWindowHeight;
+        gtk_window_get_size(GTK_WINDOW(mMainWindow),
+                &mainWindowWidth, &mainWindowHeight);
+        const int CENTERED_X_POS = (mGlobal.SnowWinWidth -
+            mainWindowWidth) / 2;
+        const int CENTERED_Y_POS = (mGlobal.SnowWinHeight -
+            mainWindowHeight) / 2;
+        gtk_window_move(GTK_WINDOW(mMainWindow),
+            CENTERED_X_POS, CENTERED_Y_POS);
+    }
+
     gtk_widget_show_all(mMainWindow);
 
     init_buttons();
-
     connectAllButtonSignals();
-
     init_pixmaps();
-
     set_buttons();
 
     preview = GTK_IMAGE(gtk_image_new());

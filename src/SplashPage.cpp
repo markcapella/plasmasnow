@@ -20,6 +20,7 @@
 #-# 
 */
 #include <cstdio>
+#include <ctype.h>
 #include <malloc.h>
 #include <unistd.h>
 
@@ -28,6 +29,11 @@
 #include <X11/xpm.h>
 #include <X11/Xutil.h>
 
+#include <gtk/gtk.h>
+
+#include <cairo-xlib.h>
+
+#include "Application.h"
 #include "Flags.h"
 #include "PlasmaSnow.h"
 #include "SplashPage.h"
@@ -36,46 +42,56 @@
 /** ********************************************************
  ** Module globals and consts.
  **/
+Screen* mScreen;
+unsigned int mScreenWidth = 0;
+unsigned int mScreenHeight = 0;
+
 Window mSplashWindow;
-bool mSplashWindowMapped = false;
-
 XImage* mSplashImage;
+XpmAttributes mSplashAttributes;
 
-int mExposeEventCount = 0;
+bool mSplashWindowMapped = false;
+int mSplashWindowExposedCount = 0;
 
 
 /** ********************************************************
  ** This method shows the SplashPage x11 window.
  **/
 void showSplashPage() {
-    if (!Flags.ShowSplashScreen) {
+    if (mGlobal.noSplashScreen ||
+        !Flags.ShowSplashScreen) {
         return;
     }
 
+    // Display initial memory useage to log.
+    mScreen = DefaultScreenOfDisplay(mGlobal.display);
+    mScreenWidth = WidthOfScreen(mScreen);
+    mScreenHeight = HeightOfScreen(mScreen);
+
     // Read XPM SplashImage from file.
-    XpmAttributes attr;
-    attr.valuemask = 0;
-    attr.bitmap_format = ZPixmap;
-    attr.valuemask |= XpmBitmapFormat;
-    attr.valuemask |= XpmSize;
-    attr.valuemask |= XpmCharsPerPixel;
-    attr.valuemask |= XpmReturnPixels;
-    attr.valuemask |= XpmReturnAllocPixels;
-    attr.exactColors = False;
-    attr.valuemask |= XpmExactColors;
-    attr.closeness = 30000;
-    attr.valuemask |= XpmCloseness;
-    attr.alloc_close_colors = False;
-    attr.valuemask |= XpmAllocCloseColors;
+    mSplashAttributes.valuemask = 0;
+    mSplashAttributes.bitmap_format = ZPixmap;
+    mSplashAttributes.valuemask |= XpmBitmapFormat;
+    mSplashAttributes.valuemask |= XpmSize;
+    mSplashAttributes.valuemask |= XpmCharsPerPixel;
+    mSplashAttributes.valuemask |= XpmReturnPixels;
+    mSplashAttributes.valuemask |= XpmReturnAllocPixels;
+    mSplashAttributes.exactColors = False;
+    mSplashAttributes.valuemask |= XpmExactColors;
+    mSplashAttributes.closeness = 30000;
+    mSplashAttributes.valuemask |= XpmCloseness;
+    mSplashAttributes.alloc_close_colors = False;
+    mSplashAttributes.valuemask |= XpmAllocCloseColors;
 
     XpmReadFileToImage(mGlobal.display,
         "/usr/local/share/pixmaps/plasmasnowsplash.xpm",
-        &mSplashImage, NULL, &attr);
+        &mSplashImage, NULL, &mSplashAttributes);
 
     // Create our X11 Window to host the image.
     mSplashWindow = XCreateSimpleWindow(mGlobal.display,
-        DefaultRootWindow(mGlobal.display), 0, 0, attr.width, attr.height,
-        1, WhitePixel(mGlobal.display, 0), WhitePixel(mGlobal.display, 0));
+        DefaultRootWindow(mGlobal.display), 0, 0, mSplashAttributes.width,
+        mSplashAttributes.height, 1, WhitePixel(mGlobal.display, 0),
+        WhitePixel(mGlobal.display, 0));
 
     // Set window to dock (no titlebar or close button).
     const Atom WINDOW_TYPE = XInternAtom(mGlobal.display,
@@ -86,28 +102,43 @@ void showSplashPage() {
         32, PropModeReplace, (unsigned char*) &TYPE_VALUE, 1);
 
     // Add the image to the host window.
-    XPutImage(mGlobal.display, mSplashWindow, XCreateGC(mGlobal.display,
-        mSplashWindow, 0, 0), mSplashImage, 0, 0, 0, 0,
-        attr.width, attr.height);
+    XPutImage(mGlobal.display, mSplashWindow,
+        XCreateGC(mGlobal.display, mSplashWindow, 0, 0),
+        mSplashImage, 0, 0, 0, 0, mSplashAttributes.width, mSplashAttributes.height);
 
     // Show SplashImage in the window.
     XSelectInput(mGlobal.display, mSplashWindow, ExposureMask);
     Atom mDeleteMessage = XInternAtom(mGlobal.display,
         "WM_DELETE_WINDOW", False);
-    XSetWMProtocols(mGlobal.display, mSplashWindow, &mDeleteMessage, 1);
+    XSetWMProtocols(mGlobal.display, mSplashWindow,
+        &mDeleteMessage, 1);
 
-    const int FINAL_EXPOSE_EVENT_COUNT = 3;
+    // Gnome & KDE have different X11 event counts to
+    // consume before SplashPage has finished loading.
+    const int MAX_EXPOSE_COUNT =
+        isThisAGnomeSession() ? 1 : 3;
+
     bool finalEventReceived = false;
-
     while (!finalEventReceived) {
         if (!mSplashWindowMapped) {
             XMapWindow(mGlobal.display, mSplashWindow);
+            // Gnome needs to be centered. KDE does
+            // it for you.
+            if (isThisAGnomeSession()) {
+                const int CENTERED_X_POS = (mScreenWidth -
+                    mSplashAttributes.width) / 2;
+                const int CENTERED_Y_POS = (mScreenHeight -
+                    mSplashAttributes.height) / 2;
+                XMoveWindow(mGlobal.display, mSplashWindow,
+                    CENTERED_X_POS, CENTERED_Y_POS);
+            }
             mSplashWindowMapped = true;
         }
 
         XEvent event;
         XNextEvent(mGlobal.display, &event);
         switch (event.type) {
+
             case ClientMessage:
                 if (event.xclient.data.l[0] ==
                         (long int) mDeleteMessage) {
@@ -120,11 +151,13 @@ void showSplashPage() {
                     break;
                 }
 
-                mExposeEventCount++;
-                XPutImage(mGlobal.display, mSplashWindow, XCreateGC(mGlobal.display,
-                    mSplashWindow, 0, 0), mSplashImage, 0, 0, 0, 0,
-                    attr.width, attr.height);
-                if (mExposeEventCount >= FINAL_EXPOSE_EVENT_COUNT) {
+                XPutImage(mGlobal.display, mSplashWindow,
+                    XCreateGC(mGlobal.display, mSplashWindow, 0, 0),
+                    mSplashImage, 0, 0, 0, 0, mSplashAttributes.width,
+                    mSplashAttributes.height);
+
+                mSplashWindowExposedCount++;
+                if (mSplashWindowExposedCount >= MAX_EXPOSE_COUNT) {
                     finalEventReceived = true;
                 }
                 break;
@@ -136,7 +169,8 @@ void showSplashPage() {
  ** This method hides the SplashPage x11 window.
  **/
 void hideSplashPage() {
-    if (!Flags.ShowSplashScreen) {
+    if (mGlobal.noSplashScreen ||
+        !Flags.ShowSplashScreen) {
         return;
     }
 

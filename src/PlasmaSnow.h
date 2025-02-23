@@ -258,7 +258,6 @@ typedef struct _FallenSnow {
 
         short int* snowHeight;    // actual heights.
         short int* maxSnowHeight; // desired heights.
-
 } FallenSnow;
 
 
@@ -266,7 +265,7 @@ typedef struct _FallenSnow {
  * Global helper objects.
  */
 extern struct _mGlobal {
-
+        bool noSplashScreen;
         char *Language;
 
         int IsCompiz;
@@ -280,7 +279,6 @@ extern struct _mGlobal {
 
         Bool hasTransparentWindow;
         char* mPlasmaWindowTitle;
-
 
         int WindowOffsetX;
         int WindowOffsetY;

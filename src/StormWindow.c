@@ -29,7 +29,7 @@
 #include <gdk/gdkx.h>
 #include <gtk/gtk.h>
 
-#include "debug.h"
+#include "Application.h"
 #include "StormWindow.h"
 #include "Windows.h"
 
@@ -41,9 +41,8 @@
 /** *********************************************************************
  ** This method creates the main Storm Window.
  **/
-bool createStormWindow(Display* display,
-    GtkWidget* transparentGTKWindow, int xscreen,
-    int sticky, int below, GdkWindow** gdk_window,
+bool createStormWindow(Display* display, GtkWidget* stormWindow,
+    int xscreen, int sticky, int below, GdkWindow** gdk_window,
     Window* x11_window, int* wantx, int* wanty) {
 
     // Guard the outputs.
@@ -55,85 +54,80 @@ bool createStormWindow(Display* display,
     }
 
     // Implement window.
-    gtk_widget_set_app_paintable(transparentGTKWindow, TRUE);
-    gtk_window_set_decorated(GTK_WINDOW(transparentGTKWindow), FALSE);
-    gtk_window_set_accept_focus(GTK_WINDOW(transparentGTKWindow), FALSE);
+    gtk_widget_set_app_paintable(stormWindow, TRUE);
+    gtk_window_set_decorated(GTK_WINDOW(stormWindow), FALSE);
+    gtk_window_set_accept_focus(GTK_WINDOW(stormWindow), FALSE);
 
-    g_signal_connect(transparentGTKWindow, "draw",
+    g_signal_connect(stormWindow, "draw",
         G_CALLBACK(setStormWindowAttributes), NULL);
 
     // Remove our things from inputStormWindow:
-    g_object_steal_data(G_OBJECT(transparentGTKWindow), "trans_sticky");
-    g_object_steal_data(G_OBJECT(transparentGTKWindow), "trans_below");
-    g_object_steal_data(G_OBJECT(transparentGTKWindow), "trans_nobelow");
-    g_object_steal_data(G_OBJECT(transparentGTKWindow), "trans_done");
+    g_object_steal_data(G_OBJECT(stormWindow), "trans_sticky");
+    g_object_steal_data(G_OBJECT(stormWindow), "trans_below");
+    g_object_steal_data(G_OBJECT(stormWindow), "trans_nobelow");
+    g_object_steal_data(G_OBJECT(stormWindow), "trans_done");
 
     // Reset our things.  :-/
     static char somechar;
     if (sticky) {
-        g_object_set_data(G_OBJECT(transparentGTKWindow),
+        g_object_set_data(G_OBJECT(stormWindow),
             "trans_sticky", &somechar);
     }
     switch (below) {
         case 0:
-            g_object_set_data(G_OBJECT(transparentGTKWindow),
+            g_object_set_data(G_OBJECT(stormWindow),
                 "trans_nobelow", &somechar);
             break;
         case 1:
-            g_object_set_data(G_OBJECT(transparentGTKWindow),
+            g_object_set_data(G_OBJECT(stormWindow),
                 "trans_below", &somechar);
             break;
     }
 
     /* To check if the display supports alpha channels, get the visual */
-    GdkScreen* screen = gtk_widget_get_screen(transparentGTKWindow);
+    GdkScreen* screen = gtk_widget_get_screen(stormWindow);
     if (!gdk_screen_is_composited(screen)) {
-        gtk_window_close(GTK_WINDOW(transparentGTKWindow));
+        gtk_window_close(GTK_WINDOW(stormWindow));
         return false;
     }
 
     // Ensure the widget (the window, actually) can take RGBA.
-    gtk_widget_set_visual(transparentGTKWindow,
+    gtk_widget_set_visual(stormWindow,
         gdk_screen_get_rgba_visual(screen));
 
     // set full screen if so desired:
+    bool useXineramaWindow = false;
     int winx, winy; // desired position of window
     int winw, winh; // desired size of window
 
-    int wantxin = (xscreen >= 0);
-
     if (xscreen < 0) {
         XWindowAttributes attr;
-        XGetWindowAttributes(display, DefaultRootWindow(display), &attr);
-        P("width, height %d %d\n", attr.width, attr.height);
-        gtk_widget_set_size_request(
-            GTK_WIDGET(transparentGTKWindow), attr.width, attr.height);
+        XGetWindowAttributes(display, DefaultRootWindow(display),
+            &attr);
+        gtk_widget_set_size_request(GTK_WIDGET(
+            stormWindow), attr.width, attr.height);
         winx = 0;
         winy = 0;
         winw = attr.width;
         winh = attr.height;
     } else {
-        wantxin = getXineramaScreenInfo(display, xscreen,
+        useXineramaWindow = getXineramaScreenInfo(display, xscreen,
             &winx, &winy, &winw, &winh);
-        if (wantxin) {
-            gtk_widget_set_size_request(GTK_WIDGET(transparentGTKWindow), winw, winh);
+        if (useXineramaWindow) {
+            gtk_widget_set_size_request(GTK_WIDGET(
+                stormWindow), winw, winh);
         }
     }
 
     // Show.
-    gtk_widget_show_all(transparentGTKWindow);
+    gtk_widget_show_all(stormWindow);
     GdkWindow* gdkwin = gtk_widget_get_window(
-        GTK_WIDGET(transparentGTKWindow));
+        GTK_WIDGET(stormWindow));
 
-    // Gnome needs this as dock or it snows
-    // on top of things. KDE needs it as not-a-dock,
-    // or it snows on top of things.
-    char* desktop = getenv("XDG_SESSION_DESKTOP");
-    for (char* eachChar = desktop; *eachChar; ++eachChar) {
-        *eachChar = tolower(*eachChar);
-    }
-    if (strstr(desktop, "gnome") ||
-        strstr(desktop, "ubuntu")) {
+    // Gnome needs this as dock or it snows on top of
+    // things. KDE needs it as NOT a dock, or it snows
+    // on top of things.
+    if (isThisAGnomeSession()) {
         gdk_window_set_type_hint(gdkwin,
             GDK_WINDOW_TYPE_HINT_DOCK);
     }
@@ -157,17 +151,17 @@ bool createStormWindow(Display* display,
     // Seems sometimes to be necessary with nvidia.
     usleep(200000);
 
-    gtk_widget_hide(transparentGTKWindow);
-    gtk_widget_show_all(transparentGTKWindow);
+    gtk_widget_hide(stormWindow);
+    gtk_widget_show_all(stormWindow);
 
     if (xscreen < 0) {
-        gtk_window_move(GTK_WINDOW(transparentGTKWindow), 0, 0);
-    } else if (wantxin) {
-        gtk_window_move(GTK_WINDOW(transparentGTKWindow), winx, winy);
+        gtk_window_move(GTK_WINDOW(stormWindow), 0, 0);
+    } else if (useXineramaWindow) {
+        gtk_window_move(GTK_WINDOW(stormWindow), winx, winy);
     }
 
-    setStormWindowAttributes(transparentGTKWindow);
-    g_object_steal_data(G_OBJECT(transparentGTKWindow), "trans_done");
+    setStormWindowAttributes(stormWindow);
+    g_object_steal_data(G_OBJECT(stormWindow), "trans_done");
 
     return true;
 }
