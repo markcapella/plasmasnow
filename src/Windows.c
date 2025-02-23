@@ -21,6 +21,7 @@
 */
 #include <ctype.h>
 #include <pthread.h>
+#include <regex.h>
 #include <stdbool.h>
 #include <stdio.h>
 
@@ -47,6 +48,7 @@
 #include "Windows.h"
 #include "WinInfo.h"
 #include "xdo.h"
+#include "xdo_search.h"
 
 
 /** *********************************************************************
@@ -194,8 +196,10 @@ void getCurrentWorkspaceData() {
         int ym = y + h / 2;
 
         xdo_move_window(mGlobal.xdo, probeWindow, xm, ym);
-        xdo_wait_for_window_map_state(mGlobal.xdo,
-            probeWindow, IsViewable);
+        if (!_xdo_is_window_visible(mGlobal.xdo, probeWindow)) {
+            xdo_wait_for_window_map_state(mGlobal.xdo, probeWindow,
+                IsViewable);
+        }
 
         long desktop;
         int rc = xdo_get_desktop_for_window(mGlobal.xdo,
@@ -294,8 +298,10 @@ void initDisplayDimensions() {
 void updateDisplayDimensions() {
     lockFallenSnowSemaphore();
 
-    xdo_wait_for_window_map_state(mGlobal.xdo,
-        mGlobal.SnowWin, IsViewable);
+    if (!_xdo_is_window_visible(mGlobal.xdo, mGlobal.SnowWin)) {
+        xdo_wait_for_window_map_state(mGlobal.xdo, mGlobal.SnowWin,
+            IsViewable);
+    }
 
     Window root;
     int x, y;
@@ -955,9 +961,6 @@ bool isWindowHidden(Window window, int windowMapState) {
     if (isWindowHiddenByWMState(window)) {
         return true;
     }
-    //if (!isWindowContentVisible(window)) {
-    //    return true;
-    //}
 
     return false;
 }
@@ -1019,47 +1022,6 @@ bool isWindowHiddenByWMState(Window window) {
     XFree(properties);
 
     return result;
-}
-
-/** *********************************************************************
- ** This method checks if a window is visible &
- ** ready to receive click events.
- **
- ** Some apps such as Chrome start with a transparent background, which
- ** causes FallenSnow to provide a "hanging" surface and collect snow,
- ** apparantly to the user with no window.
- **/
-bool isWindowContentVisible(Window window) {
-
-    // Desktop always visible.
-    if (window == None) {
-        printf("iwcv() Desktop T: ");
-        logWinInfoForWindow(window);
-        return true;
-    }
-
-    Window root_return, child_return;
-    int root_x_return, root_y_return;
-    int xPosResult, yPosResult;
-    unsigned int pointerState;
-
-    if (!XQueryPointer(mGlobal.display, window, &root_return,
-        &child_return, &root_x_return, &root_y_return,
-        &xPosResult, &yPosResult, &pointerState)) {
-        printf("iwcv() !XQuery F: ");
-        logWinInfoForWindow(window);
-        return false;
-    }
-
-    if (child_return != window) {
-        printf("iwcv() MISMATCH T: ");
-        logWinInfoForWindow(window);
-        return false;
-    }
-
-    printf("iwcv() MATCH    T: ");
-    logWinInfoForWindow(window);
-    return TRUE;
 }
 
 /** *********************************************************************

@@ -298,7 +298,7 @@ extern struct _mGlobal {
         cairo_region_t *gSnowOnTreesRegion;
 
         // Display defs.
-        Display *display;
+        Display* display;
         xdo_t *xdo;
         int Screen;
 

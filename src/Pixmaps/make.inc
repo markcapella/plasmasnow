@@ -92,6 +92,7 @@ MediumSantaRudolf3.xpm \
 MediumSantaRudolf4.xpm \
 moon1.xpm \
 moon2.xpm \
+plasmasnowsplash.xpm \
 plasmasnow.xpm \
 polarbear.xpm \
 RegularSanta1.xpm \

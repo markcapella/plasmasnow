@@ -111,7 +111,6 @@ extern "C" {
     bool isWindowHidden(Window window, int windowMapState);
     bool isWindowHiddenByNetWMState(Window window);
     bool isWindowHiddenByWMState(Window window);
-    bool isWindowContentVisible(Window window);
 
     bool isWindowSticky(Window window, long workSpace);
     bool isWindowDock(Window window);

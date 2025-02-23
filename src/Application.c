@@ -29,6 +29,7 @@
 #include <malloc.h>
 #include <math.h>
 #include <pthread.h>
+#include <regex.h>
 #include <signal.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -75,6 +76,7 @@
 #include "Santa.h"
 #include "scenery.h"
 #include "selfrep.h"
+#include "SplashPage.h"
 #include "Storm.h"
 #include "Stars.h"
 #include "StormWindow.h"
@@ -86,6 +88,7 @@
 #include "Utils.h"
 #include "vroot.h"
 #include "xdo.h"
+#include "xdo_search.h"
 
 
 /** *********************************************************************
@@ -392,14 +395,13 @@ int startApplication(int argc, char *argv[]) {
         WriteFlags();
     }
 
-    setStormShapeColor(getRGBStormShapeColorFromString(Flags.StormItemColor1));
-
     // Start Main GUI Window.
-
+    showSplashPage();
+    setStormShapeColor(getRGBStormShapeColorFromString(
+        Flags.StormItemColor1));
     updateWindowsList();
-    if (!StartWindow()) {
-        return 1;
-    }
+
+    StartWindow();
 
     // Init all Global Flags.
     #define DOIT_I(x, d, v) OldFlags.x = Flags.x;
@@ -694,7 +696,12 @@ int StartWindow() {
         xdo_move_window(mGlobal.xdo, mGlobal.SnowWin, wantx, wanty);
     }
 
-    xdo_wait_for_window_map_state(mGlobal.xdo, mGlobal.SnowWin, IsViewable);
+    if (!_xdo_is_window_visible(mGlobal.xdo, mGlobal.SnowWin)) {
+        xdo_wait_for_window_map_state(mGlobal.xdo, mGlobal.SnowWin,
+            IsViewable);
+    }
+    hideSplashPage();
+
     initDisplayDimensions();
 
     // Report log.

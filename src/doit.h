@@ -54,7 +54,7 @@
 // Note: Screen should not be included in the command
 // line parameters at refresh
 
-#define DOIT                                                                   \
+#define DOIT \
     DOIT_I(ShowAurora, 1, 0) \
     DOIT_I(AuroraSpeed, 50, 50)                                                \
     DOIT_I(AuroraBrightness, 65, 65)                                           \
@@ -64,13 +64,8 @@
     DOIT_I(AuroraLeft, 0, 0)                                                   \
     DOIT_I(AuroraMiddle, 1, 1)                                                 \
     DOIT_I(AuroraRight, 0, 0)                                                  \
-    DOIT_I(AllWorkspaces, 1, 1)                                                \
     DOIT_I(BlowOffFactor, 40, 40)                                              \
     DOIT_I(BlowSnow, 1, 0)                                                     \
-    DOIT_I(CpuLoad, 100, 100)                                                  \
-    DOIT_I(Transparency, 0, 0)                                                 \
-    DOIT_I(Screen, -1, -1)                                                     \
-    DOIT_I(Scale, 100, 100)                                                    \
     DOIT_I(DesiredNumberOfTrees, 10, 6)                                        \
     DOIT_I(FlakeCountMax, 300, 300)                                            \
     DOIT_I(Halo, 1, 1)                                                         \
@@ -93,28 +88,36 @@
     DOIT_I(NoTrees, 0, 0)                                                      \
     DOIT_I(NoWind, 0, 0)                                                       \
     DOIT_I(NStars, 50, 0)                                                      \
-    DOIT_I(OffsetS, 0, 0)                                                      \
     DOIT_I(OffsetW, -8, -8)                                                    \
     DOIT_I(OffsetX, 4, 4)                                                      \
-    DOIT_I(OffsetY, 0, 0)                                                      \
     DOIT_I(Overlap, 1, 0)                                                      \
     DOIT_I(Rudolf, 1, 1)                                                       \
     DOIT_I(SantaSize, 3, 2)                                                    \
     DOIT_I(SantaSpeedFactor, 100, 100)                                         \
     DOIT_I(SantaScale, 100, 100)                                               \
     DOIT_I(SnowFlakesFactor, 100, 15)                                          \
-    DOIT_I(ShapeSizeFactor, 8, 8)                                                     \
-    DOIT_I(mStormItemsSpeedFactor, 100, 100)                                          \
+    DOIT_I(ShapeSizeFactor, 8, 8)                                              \
+    DOIT_I(mStormItemsSpeedFactor, 100, 100)                                   \
     DOIT_I(Stars, 1, 0) \
-    DOIT_I(mAppTheme, 1, 1)                                                    \
-    DOIT_I(Outline, 0, 0)                                                      \
     DOIT_I(TreeFill, 30, 30)                                                   \
     DOIT_I(TreeScale, 100, 100)                                                \
     DOIT_I(VintageFlakes, 0, 1) /* internal flag */                            \
     DOIT_I(WhirlFactor, 100, 100)                                              \
     DOIT_I(WhirlTimer, 30, 30)                                                 \
-    DOIT_I(IgnoreTop, 0, 0)                                                    \
-    DOIT_I(IgnoreBottom, 0, 0)                                                 \
+    \
+    DOIT_I(Screen, -1, -1) \
+    DOIT_I(AllWorkspaces, 1, 1) \
+    DOIT_I(mAppTheme, 1, 1) \
+    DOIT_I(Outline, 0, 0) \
+    DOIT_I(ShowSplashScreen, 1, 1) \
+    \
+    DOIT_I(CpuLoad, 100, 100) \
+    DOIT_I(Transparency, 0, 0) \
+    DOIT_I(Scale, 100, 100) \
+    DOIT_I(OffsetS, 0, 0) \
+    DOIT_I(OffsetY, 0, 0) \
+    DOIT_I(IgnoreTop, 0, 0) \
+    DOIT_I(IgnoreBottom, 0, 0) \
     \
     DOIT_S(StormItemColor1, "white", "white") \
     DOIT_S(StormItemColor2, "cyan", "cyan") \

@@ -66,9 +66,10 @@ plasmasnow_SOURCES = \
 		FallenSnow.c Flags.c hashtable.cpp ixpm.c kdtree.c \
 		Lights.cpp LoadMeasure.c MainWindow.c mainstub.cpp \
 		meteor.c MsgBox.cpp moon.c pixmaps.c safe_malloc.c \
-		Santa.c scenery.c selfrep.c spline_interpol.c \
-		Stars.c Storm.c StormWindow.c treesnow.c ui.glade \
-		Utils.c wind.c Windows.c WindowVector.c WinInfo.c
+		Santa.c scenery.c selfrep.c SplashPage.cpp \
+		spline_interpol.c Stars.c Storm.c StormWindow.c \
+		treesnow.c ui.glade Utils.c wind.c Windows.c \
+		WindowVector.c WinInfo.c
 
 nodist_plasmasnow_SOURCES = ui_xml.h snow_includes.h
 
@@ -128,7 +129,8 @@ plasmasnow-selfrep.$(OBJEXT): $(tarfile_inc)
 # usr/local/share
 appicondir=$(datadir)/pixmaps
 appicon_DATA=Pixmaps/plasmasnow.png \
-	Pixmaps/plasmasnowpicker.png
+	Pixmaps/plasmasnowpicker.png \
+	Pixmaps/plasmasnowsplash.xpm
 
 man6_MANS = plasmasnow.6
 plasmasnow.6: plasmasnow

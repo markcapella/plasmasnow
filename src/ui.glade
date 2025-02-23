@@ -4932,7 +4932,7 @@ Note: the aurora is best viewed using a dark background.</property>
 you want snow falling. Choose 'all monitors' if you want snow in all monitors.
 NOTE: when changing monitor, the app will refresh.</property>
                 <property name="double-buffered">False</property>
-                <property name="halign">center</property>
+                <property name="halign">start</property>
                 <property name="valign">center</property>
                 <property name="active">1</property>
                 <items>
@@ -4941,7 +4941,7 @@ NOTE: when changing monitor, the app will refresh.</property>
                 </items>
               </object>
               <packing>
-                <property name="left-attach">0</property>
+                <property name="left-attach">1</property>
                 <property name="top-attach">2</property>
               </packing>
             </child>
@@ -4954,45 +4954,11 @@ NOTE: when changing monitor, the app will refresh.</property>
                 <property name="tooltip-text" translatable="yes">Use all workspaces to snow in.
 NOTE: this doesn't work properly in enlightenment.</property>
                 <property name="double-buffered">False</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-              </object>
-              <packing>
-                <property name="left-attach">1</property>
-                <property name="top-attach">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToggleButton" id="id-mAppTheme">
-                <property name="label" translatable="yes">Menu Colors</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">Toggle between plasmasnow's own menu colors and standard menu colors.
-Activated: use plasmasnow colors.
-Deactivated: use default colors.</property>
-                <property name="double-buffered">False</property>
-                <property name="halign">center</property>
+                <property name="halign">end</property>
                 <property name="valign">center</property>
               </object>
               <packing>
                 <property name="left-attach">2</property>
-                <property name="top-attach">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToggleButton" id="id-Outline">
-                <property name="label" translatable="yes">Create Outline</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">To draw an outline around the snow window.</property>
-                <property name="double-buffered">False</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-              </object>
-              <packing>
-                <property name="left-attach">3</property>
                 <property name="top-attach">2</property>
               </packing>
             </child>
@@ -5073,18 +5039,6 @@ Click and don't touch mouse and keyboard for a few seconds...</property>
               <packing>
                 <property name="left-attach">0</property>
                 <property name="top-attach">13</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="vexpand">True</property>
-                <property name="label" translatable="yes">    </property>
-              </object>
-              <packing>
-                <property name="left-attach">0</property>
-                <property name="top-attach">3</property>
               </packing>
             </child>
             <child>
@@ -5203,98 +5157,12 @@ In some cases, there are invisible windows near the bottom  of  the screen, whic
               <object class="GtkLabel">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="double-buffered">False</property>
-                <property name="halign">end</property>
-                <property name="valign">center</property>
-                <property name="label" translatable="yes">Scale:</property>
-                <property name="justify">right</property>
-                <property name="xalign">0.89999997615814209</property>
-              </object>
-              <packing>
-                <property name="left-attach">1</property>
-                <property name="top-attach">8</property>
-                <property name="width">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="double-buffered">False</property>
-                <property name="halign">end</property>
-                <property name="valign">center</property>
-                <property name="label" translatable="yes">Transparency:</property>
-                <property name="justify">center</property>
-              </object>
-              <packing>
-                <property name="left-attach">1</property>
-                <property name="top-attach">7</property>
-                <property name="width">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="double-buffered">False</property>
-                <property name="halign">end</property>
-                <property name="valign">center</property>
-                <property name="label" translatable="yes">Cpu factor:</property>
-                <property name="justify">right</property>
-                <property name="xalign">0.89999997615814209</property>
-              </object>
-              <packing>
-                <property name="left-attach">1</property>
-                <property name="top-attach">5</property>
-                <property name="width">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkScale" id="id-CpuLoad">
-                <property name="name">general-cpuload</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">The higher, the smoother plasmasnow will run, but will also use  more cpu power.</property>
-                <property name="double-buffered">False</property>
-                <property name="valign">center</property>
-                <property name="margin-bottom">7</property>
-                <property name="hexpand">True</property>
-                <property name="adjustment">cpuload-adjustment</property>
-                <property name="restrict-to-fill-level">False</property>
-                <property name="digits">0</property>
-                <property name="draw-value">False</property>
-                <property name="value-pos">bottom</property>
-                <style>
-                  <class name="cpuload"/>
-                </style>
-              </object>
-              <packing>
-                <property name="left-attach">3</property>
-                <property name="top-attach">5</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
                 <property name="vexpand">True</property>
                 <property name="label" translatable="yes">    </property>
               </object>
               <packing>
                 <property name="left-attach">0</property>
                 <property name="top-attach">4</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="vexpand">True</property>
-                <property name="label" translatable="yes">    </property>
-              </object>
-              <packing>
-                <property name="left-attach">0</property>
-                <property name="top-attach">6</property>
               </packing>
             </child>
             <child>
@@ -5426,6 +5294,167 @@ Some basic window managers need this setting (e.g. TWM  needs in general a value
                 <property name="left-attach">1</property>
                 <property name="top-attach">14</property>
               </packing>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="margin-top">15</property>
+                <property name="homogeneous">True</property>
+                <child>
+                  <object class="GtkToggleButton" id="id-mAppTheme">
+                    <property name="label" translatable="yes">Menu Colors</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <property name="tooltip-text" translatable="yes">Toggle between plasmasnow's own menu colors and standard menu colors.
+Activated: use plasmasnow colors.
+Deactivated: use default colors.</property>
+                    <property name="double-buffered">False</property>
+                    <property name="halign">start</property>
+                    <property name="valign">center</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToggleButton" id="id-Outline">
+                    <property name="label" translatable="yes">Create Outline</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <property name="tooltip-text" translatable="yes">To draw an outline around the snow window.</property>
+                    <property name="double-buffered">False</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToggleButton" id="id-ShowSplashScreen">
+                    <property name="label" translatable="yes">SplashScreen</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <property name="tooltip-text" translatable="yes">To draw an outline around the snow window.</property>
+                    <property name="double-buffered">False</property>
+                    <property name="halign">end</property>
+                    <property name="valign">center</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">3</property>
+                <property name="width">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="vexpand">True</property>
+                <property name="label" translatable="yes">    </property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">5</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="double-buffered">False</property>
+                <property name="halign">end</property>
+                <property name="valign">center</property>
+                <property name="label" translatable="yes">Cpu factor:</property>
+                <property name="justify">right</property>
+                <property name="xalign">0.89999997615814209</property>
+              </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">6</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScale" id="id-CpuLoad">
+                <property name="name">general-cpuload</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">The higher, the smoother plasmasnow will run, but will also use  more cpu power.</property>
+                <property name="double-buffered">False</property>
+                <property name="valign">center</property>
+                <property name="margin-bottom">7</property>
+                <property name="hexpand">True</property>
+                <property name="adjustment">cpuload-adjustment</property>
+                <property name="restrict-to-fill-level">False</property>
+                <property name="digits">0</property>
+                <property name="draw-value">False</property>
+                <property name="value-pos">bottom</property>
+                <style>
+                  <class name="cpuload"/>
+                </style>
+              </object>
+              <packing>
+                <property name="left-attach">3</property>
+                <property name="top-attach">6</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="double-buffered">False</property>
+                <property name="halign">end</property>
+                <property name="valign">center</property>
+                <property name="label" translatable="yes">Transparency:</property>
+                <property name="justify">center</property>
+              </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">7</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="double-buffered">False</property>
+                <property name="halign">end</property>
+                <property name="valign">center</property>
+                <property name="label" translatable="yes">Scale:</property>
+                <property name="justify">right</property>
+                <property name="xalign">0.89999997615814209</property>
+              </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">8</property>
+              </packing>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
             </child>
             <child>
               <placeholder/>

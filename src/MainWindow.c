@@ -266,10 +266,12 @@ static int nlang;
  ** UI Main Methods.
  **/
 void updateMainWindowUI() {
-    UIDO(mAppTheme, updateMainWindowTheme(););
-    UIDO(Screen, handle_screen(););
-    UIDO(Outline, clearGlobalSnowWindow(););
     UIDOS(Language, handle_language(1););
+
+    UIDO(Screen, handle_screen(););
+    UIDO(mAppTheme, updateMainWindowTheme(););
+    UIDO(Outline, clearGlobalSnowWindow(););
+    UIDO(ShowSplashScreen,);
 }
 
 void updateMainWindowTheme() {

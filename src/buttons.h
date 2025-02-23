@@ -42,8 +42,6 @@
     BUTTON(togglecode, plasmasnow_birds, FollowSanta, 1)                            \
     BUTTON(togglecode, plasmasnow_birds, ShowAttrPoint, 1)                          \
     BUTTON(togglecode, plasmasnow_birds, ShowBirds, 1)                              \
-    BUTTON(togglecode, plasmasnow_settings, AllWorkspaces, 1)                       \
-    BUTTON(togglecode, plasmasnow_settings, mAppTheme, 1)                           \
     BUTTON(togglecode, plasmasnow_celestials, NoMeteors, -1) /*i*/                  \
     BUTTON(togglecode, plasmasnow_celestials, Halo, 1)                              \
     BUTTON(togglecode, plasmasnow_celestials, Moon, 1)                              \
@@ -58,8 +56,13 @@
     BUTTON(togglecode, plasmasnow_scenery, NoTrees, -1) /*i*/                       \
     BUTTON(togglecode, plasmasnow_scenery, Overlap, 1)                              \
     BUTTON(togglecode, plasmasnow_celestials, NoWind, -1) /*i*/                     \
-    BUTTON(togglecode, plasmasnow_settings, BlackBackground, 1)                     \
-    BUTTON(togglecode, plasmasnow_settings, Outline, 1)                             \
+    \
+    BUTTON(togglecode, plasmasnow_settings, AllWorkspaces, 1) \
+    BUTTON(togglecode, plasmasnow_settings, mAppTheme, 1) \
+    BUTTON(togglecode, plasmasnow_settings, Outline, 1) \
+    BUTTON(togglecode, plasmasnow_settings, ShowSplashScreen, 1) \
+    BUTTON(togglecode, plasmasnow_settings, BlackBackground, 1) \
+    \
     BUTTON(togglecode, plasmasnow_celestials, MoonColor, 1)
 
 #define ALL_SCALES                                                                  \
@@ -74,13 +77,15 @@
     BUTTON(scalecode, plasmasnow_birds, PrefDistance, 1)                            \
     BUTTON(scalecode, plasmasnow_birds, ViewingDistance, 1)                         \
     BUTTON(scalecode, plasmasnow_birds, AttrSpace, 1)                               \
+    \
     BUTTON(scalecode, plasmasnow_settings, CpuLoad, 1)                              \
-    BUTTON(scalecode, plasmasnow_settings, OffsetS, -1) /*i*/                       \
-    BUTTON(scalecode, plasmasnow_settings, OffsetY, -1) /*i*/                       \
     BUTTON(scalecode, plasmasnow_settings, Transparency, 1)                         \
     BUTTON(scalecode, plasmasnow_settings, Scale, 1)                                \
+    BUTTON(scalecode, plasmasnow_settings, OffsetS, -1) /*i*/                       \
+    BUTTON(scalecode, plasmasnow_settings, OffsetY, -1) /*i*/                       \
     BUTTON(scalecode, plasmasnow_settings, IgnoreTop, 1)                            \
     BUTTON(scalecode, plasmasnow_settings, IgnoreBottom, 1)                         \
+    \
     BUTTON(scalecode, plasmasnow_celestials, AuroraSpeed, 1)                        \
     BUTTON(scalecode, plasmasnow_celestials, AuroraBrightness, 1)                   \
     BUTTON(scalecode, plasmasnow_celestials, AuroraWidth, 1)                        \
