@@ -106,5 +106,4 @@ RegularSantaRudolf4.xpm \
 rendier.xpm \
 snowtree.xpm \
 tannenbaum.xpm \
-tree1.xpm \
 tree.xpm 

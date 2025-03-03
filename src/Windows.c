@@ -74,7 +74,7 @@ char mTitleOfWindow[MAX_TITLE_STRING_LENGTH + 1];
  **/
 void addWindowsModuleToMainloop() {
     if (mGlobal.hasDestopWindow) {
-        mGlobal.currentWorkspace = getCurrentWorkspaceNumber();
+        mGlobal.currentWS = getCurrentWorkspaceNumber();
         getCurrentWorkspaceData();
 
         addMethodToMainloop(PRIORITY_DEFAULT, time_wupdate,
@@ -91,13 +91,12 @@ void addWindowsModuleToMainloop() {
  ** This method ...
  **/
 int WorkspaceActive() {
-    // ah, so difficult ...
     if (Flags.AllWorkspaces) {
         return true;
     }
 
-    for (int i = 0; i < mGlobal.NVisWorkSpaces; i++) {
-        if (mGlobal.VisWorkSpaces[i] == mGlobal.ChosenWorkSpace) {
+    for (int i = 0; i < mGlobal.visualWSCount; i++) {
+        if (mGlobal.visualWSList[i] == mGlobal.ChosenWorkSpace) {
             return true;
         }
     }
@@ -106,7 +105,7 @@ int WorkspaceActive() {
 }
 
 /** *********************************************************************
- ** This method ...
+ ** This method triggers onDraw() for the snow window.
  **/
 int do_sendevent() {
     XExposeEvent event;
@@ -121,32 +120,46 @@ int do_sendevent() {
     event.width = mGlobal.SnowWinWidth;
     event.height = mGlobal.SnowWinHeight;
 
-    XSendEvent(mGlobal.display, mGlobal.SnowWin, True, Expose, (XEvent *) &event);
+    XSendEvent(mGlobal.display, mGlobal.SnowWin, True,
+        Expose, (XEvent*) &event);
     return TRUE;
 }
 
 /** *********************************************************************
- ** This method ...
+ ** This is for bspwm and possibly other tiling window magagers.
+ ** Determine which workspaces are visible: place a window (probeWindow)
+ ** in each xinerama screen, and ask in which workspace the window
+ ** is located.
  **/
 void getCurrentWorkspaceData() {
-    static XClassHint class_hints;
+    if (!mGlobal.hasDestopWindow) {
+        mGlobal.visualWSCount = 1;
+        mGlobal.visualWSList[0] = mGlobal.currentWS;
+        return;
+    }
+
+    // Is Xinerame active?
+    int numberXinerama;
+    XineramaScreenInfo* info = XineramaQueryScreens(
+        mGlobal.display, &numberXinerama);
+    if (numberXinerama == 1 || info == NULL) {
+        mGlobal.visualWSCount = 1;
+        mGlobal.visualWSList[0] = mGlobal.currentWS;
+        return;
+    }
+
+    // Probe window.
+    static Window probeWindow = 0;
     static XSetWindowAttributes attr;
     static long valuemask;
+    static XClassHint class_hints;
     static long hints[5] = {2, 0, 0, 0, 0};
     static Atom motif_hints;
     static XSizeHints wmsize;
 
-    if (!mGlobal.hasDestopWindow) {
-        mGlobal.NVisWorkSpaces = 1;
-        mGlobal.VisWorkSpaces[0] = mGlobal.currentWorkspace;
-        return;
-    }
-
-    static Window probeWindow = 0;
     if (probeWindow) {
         XDestroyWindow(mGlobal.display, probeWindow);
     } else {
-        // Probe window
         attr.background_pixel = WhitePixel(mGlobal.display, mGlobal.Screen);
         attr.border_pixel = WhitePixel(mGlobal.display, mGlobal.Screen);
         attr.event_mask = ButtonPressMask;
@@ -157,66 +170,48 @@ void getCurrentWorkspaceData() {
         wmsize.flags = USPosition | USSize;
     }
 
-    int number;
-    XineramaScreenInfo *info = XineramaQueryScreens(mGlobal.display, &number);
-    if (number == 1 || info == NULL) {
-        mGlobal.NVisWorkSpaces = 1;
-        mGlobal.VisWorkSpaces[0] = mGlobal.currentWorkspace;
-        return;
-    }
-
-    // This is for bspwm and possibly other tiling window magagers.
-    // Determine which workspaces are visible: place a window (probeWindow)
-    // in each xinerama screen, and ask in which workspace the window
-    // is located.
     probeWindow = XCreateWindow(mGlobal.display, mGlobal.Rootwindow, 1, 1, 1, 1,
         10, DefaultDepth(mGlobal.display, mGlobal.Screen), InputOutput,
         DefaultVisual(mGlobal.display, mGlobal.Screen), valuemask, &attr);
 
     XSetClassHint(mGlobal.display, probeWindow, &class_hints);
-
-    // to prevent the user to determine the intial position (in twm for example)
     XSetWMNormalHints(mGlobal.display, probeWindow, &wmsize);
-
     XChangeProperty(mGlobal.display, probeWindow, motif_hints, motif_hints, 32,
         PropModeReplace, (unsigned char *) &hints, 5);
-
     xdo_map_window(mGlobal.xdo, probeWindow);
 
-    mGlobal.NVisWorkSpaces = number;
-    int prev = -SOMENUMBER;
-    for (int i = 0; i < number; i++) {
-        int x = info[i].x_org;
-        int y = info[i].y_org;
-        int w = info[i].width;
-        int h = info[i].height;
+    // BSPWM has xinerama screens in different WS's.
+    int prevWS = INT_MIN;
 
-        // Place probeWindow in the center of xinerama screen[i].
-        int xm = x + w / 2;
-        int ym = y + h / 2;
+    mGlobal.visualWSCount = numberXinerama;
+    for (int i = 0; i < mGlobal.visualWSCount; i++) {
+        const int X = info[i].x_org;
+        const int W = info[i].width;
+        const int XM = X + W / 2;
 
-        xdo_move_window(mGlobal.xdo, probeWindow, xm, ym);
-        if (!_xdo_is_window_visible(mGlobal.xdo, probeWindow)) {
-            xdo_wait_for_window_map_state(mGlobal.xdo, probeWindow,
-                IsViewable);
+        const int Y = info[i].y_org;
+        const int H = info[i].height;
+        const int YM = Y + H / 2;
+
+        xdo_move_window(mGlobal.xdo, probeWindow, XM, YM);
+        xdo_wait_for_window_map_state(mGlobal.xdo,
+            probeWindow, IsViewable);
+
+        // Get & set WS.
+        long thisWS;
+        if (xdo_get_desktop_for_window(mGlobal.xdo,
+            probeWindow, &thisWS) == XDO_ERROR) {
+            thisWS = mGlobal.currentWS;
         }
+        mGlobal.visualWSList[i] = thisWS;
 
-        long desktop;
-        int rc = xdo_get_desktop_for_window(mGlobal.xdo,
-            probeWindow, &desktop);
-        if (rc == XDO_ERROR) {
-            desktop = mGlobal.currentWorkspace;
-        }
-        mGlobal.VisWorkSpaces[i] = desktop;
-
-        // This is for the case that the xinerama screens belong to
-        // different workspaces, as seems to be the case in e.g. bspwm.
-        if (desktop != prev) {
-            if (prev >= 0) {
+        // Any single virtual WS found resets global offsets (?)
+        if (thisWS != prevWS) {
+            if (prevWS >= 0) {
                 mGlobal.WindowOffsetX = 0;
                 mGlobal.WindowOffsetY = 0;
             }
-            prev = desktop;
+            prevWS = thisWS;
         }
     }
 
@@ -296,7 +291,7 @@ void initDisplayDimensions() {
  ** This method ...
  **/
 void updateDisplayDimensions() {
-    lockFallenSnowSemaphore();
+    lockFallenSnowBaseSemaphore();
 
     if (!_xdo_is_window_visible(mGlobal.xdo, mGlobal.SnowWin)) {
         xdo_wait_for_window_map_state(mGlobal.xdo, mGlobal.SnowWin,
@@ -327,7 +322,7 @@ void updateDisplayDimensions() {
         clearGlobalSnowWindow();
     }
 
-    unlockFallenSnowSemaphore();
+    unlockFallenSnowBaseSemaphore();
 }
 
 /** *********************************************************************
@@ -429,7 +424,7 @@ int updateWindowsList() {
         wcounter = 0;
     }
     if (!mGlobal.WindowsChanged) {
-        unlockFallenSnowSemaphore();
+        unlockFallenSnowBaseSemaphore();
         return true;
     }
     mGlobal.WindowsChanged = 0;
@@ -437,7 +432,7 @@ int updateWindowsList() {
     // Get current workspace number & sanity check.
     const long WORKSPACE = getCurrentWorkspaceNumber();
     if (WORKSPACE < 0) {
-        unlockFallenSnowSemaphore();
+        unlockFallenSnowBaseSemaphore();
         printf("%splasmasnow: Virtual workspace has been lost - FATAL.%s\n",
             COLOR_RED, COLOR_NORMAL);
         displayMessageBox(100, 200, 355, 66, "plasmasnow",
@@ -447,15 +442,15 @@ int updateWindowsList() {
     }
 
     // Get current workspace data on workspace number change.
-    if (mGlobal.currentWorkspace != WORKSPACE) {
-        mGlobal.currentWorkspace = WORKSPACE;
+    if (mGlobal.currentWS != WORKSPACE) {
+        mGlobal.currentWS = WORKSPACE;
         getCurrentWorkspaceData();
     }
 
     // Don't update windows list until drag stops.
     if (isWindowBeingDragged()) {
         doAllFallenSnowWinInfoUpdates();
-        unlockFallenSnowSemaphore();
+        unlockFallenSnowBaseSemaphore();
         return true;
     }
 
@@ -482,7 +477,7 @@ int updateWindowsList() {
     // new windows WinInfo surfaces list.
     doAllFallenSnowWinInfoUpdates();
 
-    unlockFallenSnowSemaphore();
+    unlockFallenSnowBaseSemaphore();
     return true;
 }
 

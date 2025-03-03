@@ -172,10 +172,10 @@ int startApplication(int argc, char *argv[]) {
     mGlobal.WindowOffsetX = 0;
     mGlobal.WindowOffsetY = 0;
 
-    mGlobal.currentWorkspace = 0;
+    mGlobal.currentWS = 0;
     mGlobal.ChosenWorkSpace = 0;
-    mGlobal.NVisWorkSpaces = 1;
-    mGlobal.VisWorkSpaces[0] = 0;
+    mGlobal.visualWSCount = 1;
+    mGlobal.visualWSList[0] = 0;
     mGlobal.WindowsChanged = 0;
     mGlobal.ForceRestart = 0;
     mGlobal.MaxScrSnowDepth = 0;
@@ -200,9 +200,12 @@ int startApplication(int argc, char *argv[]) {
 
     // Inits.
     XInitThreads();
+
     initFallenSnowSemaphores();
     aurora_sem_init();
     birds_sem_init();
+
+    // Flags.
     InitFlags();
 
     for (int i = 0; i < argc; i++) {
@@ -237,7 +240,6 @@ int startApplication(int argc, char *argv[]) {
     }
 
     int rc = HandleFlags(argc, argv);
-
     handle_language(0);
     mybindtestdomain();
 
@@ -391,17 +393,15 @@ int startApplication(int argc, char *argv[]) {
         Flags.LightColorPink = strdup(DefaultFlags.LightColorPink);
         wasThereAnInvalidColor = true;
     }
-
     if (wasThereAnInvalidColor) {
         WriteFlags();
     }
 
+    setStormShapeColor(getRGBAFromString(Flags.StormItemColor1));
+
     // Start Main GUI Window.
     showSplashPage();
-    setStormShapeColor(getRGBStormShapeColorFromString(
-        Flags.StormItemColor1));
     updateWindowsList();
-
     StartStormWindow();
 
     // Init all Global Flags.
@@ -500,6 +500,7 @@ int startApplication(int argc, char *argv[]) {
         COLOR_YELLOW, m2InfoR.fordblks, COLOR_NORMAL);
 
     gtk_main();
+    removeFallenSnowFromAllWindows();
 
     printf("\n%splasmasnow: gtk_main() Finishes.%s\n",
         COLOR_BLUE, COLOR_NORMAL);
@@ -819,8 +820,8 @@ void respondToWorkspaceSettingsChange() {
         setTransparentWindowStickyState(0);
 
         mGlobal.ChosenWorkSpace = (Flags.Screen >= 0) ?
-            mGlobal.VisWorkSpaces[Flags.Screen] :
-            mGlobal.VisWorkSpaces[0];
+            mGlobal.visualWSList[Flags.Screen] :
+            mGlobal.visualWSList[0];
     }
 
     ui_set_sticky(Flags.AllWorkspaces);
@@ -862,9 +863,9 @@ int doAllUISettingsUpdates() {
     UIDO(Transparency, );
     UIDO(Scale, );
     UIDO(OffsetS, updateDisplayDimensions(););
-    UIDO(OffsetY, lockFallenSnowSemaphore();
+    UIDO(OffsetY, lockFallenSnowBaseSemaphore();
         doAllFallenSnowWinInfoUpdates();
-        unlockFallenSnowSemaphore(););
+        unlockFallenSnowBaseSemaphore(););
     UIDO(AllWorkspaces, respondToWorkspaceSettingsChange(););
     UIDOS(BackgroundFile, );
     UIDO(BlackBackground, );
@@ -1140,15 +1141,18 @@ void drawCairoWindowInternal(cairo_t* cc) {
         drawMeteorFrame(cc);
         drawSceneryFrame(cc);
         birds_draw(cc);
+        treesnow_draw(cc);
+        drawLowerLightsFrame(cc);
+        drawFallenSnowFrame(cc);
+        drawUpperLightsFrame(cc);
+
+        // If Flags.FollowSanta, drawing of Santa
+        // is done in Birds module.
         if (!Flags.ShowBirds || !Flags.FollowSanta) {
-            // If Flags.FollowSanta, drawing of Santa
-            // is done in Birds module.
             Santa_draw(cc);
         }
-        treesnow_draw(cc);
+
         drawAllStormItemsInItemset(cc);
-        drawFallenSnowFrame(cc);
-        drawLightsFrame(cc);
     }
 
     // Draw app window outline.

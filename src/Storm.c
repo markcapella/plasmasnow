@@ -767,15 +767,15 @@ int updateStormItemOnThread(StormItem* stormItem) {
 
     // Fallen interaction.
     if (!stormItem->fluff) {
-        lockFallenSnowSemaphore();
+        lockFallenSnowBaseSemaphore();
         if (isStormItemFallen(stormItem, NEW_STORMITEM_INT_X_POS,
                 NEW_STORMITEM_INT_Y_POS)) {
             removeStormItemInItemset(stormItem);
-            unlockFallenSnowSemaphore();
+            unlockFallenSnowBaseSemaphore();
             mStormItemBackgroundThreadIsActive = false;
             return false;
         }
-        unlockFallenSnowSemaphore();
+        unlockFallenSnowBaseSemaphore();
     }
 
     // Flake NEW_STORMITEM_INT_X_POS/NEW_STORMITEM_INT_Y_POS.
@@ -1026,7 +1026,7 @@ GdkRGBA getNextStormShapeColorAsRGB() {
 /***********************************************************
  ** These are helper methods for ItemColor.
  **/
-GdkRGBA getRGBStormShapeColorFromString(char* colorString) {
+GdkRGBA getRGBAFromString(char* colorString) {
     GdkRGBA result;
     gdk_rgba_parse(&result, colorString);
     return result;
@@ -1096,8 +1096,8 @@ bool isStormItemFallen(StormItem* stormItem,
         }
 
         for (int i = istart; i < imax; i++) {
-            if (yPosition > fsnow->y - fsnow->snowHeight[i] - 1) {
-                if (fsnow->snowHeight[i] < fsnow->maxSnowHeight[i]) {
+            if (yPosition > fsnow->y - fsnow->columnHeightList[i] - 1) {
+                if (fsnow->columnHeightList[i] < fsnow->columnMaxHeightList[i]) {
                     updateFallenSnowWithSnow(fsnow,
                         xPosition - fsnow->x, ITEM_WIDTH);
                 }

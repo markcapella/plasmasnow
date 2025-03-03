@@ -92,6 +92,7 @@ int mCurrentAppScale = 100;
 // Bulb position arrays.
 std::vector<int> mLightXPos;
 std::vector<int> mLightYPos;
+std::vector<int> mLightLayer;
 
 // Bulb color arrays.
 std::vector<GdkRGBA> mBulbColorBright;
@@ -105,6 +106,7 @@ std::vector<GdkRGBA> mBulbColorDark;
 void initLightsModule() {
     setAllBulbPositions();
     setAllBulbColors();
+    setAllBulbLayers();
 
     addMethodToMainloop(PRIORITY_DEFAULT,
         TIME_BETWEEN_LIGHTS_FRAME_UPDATES,
@@ -154,12 +156,23 @@ void setAllBulbColors() {
 }
 
 /** ***********************************************************
+ ** This method sets each bulbs Upper/Lower flag.
+ **/
+void setAllBulbLayers() {
+    mLightLayer.clear();
+
+    for (int i = 0; i < getBulbCount(); i++) {
+        mLightLayer.push_back(randint(2));
+    }
+}
+
+/** ***********************************************************
  ** This method checks for & performs user changes of
  ** Lights module settings.
  **/
 void respondToLightsSettingsChanges() {
     // Update pref.
-    UIDO(ShowLights,);
+    UIDO(ShowLights, setAllBulbLayers(););
 
     UIDO(ShowLightColorRed,
         eraseLightsFrame(); setAllBulbColors(););
@@ -187,7 +200,14 @@ void respondToLightsSettingsChanges() {
 /** ***********************************************************
  ** This method draws the bulbs onto the display screen.
  **/
-void drawLightsFrame(cairo_t* cc) {
+void drawLowerLightsFrame(cairo_t* cc) {
+    drawLightsFrame(cc, 0);
+}
+void drawUpperLightsFrame(cairo_t* cc) {
+    drawLightsFrame(cc, 1);
+}
+
+void drawLightsFrame(cairo_t* cc, int forLayer) {
     if (!Flags.ShowLights) {
         return;
     }
@@ -197,6 +217,10 @@ void drawLightsFrame(cairo_t* cc) {
     cairo_set_antialias(cc, CAIRO_ANTIALIAS_NONE);
 
     for (int i = 0; i < getBulbCount(); i++) {
+        if (mLightLayer[i] != forLayer) {
+            continue;
+        }
+
         // Create XPM from 3-color themed bulb.
         char** tempBulbXPM;
         int unusedLineCount;

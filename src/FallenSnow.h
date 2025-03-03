@@ -37,51 +37,54 @@
 // Fallensnow lifecycle helpers.
 void initFallenSnowModule();
 
+// FallenSnow Max ColumnHeight Thread.
+int updateFallenSnowMaxColumnHeightThread();
+void setColumnMaxHeightListForFallen(FallenSnow*);
+
+// FallenSnow columnHeight Thread.
+int updateFallenSnowColumnHeightThread();
+
+// Fallensnow main Thread.
 void* startFallenSnowBackgroundThread();
 int execFallenSnowBackgroundThread();
-void swapFallenSnowRenderedSurfacesBToA();
+int canSnowCollectOnFallen(FallenSnow*);
+bool isFallenSnowVisible(FallenSnow*);
+bool isFallenSnowVisibleOnWorkspace(FallenSnow*);
+void removePlowedSnowFromFallen(FallenSnow*);
+void renderFallenSnow(FallenSnow*);
+void swapFallenSnowRenderedSurfaces();
 
-// User settings hleprs.
+// User settings helpers.
 void respondToFallenSnowSettingsChanges();
 void updateFallenSnowDesktopItemDepth();
 void updateFallenSnowDesktopItemHeight();
 
 // Snow interactions.
 void updateFallenSnowWithSnow(FallenSnow*, int x, int w);
-int canSnowCollectOnFallen(FallenSnow*);
-int isFallenSnowVisibleOnWorkspace(FallenSnow*);
-void canSantaPlowSnowOnFallen(FallenSnow*);
-void renderFallenSnowSurfaceB(FallenSnow*);
-
-// Santa interactions.
-void updateFallenSnowWithSanta(FallenSnow*);
 
 // Wind interactions.
-void updateFallenSnowWithBlowoff(FallenSnow*, int w, int h);
+void blowoffSnowFromFallen(FallenSnow*, int w, int h);
 void eraseFallenSnowWindPixel(FallenSnow*, int x);
 
-// FallenSnow Linked list Helpers.
-int getFallenSnowItemcount();
-void clearAllFallenSnowItems();
-void logAllFallenSnowItems();
+// Santa plow interations.
+void blowoffPlowedSnowFromFallen(FallenSnow* fsnow);
+void createPlowedStormItems(FallenSnow* fsnow, int xPos,
+    int yPos1, int yPos2);
 
-void pushFallenSnowItem(FallenSnow**, WinInfo*,
-    int x, int y, int w, int h);
-void popAndFreeFallenSnowItem(FallenSnow**);
-void freeFallenSnowItem(FallenSnow*);
+// Main "draw frame" routine for fallen snow.
+void drawFallenSnowFrame(cairo_t*);
 
-// Desh method helpers.
-void CreateDesh(FallenSnow*);
-int do_change_deshes();
-int do_adjust_deshes();
-
-// Fallensnow by Window helpers.
+// Fallensnow egeneral helpers.
 FallenSnow* findFallenSnowItemByWindow(Window);
+void eraseFallenSnow(FallenSnow*);
 void eraseFallenSnowPartial(FallenSnow*, int x, int w);
+int getMaximumFallenSnowColumnHeight(FallenSnow*);
 void removeFallenSnowFromAllWindows();
 void removeFallenSnowFromWindow(Window);
 int removeAndFreeFallenSnowForWindow(FallenSnow**,
     Window);
+void generateFallenSnowFlakes(FallenSnow* fsnow,
+    int xPos, int xWidth, float vy, bool limitToMax);
 
 // WinInfo change watchers.
 void doAllFallenSnowWinInfoUpdates();
@@ -91,44 +94,22 @@ bool windowIsTransparent(Window chromeWindow);
 void doWinInfoRemoves();
 void doWinInfoProgrammaticRemoves();
 
-// Helper for Blown, Dropped, and Plowed Snow.
-void generateFallenSnowFlakes(FallenSnow* fsnow,
-    int xPos, int xWidth, float vy, bool limitToMax);
-void generateSantaPlowFlakes(GdkRGBA fallenColor, int xPos,
-    int yPos1, int yPos2);
+// FallenSnow Linked list Helpers.
+int getFallenSnowItemcount();
+void clearAllFallenSnowItems();
+void pushFallenSnowItem(FallenSnow**, WinInfo*,
+    int x, int y, int w, int h);
+void popAndFreeFallenSnowItem(FallenSnow**);
+void freeFallenSnowItem(FallenSnow*);
 
-// Main "draw frame" routine for fallen snow.
-void drawFallenSnowFrame(cairo_t*);
-
-
-// Technical lock & Semaphore helpers.
+// Lock support.
 void initFallenSnowSemaphores();
-
-int lockFallenSnowBaseSemaphore();
 int softLockFallenSnowBaseSemaphore(int softTrys, int* tryCount);
+int lockFallenSnowBaseSemaphore();
+int unlockFallenSnowSwapSemaphore();
+int lockFallenSnowSwapSemaphore();
 int unlockFallenSnowBaseSemaphore();
 
-int lockFallenSnowSwapSemaphore();
-int unlockFallenSnowSwapSemaphore();
-
-#ifndef __GNUC__
-    #define lockFallenSnowSemaphore() \
-        lockFallenSnowBaseSemaphore()
-    #define unlockFallenSnowSemaphore() \
-        unlockFallenSnowBaseSemaphore()
-    #define softLockFallenSnowSemaphore(softTrys,tryCount) \
-        softLockFallenSnowBaseSemaphore(softTrys,tryCount)
-#else
-    #define lockFallenSnowSemaphore() __extension__({ \
-        int retval = lockFallenSnowBaseSemaphore(); \
-        retval; })
-    #define unlockFallenSnowSemaphore() __extension__({ \
-        int retval = unlockFallenSnowBaseSemaphore(); \
-        retval; })
-    #define softLockFallenSnowSemaphore( \
-        softTrys,tryCount) __extension__({ \
-        int retval = softLockFallenSnowBaseSemaphore( \
-            softTrys,tryCount); \
-        retval; })
-#endif
-
+// Other module helpers.
+void logAllFallenSnowItems();
+void logFallenSnowItem(FallenSnow*);

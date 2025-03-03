@@ -62,7 +62,7 @@
 #define TIME_BETWEEEN_UI_SETTINGS_UPDATES  0.25
 
 #define TIME_BETWEEN_STORM_THREAD_UPDATES 0.10         // time between generation of flakes
-#define TIME_BETWEEN_BLOWOFF_FRAME_UPDATES 0.5
+#define TIME_BETWEEN_BLOWOFF_FRAME_UPDATES 0.1
 #define TIME_BETWEEN_LIGHTS_FRAME_UPDATES  0.5
 #define TIME_BETWEEN_LOADMEASURE_UPDATES   0.1
 #define TIME_BETWEEN_STORMITEM_THREAD_UPDATES    (0.02 * mGlobal.cpufactor)
@@ -256,8 +256,8 @@ typedef struct _FallenSnow {
         cairo_surface_t* renderedSurfaceA;
         cairo_surface_t* renderedSurfaceB;
 
-        short int* snowHeight;    // actual heights.
-        short int* maxSnowHeight; // desired heights.
+        short int* columnHeightList;    // actual heights.
+        short int* columnMaxHeightList; // desired heights.
 } FallenSnow;
 
 
@@ -308,9 +308,9 @@ extern struct _mGlobal {
         unsigned int Hroot;
 
         // Workspace defs.
-        long currentWorkspace;
-        long VisWorkSpaces[MAXVISWORKSPACES];
-        int NVisWorkSpaces;
+        long currentWS;
+        long visualWSList[MAXVISWORKSPACES];
+        int visualWSCount;
         long ChosenWorkSpace;
 
         // Snow defs.

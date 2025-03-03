@@ -21,7 +21,6 @@
 */
 #pragma once
 
-#define SOMENUMBER 42
 #define PRIORITY_DEFAULT G_PRIORITY_LOW
 #define PRIORITY_HIGH G_PRIORITY_DEFAULT
 

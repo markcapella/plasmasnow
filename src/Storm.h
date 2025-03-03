@@ -56,7 +56,7 @@ void removeStormItemInItemset(StormItem*);
 void setStormShapeColor(GdkRGBA);
 char* getNextStormShapeColorAsString();
 GdkRGBA getNextStormShapeColorAsRGB();
-GdkRGBA getRGBStormShapeColorFromString(char*);
+GdkRGBA getRGBAFromString(char*);
 
 bool isStormItemFallen(StormItem*,
     int xPosition, int yPosition);

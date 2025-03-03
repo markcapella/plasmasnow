@@ -38,7 +38,6 @@
  **/
 int mBlowOffLockCounter = 0;
 
-
 /** *********************************************************************
  ** This method initializes the Blowoff module.
  **/
@@ -58,7 +57,7 @@ void respondToBlowoffSettingsChanges() {
 }
 
 /** *********************************************************************
- ** This method gets a random number up to blowOff factor
+ ** This method gets a random number up to blowoff factor
  ** for each blowoff event.
  **/
 int getNumberOfFlakesToBlowoff() {
@@ -79,28 +78,42 @@ int updateBlowoffFrame() {
     if (!WorkspaceActive()) {
         return true;
     }
-    if (!Flags.BlowSnow) {
-        return true;
-    }
 
-    if (softLockFallenSnowBaseSemaphore(3, &mBlowOffLockCounter)) {
+    if (softLockFallenSnowBaseSemaphore(3,
+        &mBlowOffLockCounter)) {
         return true;
     }
 
     // Loop through all fallen.
     FallenSnow *fsnow = mGlobal.FsnowFirst;
     while (fsnow) {
-        if (canSnowCollectOnFallen(fsnow)) {
-            if (fsnow->winInfo.window == 0 ||
-                (!fsnow->winInfo.hidden &&
-                    (isFallenSnowVisibleOnWorkspace(fsnow) ||
-                     fsnow->winInfo.sticky))) {
-                updateFallenSnowWithBlowoff(fsnow, fsnow->w / 4, fsnow->h / 4);
+        if (canSnowCollectOnFallen(fsnow) &&
+            isFallenSnowVisible(fsnow)) {
+
+            // Check for Santa Blowoff interaction.
+            bool wasFallenBlownBySantaPlowing = false;
+            if (!Flags.NoSanta && mGlobal.SantaPlowRegion) {
+                const int ACTUAL_FALLEN_MAX_HEIGHT =
+                    getMaximumFallenSnowColumnHeight(fsnow);
+                const bool IS_IT_IN = XRectInRegion(mGlobal.SantaPlowRegion,
+                    fsnow->x, fsnow->y - ACTUAL_FALLEN_MAX_HEIGHT,
+                    fsnow->w, ACTUAL_FALLEN_MAX_HEIGHT);
+                if (IS_IT_IN == RectangleIn || IS_IT_IN == RectanglePart) {
+                    blowoffPlowedSnowFromFallen(fsnow);
+                    wasFallenBlownBySantaPlowing = true;
+                }
+            }
+
+            // Check for normal blowoff interaction.
+            if (Flags.BlowSnow && !wasFallenBlownBySantaPlowing &&
+                randint(5) == 0) {
+                blowoffSnowFromFallen(fsnow, fsnow->w / 4, fsnow->h / 4);
             }
         }
+
         fsnow = fsnow->next;
     }
 
-    unlockFallenSnowSemaphore();
+    unlockFallenSnowBaseSemaphore();
     return true;
 }

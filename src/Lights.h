@@ -38,10 +38,14 @@ extern "C" {
      void initLightsModule();
      void setAllBulbPositions();
      void setAllBulbColors();
+     void setAllBulbLayers();
 
      void respondToLightsSettingsChanges();
 
-     void drawLightsFrame(cairo_t* cc);
+     void drawLowerLightsFrame(cairo_t* cc);
+     void drawUpperLightsFrame(cairo_t* cc);
+     void drawLightsFrame(cairo_t* cc, int forLayer);
+
      gboolean updateLightsFrame(void*);
      void eraseLightsFrame();
 

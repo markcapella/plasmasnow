@@ -385,7 +385,7 @@ int updateSceneryFrame() {
 
         cairo_region_t *r;
         switch (tt) {
-            case -SOMENUMBER:
+            case -42:
                 r = gregionfromxpm((const char**) TreeXpm,
                     tree->rev, tree->scale);
                 break;

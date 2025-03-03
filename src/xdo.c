@@ -115,6 +115,10 @@ static Atom atom_WM_NAME = -1;
 static Atom atom_STRING = -1;
 static Atom atom_UTF8_STRING = -1;
 
+
+/** *********************************************************************
+ ** This method ...
+ **/
 xdo_t *xdo_new(const char *display_name) {
     Display *xdpy;
 
@@ -131,6 +135,9 @@ xdo_t *xdo_new(const char *display_name) {
     return xdo_new_with_opened_display(xdpy, display_name, 1);
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 xdo_t* xdo_new_with_opened_display(Display* xdpy,
     const char* display, int close_display_when_freed) {
 
@@ -173,6 +180,9 @@ xdo_t* xdo_new_with_opened_display(Display* xdpy,
     return xdo;
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 void xdo_free(xdo_t *xdo) {
     if (xdo == NULL) {
         return;
@@ -191,37 +201,31 @@ void xdo_free(xdo_t *xdo) {
     free(xdo);
 }
 
-int xdo_wait_for_window_map_state_orig(
-    const xdo_t *xdo, Window wid, int map_state);
-int xdo_wait_for_window_map_state_orig(
-    const xdo_t *xdo, Window wid, int map_state) {
-    int tries = MAX_TRIES;
-    XWindowAttributes attr;
-    attr.map_state = IsUnmapped;
-    while (tries > 0 && attr.map_state != map_state) {
-        XGetWindowAttributes(xdo->xdpy, wid, &attr);
-        usleep(30000);
-        tries--;
-    }
-    return 0;
-}
+/** *********************************************************************
+ ** This method waits until a window reaches a desired map state.
+ **/
+int xdo_wait_for_window_map_state(const xdo_t*xdo,
+    Window wid, int map_state) {
 
-// wv:
-int xdo_wait_for_window_map_state(const xdo_t *xdo, Window wid, int map_state) {
     XWindowAttributes attr;
     attr.map_state = IsUnmapped;
     useconds_t usecs = 20000;
+
     useconds_t sumusecs = 0;
     while (sumusecs < 4000000 && attr.map_state != map_state) {
         XGetWindowAttributes(xdo->xdpy, wid, &attr);
+
         usecs *= 1.5;
         usleep(usecs);
         sumusecs += usecs;
     }
-    // printf("xdo_wait_for_window_map_state: usecs: %d\n",usecs);
+
     return 0;
 }
 
+/** *********************************************************************
+ ** This method maps a window into view.
+ **/
 int xdo_map_window(const xdo_t *xdo, Window wid) {
     int ret = 0;
     ret = XMapWindow(xdo->xdpy, wid);
@@ -229,6 +233,9 @@ int xdo_map_window(const xdo_t *xdo, Window wid) {
     return printMsgIfConditionTrue("XMapWindow", ret == 0, xdo);
 }
 
+/** *********************************************************************
+ ** This method unmaps a window from view.
+ **/
 int xdo_unmap_window(const xdo_t *xdo, Window wid) {
     int ret = 0;
     ret = XUnmapWindow(xdo->xdpy, wid);
@@ -236,19 +243,26 @@ int xdo_unmap_window(const xdo_t *xdo, Window wid) {
     return printMsgIfConditionTrue("XUnmapWindow", ret == 0, xdo);
 }
 
-int xdo_reparent_window(
-    const xdo_t *xdo, Window wid_source, Window wid_target) {
+/** *********************************************************************
+ ** This method ...
+ **/
+int xdo_reparent_window(const xdo_t *xdo,
+    Window wid_source, Window wid_target) {
     int ret = 0;
     ret = XReparentWindow(xdo->xdpy, wid_source, wid_target, 0, 0);
     XFlush(xdo->xdpy);
     return printMsgIfConditionTrue("XReparentWindow", ret == 0, xdo);
 }
 
+/** *********************************************************************
+ ** This method ...
+ **/
 int xdo_get_window_location(
-    const xdo_t *xdo, Window wid, int *x_ret, int *y_ret, Screen **screen_ret) {
-    int ret;
+    const xdo_t *xdo, Window wid, int *x_ret, int *y_ret,
+    Screen **screen_ret) {
+
     XWindowAttributes attr;
-    ret = XGetWindowAttributes(xdo->xdpy, wid, &attr);
+    int ret = XGetWindowAttributes(xdo->xdpy, wid, &attr);
     if (ret != 0) {
         int x, y;
         Window unused_child;
@@ -288,11 +302,14 @@ int xdo_get_window_location(
     return printMsgIfConditionTrue("XGetWindowAttributes", ret == 0, xdo);
 }
 
-int xdo_get_window_size(const xdo_t *xdo, Window wid, unsigned int *width_ret,
-    unsigned int *height_ret) {
-    int ret;
+/** *********************************************************************
+ ** This method ...
+ **/
+int xdo_get_window_size(const xdo_t *xdo, Window wid,
+        unsigned int *width_ret, unsigned int *height_ret) {
+
     XWindowAttributes attr;
-    ret = XGetWindowAttributes(xdo->xdpy, wid, &attr);
+    int ret = XGetWindowAttributes(xdo->xdpy, wid, &attr);
     if (ret != 0) {
         if (width_ret != NULL) {
             *width_ret = attr.width;
