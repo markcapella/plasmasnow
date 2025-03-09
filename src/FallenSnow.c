@@ -1080,27 +1080,33 @@ void doWinInfoInitialAdds() {
  ** shorter / faster version.
  **/
 bool windowIsTransparent(Window window) {
-    const int BLOCK_SIZE = 3;
+    const int PIXEL_BYTE_WIDTH = 4;
+    const int PIXELS_HEIGHT = 3;
 
     const int XPOS = 100;
     const int YPOS = 100;
 
     // If there is no window, it's transparent.
-    XImage* windowImage = XGetImage(mGlobal.display, window,
-        XPOS, YPOS, BLOCK_SIZE, BLOCK_SIZE, XAllPlanes(), ZPixmap);
+    XImage* windowImage = XGetImage(mGlobal.display,
+        window, XPOS, YPOS, PIXEL_BYTE_WIDTH, PIXELS_HEIGHT,
+        XAllPlanes(), ZPixmap);
     if (!windowImage) {
         return true;
     }
 
     // If any data item isn't zero, it's not transparent.
-    for (int i = 0; i < BLOCK_SIZE * BLOCK_SIZE; i++) {
+    bool result = true;
+    for (int i = 0; i < PIXEL_BYTE_WIDTH * PIXELS_HEIGHT; i++) {
         const unsigned int DATA =
             *((windowImage->data) + i);
         if (DATA) {
-            return false;
+            result = false;
+            break;
         }
     }
-    return true;
+
+    XFree(windowImage);
+    return result;
 }
 
 /** *********************************************************************

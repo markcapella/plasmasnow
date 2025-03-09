@@ -27,21 +27,10 @@ TOASCII  = $(top_srcdir)/src/toascii.sh
 gamesdir = $(exec_prefix)/games
 games_PROGRAMS = plasmasnow
 
-# Qt Dev package
-QT_CDEFINES  = -DQT_NO_DEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB
-QT_CFLAGS    = -pipe -D_REENTRANT -fPIC $(QT_CDEFINES)
-QT_CINCLUDES = -I/usr/include/x86_64-linux-gnu/qt5 \
-	-I/usr/include/x86_64-linux-gnu/qt5/QtCore \
-	-I/usr/include/x86_64-linux-gnu/qt5/QtGui \
-	-I/usr/include/x86_64-linux-gnu/qt5/QtWidgets
-QT_LIBS      = /usr/lib/x86_64-linux-gnu/libQt5Core.so \
-	/usr/lib/x86_64-linux-gnu/libQt5Gui.so \
-	/usr/lib/x86_64-linux-gnu/libQt5Widgets.so
-
-plasmasnow_CPPFLAGS = $(QT_CFLAGS) $(QT_CINCLUDES) $(GTK_CFLAGS) \
+plasmasnow_CPPFLAGS = $(GTK_CFLAGS) \
 	$(X11_CFLAGS) $(GSL_CFLAGS) -DLOCALEDIR=\"$(LOCALEDIR)\" \
 	-DLANGUAGES='"$(LANGUAGES)"'
-plasmasnow_LDADD = libxdo.a $(GTK_LIBS) $(QT_LIBS) $(X11_LIBS) \
+plasmasnow_LDADD = libxdo.a $(GTK_LIBS) $(X11_LIBS) \
 	-lXfixes $(GSL_LIBS) $(LIBINTL) 
 libxdo_a_CPPFLAGS = $(X11_CFLAGS)
 
@@ -62,7 +51,7 @@ libxdo_a_SOURCES = xdo.c xdo_search.c xdo.h xdo_util.h xdo_version.h
 
 plasmasnow_SOURCES = \
 		Application.c Aurora.c birds.c Blowoff.c clientwin.c \
-		clocks.c ColorPicker.cpp csvpos.c docs.c dsimple.c \
+		clocks.c ColorPicker.c csvpos.c docs.c dsimple.c \
 		FallenSnow.c Flags.c hashtable.cpp ixpm.c kdtree.c \
 		Lights.cpp LoadMeasure.c MainWindow.c mainstub.cpp \
 		meteor.c MsgBox.cpp moon.c pixmaps.c safe_malloc.c \
@@ -110,12 +99,10 @@ snow_includes.h: Pixmaps
 install-data-local:
 	cp 'Pixmaps/plasmasnow.png' /usr/share/icons/hicolor/48x48/apps/
 	cp 'Pixmaps/plasmasnowbox.png' /usr/share/icons/hicolor/48x48/apps/
-	cp 'Pixmaps/plasmasnowpicker.png' /usr/share/icons/hicolor/48x48/apps/
 
 uninstall-local:
 	rm -f /usr/share/icons/hicolor/48x48/apps/plasmasnow.png
 	rm -f /usr/share/icons/hicolor/48x48/apps/plasmasnowbox.png
-	rm -f /usr/share/icons/hicolor/48x48/apps/plasmasnowpicker.png
 
 TESTS = test1.sh
 
@@ -129,8 +116,8 @@ plasmasnow-selfrep.$(OBJEXT): $(tarfile_inc)
 # usr/local/share
 appicondir=$(datadir)/pixmaps
 appicon_DATA=Pixmaps/plasmasnow.png \
-	Pixmaps/plasmasnowpicker.png \
-	Pixmaps/plasmasnowsplash.xpm
+	Pixmaps/plasmasnowsplash.xpm \
+	Pixmaps/plasmasnowcolorpicker.xpm
 
 man6_MANS = plasmasnow.6
 plasmasnow.6: plasmasnow

@@ -304,7 +304,7 @@ void updateDisplayDimensions() {
     int rc = XGetGeometry(mGlobal.display, mGlobal.SnowWin,
         &root, &x, &y, &w, &h, &b, &d);
     if (rc == 0) {
-        uninitQPickerDialog();
+        clearColorPicker();
         exit(1);
         return;
     }

@@ -59,7 +59,6 @@
 #include "clocks.h"
 #include "ColorCodes.h"
 #include "ColorPicker.h"
-#include "debug.h"
 #include "docs.h"
 #include "dsimple.h"
 #include "FallenSnow.h"
@@ -245,7 +244,7 @@ int startApplication(int argc, char *argv[]) {
 
     switch (rc) {
         case -1: // wrong flag
-            uninitQPickerDialog();
+            clearColorPicker();
             return 1;
             break;
 
@@ -397,11 +396,12 @@ int startApplication(int argc, char *argv[]) {
         WriteFlags();
     }
 
-    setStormShapeColor(getRGBAFromString(Flags.StormItemColor1));
-
-    // Start Main GUI Window.
+    // Show aplash page & start Storming.
     showSplashPage();
     updateWindowsList();
+
+    setStormShapeColor(getRGBAFromString(
+        Flags.StormItemColor1));
     StartStormWindow();
 
     // Init all Global Flags.
@@ -420,7 +420,7 @@ int startApplication(int argc, char *argv[]) {
 
     XSelectInput(mGlobal.display, eventWindow,
         StructureNotifyMask | SubstructureNotifyMask |
-        FocusChangeMask);
+        FocusChangeMask | ButtonPressMask);
 
     XFixesSelectCursorInput(mGlobal.display, eventWindow,
         XFixesDisplayCursorNotifyMask);
@@ -518,7 +518,7 @@ int startApplication(int argc, char *argv[]) {
     XFlush(mGlobal.display);
 
     XCloseDisplay(mGlobal.display);
-    uninitQPickerDialog();
+    clearColorPicker();
 
     // If Restarting due to display change.
     if (mDoRestartDueToDisplayChange) {
@@ -982,6 +982,38 @@ int handlePendingX11Events() {
                 onWindowClientMessage(&event);
                 break;
 
+            case ButtonPress:
+                Window root_return, child_return;
+                int root_x_return, root_y_return;
+                int xPosResult, yPosResult;
+                unsigned int pointerState;
+
+                if (XQueryPointer(mGlobal.display,
+                    DefaultRootWindow(mGlobal.display), &root_return,
+                    &child_return, &root_x_return, &root_y_return,
+                    &xPosResult, &yPosResult, &pointerState)) {
+
+                    XImage* windowImage = XGetImage(mGlobal.display,
+                        root_return, root_x_return, root_y_return,
+                        1, 1, XAllPlanes(), XYPixmap);
+                    if (windowImage) {
+                        XColor c;
+                        c.pixel = XGetPixel(windowImage, 0, 0);
+                        XQueryColor(mGlobal.display,
+                            DefaultColormap(mGlobal.display,
+                                DefaultScreen (mGlobal.display)), &c);
+                        setColorPickerResultRed(c.red / 256);
+                        setColorPickerResultGreen(c.green / 256);
+                        setColorPickerResultBlue(c.blue / 256);
+                        setColorPickerResultAlpha(0);
+                        XFree(windowImage);
+                    }
+                }
+
+                setColorPickerResultAvailable(true);
+                XUngrabPointer(mGlobal.display, CurrentTime);
+                break;
+
             default:
                 // Perform XFixes action.
                 int xfixes_event_base;
@@ -1178,7 +1210,6 @@ void SetWindowScale() {
     } else {
         mGlobal.WindowScale = y;
     }
-    P("WindowScale: %f\n", mGlobal.WindowScale);
 }
 
 /** *********************************************************************
@@ -1364,9 +1395,6 @@ void mybindtestdomain() {
             // setenv("LC_ALL",lc,1);
             // setenv("LANG",lc,1);
             setenv("LANGUAGE", Flags.Language, 1);
-            P("LC_ALL: %s\n", getenv("LC_ALL"));
-            P("LANG: %s\n", getenv("LANG"));
-            P("LANGUAGE: %s\n", getenv("LANGUAGE"));
 
         } else {
             unsetenv("LANGUAGE");
@@ -1375,19 +1403,14 @@ void mybindtestdomain() {
                 char *l = getenv("LANG");
                 if (l && !getenv("LANGUAGE")) {
                     char *lang = strdup(l);
-                    P("lang: %s\n", lang);
                     char *p = strchr(lang, '_');
                     if (p) {
                         *p = 0; // TODO: wrong
-                        P("lang: %s\n", lang);
                         setenv("LANGUAGE", lang, 1);
                     }
                     free(lang);
                 }
             }
-            P("LC_ALL: %s\n", getenv("LC_ALL"));
-            P("LANG: %s\n", getenv("LANG"));
-            P("LANGUAGE: %s\n", getenv("LANGUAGE"));
         }
     }
 #endif
@@ -1494,3 +1517,5 @@ bool isThisAGnomeSession() {
         return true;
     }
 }
+
+

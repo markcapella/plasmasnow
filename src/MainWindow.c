@@ -251,19 +251,6 @@ void updateMainWindowUI() {
     UIDO(ShowSplashScreen,);
 }
 
-void updateMainWindowTheme() {
-    if (!ui_running) {
-        return;
-    }
-    if (Flags.mAppTheme) {
-        gtk_style_context_add_class(mStyleContext, "plasmaColor");
-        gtk_style_context_remove_class(mStyleContext, "plasmaNoColor");
-    } else {
-        gtk_style_context_remove_class(mStyleContext, "plasmaColor");
-        gtk_style_context_add_class(mStyleContext, "plasmaNoColor");
-    }
-}
-
 void handle_screen() {
     if (HaveXinerama && Nscreens > 1) {
         mGlobal.ForceRestart = 1;
@@ -557,32 +544,80 @@ ALL_BUTTONS
 /***********************************************************
  ** Helpers for LightColors Control Panel settings.
  **/
-void onClickedSnowColor() {
+void onClickedStormItemColor1() {
     if (!human_interaction) {
         return;
     }
-    startQPickerDialog("SnowColorTAG", Flags.StormItemColor1);
+
+    Cursor cursor = XCreateFontCursor(mGlobal.display, 130);
+    int grabbedPointer = XGrabPointer(mGlobal.display,
+        DefaultRootWindow(mGlobal.display), false,
+        ButtonPressMask, GrabModeAsync, GrabModeAsync,
+        None, cursor, CurrentTime);
+    if (grabbedPointer == GrabSuccess) {
+        GtkAllocation allocation;
+        gtk_widget_get_allocation(Button.StormItemColor1, &allocation);
+        startColorPicker("StormItemColor1",
+            allocation.x,
+            allocation.y);
+    }
 }
 
-void onClickedSnowColor2() {
+void onClickedStormItemColor2() {
     if (!human_interaction) {
         return;
     }
-    startQPickerDialog("SnowColor2TAG", Flags.StormItemColor2);
+
+    Cursor cursor = XCreateFontCursor(mGlobal.display, 130);
+    int grabbedPointer = XGrabPointer(mGlobal.display,
+        DefaultRootWindow(mGlobal.display), false,
+        ButtonPressMask, GrabModeAsync, GrabModeAsync,
+        None, cursor, CurrentTime);
+    if (grabbedPointer == GrabSuccess) {
+        GtkAllocation allocation;
+        gtk_widget_get_allocation(Button.StormItemColor2, &allocation);
+        startColorPicker("StormItemColor2",
+            allocation.x,
+            allocation.y);
+    }
 }
 
 void onClickedBirdsColor() {
     if (!human_interaction) {
         return;
     }
-    startQPickerDialog("BirdsColorTAG", Flags.BirdsColor);
+
+    Cursor cursor = XCreateFontCursor(mGlobal.display, 130);
+    int grabbedPointer = XGrabPointer(mGlobal.display,
+        DefaultRootWindow(mGlobal.display), false,
+        ButtonPressMask, GrabModeAsync, GrabModeAsync,
+        None, cursor, CurrentTime);
+    if (grabbedPointer == GrabSuccess) {
+        GtkAllocation allocation;
+        gtk_widget_get_allocation(Button.BirdsColor, &allocation);
+        startColorPicker("BirdsColor",
+            allocation.x,
+            allocation.y);
+    }
 }
 
 void onClickedTreeColor() {
     if (!human_interaction) {
         return;
     }
-    startQPickerDialog("TreeColorTAG", Flags.TreeColor);
+
+    Cursor cursor = XCreateFontCursor(mGlobal.display, 130);
+    int grabbedPointer = XGrabPointer(mGlobal.display,
+        DefaultRootWindow(mGlobal.display), false,
+        ButtonPressMask, GrabModeAsync, GrabModeAsync,
+        None, cursor, CurrentTime);
+    if (grabbedPointer == GrabSuccess) {
+        GtkAllocation allocation;
+        gtk_widget_get_allocation(Button.TreeColor, &allocation);
+        startColorPicker("TreeColor",
+            allocation.x,
+            allocation.y);
+    }
 }
 
 void onClickedLightColorRed() {
@@ -812,9 +847,9 @@ void connectAllButtonSignals() {
 
     // QColorDialog "Widgets".
     g_signal_connect(G_OBJECT(Button.StormItemColor1), "toggled",
-        G_CALLBACK(onClickedSnowColor), NULL);
+        G_CALLBACK(onClickedStormItemColor1), NULL);
     g_signal_connect(G_OBJECT(Button.StormItemColor2), "toggled",
-        G_CALLBACK(onClickedSnowColor2), NULL);
+        G_CALLBACK(onClickedStormItemColor2), NULL);
     g_signal_connect(G_OBJECT(Button.BirdsColor), "toggled",
         G_CALLBACK(onClickedBirdsColor), NULL);
     g_signal_connect(G_OBJECT(Button.TreeColor), "toggled",
@@ -1276,13 +1311,10 @@ void createMainWindow() {
     // Gnome needs to be centered. KDE does
     // it for you.
     if (isThisAGnomeSession()) {
-        int mainWindowWidth, mainWindowHeight;
-        gtk_window_get_size(GTK_WINDOW(mMainWindow),
-                &mainWindowWidth, &mainWindowHeight);
         const int CENTERED_X_POS = (mGlobal.SnowWinWidth -
-            mainWindowWidth) / 2;
+            getMainWindowWidth()) / 2;
         const int CENTERED_Y_POS = (mGlobal.SnowWinHeight -
-            mainWindowHeight) / 2;
+            getMainWindowHeight()) / 2;
         gtk_window_move(GTK_WINDOW(mMainWindow),
             CENTERED_X_POS, CENTERED_Y_POS);
     }
@@ -1394,8 +1426,6 @@ void createMainWindow() {
 /***********************************************************
  ** CSS related code for MainWindow styling.
  **/
-
-// Set the style provider for the widgets
 static void applyCSSToWindow(
     GtkWidget *widget, GtkCssProvider *cssstyleProvider) {
     gtk_style_context_add_provider(gtk_widget_get_style_context(widget),
@@ -1461,6 +1491,19 @@ void applyMainWindowCSSTheme() {
     updateMainWindowTheme();
 }
 
+void updateMainWindowTheme() {
+    if (!ui_running) {
+        return;
+    }
+    if (Flags.mAppTheme) {
+        gtk_style_context_add_class(mStyleContext, "plasmaColor");
+        gtk_style_context_remove_class(mStyleContext, "plasmaNoColor");
+    } else {
+        gtk_style_context_remove_class(mStyleContext, "plasmaColor");
+        gtk_style_context_add_class(mStyleContext, "plasmaNoColor");
+    }
+}
+
 /***********************************************************
  ** "Busy" Style class getter / setters.
  **/
@@ -1476,6 +1519,44 @@ void removeBusyStyleClass() {
         return;
     }
     gtk_style_context_remove_class(mStyleContext, "mAppBusy");
+}
+
+/***********************************************************
+ ** Helpers for main window. Return height, width.
+ **/
+int getMainWindowWidth() {
+    int mainWindowWidth, mainWindowHeight;
+    gtk_window_get_size(GTK_WINDOW(mMainWindow),
+            &mainWindowWidth, &mainWindowHeight);
+
+    return mainWindowWidth;
+}
+
+int getMainWindowHeight() {
+    int mainWindowWidth, mainWindowHeight;
+    gtk_window_get_size(GTK_WINDOW(mMainWindow),
+            &mainWindowWidth, &mainWindowHeight);
+
+    return mainWindowHeight;
+}
+
+/***********************************************************
+ ** Helpers for main window. Return X & Y Position.
+ **/
+int getMainWindowXPos() {
+    int mainWindowXpos, mainWindowYPos;
+    gtk_window_get_position(GTK_WINDOW(mMainWindow),
+            &mainWindowXpos, &mainWindowYPos);
+
+    return mainWindowXpos;
+}
+
+int getMainWindowYPos() {
+    int mainWindowXpos, mainWindowYPos;
+    gtk_window_get_position(GTK_WINDOW(mMainWindow),
+            &mainWindowXpos, &mainWindowYPos);
+
+    return mainWindowYPos;
 }
 
 /***********************************************************

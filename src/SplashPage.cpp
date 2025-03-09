@@ -50,9 +50,6 @@ Window mSplashWindow;
 XImage* mSplashImage;
 XpmAttributes mSplashAttributes;
 
-bool mSplashWindowMapped = false;
-int mSplashWindowExposedCount = 0;
-
 
 /** ********************************************************
  ** This method shows the SplashPage x11 window.
@@ -69,25 +66,18 @@ void showSplashPage() {
     mScreenHeight = HeightOfScreen(mScreen);
 
     // Read XPM SplashImage from file.
-    mSplashAttributes.valuemask = 0;
-    mSplashAttributes.bitmap_format = ZPixmap;
-    mSplashAttributes.valuemask |= XpmBitmapFormat;
-    mSplashAttributes.valuemask |= XpmSize;
-    mSplashAttributes.valuemask |= XpmCharsPerPixel;
-    mSplashAttributes.valuemask |= XpmReturnPixels;
-    mSplashAttributes.valuemask |= XpmReturnAllocPixels;
-    mSplashAttributes.exactColors = False;
-    mSplashAttributes.valuemask |= XpmExactColors;
-    mSplashAttributes.closeness = 30000;
-    mSplashAttributes.valuemask |= XpmCloseness;
-    mSplashAttributes.alloc_close_colors = False;
-    mSplashAttributes.valuemask |= XpmAllocCloseColors;
-
+    mSplashAttributes.valuemask = XpmSize;
     XpmReadFileToImage(mGlobal.display,
         "/usr/local/share/pixmaps/plasmasnowsplash.xpm",
         &mSplashImage, NULL, &mSplashAttributes);
 
-    // Create our X11 Window to host the image.
+    // Determine where to center Splash.
+    const int CENTERED_X_POS = (mScreenWidth -
+        mSplashAttributes.width) / 2;
+    const int CENTERED_Y_POS = (mScreenHeight -
+        mSplashAttributes.height) / 2;
+
+    // Create our X11 Window to host the splash image.
     mSplashWindow = XCreateSimpleWindow(mGlobal.display,
         DefaultRootWindow(mGlobal.display), 0, 0, mSplashAttributes.width,
         mSplashAttributes.height, 1, WhitePixel(mGlobal.display, 0),
@@ -101,68 +91,38 @@ void showSplashPage() {
     XChangeProperty(mGlobal.display, mSplashWindow, WINDOW_TYPE, XA_ATOM,
         32, PropModeReplace, (unsigned char*) &TYPE_VALUE, 1);
 
-    // Add the image to the host window.
-    XPutImage(mGlobal.display, mSplashWindow,
-        XCreateGC(mGlobal.display, mSplashWindow, 0, 0),
-        mSplashImage, 0, 0, 0, 0, mSplashAttributes.width, mSplashAttributes.height);
+    // Map, then position window.
+    XMapWindow(mGlobal.display, mSplashWindow);
+    XMoveWindow(mGlobal.display, mSplashWindow,
+        CENTERED_X_POS, CENTERED_Y_POS);
 
-    // Show SplashImage in the window.
-    XSelectInput(mGlobal.display, mSplashWindow, ExposureMask);
-    Atom mDeleteMessage = XInternAtom(mGlobal.display,
-        "WM_DELETE_WINDOW", False);
-    XSetWMProtocols(mGlobal.display, mSplashWindow,
-        &mDeleteMessage, 1);
-
-    // Gnome & KDE have different X11 event counts to
-    // consume before SplashPage has finished loading.
-    const int MAX_EXPOSE_COUNT =
+    // Gnome && KDE get different X11 event counts that
+    // determine when the SplashPage has been completely DRAWN.
+    const int EXPOSED_EVENTS_NEEDED =
         isThisAGnomeSession() ? 1 : 3;
+
+    // Show SplashImage in the window. Consume X11 events.
+    // Respond to Expose event for DRAW.
+    XSelectInput(mGlobal.display, mSplashWindow, ExposureMask);
+    int exposedEventCount = 0;
 
     bool finalEventReceived = false;
     while (!finalEventReceived) {
-        if (!mSplashWindowMapped) {
-            XMapWindow(mGlobal.display, mSplashWindow);
-            // Gnome needs to be centered. KDE does
-            // it for you.
-            if (isThisAGnomeSession()) {
-                const int CENTERED_X_POS = (mScreenWidth -
-                    mSplashAttributes.width) / 2;
-                const int CENTERED_Y_POS = (mScreenHeight -
-                    mSplashAttributes.height) / 2;
-                XMoveWindow(mGlobal.display, mSplashWindow,
-                    CENTERED_X_POS, CENTERED_Y_POS);
-            }
-            mSplashWindowMapped = true;
-        }
-
         XEvent event;
         XNextEvent(mGlobal.display, &event);
         switch (event.type) {
-
-            case ClientMessage:
-                if (event.xclient.data.l[0] ==
-                        (long int) mDeleteMessage) {
-                    finalEventReceived = true;
-                }
-                break;
-
             case Expose:
-                if (event.xexpose.window != mSplashWindow) {
-                    break;
-                }
-
-                XPutImage(mGlobal.display, mSplashWindow,
-                    XCreateGC(mGlobal.display, mSplashWindow, 0, 0),
-                    mSplashImage, 0, 0, 0, 0, mSplashAttributes.width,
-                    mSplashAttributes.height);
-
-                mSplashWindowExposedCount++;
-                if (mSplashWindowExposedCount >= MAX_EXPOSE_COUNT) {
+                if (++exposedEventCount >= EXPOSED_EVENTS_NEEDED) {
                     finalEventReceived = true;
+                    XPutImage(mGlobal.display, mSplashWindow,
+                        XCreateGC(mGlobal.display, mSplashWindow, 0, 0),
+                        mSplashImage, 0, 0, 0, 0,
+                        mSplashAttributes.width,
+                        mSplashAttributes.height);
                 }
-                break;
         }
     }
+    XFlush(mGlobal.display);
 }
 
 /** ********************************************************
@@ -175,6 +135,8 @@ void hideSplashPage() {
     }
 
     // Close & destroy window, display.
+    XpmFreeAttributes(&mSplashAttributes);
+    XFree(mSplashImage);
     XUnmapWindow(mGlobal.display, mSplashWindow);
     XDestroyWindow(mGlobal.display, mSplashWindow);
 }

@@ -34,6 +34,7 @@
 #include "birdglobals.h"
 #include "birds.h"
 #include "clocks.h"
+#include "ColorPicker.h"
 #include "doitb.h"
 #include "Flags.h"
 #include "hashtable.h"
@@ -113,17 +114,6 @@ static BirdType attrbird;
 
 static sem_t sem;
 
-bool isQPickerActive();
-char* getQPickerColorTAG();
-bool isQPickerVisible();
-bool isQPickerTerminated();
-
-int getQPickerRed();
-int getQPickerBlue();
-int getQPickerGreen();
-
-void endQPickerDialog();
-
 
 void birds_ui() {
 
@@ -146,18 +136,19 @@ void birds_ui() {
         clearGlobalSnowWindow();
     );
 
-    if (isQPickerActive() && !strcmp(getQPickerColorTAG(), "BirdsColorTAG") &&
-        !isQPickerVisible()) {
-        static char cbuffer[16];
-        snprintf(cbuffer, 16, "#%02x%02x%02x", getQPickerRed(),
-            getQPickerGreen(), getQPickerBlue());
-
-        static GdkRGBA color;
-        gdk_rgba_parse(&color, cbuffer);
+    if (isColorPickerActive() &&
+        isColorPickerConsumer("BirdsColor") &&
+        isColorPickerResultAvailable()) {
+        char sbuffer[16];
+        snprintf(sbuffer, 16, "#%02x%02x%02x",
+            getColorPickerResultRed(),
+            getColorPickerResultGreen(),
+            getColorPickerResultBlue());
+        GdkRGBA color;
+        gdk_rgba_parse(&color, sbuffer);
         free(Flags.BirdsColor);
         rgba2color(&color, &Flags.BirdsColor);
-
-        endQPickerDialog();
+        clearColorPicker();
     }
 
     UIDO(Nbirds,

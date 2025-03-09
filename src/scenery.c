@@ -30,6 +30,7 @@
 
 #include <gtk/gtk.h>
 
+#include "ColorPicker.h"
 #include "csvpos.h"
 #include "debug.h"
 #include "FallenSnow.h"
@@ -41,19 +42,6 @@
 #include "treesnow.h"
 #include "Utils.h"
 #include "Windows.h"
-
-
-/***********************************************************
- * Externally provided to this Module.
- */
-bool isQPickerActive();
-char* getQPickerColorTAG();
-bool isQPickerVisible();
-bool isQPickerTerminated();
-int getQPickerRed();
-int getQPickerBlue();
-int getQPickerGreen();
-void endQPickerDialog();
 
 
 /***********************************************************
@@ -513,19 +501,19 @@ void respondToScenerySettingsChanges() {
 
     UIDOS(TreeColor, updateColorTree(););
 
-    if (isQPickerActive() &&
-        !strcmp(getQPickerColorTAG(), "TreeColorTAG") &&
-        !isQPickerVisible()) {
-        static char cbuffer[16];
-        snprintf(cbuffer, 16, "#%02x%02x%02x", getQPickerRed(),
-            getQPickerGreen(), getQPickerBlue());
-
-        static GdkRGBA color;
-        gdk_rgba_parse(&color, cbuffer);
+    if (isColorPickerActive() &&
+        isColorPickerConsumer("TreeColor") &&
+        isColorPickerResultAvailable()) {
+        char sbuffer[16];
+        snprintf(sbuffer, 16, "#%02x%02x%02x",
+            getColorPickerResultRed(),
+            getColorPickerResultGreen(),
+            getColorPickerResultBlue());
+        GdkRGBA color;
+        gdk_rgba_parse(&color, sbuffer);
         free(Flags.TreeColor);
         rgba2color(&color, &Flags.TreeColor);
-
-        endQPickerDialog();
+        clearColorPicker();
     }
 
     UIDO(Overlap, clearAndRedrawScenery(););

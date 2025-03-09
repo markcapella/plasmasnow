@@ -27,6 +27,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <X11/Xlib.h>
+
 #include <gtk/gtk.h>
 
 #include "Blowoff.h"
@@ -325,16 +327,19 @@ void respondToStormSettingsChanges() {
         clearGlobalSnowWindow();
     );
 
-    if (isQPickerActive() && !strcmp(getQPickerColorTAG(),
-        "SnowColorTAG") && !isQPickerVisible()) {
-        char cbuffer[16];
-        snprintf(cbuffer, 16, "#%02x%02x%02x", getQPickerRed(),
-            getQPickerGreen(), getQPickerBlue());
+    if (isColorPickerActive() &&
+        isColorPickerConsumer("StormItemColor1") &&
+        isColorPickerResultAvailable()) {
+        char sbuffer[16];
+        snprintf(sbuffer, 16, "#%02x%02x%02x",
+            getColorPickerResultRed(),
+            getColorPickerResultGreen(),
+            getColorPickerResultBlue());
         GdkRGBA color;
-        gdk_rgba_parse(&color, cbuffer);
+        gdk_rgba_parse(&color, sbuffer);
         free(Flags.StormItemColor1);
         rgba2color(&color, &Flags.StormItemColor1);
-        endQPickerDialog();
+        clearColorPicker();
         clearAllFallenSnowItems();
         clearGlobalSnowWindow();
     }
@@ -344,16 +349,19 @@ void respondToStormSettingsChanges() {
         clearGlobalSnowWindow();
     );
 
-    if (isQPickerActive() && !strcmp(getQPickerColorTAG(),
-        "SnowColor2TAG") && !isQPickerVisible()) {
-        char cbuffer[16];
-        snprintf(cbuffer, 16, "#%02x%02x%02x", getQPickerRed(),
-            getQPickerGreen(), getQPickerBlue());
+    if (isColorPickerActive() &&
+        isColorPickerConsumer("StormItemColor2") &&
+        isColorPickerResultAvailable()) {
+        char sbuffer[16];
+        snprintf(sbuffer, 16, "#%02x%02x%02x",
+            getColorPickerResultRed(),
+            getColorPickerResultGreen(),
+            getColorPickerResultBlue());
         GdkRGBA color;
-        gdk_rgba_parse(&color, cbuffer);
+        gdk_rgba_parse(&color, sbuffer);
         free(Flags.StormItemColor2);
         rgba2color(&color, &Flags.StormItemColor2);
-        endQPickerDialog();
+        clearColorPicker();
         clearAllFallenSnowItems();
         clearGlobalSnowWindow();
     }

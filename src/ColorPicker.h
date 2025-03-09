@@ -25,27 +25,27 @@
 /***********************************************************
  * Module Method stubs.
  */
+void startColorPicker(char* consumerTag, int xPos, int yPos);
+void clearColorPicker();
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+bool isColorPickerActive();
+bool isColorPickerConsumer(char* consumerTag);
 
-     bool startQPickerDialog(char* colorTAG,
-          char* colorAsString);
+bool isColorPickerResultAvailable();
+void setColorPickerResultAvailable(bool value);
 
-     void endQPickerDialog();
-     void uninitQPickerDialog();
+int getColorPickerResultRed();
+void setColorPickerResultRed(int value);
 
-     char* getQPickerColorTAG();
+int getColorPickerResultGreen();
+void setColorPickerResultGreen(int value);
 
-     bool isQPickerActive();
-     bool isQPickerVisible();
-     bool isQPickerTerminated();
+int getColorPickerResultBlue();
+void setColorPickerResultBlue(int value);
 
-     int getQPickerRed();
-     int getQPickerGreen();
-     int getQPickerBlue();
+int getColorPickerResultAlpha();
+void setColorPickerResultAlpha(int value);
 
-#ifdef __cplusplus
-}
-#endif
+void copyTransparentXImage(XImage* fromImage, XImage* toImage);
+
+void debugXImage(char* tag, XImage* image);

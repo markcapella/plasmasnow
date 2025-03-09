@@ -31,6 +31,16 @@
 
 
 void createMainWindow();
+void applyMainWindowCSSTheme();
+void addBusyStyleClass();
+void removeBusyStyleClass();
+void updateMainWindowTheme();
+
+int getMainWindowWidth();
+int getMainWindowHeight();
+int getMainWindowXPos();
+int getMainWindowYPos();
+
 void updateMainWindowUI();
 int ui_run_nomenu();
 void handle_screen();
@@ -42,10 +52,6 @@ void connectAllButtonSignals();
 void set_santa_buttons();
 void set_tree_buttons();
 
-void applyMainWindowCSSTheme();
-void addBusyStyleClass();
-void removeBusyStyleClass();
-void updateMainWindowTheme();
 
 void birdscb(GtkWidget* w, void* m);
 void ui_gray_birds(int m);
