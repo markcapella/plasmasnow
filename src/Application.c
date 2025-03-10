@@ -415,31 +415,24 @@ int startApplication(int argc, char *argv[]) {
     OldFlags.FullScreen = !Flags.FullScreen;
 
     // Request all interesting X11 events.
-    const Window eventWindow = (mGlobal.hasDestopWindow) ?
+    const Window EVENT_WINDOW = (mGlobal.hasDestopWindow) ?
         mGlobal.Rootwindow : mGlobal.SnowWin;
-
-    XSelectInput(mGlobal.display, eventWindow,
+    XSelectInput(mGlobal.display, EVENT_WINDOW,
         StructureNotifyMask | SubstructureNotifyMask |
         FocusChangeMask | ButtonPressMask);
-
-    XFixesSelectCursorInput(mGlobal.display, eventWindow,
+    XFixesSelectCursorInput(mGlobal.display, EVENT_WINDOW,
         XFixesDisplayCursorNotifyMask);
 
     clearGlobalSnowWindow();
-
     if (!Flags.NoMenu && !mGlobal.XscreensaverMode) {
         createMainWindow();
         ui_set_sticky(Flags.AllWorkspaces);
     }
 
-    Flags.shutdownRequested = 0;
-
-    addWindowsModuleToMainloop();
-
     // Init app modules & log window status.
+    Flags.shutdownRequested = 0;
+    addWindowsModuleToMainloop();
     initStormModule();
-
-    getWinInfoForAllWindows();
     printf("%splasmasnow: It\'s Snowing in: [0x%08lx]%s\n",
         COLOR_CYAN, mGlobal.SnowWin, COLOR_NORMAL);
 
@@ -1174,6 +1167,9 @@ void drawCairoWindowInternal(cairo_t* cc) {
         drawSceneryFrame(cc);
         birds_draw(cc);
         treesnow_draw(cc);
+
+        drawAllStormItemsInItemset(cc);
+
         drawLowerLightsFrame(cc);
         drawFallenSnowFrame(cc);
         drawUpperLightsFrame(cc);
@@ -1184,7 +1180,6 @@ void drawCairoWindowInternal(cairo_t* cc) {
             Santa_draw(cc);
         }
 
-        drawAllStormItemsInItemset(cc);
     }
 
     // Draw app window outline.

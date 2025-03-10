@@ -117,23 +117,23 @@ XPM_TYPE ***Santas[MAXSANTA + 1][2] = {{RegularSanta, RegularSantaRudolf},
 
 #include "Pixmaps/tannenbaum.xpm"
 #include "Pixmaps/tree.xpm"
-#include "Pixmaps/greenTree.xpm"
+#include "Pixmaps/cloverLeaf.xpm"
 #include "Pixmaps/huis4.xpm"
-#include "Pixmaps/rendier.xpm"
+#include "Pixmaps/potOfGold.xpm"
 #include "Pixmaps/eland.xpm"
 #include "Pixmaps/snowtree.xpm"
 #include "Pixmaps/polarbear.xpm"
 #include "Pixmaps/candycane.xpm"
-#include "Pixmaps/garland.xpm"
+#include "Pixmaps/stPaddyHat.xpm"
 //------
 #include "Pixmaps/extratree.xpm"
 //------
 
 
 XPM_TYPE **xpmtrees[NUM_ALL_SCENE_TYPES] = {
-    tannenbaum_xpm, tree_xpm, greenTree_xpm, huis4_xpm,
-    reindeer_xpm, eland_xpm, snowtree_xpm, polarbear_xpm,
-    candycane_xpm, garland_xpm, extratree_xpm };
+    tannenbaum_xpm, tree_xpm, cloverLeaf_xpm, huis4_xpm,
+    potOfGold_xpm, eland_xpm, snowtree_xpm, polarbear_xpm,
+    candycane_xpm, stPaddyHat_xpm, extratree_xpm };
 
 
 

@@ -69,6 +69,7 @@ birdl6.xpm \
 birdl7.xpm \
 birdl8.xpm \
 candycane.xpm \
+cloverLeaf.xpm \
 eland.xpm \
 extratree.xpm \
 flake0.xpm \
@@ -96,6 +97,7 @@ plasmasnowcolorpicker.xpm \
 plasmasnowsplash.xpm \
 plasmasnow.xpm \
 polarbear.xpm \
+potOfGold.xpm \
 RegularSanta1.xpm \
 RegularSanta2.xpm \
 RegularSanta3.xpm \
@@ -106,5 +108,6 @@ RegularSantaRudolf3.xpm \
 RegularSantaRudolf4.xpm \
 rendier.xpm \
 snowtree.xpm \
+stPaddyHat.xpm \
 tannenbaum.xpm \
 tree.xpm 
