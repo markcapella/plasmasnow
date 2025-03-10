@@ -37,7 +37,7 @@
 /***********************************************************
  ** Main Globals & initialization.
  **/
-bool mColorPicker = false;
+bool mColorPickerActive = false;
 char* mColorPickerConsumer;
 
 bool mColorPickerResultAvailable = false;
@@ -49,20 +49,20 @@ int mColorPickerResultAlpha = 0;
 XImage* mColorPickerImage;
 XpmAttributes mColorPickerAttributes;
 
-XImage* mRootImage;
-
+XImage* mColorPickerWindowImage;
 Window mColorPickerWindow;
+
 
 /** ********************************************************
  ** This method starts a ColorPicker widget.
  **/
 void startColorPicker(char* consumerTag, int xPos, int yPos) {
-    if (mColorPicker == true) {
+    if (isColorPickerActive()) {
         return;
     }
-    mColorPicker = true;
+    mColorPickerActive = true;
 
-    // Set ColorPicker.
+    // Start ColorPicker.
     mColorPickerConsumer = strdup(consumerTag);
     mColorPickerResultAvailable = false;
     mColorPickerResultRed = 0;
@@ -70,33 +70,61 @@ void startColorPicker(char* consumerTag, int xPos, int yPos) {
     mColorPickerResultBlue = 0;
     mColorPickerResultAlpha = 0;
 
-    // Read XPM SplashImage from file.
+    // Read XPM ColorPicker from file.
     mColorPickerAttributes.valuemask = XpmSize;
     XpmReadFileToImage(mGlobal.display,
         "/usr/local/share/pixmaps/plasmasnowcolorpicker.xpm",
         &mColorPickerImage, NULL, &mColorPickerAttributes);
 
-    // Determine where to center Picker.
+    // Determine where to position ColorPicker.
+    const int SCREEN_WIDTH = WidthOfScreen(
+        DefaultScreenOfDisplay(mGlobal.display));
+    const int SCREEN_HEIGHT = HeightOfScreen(
+        DefaultScreenOfDisplay(mGlobal.display));
+
     const int ADJUST_X_POS_FOR_OVERLAP = -105;
     const int ADJUST_Y_POS_FOR_OVERLAP = 100;
 
-    const int CENTERED_X_POS = getMainWindowXPos() +
-        xPos + ADJUST_X_POS_FOR_OVERLAP;
-    const int CENTERED_Y_POS = getMainWindowYPos() +
-        yPos + ADJUST_Y_POS_FOR_OVERLAP ;
+    int mColorPickerXPos = getMainWindowXPos() +
+       xPos + ADJUST_X_POS_FOR_OVERLAP;
+    int mColorPickerYPos = getMainWindowYPos() +
+       yPos + ADJUST_Y_POS_FOR_OVERLAP ;
 
-    // Get root image under Splash & merge for transparency.
-    mRootImage = XGetImage(mGlobal.display,
-        DefaultRootWindow(mGlobal.display), CENTERED_X_POS,
-        CENTERED_Y_POS, mColorPickerAttributes.width,
+    const int COLOR_PICKER_END_X_POS = mColorPickerXPos +
+        mColorPickerAttributes.width - 1;
+    const int COLOR_PICKER_END_Y_POS = mColorPickerYPos +
+        mColorPickerAttributes.height - 1;
+
+    // Sanity check ColorPicker window positions. If
+    // window edges off screen at all, center it instead.
+    const bool IS_COLORPICKER_CENTERED =
+        mColorPickerXPos < 0 || mColorPickerYPos < 0 ||
+        COLOR_PICKER_END_X_POS >= SCREEN_WIDTH ||
+        COLOR_PICKER_END_Y_POS >= SCREEN_HEIGHT;
+
+    if (IS_COLORPICKER_CENTERED) {
+        mColorPickerXPos = (SCREEN_WIDTH -
+            mColorPickerAttributes.width) / 2;
+        mColorPickerYPos = (SCREEN_HEIGHT -
+            mColorPickerAttributes.height) / 2;
+    }
+
+    // Get initial ColorPicker window image from current screen.
+    mColorPickerWindowImage = XGetImage(mGlobal.display,
+        DefaultRootWindow(mGlobal.display), mColorPickerXPos,
+        mColorPickerYPos, mColorPickerAttributes.width,
         mColorPickerAttributes.height, XAllPlanes(), ZPixmap);
-    copyTransparentXImage(mColorPickerImage, mRootImage);
 
-    // Create our X11 Window to host the Picker Image.
+    // Merge the ColorPicker image into the Window image.
+    addColorPickerToWindowImage(mColorPickerWindowImage,
+        mColorPickerImage, IS_COLORPICKER_CENTERED);
+
+    // Create our X11 Window to host the merged Image.
     mColorPickerWindow = XCreateSimpleWindow(mGlobal.display,
         DefaultRootWindow(mGlobal.display), 0, 0,
         mColorPickerAttributes.width, mColorPickerAttributes.height,
-        1, WhitePixel(mGlobal.display, 0), WhitePixel(mGlobal.display, 0));
+        1, WhitePixel(mGlobal.display, 0),
+        WhitePixel(mGlobal.display, 0));
 
     // Set X11 Window to dock (no titlebar or close button).
     const Atom WINDOW_TYPE = XInternAtom(mGlobal.display,
@@ -109,29 +137,28 @@ void startColorPicker(char* consumerTag, int xPos, int yPos) {
     // Map, then position window.
     XMapWindow(mGlobal.display, mColorPickerWindow);
     XMoveWindow(mGlobal.display, mColorPickerWindow,
-        CENTERED_X_POS, CENTERED_Y_POS);
-
-    // Gnome && KDE get different X11 event counts that
-    // determine when the SplashPage has been completely DRAWN.
-    const int EXPOSED_EVENT_COUNT_NEEDED =
-        isThisAGnomeSession() ? 1 : 3;
+        mColorPickerXPos, mColorPickerYPos);
+    XSelectInput(mGlobal.display, mColorPickerWindow,
+        ExposureMask);
 
     // Show SplashImage in the window. Consume X11 events.
     // Respond to Expose event for DRAW.
-    XSelectInput(mGlobal.display, mColorPickerWindow,
-        ExposureMask);
     int exposedEventCount = 0;
-
+    const int EXPOSED_EVENT_COUNT_NEEDED =
+        isThisAGnomeSession() ? 1 : 3;
     bool finalEventReceived = false;
+
     while (!finalEventReceived) {
         XEvent event;
         XNextEvent(mGlobal.display, &event);
         switch (event.type) {
             case Expose:
-                if (++exposedEventCount >= EXPOSED_EVENT_COUNT_NEEDED) {
+                if (++exposedEventCount >=
+                    EXPOSED_EVENT_COUNT_NEEDED) {
                     XPutImage(mGlobal.display, mColorPickerWindow,
-                        XCreateGC(mGlobal.display, mColorPickerWindow, 0, 0),
-                        mRootImage, 0, 0, 0, 0, mColorPickerAttributes.width,
+                        XCreateGC(mGlobal.display, mColorPickerWindow,
+                        0, 0), mColorPickerWindowImage, 0, 0, 0, 0,
+                        mColorPickerAttributes.width,
                         mColorPickerAttributes.height);
                     finalEventReceived = true;
                 }
@@ -145,10 +172,10 @@ void startColorPicker(char* consumerTag, int xPos, int yPos) {
  ** This method clears / completes a ColorPicker widget.
  **/
 void clearColorPicker() {
-    if (mColorPicker == false) {
+    if (!isColorPickerActive()) {
         return;
     }
-    mColorPicker = false;
+    mColorPickerActive = false;
 
     mColorPickerConsumer = strdup("");
     mColorPickerResultAvailable = false;
@@ -158,7 +185,7 @@ void clearColorPicker() {
     mColorPickerResultAlpha = 0;
 
     // Close & destroy window, display.
-    XFree(mRootImage);
+    XFree(mColorPickerWindowImage);
     XpmFreeAttributes(&mColorPickerAttributes);
     XFree(mColorPickerImage);
 
@@ -171,7 +198,7 @@ void clearColorPicker() {
  ** in ColorPicker mode.
  **/
 bool isColorPickerActive() {
-    return mColorPicker;
+    return mColorPickerActive;
 }
 
 /** ********************************************************
@@ -242,70 +269,57 @@ void setColorPickerResultAlpha(int value) {
 }
 
 /** ********************************************************
- ** Copies source XPM onto target XPM.
+ ** Updates the ColorPicker XImage with background color
+ ** where transparent, and optionally "undraws" the top
+ ** pointer arrow.
  **/
-void copyTransparentXImage(XImage* fromImage, XImage* toImage) {
-    for (int h = 0; h < fromImage->height; h++) {
-        const int rowI = h * fromImage->width * 4;
+void addColorPickerToWindowImage(XImage* windowImage,
+    XImage* pickerImage, bool shouldHideArrow) {
+    for (int h = 0; h < pickerImage->height; h++) {
+        const int H_OFFSET = h * pickerImage->width * 4;
 
-        for (int w = 0; w < fromImage->width; w++) {
-            const int byteI = rowI + (w * 4);
+        for (int w = 0; w < pickerImage->width; w++) {
+            const int W_OFFSET = H_OFFSET + (w * 4);
 
             const unsigned char fromByte0 =
-                *((fromImage->data) + byteI + 0);
+                *((pickerImage->data) + W_OFFSET + 0);
             const unsigned char fromByte1 =
-                *((fromImage->data) + byteI + 1);
+                *((pickerImage->data) + W_OFFSET + 1);
             const unsigned char fromByte2 =
-                *((fromImage->data) + byteI + 2);
+                *((pickerImage->data) + W_OFFSET + 2);
             const unsigned char fromByte3 =
-                *((fromImage->data) + byteI + 3);
+                *((pickerImage->data) + W_OFFSET + 3);
 
-            // Ignore this color, considered transparent.
+            // Don't draw from transparent bytes.
             if (fromByte0 == 0xf0 && fromByte1 == 0xfb &&
                 fromByte2 == 0xea) {
                 continue;
             }
 
-            *((toImage->data) + byteI + 0) = fromByte0; // Blue.
-            *((toImage->data) + byteI + 1) = fromByte1; // Green.
-            *((toImage->data) + byteI + 2) = fromByte2; // Red.
-            *((toImage->data) + byteI + 3) = fromByte3;
-        }
-    }
-}
-
-/** ********************************************************
- ** Helper method to debug the window contents.
- **/
-void debugXImage(char* tag, XImage* image) {
-    printf("\ndebugXImage() width / height : %d x %d\n",
-        image->width, image->height);
-    printf("debugXImage() xoffset, format : %d, %d\n\n",
-        image->xoffset, image->format);
-
-    for (int h = 0; h < image->height; h++) {
-        if (h > 3) {
-            return;
-        }
-
-        const int rowI = h * image->width * 4;
-        printf("debugXImage() %s : ", tag);
-
-        for (int w = 0; w < image->width; w++) {
-            if (w > 5) {
-                break;
+            // Is ColorPicker "arraw pointer" shown ?
+            if (shouldHideArrow) {
+                // This "erases" arrow from pickerImage.
+                if (h < 25) {
+                    continue;
+                }
+                // This draws a black line under where the
+                // arrow would be to complete the outline.
+                if (h == 25) {
+                    if (w >= 97 && w <= 145) {
+                        *((windowImage->data) + W_OFFSET + 0) = 0x00;
+                        *((windowImage->data) + W_OFFSET + 1) = 0x00;
+                        *((windowImage->data) + W_OFFSET + 2) = 0x00;
+                        *((windowImage->data) + W_OFFSET + 3) = 0xff;
+                        continue;
+                    }
+                }
             }
 
-            const int byteI = rowI + (w * 4);
-            const unsigned char byte0 = *((image->data) + byteI + 0);
-            const unsigned char byte1 = *((image->data) + byteI + 1);
-            const unsigned char byte2 = *((image->data) + byteI + 2);
-            const unsigned char byte3 = *((image->data) + byteI + 3);
-
-            printf("[%02x %02x %02x %02x]  ",
-                byte0, byte1, byte2, byte3);
+            // Copy Blue, Green, Red, Alpha bytes.
+            *((windowImage->data) + W_OFFSET + 0) = fromByte0;
+            *((windowImage->data) + W_OFFSET + 1) = fromByte1;
+            *((windowImage->data) + W_OFFSET + 2) = fromByte2;
+            *((windowImage->data) + W_OFFSET + 3) = fromByte3;
         }
-
-        printf("\n");
     }
 }

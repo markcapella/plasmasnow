@@ -136,14 +136,6 @@ int mX11LastErrorCode = 0;
  ** main.c: 
  **/
 int startApplication(int argc, char *argv[]) {
-    struct mallinfo2 m2InfoS = mallinfo2();
-    printf("\n%splasmasnow: Total arena bytes @start     : %li.%s\n",
-        COLOR_YELLOW, m2InfoS.arena, COLOR_NORMAL);
-    printf("%splasmasnow: Total allocated bytes @start : %li.%s\n",
-        COLOR_YELLOW, m2InfoS.uordblks, COLOR_NORMAL);
-    printf("%splasmasnow: Total free bytes @start      : %li.%s\n",
-        COLOR_YELLOW, m2InfoS.fordblks, COLOR_NORMAL);
-
     signal(SIGINT, appShutdownHook);
     signal(SIGTERM, appShutdownHook);
     signal(SIGHUP, appShutdownHook);
@@ -433,12 +425,6 @@ int startApplication(int argc, char *argv[]) {
     Flags.shutdownRequested = 0;
     addWindowsModuleToMainloop();
     initStormModule();
-    printf("%splasmasnow: It\'s Snowing in: [0x%08lx]%s\n",
-        COLOR_CYAN, mGlobal.SnowWin, COLOR_NORMAL);
-
-    // Init global wininfo list, and further log snow window.
-    logWinInfoStructColumns();
-    logWinInfoForWindow(mGlobal.SnowWin);
 
     // Init other modules.
     initFallenSnowModule();
@@ -481,21 +467,13 @@ int startApplication(int argc, char *argv[]) {
     // Bring it all up !
     //***************************************************
 
-    printf("\n%splasmasnow: gtk_main() Starts.%s\n",
+    printf("%splasmasnow: gtk_main() Starts.%s\n",
         COLOR_BLUE, COLOR_NORMAL);
-
-    struct mallinfo2 m2InfoR = mallinfo2();
-    printf("\n%splasmasnow: Total arena bytes @run      : %li.%s\n",
-        COLOR_YELLOW, m2InfoR.arena, COLOR_NORMAL);
-    printf("%splasmasnow: Total allocated bytes @run  : %li.%s\n",
-        COLOR_YELLOW, m2InfoR.uordblks, COLOR_NORMAL);
-    printf("%splasmasnow: Total free bytes @run       : %li.%s\n",
-        COLOR_YELLOW, m2InfoR.fordblks, COLOR_NORMAL);
 
     gtk_main();
     removeFallenSnowFromAllWindows();
 
-    printf("\n%splasmasnow: gtk_main() Finishes.%s\n",
+    printf("%splasmasnow: gtk_main() Finishes.%s\n",
         COLOR_BLUE, COLOR_NORMAL);
 
     // Display termination messages to MessageBox or STDOUT.

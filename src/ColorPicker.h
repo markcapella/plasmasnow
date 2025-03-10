@@ -46,6 +46,5 @@ void setColorPickerResultBlue(int value);
 int getColorPickerResultAlpha();
 void setColorPickerResultAlpha(int value);
 
-void copyTransparentXImage(XImage* fromImage, XImage* toImage);
-
-void debugXImage(char* tag, XImage* image);
+void addColorPickerToWindowImage(XImage* windowImage,
+    XImage* pickerImage, bool shouldHideArrow);
