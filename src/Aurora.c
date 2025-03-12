@@ -36,7 +36,7 @@
 #include <gsl/gsl_spline.h>
 
 #include "Aurora.h"
-#include "clocks.h"
+#include "ClockHelper.h"
 #include "Flags.h"
 #include "PlasmaSnow.h"
 #include "safe_malloc.h"
@@ -207,7 +207,7 @@ void* do_aurora(void* d) {
             pthread_exit(NULL);
         }
 
-        if (!Flags.ShowAurora || !WorkspaceActive()) {
+        if (!Flags.ShowAurora || !isWorkspaceActive()) {
             usleep((useconds_t) (1.0e6 * time_aurora /
                 (0.2 * Flags.AuroraSpeed)));
             continue;

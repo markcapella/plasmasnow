@@ -90,7 +90,7 @@ void addWindowsModuleToMainloop() {
 /** *********************************************************************
  ** This method ...
  **/
-int WorkspaceActive() {
+int isWorkspaceActive() {
     if (Flags.AllWorkspaces) {
         return true;
     }

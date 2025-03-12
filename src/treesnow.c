@@ -35,6 +35,7 @@
 #include "safe_malloc.h"
 #include "scenery.h"
 #include "Storm.h"
+#include "StormItem.h"
 #include "treesnow.h"
 #include "Utils.h"
 #include "wind.h"
@@ -91,7 +92,7 @@ int execTreesnowBackgroundThread() {
         return FALSE;
     }
 
-    if ((!WorkspaceActive() || Flags.NoSnowFlakes ||
+    if ((!isWorkspaceActive() || Flags.NoSnowFlakes ||
         Flags.NoKeepSnowOnTrees || Flags.NoTrees)) {
         mTreesnowBackgroundThreadIsActive = false;
         return TRUE;
@@ -140,7 +141,7 @@ void reinit_treesnow_region() {
  ** This method draws the treesnow onto the display screen.
  **/
 void treesnow_draw(cairo_t* cr) {
-    if (!WorkspaceActive() || Flags.NoSnowFlakes ||
+    if (!isWorkspaceActive() || Flags.NoSnowFlakes ||
         Flags.NoKeepSnowOnTrees || Flags.NoTrees) {
         return;
     }

@@ -75,7 +75,7 @@ int updateBlowoffFrame() {
     if (Flags.NoSnowFlakes) {
         return true;
     }
-    if (!WorkspaceActive()) {
+    if (!isWorkspaceActive()) {
         return true;
     }
 
@@ -106,7 +106,7 @@ int updateBlowoffFrame() {
 
             // Check for normal blowoff interaction.
             if (Flags.BlowSnow && !wasFallenBlownBySantaPlowing &&
-                randint(5) == 0) {
+                randomIntegerUpTo(5) == 0) {
                 blowoffSnowFromFallen(fsnow, fsnow->w / 4, fsnow->h / 4);
             }
         }

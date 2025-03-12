@@ -56,7 +56,7 @@
 #include "Aurora.h"
 #include "birds.h"
 #include "Blowoff.h"
-#include "clocks.h"
+#include "ClockHelper.h"
 #include "ColorCodes.h"
 #include "ColorPicker.h"
 #include "docs.h"
@@ -78,6 +78,7 @@
 #include "SplashPage.h"
 #include "Storm.h"
 #include "Stars.h"
+#include "StormItem.h"
 #include "StormWindow.h"
 #include "treesnow.h"
 #include "WinInfo.h"
@@ -141,7 +142,7 @@ int startApplication(int argc, char *argv[]) {
     signal(SIGHUP, appShutdownHook);
 
     // Set up random,
-    srand48((int) (fmod(wallcl() * 1.0e6, 1.0e8)));
+    srand48((int) (fmod(getWallClockReal() * 1.0e6, 1.0e8)));
 
     // Cleaar space for app Global struct.
     memset(&mGlobal, 0, sizeof(mGlobal));
@@ -1137,7 +1138,7 @@ void drawCairoWindowInternal(cairo_t* cc) {
     cairo_translate(cc, tx, ty);
 
     // Do all module draws.
-    if (WorkspaceActive()) {
+    if (isWorkspaceActive()) {
         drawStarsFrame(cc);
         moon_draw(cc);
         aurora_draw(cc);

@@ -23,61 +23,63 @@
 
 #include <stdbool.h>
 
-// required GTK version for running the ui.
-// (from ui.xml, made using glade)
 #define GTK_MAJOR 3
 #define GTK_MINOR 20
 #define GTK_MICRO 0
 
-
-void createMainWindow();
-void applyMainWindowCSSTheme();
-void addBusyStyleClass();
-void removeBusyStyleClass();
-void updateMainWindowTheme();
-
-int getMainWindowWidth();
-int getMainWindowHeight();
-int getMainWindowXPos();
-int getMainWindowYPos();
-
-void updateMainWindowUI();
-int ui_run_nomenu();
-void handle_screen();
-
-void init_buttons();
-void initAllButtonValues();
-void set_buttons();
-void connectAllButtonSignals();
-void set_santa_buttons();
-void set_tree_buttons();
-
-
-void birdscb(GtkWidget* w, void* m);
-void ui_gray_birds(int m);
-void ui_set_birds_header(const char *text);
-
-void setTabDefaults(int tab);
-void setLabelText(GtkLabel* label, const gchar* str);
-void handle_language(int restart);
-void ui_set_celestials_header(const char *text);
-void ui_set_sticky(int x);
-void ui_gray_ww(const int m);
-void ui_gray_below(const int m);
-
-void handleFileChooserPreview(GtkFileChooser* file_chooser,
-    gpointer data);
-gboolean handleMainWindowStateEvents(GtkWidget* widget,
-    GdkEventWindowState* event, gpointer user_data);
-
-int isGtkVersionValid();
-char* ui_gtk_version();
-char* ui_gtk_required();
-
-// Helpers for LightColors Control Panel settings.
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+	void createMainWindow();
+	void applyMainWindowCSSTheme();
+	void addBusyStyleClass();
+	void removeBusyStyleClass();
+	void updateMainWindowTheme();
+
+	int getMainWindowWidth();
+	int getMainWindowHeight();
+	int getMainWindowXPos();
+	int getMainWindowYPos();
+
+	char* getStormItemColor1Tag();
+	char* getStormItemColor2Tag();
+	char* getBirdsColorTag();
+	char* getTreeColorTag();
+
+	void updateMainWindowUI();
+	int ui_run_nomenu();
+	void handle_screen();
+
+	void init_buttons();
+	void initAllButtonValues();
+	void set_buttons();
+	void connectAllButtonSignals();
+	void set_santa_buttons();
+	void set_tree_buttons();
+
+	void birdscb(GtkWidget* w, void* m);
+	void ui_gray_birds(int m);
+	void ui_set_birds_header(const char *text);
+
+	void setTabDefaults(int tab);
+	void setLabelText(GtkLabel* label, const gchar* str);
+	void handle_language(int restart);
+	void ui_set_celestials_header(const char *text);
+	void ui_set_sticky(int x);
+	void ui_gray_ww(const int m);
+	void ui_gray_below(const int m);
+
+	void handleFileChooserPreview(GtkFileChooser* file_chooser,
+	    gpointer data);
+	gboolean handleMainWindowStateEvents(GtkWidget* widget,
+	    GdkEventWindowState* event, gpointer user_data);
+
+	int isGtkVersionValid();
+	char* ui_gtk_version();
+	char* ui_gtk_required();
+
+	// Helpers for LightColors Control Panel settings.
 	bool shouldShowLightColorRed();
 	bool shouldShowLightColorLime();
 	bool shouldShowLightColorPurple();
@@ -86,6 +88,7 @@ extern "C" {
 	bool shouldShowLightColorOrange();
 	bool shouldShowLightColorBlue();
 	bool shouldShowLightColorPink();
+
 #ifdef __cplusplus
 }
 #endif

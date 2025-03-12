@@ -21,44 +21,43 @@
 */
 #pragma once
 
-#include <gtk/gtk.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#include "PlasmaSnow.h"
+    void initStormModule();
+    int getResourcesShapeCount();
 
+    int getAllStormItemsShapeCount();
+    void setAllStormItemsShapeCount(int count);
 
-void initStormModule();
-int getResourcesShapeCount();
+    void getAllStormItemsShapeList();
+    void getRandomStormItemShape(int w, int h, char*** xpm);
 
-void getAllStormItemsShapeList();
-void createRandomStormItemShape(int w, int h, char*** xpm);
-void getAllStormItemSurfacesList();
+    void getAllStormItemSurfacesList();
+    int getStormItemSurfaceWidth(unsigned shapeType);
+    int getStormItemSurfaceHeight(unsigned shapeType);
+    cairo_surface_t* getStormItemSurface(
+        unsigned shapeType);
 
-void respondToStormSettingsChanges();
-void setStormItemSpeed();
-void setStormItemsPerSecond();
-void setStormItemFluffState(StormItem*, float state);
-void resetAllStormItemsShapeSizeAndColor();
-void setAllStormItemsShapeSizeAndColor();
+    void respondToStormSettingsChanges();
+    float getStormItemsSpeedFactor();
+    void setStormItemsSpeedFactor();
+    void setStormItemsPerSecond();
+    void resetAllStormItemsShapeSizeAndColor();
+    void setAllStormItemsShapeSizeAndColor();
 
-int updateStormOnThread();
+    int updateStormOnThread();
+    bool getStallingNewStormItems();
+    int stallCreatingStormItems();
 
-StormItem* createStormItem(int type);
-void addStormItemToItemset(StormItem*);
+    GdkRGBA getStormShapeColor();
+    void setStormShapeColor(GdkRGBA);
 
-int updateStormItemOnThread(StormItem*);
-int stallCreatingStormItems();
+    GdkRGBA getNextStormShapeColorAsRGB();
+    GdkRGBA getRGBAFromString(char*);
+    char* getNextStormShapeColorAsString();
 
-int drawAllStormItemsInItemset(cairo_t*);
-void eraseStormItemInItemset(StormItem*);
-int removeAllStormItemsInItemset();
-void removeStormItemInItemset(StormItem*);
-
-void setStormShapeColor(GdkRGBA);
-char* getNextStormShapeColorAsString();
-GdkRGBA getNextStormShapeColorAsRGB();
-GdkRGBA getRGBAFromString(char*);
-
-bool isStormItemFallen(StormItem*,
-    int xPosition, int yPosition);
-
-void logStormItem(StormItem*);
+#ifdef __cplusplus
+}
+#endif

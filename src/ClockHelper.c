@@ -19,7 +19,16 @@
 #-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-# 
 */
-#pragma once
+#include <gtk/gtk.h>
+#include <pthread.h>
+#include <stdlib.h>
 
-extern double wallclock(void);
-extern double wallcl(void);
+#include "ClockHelper.h"
+
+double getWallClockReal() {
+    return (double) g_get_real_time() * 1.0e-6;
+}
+
+double getWallClockMono() {
+    return (double) g_get_monotonic_time() * 1.0e-6;
+}

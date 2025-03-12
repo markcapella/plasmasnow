@@ -161,7 +161,7 @@
 
 #include "Application.h"
 #include "birds.h"
-#include "clocks.h"
+#include "ClockHelper.h"
 #include "ColorCodes.h"
 #include "ColorPicker.h"
 #include "csvpos.h"
@@ -556,8 +556,9 @@ void onClickedStormItemColor1() {
         None, cursor, CurrentTime);
     if (grabbedPointer == GrabSuccess) {
         GtkAllocation allocation;
-        gtk_widget_get_allocation(Button.StormItemColor1, &allocation);
-        startColorPicker("StormItemColor1",
+        gtk_widget_get_allocation(Button.StormItemColor1,
+            &allocation);
+        startColorPicker(getStormItemColor1Tag(),
             allocation.x,
             allocation.y);
     }
@@ -575,8 +576,9 @@ void onClickedStormItemColor2() {
         None, cursor, CurrentTime);
     if (grabbedPointer == GrabSuccess) {
         GtkAllocation allocation;
-        gtk_widget_get_allocation(Button.StormItemColor2, &allocation);
-        startColorPicker("StormItemColor2",
+        gtk_widget_get_allocation(Button.StormItemColor2,
+            &allocation);
+        startColorPicker(getStormItemColor2Tag(),
             allocation.x,
             allocation.y);
     }
@@ -594,8 +596,9 @@ void onClickedBirdsColor() {
         None, cursor, CurrentTime);
     if (grabbedPointer == GrabSuccess) {
         GtkAllocation allocation;
-        gtk_widget_get_allocation(Button.BirdsColor, &allocation);
-        startColorPicker("BirdsColor",
+        gtk_widget_get_allocation(Button.BirdsColor,
+            &allocation);
+        startColorPicker(getBirdsColorTag(),
             allocation.x,
             allocation.y);
     }
@@ -613,8 +616,9 @@ void onClickedTreeColor() {
         None, cursor, CurrentTime);
     if (grabbedPointer == GrabSuccess) {
         GtkAllocation allocation;
-        gtk_widget_get_allocation(Button.TreeColor, &allocation);
-        startColorPicker("TreeColor",
+        gtk_widget_get_allocation(Button.TreeColor,
+            &allocation);
+        startColorPicker(getTreeColorTag(),
             allocation.x,
             allocation.y);
     }
@@ -1557,6 +1561,22 @@ int getMainWindowYPos() {
             &mainWindowXpos, &mainWindowYPos);
 
     return mainWindowYPos;
+}
+
+/***********************************************************
+ **
+ **/
+char* getStormItemColor1Tag() {
+    return "StormItemColor1Tag";
+}
+char* getStormItemColor2Tag() {
+    return "StormItemColor2Tag";
+}
+char* getBirdsColorTag() {
+    return "BirdsColorTag";
+}
+char* getTreeColorTag() {
+    return "TreeColorTag";
 }
 
 /***********************************************************

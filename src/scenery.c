@@ -36,6 +36,7 @@
 #include "FallenSnow.h"
 #include "Flags.h"
 #include "ixpm.h"
+#include "MainWindow.h"
 #include "pixmaps.h"
 #include "safe_malloc.h"
 #include "scenery.h"
@@ -322,7 +323,7 @@ int updateSceneryFrame() {
             break;
         }
 
-        int tt = TreeType[randint(NtreeTypes)];
+        int tt = TreeType[randomIntegerUpTo(NtreeTypes)];
 
         int w = TreeWidth[tt];
         int h = TreeHeight[tt];
@@ -336,8 +337,8 @@ int updateSceneryFrame() {
             y1 = y2 + 1;
         }
 
-        int x = randint(mGlobal.SnowWinWidth - w * treeScale);
-        int y = y1 - randint(y1 - y2);
+        int x = randomIntegerUpTo(mGlobal.SnowWinWidth - w * treeScale);
+        int y = y1 - randomIntegerUpTo(y1 - y2);
 
         float myScale = (1 - MinScale) * (y - y2) /
             (y1 - y2) + MinScale;
@@ -502,7 +503,7 @@ void respondToScenerySettingsChanges() {
     UIDOS(TreeColor, updateColorTree(););
 
     if (isColorPickerActive() &&
-        isColorPickerConsumer("TreeColor") &&
+        isColorPickerConsumer(getTreeColorTag()) &&
         isColorPickerResultAvailable()) {
         char sbuffer[16];
         snprintf(sbuffer, 16, "#%02x%02x%02x",

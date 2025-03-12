@@ -121,7 +121,7 @@
 #define MAXVISWORKSPACES 100 // should be enough...
 
 typedef struct {
-        unsigned int shapeType;
+        unsigned shapeType;
         GdkRGBA color;
 
         bool survivesScreenEdges;

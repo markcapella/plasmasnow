@@ -24,9 +24,9 @@
 #include <X11/xpm.h>
 #include <gtk/gtk.h>
 
-
-Region regionfromxpm(const char** data, int flop,
-        float scale);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 cairo_region_t* gregionfromxpm(const char** data,
     int flop, float scale);
@@ -34,12 +34,8 @@ cairo_region_t* gregionfromxpm(const char** data,
 void xpm_set_color(char** data, char*** out,
     int* lines, const char* color);
 
-int xpmtobits(char* xpm[],
-    unsigned char** bitsreturn, int* wreturn,
-    int* hreturn, int* lreturn);
-
-void xpm_print(char** xpm);
-
-void strrevert(char*, size_t);
-
 void xpm_destroy(char** data);
+
+#ifdef __cplusplus
+}
+#endif

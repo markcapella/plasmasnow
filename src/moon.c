@@ -32,7 +32,7 @@
 #include <stdlib.h>
 
 #define LEAVE_IF_INACTIVE \
-    if (!Flags.Moon || !WorkspaceActive()) \
+    if (!Flags.Moon || !isWorkspaceActive()) \
     return TRUE
 
 static int do_umoon();

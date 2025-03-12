@@ -21,39 +21,12 @@
 */
 #pragma once
 
-
-/***********************************************************
- * Module Method stubs.
- */
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-    void startColorPicker(char* consumerTag,
-        int xPos, int yPos);
-    void clearColorPicker();
-
-    bool isColorPickerActive();
-    bool isColorPickerConsumer(char* consumerTag);
-
-    bool isColorPickerResultAvailable();
-    void setColorPickerResultAvailable(bool value);
-
-    int getColorPickerResultRed();
-    void setColorPickerResultRed(int value);
-
-    int getColorPickerResultGreen();
-    void setColorPickerResultGreen(int value);
-
-    int getColorPickerResultBlue();
-    void setColorPickerResultBlue(int value);
-
-    int getColorPickerResultAlpha();
-    void setColorPickerResultAlpha(int value);
-
-    void addColorPickerToWindowImage(XImage* windowImage,
-        XImage* pickerImage, bool shouldHideArrow);
+    double getWallClockMono();
+    double getWallClockReal();
 
 #ifdef __cplusplus
 }

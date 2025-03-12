@@ -19,11 +19,28 @@
 #-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-# 
 */
-#include "clocks.h"
-#include <gtk/gtk.h>
-#include <pthread.h>
-#include <stdlib.h>
+#pragma once
 
-double wallcl() { return (double)g_get_real_time() * 1.0e-6; }
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-double wallclock() { return (double)g_get_monotonic_time() * 1.0e-6; }
+    StormItem* createStormItem(int type);
+    void addStormItemToItemset(StormItem*);
+
+    int updateStormItemOnThread(StormItem*);
+
+    int drawAllStormItemsInItemset(cairo_t*);
+    void eraseStormItemInItemset(StormItem*);
+    int removeAllStormItemsInItemset();
+    void removeStormItemInItemset(StormItem*);
+
+    bool isStormItemFallen(StormItem*,
+        int xPosition, int yPosition);
+    void setStormItemFluffState(StormItem*, float state);
+
+    void logStormItem(StormItem*);
+
+#ifdef __cplusplus
+}
+#endif

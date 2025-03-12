@@ -313,7 +313,7 @@ int do_usanta() {
         return TRUE; \
     } while (0)
 
-    if (!WorkspaceActive()) {
+    if (!isWorkspaceActive()) {
         RETURN;
     }
     if (Flags.NoSanta && !Flags.FollowSanta) {
@@ -377,7 +377,7 @@ int do_usanta() {
     if (sdt > 2.0 * 50.0 / mSantaSpeed || sdt > 2.0) {
         // time to change yspeed
         sdt = 0;
-        yspeeddir = randint(3) - 1; //  -1, 0, 1
+        yspeeddir = randomIntegerUpTo(3) - 1; //  -1, 0, 1
         if (SantaYr < santayrmin + 20) {
             yspeeddir = 2;
         }
@@ -453,7 +453,7 @@ void ResetSanta() {
     }
 
     SantaXr = mGlobal.SantaX;
-    mGlobal.SantaY = randint(mGlobal.SnowWinHeight / 3) + 40;
+    mGlobal.SantaY = randomIntegerUpTo(mGlobal.SnowWinHeight / 3) + 40;
     MoonSeeking = drand48() > 0.5;
 
     int ms;
@@ -465,9 +465,9 @@ void ResetSanta() {
     }
 
     if (ms) {
-        mGlobal.SantaY = randint(Flags.MoonSize + 40) + mGlobal.moonY - 20;
+        mGlobal.SantaY = randomIntegerUpTo(Flags.MoonSize + 40) + mGlobal.moonY - 20;
     } else {
-        mGlobal.SantaY = randint(mGlobal.SnowWinHeight / 3) + 40;
+        mGlobal.SantaY = randomIntegerUpTo(mGlobal.SnowWinHeight / 3) + 40;
     }
 
     SantaYr = mGlobal.SantaY;

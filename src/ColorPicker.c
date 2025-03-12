@@ -56,7 +56,8 @@ Window mColorPickerWindow;
 /** ********************************************************
  ** This method starts a ColorPicker widget.
  **/
-void startColorPicker(char* consumerTag, int xPos, int yPos) {
+void startColorPicker(char* consumerTag,
+    int xPos, int yPos) {
     if (isColorPickerActive()) {
         return;
     }

@@ -51,14 +51,14 @@ libxdo_a_SOURCES = xdo.c xdo_search.c xdo.h xdo_util.h xdo_version.h
 
 plasmasnow_SOURCES = \
 		Application.c Aurora.c birds.c Blowoff.c clientwin.c \
-		clocks.c ColorPicker.c csvpos.c docs.c dsimple.c \
+		ClockHelper.c ColorPicker.c csvpos.c docs.c dsimple.c \
 		FallenSnow.c Flags.c hashtable.cpp ixpm.c kdtree.c \
 		Lights.cpp LoadMeasure.c MainWindow.c mainstub.cpp \
 		meteor.c MsgBox.cpp moon.c pixmaps.c safe_malloc.c \
 		Santa.c scenery.c selfrep.c SplashPage.cpp \
-		spline_interpol.c Stars.c Storm.c StormWindow.c \
-		treesnow.c ui.glade Utils.c wind.c Windows.c \
-		WindowVector.c WinInfo.c
+		spline_interpol.c Stars.c Storm.cpp StormItem.cpp \
+		StormWindow.c treesnow.c ui.glade Utils.c wind.c \
+		Windows.c WindowVector.c WinInfo.c
 
 nodist_plasmasnow_SOURCES = ui_xml.h snow_includes.h
 

@@ -33,83 +33,90 @@
 
 #include "PlasmaSnow.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-// Fallensnow lifecycle helpers.
-void initFallenSnowModule();
+    // Fallensnow lifecycle helpers.
+    void initFallenSnowModule();
 
-// FallenSnow Max ColumnHeight Thread.
-int updateFallenSnowMaxColumnHeightThread();
-void setColumnMaxHeightListForFallen(FallenSnow*);
+    // FallenSnow Max ColumnHeight Thread.
+    int updateFallenSnowMaxColumnHeightThread();
+    void setColumnMaxHeightListForFallen(FallenSnow*);
 
-// FallenSnow columnHeight Thread.
-int updateFallenSnowColumnHeightThread();
+    // FallenSnow columnHeight Thread.
+    int updateFallenSnowColumnHeightThread();
 
-// Fallensnow main Thread.
-void* startFallenSnowBackgroundThread();
-int execFallenSnowBackgroundThread();
-int canSnowCollectOnFallen(FallenSnow*);
-bool isFallenSnowVisible(FallenSnow*);
-bool isFallenSnowVisibleOnWorkspace(FallenSnow*);
-void removePlowedSnowFromFallen(FallenSnow*);
-void renderFallenSnow(FallenSnow*);
-void swapFallenSnowRenderedSurfaces();
+    // Fallensnow main Thread.
+    void* startFallenSnowBackgroundThread();
+    int execFallenSnowBackgroundThread();
+    int canSnowCollectOnFallen(FallenSnow*);
+    bool isFallenSnowVisible(FallenSnow*);
+    bool isFallenSnowVisibleOnWorkspace(FallenSnow*);
+    void removePlowedSnowFromFallen(FallenSnow*);
+    void renderFallenSnow(FallenSnow*);
+    void swapFallenSnowRenderedSurfaces();
 
-// User settings helpers.
-void respondToFallenSnowSettingsChanges();
-void updateFallenSnowDesktopItemDepth();
-void updateFallenSnowDesktopItemHeight();
+    // User settings helpers.
+    void respondToFallenSnowSettingsChanges();
+    void updateFallenSnowDesktopItemDepth();
+    void updateFallenSnowDesktopItemHeight();
 
-// Snow interactions.
-void updateFallenSnowWithSnow(FallenSnow*, int x, int w);
+    // Snow interactions.
+    void updateFallenSnowWithSnow(FallenSnow*, int x, int w);
 
-// Wind interactions.
-void blowoffSnowFromFallen(FallenSnow*, int w, int h);
-void eraseFallenSnowWindPixel(FallenSnow*, int x);
+    // Wind interactions.
+    void blowoffSnowFromFallen(FallenSnow*, int w, int h);
+    void eraseFallenSnowWindPixel(FallenSnow*, int x);
 
-// Santa plow interations.
-void blowoffPlowedSnowFromFallen(FallenSnow* fsnow);
-void createPlowedStormItems(FallenSnow* fsnow, int xPos,
-    int yPos1, int yPos2);
+    // Santa plow interations.
+    void blowoffPlowedSnowFromFallen(FallenSnow* fsnow);
+    void createPlowedStormItems(FallenSnow* fsnow, int xPos,
+        int yPos1, int yPos2);
 
-// Main "draw frame" routine for fallen snow.
-void drawFallenSnowFrame(cairo_t*);
+    // Main "draw frame" routine for fallen snow.
+    void drawFallenSnowFrame(cairo_t*);
 
-// Fallensnow egeneral helpers.
-FallenSnow* findFallenSnowItemByWindow(Window);
-void eraseFallenSnow(FallenSnow*);
-void eraseFallenSnowPartial(FallenSnow*, int x, int w);
-int getMaximumFallenSnowColumnHeight(FallenSnow*);
-void removeFallenSnowFromAllWindows();
-void removeFallenSnowFromWindow(Window);
-int removeAndFreeFallenSnowForWindow(FallenSnow**,
-    Window);
-void generateFallenSnowFlakes(FallenSnow* fsnow,
-    int xPos, int xWidth, float vy, bool limitToMax);
+    // Fallensnow egeneral helpers.
+    FallenSnow* findFallenSnowItemByWindow(Window);
+    void eraseFallenSnow(FallenSnow*);
+    void eraseFallenSnowPartial(FallenSnow*, int x, int w);
+    int getMaximumFallenSnowColumnHeight(FallenSnow*);
+    void removeFallenSnowFromAllWindows();
+    void removeFallenSnowFromWindow(Window);
+    int removeAndFreeFallenSnowForWindow(FallenSnow**,
+        Window);
+    void generateFallenSnowFlakes(FallenSnow* fsnow,
+        int xPos, int xWidth, float vy, bool limitToMax);
 
-// WinInfo change watchers.
-void doAllFallenSnowWinInfoUpdates();
-void doWinInfoWSHides();
-void doWinInfoInitialAdds();
-bool windowIsTransparent(Window chromeWindow);
-void doWinInfoRemoves();
-void doWinInfoProgrammaticRemoves();
+    // WinInfo change watchers.
+    void doAllFallenSnowWinInfoUpdates();
+    void doWinInfoWSHides();
+    void doWinInfoInitialAdds();
+    bool windowIsTransparent(Window chromeWindow);
+    void doWinInfoRemoves();
+    void doWinInfoProgrammaticRemoves();
 
-// FallenSnow Linked list Helpers.
-int getFallenSnowItemcount();
-void clearAllFallenSnowItems();
-void pushFallenSnowItem(FallenSnow**, WinInfo*,
-    int x, int y, int w, int h);
-void popAndFreeFallenSnowItem(FallenSnow**);
-void freeFallenSnowItem(FallenSnow*);
+    // FallenSnow Linked list Helpers.
+    int getFallenSnowItemcount();
+    void clearAllFallenSnowItems();
+    void pushFallenSnowItem(FallenSnow**, WinInfo*,
+        int x, int y, int w, int h);
+    void popAndFreeFallenSnowItem(FallenSnow**);
+    void freeFallenSnowItem(FallenSnow*);
 
-// Lock support.
-void initFallenSnowSemaphores();
-int softLockFallenSnowBaseSemaphore(int softTrys, int* tryCount);
-int lockFallenSnowBaseSemaphore();
-int unlockFallenSnowSwapSemaphore();
-int lockFallenSnowSwapSemaphore();
-int unlockFallenSnowBaseSemaphore();
+    // Lock support.
+    void initFallenSnowSemaphores();
+    int softLockFallenSnowBaseSemaphore(int softTrys, int* tryCount);
+    int lockFallenSnowBaseSemaphore();
+    int unlockFallenSnowSwapSemaphore();
+    int lockFallenSnowSwapSemaphore();
+    int unlockFallenSnowBaseSemaphore();
 
-// Other module helpers.
-void logAllFallenSnowItems();
-void logFallenSnowItem(FallenSnow*);
+    // Other module helpers.
+    void logAllFallenSnowItems();
+    void logFallenSnowItem(FallenSnow*);
+
+#ifdef __cplusplus
+}
+#endif

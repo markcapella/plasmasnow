@@ -162,7 +162,7 @@ void setAllBulbLayers() {
     mLightLayer.clear();
 
     for (int i = 0; i < getBulbCount(); i++) {
-        mLightLayer.push_back(randint(2));
+        mLightLayer.push_back(randomIntegerUpTo(2));
     }
 }
 
@@ -265,7 +265,7 @@ gboolean updateLightsFrame(__attribute__
     int colorType = getFirstUserSelectedColor();
     if (colorType != GRAYED) {
         for (int i = 0; i < getBulbCount(); i++) {
-            if (randint(5) == 0) {
+            if (randomIntegerUpTo(5) == 0) {
                 mBulbColorBright[i] = getTwinklingBright(colorType);
                 mBulbColorNormal[i] = getTwinklingNormal(colorType);
                 mBulbColorDark[i] = getTwinklingDark(colorType);
@@ -803,9 +803,9 @@ GdkRGBA getTwinkledColorTypeFrom(GdkRGBA seed) {
 double getFuzzyRGBInt(double color) {
     const int RANGE_ABOVE_AND_BELOW = 45;
 
-    const int newColor = randint(2) == 0 ?
-        color + randint(RANGE_ABOVE_AND_BELOW) :
-        color - randint(RANGE_ABOVE_AND_BELOW);
+    const int newColor = randomIntegerUpTo(2) == 0 ?
+        color + randomIntegerUpTo(RANGE_ABOVE_AND_BELOW) :
+        color - randomIntegerUpTo(RANGE_ABOVE_AND_BELOW);
 
     return min(max(newColor, 0x00), 0xff);
 }

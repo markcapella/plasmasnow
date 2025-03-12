@@ -33,7 +33,7 @@
 
 #include "birdglobals.h"
 #include "birds.h"
-#include "clocks.h"
+#include "ClockHelper.h"
 #include "ColorPicker.h"
 #include "doitb.h"
 #include "Flags.h"
@@ -137,7 +137,7 @@ void birds_ui() {
     );
 
     if (isColorPickerActive() &&
-        isColorPickerConsumer("BirdsColor") &&
+        isColorPickerConsumer(getBirdsColorTag()) &&
         isColorPickerResultAvailable()) {
         char sbuffer[16];
         snprintf(sbuffer, 16, "#%02x%02x%02x",
@@ -269,7 +269,7 @@ void birds_set_scale() { createAttractionPointSurface(); }
 
 void *updateBirdSpeed() {
     while (1) {
-        if (!(Flags.shutdownRequested || (!Flags.ShowBirds || blobals.freeze || !WorkspaceActive()))) {
+        if (!(Flags.shutdownRequested || (!Flags.ShowBirds || blobals.freeze || !isWorkspaceActive()))) {
 
             lock();
             kd_free(kd);
@@ -419,7 +419,7 @@ int do_update_pos_birds() {
     if (Flags.shutdownRequested) {
         return false;
     }
-    if (!Flags.ShowBirds || blobals.freeze || !WorkspaceActive()) {
+    if (!Flags.ShowBirds || blobals.freeze || !isWorkspaceActive()) {
         return true;
     }
 
@@ -444,7 +444,7 @@ int do_update_pos_birds() {
 }
 
 int birds_draw(cairo_t *cr) {
-    if (!Flags.ShowBirds || blobals.freeze || !WorkspaceActive()) {
+    if (!Flags.ShowBirds || blobals.freeze || !isWorkspaceActive()) {
         return true;
     }
 
@@ -667,7 +667,7 @@ int birds_erase(int force) {
         return TRUE;
     }
     if (!force) {
-        if (!Flags.ShowBirds || blobals.freeze || !WorkspaceActive()) {
+        if (!Flags.ShowBirds || blobals.freeze || !isWorkspaceActive()) {
             return true;
         }
     }
@@ -691,7 +691,7 @@ int attrbird_erase(int force) {
         return TRUE;
     }
     if (!force) {
-        if (!Flags.ShowBirds || blobals.freeze || !WorkspaceActive()) {
+        if (!Flags.ShowBirds || blobals.freeze || !isWorkspaceActive()) {
             return true;
         }
     }
@@ -771,7 +771,7 @@ static int do_wings() {
     if (Flags.shutdownRequested) {
         return FALSE;
     }
-    if (!Flags.ShowBirds || blobals.freeze || !WorkspaceActive()) {
+    if (!Flags.ShowBirds || blobals.freeze || !isWorkspaceActive()) {
         return true;
     }
 

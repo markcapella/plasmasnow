@@ -85,9 +85,9 @@ void initStarsModuleArrays() {
 
     for (int i = 0; i < mNumberOfStars; i++) {
         StarCoordinate* star = &mStarCoordinates[i];
-        star->x = randint(mGlobal.SnowWinWidth);
-        star->y = randint(mGlobal.SnowWinHeight / 4);
-        star->color = randint(STARANIMATIONS);
+        star->x = randomIntegerUpTo(mGlobal.SnowWinWidth);
+        star->y = randomIntegerUpTo(mGlobal.SnowWinHeight / 4);
+        star->color = randomIntegerUpTo(STARANIMATIONS);
     }
 }
 
@@ -158,24 +158,24 @@ int updateStarsFrame() {
     if (Flags.shutdownRequested) {
         return FALSE;
     }
-    if (!WorkspaceActive()) {
+    if (!isWorkspaceActive()) {
         return TRUE;
     }
 
     // Change color of 1/5 stars.
     for (int i = 0; i < mNumberOfStars; i++) {
-        if (randint(5) == 0) {
+        if (randomIntegerUpTo(5) == 0) {
             StarCoordinate* star = &mStarCoordinates[i];
-            star->color = randint(STARANIMATIONS);
+            star->color = randomIntegerUpTo(STARANIMATIONS);
         }
     }
 
     // Change position of 1/50 stars.
     for (int i = 0; i < mNumberOfStars; i++) {
-        if (randint(50) == 0) {
+        if (randomIntegerUpTo(50) == 0) {
             StarCoordinate* star = &mStarCoordinates[i];
-            star->x = randint(mGlobal.SnowWinWidth);
-            star->y = randint(mGlobal.SnowWinHeight / 4);
+            star->x = randomIntegerUpTo(mGlobal.SnowWinWidth);
+            star->y = randomIntegerUpTo(mGlobal.SnowWinHeight / 4);
         }
     }
 

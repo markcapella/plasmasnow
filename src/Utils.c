@@ -151,6 +151,9 @@ float fsignf(float x) {
     return 0.0f;
 }
 
+/***********************************************************
+ ** This method ...
+ **/
 int ValidColor(const char *colorName) {
     XColor scrncolor;
     XColor exactcolor;
@@ -160,6 +163,9 @@ int ValidColor(const char *colorName) {
             colorName, &scrncolor, &exactcolor));
 }
 
+/***********************************************************
+ ** This method ...
+ **/
 Pixel AllocNamedColor(const char *colorName, Pixel dfltPix) {
     XColor scrncolor;
     XColor exactcolor;
@@ -172,18 +178,29 @@ Pixel AllocNamedColor(const char *colorName, Pixel dfltPix) {
     }
 }
 
+/***********************************************************
+ ** This method ...
+ **/
 Pixel IAllocNamedColor(const char *colorName, Pixel dfltPix) {
     return AllocNamedColor(colorName, dfltPix) | 0xff000000;
 }
 
-int randint(int m) {
+/***********************************************************
+ ** This method ...
+ **/
+int randomIntegerUpTo(int m) {
     if (m <= 0) {
         return 0;
     }
     return drand48() * m;
 }
+
+/***********************************************************
+ ** This method ...
+ **/
 // https://www.alanzucconi.com/2015/09/16/how-to-sample-from-a-gaussian-distribution/
 // Interesting but not used now in app
+
 double gaussian(double mean, double std, double min, double max) {
     double x;
     do {
@@ -198,7 +215,9 @@ double gaussian(double mean, double std, double min, double max) {
     return x;
 }
 
-
+/***********************************************************
+ ** This method ...
+ **/
 void remove_from_mainloop(guint *tag) {
     if (*tag) {
         g_source_remove(*tag);
@@ -206,6 +225,9 @@ void remove_from_mainloop(guint *tag) {
     *tag = 0;
 }
 
+/***********************************************************
+ ** This method ...
+ **/
 int is_little_endian(void) {
     volatile int endiantest = 1;
     return (*(char *)&endiantest) == 1;

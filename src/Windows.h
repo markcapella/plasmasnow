@@ -38,7 +38,7 @@ extern "C" {
 
     void addWindowsModuleToMainloop(void);
 
-    int WorkspaceActive();
+    int isWorkspaceActive();
 
     void initDisplayDimensions();
     void updateDisplayDimensions(void);

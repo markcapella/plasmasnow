@@ -25,7 +25,7 @@
 
 #include <gtk/gtk.h>
 
-#include "clocks.h"
+#include "ClockHelper.h"
 #include "Flags.h"
 #include "LoadMeasure.h"
 #include "MainWindow.h"
@@ -64,7 +64,7 @@ void startLoadMeasureBackgroundThread() {
  ** Enable or disable CSS "Busy" Style.
  **/
 int updateLoadMeasureThread() {
-    double tnow = wallclock();
+    double tnow = getWallClockMono();
     if ((tnow - mLoadMeasurePrevThreadStart) >
         (TIME_BETWEEN_LOADMEASURE_UPDATES * EXCESSIVE_LOAD_MONITOR_TIME_PCT)) {
         mLoadPressure++;

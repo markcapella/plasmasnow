@@ -26,7 +26,7 @@
 #include <X11/Intrinsic.h>
 #include <gtk/gtk.h>
 
-#include "clocks.h"
+#include "ClockHelper.h"
 #include "debug.h"
 #include "Flags.h"
 #include "MainWindow.h"
@@ -77,7 +77,7 @@ int eraseMeteorFrame() {
         return FALSE;
     }
 
-    if (!meteor.active || !WorkspaceActive()) {
+    if (!meteor.active || !isWorkspaceActive()) {
         return TRUE;
     }
 
@@ -116,16 +116,16 @@ int updateMeteorFrame() {
         return FALSE;
     }
 
-    if (!(!WorkspaceActive() || meteor.active || Flags.NoMeteors)) {
-        meteor.x1 = randint(mGlobal.SnowWinWidth);
-        meteor.y1 = randint(mGlobal.SnowWinHeight / 4);
+    if (!(!isWorkspaceActive() || meteor.active || Flags.NoMeteors)) {
+        meteor.x1 = randomIntegerUpTo(mGlobal.SnowWinWidth);
+        meteor.y1 = randomIntegerUpTo(mGlobal.SnowWinHeight / 4);
         meteor.x2 = meteor.x1 + mGlobal.SnowWinWidth / 10 -
-                    randint(mGlobal.SnowWinWidth / 5);
+                    randomIntegerUpTo(mGlobal.SnowWinWidth / 5);
         if (meteor.x2 == meteor.x1) {
             meteor.x2 += 5;
         }
         meteor.y2 = meteor.y1 + mGlobal.SnowWinHeight / 5 -
-                    randint(mGlobal.SnowWinHeight / 5);
+                    randomIntegerUpTo(mGlobal.SnowWinHeight / 5);
         if (meteor.y2 == meteor.y1) {
             meteor.y2 += 5;
         }

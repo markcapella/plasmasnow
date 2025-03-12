@@ -24,7 +24,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "clocks.h"
+#include "ClockHelper.h"
 #include "debug.h"
 #include "Flags.h"
 #include "Utils.h"
@@ -65,7 +65,7 @@ int do_newwind() {
     if (Flags.shutdownRequested) {
         return FALSE;
     }
-    if (!WorkspaceActive()) {
+    if (!isWorkspaceActive()) {
         return TRUE;
     }
     //
@@ -77,7 +77,7 @@ int do_newwind() {
     }
     static double t0 = -1;
     if (t0 < 0) {
-        t0 = wallclock();
+        t0 = getWallClockMono();
         return TRUE;
     }
 
@@ -110,7 +110,7 @@ int do_wind() {
     if (Flags.shutdownRequested) {
         return FALSE;
     }
-    if (!WorkspaceActive()) {
+    if (!isWorkspaceActive()) {
         return TRUE;
     }
     if (Flags.NoWind) {
@@ -119,7 +119,7 @@ int do_wind() {
     static int first = 1;
     static double prevtime;
 
-    double NOW = wallclock();
+    double NOW = getWallClockMono();
     if (first) {
         prevtime = NOW;
         ;

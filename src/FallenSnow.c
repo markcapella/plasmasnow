@@ -45,6 +45,7 @@
 #include "Santa.h"
 #include "spline_interpol.h"
 #include "Storm.h"
+#include "StormItem.h"
 #include "Utils.h"
 #include "WindowVector.h"
 #include "wind.h"
@@ -202,7 +203,7 @@ void* startFallenSnowBackgroundThread() {
  ** This method is FallenSnow background thread executor.
  **/
 int execFallenSnowBackgroundThread() {
-    if (!WorkspaceActive()) {
+    if (!isWorkspaceActive()) {
         return 0;
     }
     if (Flags.NoSnowFlakes) {
@@ -575,7 +576,7 @@ void updateFallenSnowDesktopItemHeight() {
 void updateFallenSnowWithSnow(FallenSnow* fsnow,
     int position, int width) {
 
-    if (!WorkspaceActive() || Flags.NoSnowFlakes ||
+    if (!isWorkspaceActive() || Flags.NoSnowFlakes ||
         (Flags.NoKeepSnowOnWindows && Flags.NoKeepSnowOnBottom)) {
         return;
     }
@@ -666,7 +667,7 @@ void updateFallenSnowWithSnow(FallenSnow* fsnow,
  **/
 void blowoffSnowFromFallen(FallenSnow* fsnow,
     int w, int h) {
-    const int x = randint(fsnow->w - w);
+    const int x = randomIntegerUpTo(fsnow->w - w);
 
     for (int i = x; i < x + w; i++) {
         if (fsnow->columnHeightList[i] > h) {
@@ -752,7 +753,7 @@ void createPlowedStormItems(FallenSnow* fsnow, int xPos,
 
     // Create up to 10 blown items in an upper and
     // lower stream.
-    const int PLOWED_ITEMS_TO_CREATE = 10;
+    const int PLOWED_ITEMS_TO_CREATE = 20;
 
     for (int i = 0; i < PLOWED_ITEMS_TO_CREATE; i++) {
         StormItem* flake = createStormItem(-1);
@@ -761,7 +762,7 @@ void createPlowedStormItems(FallenSnow* fsnow, int xPos,
         flake->yRealPosition = yPos1;
         flake->xVelocity = -0.1 * fsignf(mGlobal.NewWind) *
             mGlobal.WindMax;
-        flake->yVelocity = -randint(6) - 10;
+        flake->yVelocity = -randomIntegerUpTo(6) - 60;
         addStormItemToItemset(flake);
 
         StormItem* flake2 = createStormItem(-1);
@@ -770,7 +771,7 @@ void createPlowedStormItems(FallenSnow* fsnow, int xPos,
         flake2->yRealPosition = yPos2;
         flake2->xVelocity = -0.1 * fsignf(mGlobal.NewWind) *
             mGlobal.WindMax;
-        flake2->yVelocity = -randint(6) - 10;
+        flake2->yVelocity = -randomIntegerUpTo(6) - 60;
         addStormItemToItemset(flake2);
     }
 }
@@ -780,7 +781,7 @@ void createPlowedStormItems(FallenSnow* fsnow, int xPos,
  ** Draw all rendered fallensnow from surfaceA.
  **/
 void drawFallenSnowFrame(cairo_t* cr) {
-    if (!WorkspaceActive() || Flags.NoSnowFlakes ||
+    if (!isWorkspaceActive() || Flags.NoSnowFlakes ||
         (Flags.NoKeepSnowOnWindows && Flags.NoKeepSnowOnBottom)) {
         return;
     }
