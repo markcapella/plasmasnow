@@ -106,6 +106,7 @@
     DOIT_I(WhirlTimer, 30, 30)                                                 \
     \
     DOIT_I(Screen, -1, -1) \
+    DOIT_I(LightsShape, 0, 0) \
     DOIT_I(AllWorkspaces, 1, 1) \
     DOIT_I(mAppTheme, 1, 1) \
     DOIT_I(Outline, 0, 0) \

@@ -1,5 +1,5 @@
 /* XPM */
-XPM_TYPE *eland_xpm[] = {
+XPM_TYPE *moose_xpm[] = {
 "100 100 766 2",
 "  	c None",
 ". 	c #010000",

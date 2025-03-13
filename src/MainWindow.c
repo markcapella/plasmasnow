@@ -166,6 +166,7 @@
 #include "ColorPicker.h"
 #include "csvpos.h"
 #include "Flags.h"
+#include "Lights.h"
 #include "MainWindow.h"
 #include "mygettext.h"
 #include "pixmaps.h"
@@ -994,23 +995,34 @@ void set_tree_buttons() {
 }
 
 /***********************************************************
- ** Helpers.
+ ** CombmoBox Helpers.
  **/
 
 MODULE_EXPORT
 void combo_screen(GtkComboBoxText *combo, gpointer data) {
-    const int num = gtk_combo_box_get_active(
+    const int NUM = gtk_combo_box_get_active(
         GTK_COMBO_BOX(combo));
 
-    Flags.Screen = num - 1;
+    Flags.Screen = NUM - 1;
 }
 
 MODULE_EXPORT
 void onSelectedLanguageButton(GtkComboBoxText *combo, gpointer data) {
-    const int num = gtk_combo_box_get_active(
+    const int NUM = gtk_combo_box_get_active(
         GTK_COMBO_BOX(combo));
 
-    Flags.Language = strdup(lang[num]);
+    Flags.Language = strdup(lang[NUM]);
+}
+
+MODULE_EXPORT
+void onSelectedLightsShape(GtkComboBoxText *combo,
+     __attribute__((unused)) gpointer data) {
+
+    Flags.LightsShape = gtk_combo_box_get_active(
+        GTK_COMBO_BOX(combo));
+    WriteFlags();
+
+    initLightsModule();
 }
 
 /***********************************************************
@@ -1085,7 +1097,7 @@ void setTabDefaults(int tab) {
         Flags.StormItemColor2 = DefaultFlags.StormItemColor2;
     }
 
-    // Lights module on Tab #2 (Xmas/Santa).
+    // Lights module on Tab #2 (Holidays).
     if (tab == 2) {
         // Default which light colors are active.
         Flags.ShowLightColorRed = DefaultFlags.ShowLightColorRed;
@@ -1364,8 +1376,7 @@ void createMainWindow() {
 
     char *s = NULL;
     int p = 0;
-    int i;
-    for (i = 0; i < Nscreens; i++) {
+    for (int i = 0; i < Nscreens; i++) {
         snprintf(sbuffer, nsbuffer, _("monitor %d"), i);
         s = (char *)realloc(s, p + 1 + strlen(sbuffer));
         strcpy(&s[p], sbuffer);
@@ -1377,6 +1388,27 @@ void createMainWindow() {
 
     gtk_combo_box_set_active(GTK_COMBO_BOX(ScreenButton), Flags.Screen + 1);
     g_signal_connect(ScreenButton, "changed", G_CALLBACK(combo_screen), NULL);
+
+    /**
+     ** StormShapes ComboBox.
+     **/
+    GtkComboBoxText* lightsShapeComboBox =
+        GTK_COMBO_BOX_TEXT(gtk_builder_get_object(
+        builder, "id-LightsShape"));
+
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(
+        lightsShapeComboBox), "    Xmas Lights ");
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(
+        lightsShapeComboBox), "Plain Easter Eggs ");
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(
+        lightsShapeComboBox), "    Easter Eggs ");
+
+    // Set Active selection from pref.
+    gtk_combo_box_set_active(GTK_COMBO_BOX(lightsShapeComboBox),
+        Flags.LightsShape);
+
+    g_signal_connect(lightsShapeComboBox, "changed",
+        G_CALLBACK(onSelectedLightsShape), NULL);
 
     /**
      ** Languages.
@@ -1406,15 +1438,15 @@ void createMainWindow() {
     }
 
     gtk_combo_box_set_active(GTK_COMBO_BOX(LangButton), 0);
-    for (i = 0; i < nlang; i++) {
+    for (int i = 0; i < nlang; i++) {
         if (!strcmp(lang[i], Flags.Language)) {
             gtk_combo_box_set_active(GTK_COMBO_BOX(LangButton), i);
             break;
         }
     }
 
-    g_signal_connect(
-        LangButton, "changed", G_CALLBACK(onSelectedLanguageButton), NULL);
+    g_signal_connect(LangButton, "changed",
+        G_CALLBACK(onSelectedLanguageButton), NULL);
     if (strlen(LANGUAGES) == 0) {
         gtk_widget_destroy(GTK_WIDGET(LangButton));
     }

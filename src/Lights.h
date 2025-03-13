@@ -29,7 +29,7 @@
 /***********************************************************
  * Module Method stubs.
  */
-typedef int BULB_COLOR_TYPE;
+typedef int LIGHT_COLOR_TYPE;
 
 #ifdef __cplusplus
 extern "C" {
@@ -54,11 +54,11 @@ extern "C" {
      int getYPosForBulbNumber(int bulbNumber);
 
      bool hasTheUserSelectedAnyColors();
-     bool hasUserSelectedColor(BULB_COLOR_TYPE colorType);
+     bool hasUserSelectedColor(LIGHT_COLOR_TYPE colorType);
 
-     BULB_COLOR_TYPE getFirstUserSelectedColor();
-     BULB_COLOR_TYPE getNextUserSelectedColorAfter(
-          BULB_COLOR_TYPE thisColor);
+     LIGHT_COLOR_TYPE getFirstUserSelectedColor();
+     LIGHT_COLOR_TYPE getNextUserSelectedColorAfter(
+          LIGHT_COLOR_TYPE thisColor);
 
      void createColoredBulb(GdkRGBA bright,
           GdkRGBA normal, GdkRGBA dark,
@@ -66,9 +66,9 @@ extern "C" {
      void destroyColoredBulb(char** xpmStrings);
 
      // Routine helpers.
-     GdkRGBA getTwinklingBright(BULB_COLOR_TYPE colorType);
-     GdkRGBA getTwinklingNormal(BULB_COLOR_TYPE colorType);
-     GdkRGBA getTwinklingDark(BULB_COLOR_TYPE colorType);
+     GdkRGBA getTwinklingBright(LIGHT_COLOR_TYPE colorType);
+     GdkRGBA getTwinklingNormal(LIGHT_COLOR_TYPE colorType);
+     GdkRGBA getTwinklingDark(LIGHT_COLOR_TYPE colorType);
 
      GdkRGBA getTwinklingRedBright();
      GdkRGBA getTwinklingRedNormal();

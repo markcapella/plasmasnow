@@ -432,7 +432,13 @@ int startApplication(int argc, char *argv[]) {
     initBlowoffModule();
     wind_init();
     Santa_init();
+
+    // Init lights, start it's callbacks.
     initLightsModule();
+    addMethodToMainloop(PRIORITY_DEFAULT,
+        TIME_BETWEEN_LIGHTS_FRAME_UPDATES,
+        updateLightsFrame);
+
     InitSnowOnTrees();
     treesnow_init();
     initSceneryModule();

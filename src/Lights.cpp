@@ -43,11 +43,8 @@ using namespace std;
  ** Module globals and consts.
  **/
 
-// Lightbulb defs.
-const int LIGHTBULB_SIZE_WIDTH = 40;
-const int LIGHTBULB_SIZE_HEIGHT = 57;
 
-const int LIGHTBULB_SPACING_WIDTH = 15;
+const int LIGHT_SPACING_WIDTH = 15;
 
 const int BRIGHT_COLOR = 252;
 const int NORMAL_COLOR = 176;
@@ -70,21 +67,34 @@ const GdkRGBA DARK_GRAYED_RGBA {
     .blue = DARK_GRAY, .alpha = 0x00
 };
 
-// Light color types.
-const int MAX_BULB_COLOR_TYPES = 8;
+// Light color types. 8 selectable from
+// MainWindow buttons list.
+const int MAX_LIGHT_COLOR_TYPES = 8;
 
-const BULB_COLOR_TYPE GRAYED = -1;
-const BULB_COLOR_TYPE RED = 0;
-const BULB_COLOR_TYPE LIME = 1;
-const BULB_COLOR_TYPE PURPLE = 2;
-const BULB_COLOR_TYPE CYAN = 3;
-const BULB_COLOR_TYPE GREEN = 4;
-const BULB_COLOR_TYPE ORANGE = 5;
-const BULB_COLOR_TYPE BLUE = 6;
-const BULB_COLOR_TYPE PINK = 7;
+const LIGHT_COLOR_TYPE GRAYED = -1;
+const LIGHT_COLOR_TYPE RED = 0;
+const LIGHT_COLOR_TYPE LIME = 1;
+const LIGHT_COLOR_TYPE PURPLE = 2;
+const LIGHT_COLOR_TYPE CYAN = 3;
+const LIGHT_COLOR_TYPE GREEN = 4;
+const LIGHT_COLOR_TYPE ORANGE = 5;
+const LIGHT_COLOR_TYPE BLUE = 6;
+const LIGHT_COLOR_TYPE PINK = 7;
 
-// Gray themed template XPM (mLightShape).
+// Gray themed template LightShapes.
+#define SHAPE_LIST_COUNT 3
+
+// Individual Shapes.
 #include "Pixmaps/lightBulb.xpm"
+#include "Pixmaps/easterEggPlain.xpm"
+#include "Pixmaps/easterEgg.xpm"
+
+// Shape array.
+XPM_TYPE** mLightShapeList[SHAPE_LIST_COUNT] = {
+    mLightShape,
+    mEasterEggPlainShape,
+    mEasterEggShape
+};
 
 // Ued to track screen scale changes.
 int mCurrentAppScale = 100;
@@ -104,13 +114,10 @@ std::vector<GdkRGBA> mBulbColorDark;
  ** This method initializes the Lights module.
  **/
 void initLightsModule() {
+
     setAllBulbPositions();
     setAllBulbColors();
     setAllBulbLayers();
-
-    addMethodToMainloop(PRIORITY_DEFAULT,
-        TIME_BETWEEN_LIGHTS_FRAME_UPDATES,
-        updateLightsFrame);
 }
 
 /** ***********************************************************
@@ -120,14 +127,18 @@ void setAllBulbPositions() {
     mLightXPos.clear();
     mLightYPos.clear();
 
-    for (int i = 0; i < getBulbCount(); i++) {
-        const int xPos = getFirstBulbXPos() +
-            (i * (LIGHTBULB_SIZE_WIDTH +
-            LIGHTBULB_SPACING_WIDTH));
-        const int yPos = getYPosForBulbNumber(i);
+    // Get width of user selected shape.
+    int lightWidth = 0;
+    sscanf(mLightShapeList[Flags.LightsShape][0], "%d",
+        &lightWidth);
 
-        mLightXPos.push_back(xPos);
-        mLightYPos.push_back(yPos);
+    for (int i = 0; i < getBulbCount(); i++) {
+        const int XPOS = getFirstBulbXPos() + (i *
+            (lightWidth + LIGHT_SPACING_WIDTH));
+        const int YPOS = getYPosForBulbNumber(i);
+
+        mLightXPos.push_back(XPOS);
+        mLightYPos.push_back(YPOS);
     }
 }
 
@@ -193,7 +204,7 @@ void respondToLightsSettingsChanges() {
 
     // Detect app scale change.
     if (appScalesHaveChanged(&mCurrentAppScale)) {
-        setAllBulbPositions(); setAllBulbColors();
+        initLightsModule();
     }
 }
 
@@ -221,7 +232,7 @@ void drawLightsFrame(cairo_t* cc, int forLayer) {
             continue;
         }
 
-        // Create XPM from 3-color themed bulb.
+        // Create XPM from 3-color themed light.
         char** tempBulbXPM;
         int unusedLineCount;
 
@@ -285,10 +296,15 @@ void eraseLightsFrame() {
         return;
     }
 
+    // Get width & height of user selected shape.
+    int lightWidth = 0, lightHeight = 0;
+    sscanf(mLightShapeList[Flags.LightsShape][0], "%d %d",
+        &lightWidth, &lightHeight);
+
     for (int i = 0; i < getBulbCount(); i++) {
         clearDisplayArea(mGlobal.display, mGlobal.SnowWin,
             mLightXPos[i], mLightYPos[i],
-            LIGHTBULB_SIZE_WIDTH, LIGHTBULB_SIZE_HEIGHT,
+            lightWidth, lightHeight,
             mGlobal.xxposures);
     }
 }
@@ -298,42 +314,49 @@ void eraseLightsFrame() {
  ** to be displayed on screen.
  **/
 int getBulbCount() {
-    const int oneBulbAndColumnWidth =
-        LIGHTBULB_SIZE_WIDTH + LIGHTBULB_SPACING_WIDTH;
+    // Get width of user selected shape.
+    int lightWidth = 0;
+    sscanf(mLightShapeList[Flags.LightsShape][0], "%d",
+        &lightWidth);
 
-    const int totalBulbAndColumns =
-        mGlobal.SnowWinWidth / oneBulbAndColumnWidth;
+    const int ONE_LIGHT_AND_COLUMN_WIDTH =
+        lightWidth + LIGHT_SPACING_WIDTH;
+    const int TOTAL_LIGHT_AND_COLUMNS =
+        mGlobal.SnowWinWidth / ONE_LIGHT_AND_COLUMN_WIDTH;
 
-    return totalBulbAndColumns;
+    return TOTAL_LIGHT_AND_COLUMNS;
 }
 
 /** ***********************************************************
  ** This method returns the X position of the first (left)
- ** bulb on screen.
+ ** light on screen.
  **/
 int getFirstBulbXPos() {
-    const int oneBulbAndColumnWidth =
-        LIGHTBULB_SIZE_WIDTH + LIGHTBULB_SPACING_WIDTH;
+    // Get width of user selected shape.
+    int lightWidth = 0;
+    sscanf(mLightShapeList[Flags.LightsShape][0], "%d",
+        &lightWidth);
 
-    const int totalBulbAndColumns =
-        mGlobal.SnowWinWidth / oneBulbAndColumnWidth;
+    const int ONE_LIGHT_AND_COLUMN_WIDTH =
+        lightWidth + LIGHT_SPACING_WIDTH;
+    const int TOTAL_LIGHT_AND_COLUMNS =
+        mGlobal.SnowWinWidth / ONE_LIGHT_AND_COLUMN_WIDTH;
 
-    const int widthForMargins = mGlobal.SnowWinWidth -
-        (totalBulbAndColumns * oneBulbAndColumnWidth) +
-        LIGHTBULB_SPACING_WIDTH;
-
-    return widthForMargins / 2;
+    const int WIDTH_FOR_MARGINS = mGlobal.SnowWinWidth -
+        (TOTAL_LIGHT_AND_COLUMNS * ONE_LIGHT_AND_COLUMN_WIDTH) +
+        LIGHT_SPACING_WIDTH;
+    return WIDTH_FOR_MARGINS / 2;
 }
 
 /** ***********************************************************
  ** This method returns a bulbs Y position on screen,
- ** based on bulb number.
+ ** based on light number.
  **/
-int getYPosForBulbNumber(int bulbNumber) {
-    const bool isEven = 
-        ((int) (bulbNumber / 2) * 2 == bulbNumber);
+int getYPosForBulbNumber(int lightNumber) {
+    const bool IS_LIGHT_NUMBER_EVEN =
+        ((int) (lightNumber / 2) * 2 == lightNumber);
 
-    return isEven ? 40 : 55;
+    return IS_LIGHT_NUMBER_EVEN ? 40 : 55;
 }
 
 /** ***********************************************************
@@ -352,7 +375,7 @@ bool hasTheUserSelectedAnyColors() {
  ** This method determines if a colortype is available
  ** at a start point as selected by the user list.
  **/
-bool hasUserSelectedColor(BULB_COLOR_TYPE colorType) {
+bool hasUserSelectedColor(LIGHT_COLOR_TYPE colorType) {
 
     switch (colorType) {
         case RED: return shouldShowLightColorRed();
@@ -373,7 +396,7 @@ bool hasUserSelectedColor(BULB_COLOR_TYPE colorType) {
  ** This method returns the first colortype available
  ** as selected by the user.
  **/
-BULB_COLOR_TYPE getFirstUserSelectedColor() {
+LIGHT_COLOR_TYPE getFirstUserSelectedColor() {
     // Find @ least one.
     return hasTheUserSelectedAnyColors() ?
         getNextUserSelectedColorAfter(GRAYED) : GRAYED;
@@ -383,9 +406,8 @@ BULB_COLOR_TYPE getFirstUserSelectedColor() {
  ** This method returns the next colortype available
  ** other than the one mentioned.
  **/
-BULB_COLOR_TYPE getNextUserSelectedColorAfter(
-    BULB_COLOR_TYPE thisColor) {
-
+LIGHT_COLOR_TYPE getNextUserSelectedColorAfter(
+    LIGHT_COLOR_TYPE thisColor) {
     // Find @ least one.
     if (!hasTheUserSelectedAnyColors()) {
         return GRAYED;
@@ -396,11 +418,11 @@ BULB_COLOR_TYPE getNextUserSelectedColorAfter(
 
     while (true) {
         thisColorIndex++;
-        if (thisColorIndex == MAX_BULB_COLOR_TYPES) {
+        if (thisColorIndex == MAX_LIGHT_COLOR_TYPES) {
             thisColorIndex = getFirstUserSelectedColor();
         }
 
-        if (hasUserSelectedColor((BULB_COLOR_TYPE)
+        if (hasUserSelectedColor((LIGHT_COLOR_TYPE)
             thisColorIndex)) {
             return thisColorIndex;
         }
@@ -408,7 +430,7 @@ BULB_COLOR_TYPE getNextUserSelectedColorAfter(
 }
 
 /** ***********************************************************
- ** This method creates a 3-colored XPM bulb
+ ** This method creates a 3-colored XPM light
  ** from a gray template. All the magic. :-)
  **/
 void createColoredBulb(GdkRGBA bright, GdkRGBA normal,
@@ -430,69 +452,70 @@ void createColoredBulb(GdkRGBA bright, GdkRGBA normal,
         (int) dark.blue);
 
     // Get source image attributes.
-    const int headerStrings = 1;
-    const int colorIndex = 4;
+    const int HEADERSTRING_COUNT = 1;
+    const int COLORSTRING_INDEX = 4;
 
-    int colorStrings, dataStrings;
-    sscanf(mLightShape[0], "%*d %d %d",
+    int dataStrings, colorStrings;
+    sscanf(mLightShapeList[Flags.LightsShape][0], "%*d %d %d",
         &dataStrings, &colorStrings);
-
-    const int totalStrings = headerStrings +
+    const int ALL_STRINGS_COUNT = HEADERSTRING_COUNT +
         colorStrings + dataStrings;
 
     // Allocate space for output target XPM.
-    *targetXPM = (char**) malloc(sizeof(char*) * totalStrings);
+    *targetXPM = (char**) malloc(sizeof(char*) * ALL_STRINGS_COUNT);
     char** targetXPMArray = *targetXPM;
 
     // Copy all line data before the three color
-    // strings to be created from mLightShape source
-    // to target XPM return area.
-    for (int i = 0; i < colorIndex; i++) {
-        targetXPMArray[i] = strdup(mLightShape[i]);
+    // strings to be created from shape source to
+    // target the XPM return area.
+    for (int i = 0; i < COLORSTRING_INDEX; i++) {
+        targetXPMArray[i] = strdup(mLightShapeList[
+            Flags.LightsShape][i]);
     }
 
     // Create the three color strings to XPM return area.
-    const char* brightColorKey = "- c ";
-    const char* normalColorKey = "% c ";
-    const char* darkColorKey = ", c ";
+    const char* BRIGHT_COLOR_KEY = "- c ";
+    const char* NORMAL_COLOR_KEY = "% c ";
+    const char* DARK_COLOR_KEY = ", c ";
 
-    targetXPMArray[colorIndex + 0] = (char*) malloc(
-        strlen(brightColorKey) + strlen(brightColorValue) + 1);
-    targetXPMArray[colorIndex + 0][0] = '\0';
-    strcat(targetXPMArray[colorIndex + 0], brightColorKey);
-    strcat(targetXPMArray[colorIndex + 0], brightColorValue);
+    targetXPMArray[COLORSTRING_INDEX + 0] = (char*) malloc(
+        strlen(BRIGHT_COLOR_KEY) + strlen(brightColorValue) + 1);
+    targetXPMArray[COLORSTRING_INDEX + 0][0] = '\0';
+    strcat(targetXPMArray[COLORSTRING_INDEX + 0], BRIGHT_COLOR_KEY);
+    strcat(targetXPMArray[COLORSTRING_INDEX + 0], brightColorValue);
 
-    targetXPMArray[colorIndex + 1] = (char*) malloc(
-        strlen(normalColorKey) + strlen(normalColorValue) + 1);
-    targetXPMArray[colorIndex + 1][0] = '\0';
-    strcat(targetXPMArray[colorIndex + 1], normalColorKey);
-    strcat(targetXPMArray[colorIndex + 1], normalColorValue);
+    targetXPMArray[COLORSTRING_INDEX + 1] = (char*) malloc(
+        strlen(NORMAL_COLOR_KEY) + strlen(normalColorValue) + 1);
+    targetXPMArray[COLORSTRING_INDEX + 1][0] = '\0';
+    strcat(targetXPMArray[COLORSTRING_INDEX + 1], NORMAL_COLOR_KEY);
+    strcat(targetXPMArray[COLORSTRING_INDEX + 1], normalColorValue);
 
-    targetXPMArray[colorIndex + 2] = (char*) malloc(
-        strlen(darkColorKey) + strlen(darkColorValue) + 1);
-    targetXPMArray[colorIndex + 2][0] = '\0';
-    strcat(targetXPMArray[colorIndex + 2], darkColorKey);
-    strcat(targetXPMArray[colorIndex + 2], darkColorValue);
+    targetXPMArray[COLORSTRING_INDEX + 2] = (char*) malloc(
+        strlen(DARK_COLOR_KEY) + strlen(darkColorValue) + 1);
+    targetXPMArray[COLORSTRING_INDEX + 2][0] = '\0';
+    strcat(targetXPMArray[COLORSTRING_INDEX + 2], DARK_COLOR_KEY);
+    strcat(targetXPMArray[COLORSTRING_INDEX + 2], darkColorValue);
 
     // Copy all line data after the three color
-    // strings that were created, from mLightShape
-    // source to XPM return area.
+    // strings that were created, from shape source
+    // to XPM return area.
     const int CHANGED_COLORS = 3;
-    const int NEXT_COLOR_INDEX =
-        colorIndex + CHANGED_COLORS;
+    const int NEXT_COLOR_INDEX = COLORSTRING_INDEX +
+        CHANGED_COLORS;
 
     for (int i = NEXT_COLOR_INDEX;
-        i < totalStrings; i++) {
-        targetXPMArray[i] = strdup(mLightShape[i]);
+        i < ALL_STRINGS_COUNT; i++) {
+        targetXPMArray[i] = strdup(mLightShapeList[
+            Flags.LightsShape][i]);
     }
 
     // Return resulting XPM Line count.
-    *targetLineCount = totalStrings;
+    *targetLineCount = ALL_STRINGS_COUNT;
 }
 
 /** ***********************************************************
  ** This method destroys a previously created
- ** 3-colored XPM bulb.
+ ** 3-colored XPM light.
  **/
 void destroyColoredBulb(char** xpmStrings) {
     int dataStrings, colorStrings;
@@ -509,10 +532,9 @@ void destroyColoredBulb(char** xpmStrings) {
 
 /** ***********************************************************
  ** This method gets a "twinkling" version of a
- ** Bright bulb colorType.
+ ** Bright light colorType.
  **/
-GdkRGBA getTwinklingBright(BULB_COLOR_TYPE colorType) {
-
+GdkRGBA getTwinklingBright(LIGHT_COLOR_TYPE colorType) {
     switch (colorType) {
         case RED: return getTwinklingRedBright();
         case LIME: return getTwinklingLimeBright();
@@ -526,16 +548,14 @@ GdkRGBA getTwinklingBright(BULB_COLOR_TYPE colorType) {
         case GRAYED:
         default:
             return BRIGHT_GRAYED_RGBA;
-
     }
 }
 
 /** ***********************************************************
  ** This method gets a "twinkling" version of a
- ** Normal bulb colorType.
+ ** Normal light colorType.
  **/
-GdkRGBA getTwinklingNormal(BULB_COLOR_TYPE colorType) {
-
+GdkRGBA getTwinklingNormal(LIGHT_COLOR_TYPE colorType) {
     switch (colorType) {
         case RED: return getTwinklingRedNormal();
         case LIME: return getTwinklingLimeNormal();
@@ -554,11 +574,10 @@ GdkRGBA getTwinklingNormal(BULB_COLOR_TYPE colorType) {
 
 /** ***********************************************************
  ** This method gets a "twinkling" version of a
- ** Dark bulb colorType.
+ ** Dark light colorType.
  **/
 GdkRGBA getTwinklingDark(
-    BULB_COLOR_TYPE colorType) {
-
+    LIGHT_COLOR_TYPE colorType) {
     switch (colorType) {
         case RED: return getTwinklingRedDark();
         case LIME: return getTwinklingLimeDark();

@@ -70,7 +70,8 @@ birdl7.xpm \
 birdl8.xpm \
 candycane.xpm \
 cloverLeaf.xpm \
-eland.xpm \
+easterEggPlain.xpm \
+easterEgg.xpm \
 extratree.xpm \
 flake0.xpm \
 flake1.xpm \
@@ -93,6 +94,7 @@ MediumSantaRudolf3.xpm \
 MediumSantaRudolf4.xpm \
 moon1.xpm \
 moon2.xpm \
+moose.xpm \
 plasmasnowcolorpicker.xpm \
 plasmasnowsplash.xpm \
 plasmasnow.xpm \
@@ -110,4 +112,4 @@ rendier.xpm \
 snowtree.xpm \
 stPaddyHat.xpm \
 tannenbaum.xpm \
-tree.xpm 
+twoTrees.xpm 

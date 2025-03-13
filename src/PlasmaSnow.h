@@ -149,7 +149,7 @@ typedef struct {
 } StormItem;
 
 /***********************************************************
- * Xmas consts.
+ * Santa consts.
  */
 #define MAXSANTA           4
 #define PIXINANIMATION     4 // nr of santa animations
@@ -318,11 +318,11 @@ extern struct _mGlobal {
         int SnowWinX;
         int SnowWinY;
 
-        unsigned int MaxFlakeHeight;      /* Biggest flake */
-        unsigned int MaxFlakeWidth;       /* Biggest flake */
+        unsigned int MaxFlakeHeight; /* Biggest flake */
+        unsigned int MaxFlakeWidth;  /* Biggest flake */
 
-        int stormItemCount;                  /* number of flakes */
-        int FluffCount;                  /* number of fluff flakes */
+        int stormItemCount;          /* number of flakes */
+        int FluffCount;              /* number of fluff flakes */
 
         int SnowWinBorderWidth;
         int SnowWinWidth;
