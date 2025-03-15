@@ -1018,17 +1018,6 @@ void onSelectedLanguageButton(GtkComboBoxText *combo, gpointer data) {
     Flags.Language = strdup(lang[NUM]);
 }
 
-MODULE_EXPORT
-void onSelectedLightsShape(GtkComboBoxText *combo,
-     __attribute__((unused)) gpointer data) {
-
-    Flags.LightsShape = gtk_combo_box_get_active(
-        GTK_COMBO_BOX(combo));
-    WriteFlags();
-
-    initLightsModule();
-}
-
 /***********************************************************
  ** Helpers.
  **/
@@ -1412,7 +1401,7 @@ void createMainWindow() {
         Flags.LightsShape);
 
     g_signal_connect(lightsShapeComboBox, "changed",
-        G_CALLBACK(onSelectedLightsShape), NULL);
+        G_CALLBACK(onLightsShapeChange), NULL);
 
     /**
      ** Languages.

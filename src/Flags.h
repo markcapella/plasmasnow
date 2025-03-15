@@ -69,6 +69,16 @@ extern FLAGS OldFlags;
 extern FLAGS DefaultFlags;
 extern FLAGS VintageFlags;
 
-extern int HandleFlags(int argc, char *argv[]);
-extern void InitFlags();
-extern void WriteFlags();
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+    void InitFlags();
+    int HandleFlags(int argc, char *argv[]);
+    void WriteFlags();
+
+#ifdef __cplusplus
+}
+#endif
+

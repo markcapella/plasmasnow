@@ -432,13 +432,6 @@ int startApplication(int argc, char *argv[]) {
     initBlowoffModule();
     wind_init();
     Santa_init();
-
-    // Init lights, start it's callbacks.
-    initLightsModule();
-    addMethodToMainloop(PRIORITY_DEFAULT,
-        TIME_BETWEEN_LIGHTS_FRAME_UPDATES,
-        updateLightsFrame);
-
     InitSnowOnTrees();
     treesnow_init();
     initSceneryModule();
@@ -478,16 +471,16 @@ int startApplication(int argc, char *argv[]) {
         COLOR_BLUE, COLOR_NORMAL);
 
     gtk_main();
-    removeFallenSnowFromAllWindows();
-
-    printf("%splasmasnow: gtk_main() Finishes.%s\n",
-        COLOR_BLUE, COLOR_NORMAL);
 
     // Display termination messages to MessageBox or STDOUT.
-     printf("%s\nThanks for using plasmasnow, you rock !%s\n",
-         COLOR_GREEN, COLOR_NORMAL);
+    printf("%splasmasnow: gtk_main() Finishes.%s\n",
+        COLOR_BLUE, COLOR_NORMAL);
+    printf("%s\nThanks for using plasmasnow, you rock !%s\n",
+        COLOR_GREEN, COLOR_NORMAL);
 
     // More terminates.
+    removeFallenSnowFromAllWindows();
+    uninitLightsModule();
     if (mSnowWindowTitlebarName) {
         free(mSnowWindowTitlebarName);
     }
@@ -1020,8 +1013,7 @@ void RestartDisplay() {
     clearAllFallenSnowItems();
 
     initStarsModuleArrays();
-    setAllBulbPositions();
-
+    respondToScreenSizeChanges();
     clearAndRedrawScenery();
 
     if (!Flags.NoKeepSnowOnTrees && !Flags.NoTrees) {

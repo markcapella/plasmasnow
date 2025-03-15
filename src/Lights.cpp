@@ -42,8 +42,6 @@ using namespace std;
 /** ***********************************************************
  ** Module globals and consts.
  **/
-
-
 const int LIGHT_SPACING_WIDTH = 15;
 
 const int BRIGHT_COLOR = 252;
@@ -93,8 +91,9 @@ XPM_TYPE** mLightShapeList[] = {
     mEasterEggShape
 };
 
-// Ued to track screen scale changes.
-int mCurrentAppScale = 100;
+// Lights thread handler.
+bool mLightsThreadActive = false;
+guint mLightsThreadId = 0;
 
 // Bulb position arrays.
 std::vector<int> mLightXPos;
@@ -108,13 +107,156 @@ std::vector<GdkRGBA> mBulbColorDark;
 
 
 /** ***********************************************************
- ** This method initializes the Lights module.
+ ** Module global Public.
+ **/
+
+/** ***********************************************************
+ ** This method responds to user changing lights module
+ ** bulb shape.
+ **/
+void onLightsShapeChange(GtkComboBoxText *combo,
+     __attribute__((unused)) gpointer data) {
+    if (Flags.ShowLights) {
+        uninitLightsModule();
+    }
+
+    Flags.LightsShape = gtk_combo_box_get_active(
+        GTK_COMBO_BOX(combo));
+    WriteFlags();
+
+    if (Flags.ShowLights) {
+        initLightsModule();
+    }
+}
+
+/** ***********************************************************
+ ** This method responds to the user changing all other
+ ** lights module settings.
+ **/
+void respondToLightsSettingsChanges() {
+    // Update pref.
+    UIDO(ShowLights, setAllBulbLayers(););
+
+    UIDO(ShowLightColorRed,
+        eraseLightsFrame(); setAllBulbColors(););
+    UIDO(ShowLightColorLime,
+        eraseLightsFrame(); setAllBulbColors(););
+    UIDO(ShowLightColorPurple,
+        eraseLightsFrame(); setAllBulbColors(););
+    UIDO(ShowLightColorCyan,
+        eraseLightsFrame(); setAllBulbColors(););
+    UIDO(ShowLightColorGreen,
+        eraseLightsFrame(); setAllBulbColors(););
+    UIDO(ShowLightColorOrange,
+        eraseLightsFrame(); setAllBulbColors(););
+    UIDO(ShowLightColorBlue,
+        eraseLightsFrame(); setAllBulbColors(););
+    UIDO(ShowLightColorPink,
+        eraseLightsFrame(); setAllBulbColors(););
+}
+
+/** ***********************************************************
+ ** This method responds to OS screen size changes.
+ **
+ ** Lights module just "restrings" them left to right
+ ** to fit the new screen width.
+ **/
+void respondToScreenSizeChanges() {
+    setAllBulbPositions();
+}
+
+/** ***********************************************************
+ ** This method draws the bulbs onto the display screen.
+ **/
+void drawLowerLightsFrame(cairo_t* cc) {
+    drawLightsFrame(cc, 0);
+}
+void drawUpperLightsFrame(cairo_t* cc) {
+    drawLightsFrame(cc, 1);
+}
+
+/** ***********************************************************
+ ** This method updates the bulbs randomly to produce
+ ** Twinkling effect.
+ **/
+gboolean updateLightsFrame(__attribute__ ((unused))
+    void* data) {
+
+    // Change 1 out of 5 bulbs.
+    int colorType = getFirstUserSelectedColor();
+    if (colorType != GRAYED) {
+        for (int i = 0; i < getBulbCount(); i++) {
+            if (randomIntegerUpTo(5) == 0) {
+                mBulbColorBright[i] = getTwinklingBright(colorType);
+                mBulbColorNormal[i] = getTwinklingNormal(colorType);
+                mBulbColorDark[i] = getTwinklingDark(colorType);
+            }
+            colorType = getNextUserSelectedColorAfter(colorType);
+        }
+    }
+
+    return true;
+}
+
+/** ***********************************************************
+ ** This method erases the bulbs from the display screen.
+ **/
+void eraseLightsFrame() {
+    if (!Flags.ShowLights) {
+        return;
+    }
+
+    // Get width & height of user selected shape.
+    int lightWidth = 0, lightHeight = 0;
+    sscanf(mLightShapeList[Flags.LightsShape][0], "%d %d",
+        &lightWidth, &lightHeight);
+
+    for (int i = 0; i < getBulbCount(); i++) {
+        clearDisplayArea(mGlobal.display, mGlobal.SnowWin,
+            mLightXPos[i], mLightYPos[i],
+            lightWidth, lightHeight,
+            mGlobal.xxposures);
+    }
+}
+
+/** ***********************************************************
+ ** Module global Private.
+ **/
+
+/** ***********************************************************
+ ** This method initializes the lazy-loaded Lights module.
  **/
 void initLightsModule() {
-
+    // Set all structures.
     setAllBulbPositions();
-    setAllBulbColors();
     setAllBulbLayers();
+    setAllBulbColors();
+
+    // Start the update thread.
+    const float LIGHTS_THREAD_DELAY_IN_MS = 0.5;
+    mLightsThreadId = addMethodToMainloop(PRIORITY_DEFAULT,
+        LIGHTS_THREAD_DELAY_IN_MS, updateLightsFrame);
+
+    mLightsThreadActive = true;
+}
+
+/** ***********************************************************
+ ** This method uninitializes the Lights module.
+ **/
+void uninitLightsModule() {
+    // Clear the update thread.
+    g_source_remove(mLightsThreadId);
+
+    // Clear all structures.
+    mLightXPos.clear();
+    mLightYPos.clear();
+    mLightLayer.clear();
+
+    mBulbColorBright.clear();
+    mBulbColorNormal.clear();
+    mBulbColorDark.clear();
+
+    mLightsThreadActive = false;
 }
 
 /** ***********************************************************
@@ -136,6 +278,17 @@ void setAllBulbPositions() {
 
         mLightXPos.push_back(XPOS);
         mLightYPos.push_back(YPOS);
+    }
+}
+
+/** ***********************************************************
+ ** This method sets each bulbs Upper/Lower layer flag.
+ **/
+void setAllBulbLayers() {
+    mLightLayer.clear();
+
+    for (int i = 0; i < getBulbCount(); i++) {
+        mLightLayer.push_back(randomIntegerUpTo(2));
     }
 }
 
@@ -164,60 +317,16 @@ void setAllBulbColors() {
 }
 
 /** ***********************************************************
- ** This method sets each bulbs Upper/Lower flag.
- **/
-void setAllBulbLayers() {
-    mLightLayer.clear();
-
-    for (int i = 0; i < getBulbCount(); i++) {
-        mLightLayer.push_back(randomIntegerUpTo(2));
-    }
-}
-
-/** ***********************************************************
- ** This method checks for & performs user changes of
- ** Lights module settings.
- **/
-void respondToLightsSettingsChanges() {
-    // Update pref.
-    UIDO(ShowLights, setAllBulbLayers(););
-
-    UIDO(ShowLightColorRed,
-        eraseLightsFrame(); setAllBulbColors(););
-    UIDO(ShowLightColorLime,
-        eraseLightsFrame(); setAllBulbColors(););
-    UIDO(ShowLightColorPurple,
-        eraseLightsFrame(); setAllBulbColors(););
-    UIDO(ShowLightColorCyan,
-        eraseLightsFrame(); setAllBulbColors(););
-    UIDO(ShowLightColorGreen,
-        eraseLightsFrame(); setAllBulbColors(););
-    UIDO(ShowLightColorOrange,
-        eraseLightsFrame(); setAllBulbColors(););
-    UIDO(ShowLightColorBlue,
-        eraseLightsFrame(); setAllBulbColors(););
-    UIDO(ShowLightColorPink,
-        eraseLightsFrame(); setAllBulbColors(););
-
-    // Detect app scale change.
-    if (appScalesHaveChanged(&mCurrentAppScale)) {
-        initLightsModule();
-    }
-}
-
-/** ***********************************************************
  ** This method draws the bulbs onto the display screen.
  **/
-void drawLowerLightsFrame(cairo_t* cc) {
-    drawLightsFrame(cc, 0);
-}
-void drawUpperLightsFrame(cairo_t* cc) {
-    drawLightsFrame(cc, 1);
-}
-
 void drawLightsFrame(cairo_t* cc, int forLayer) {
     if (!Flags.ShowLights) {
         return;
+    }
+
+    // Lazy load Lights module on requested draw.
+    if (!mLightsThreadActive) {
+        initLightsModule();
     }
 
     cairo_save(cc);
@@ -257,53 +366,6 @@ void drawLightsFrame(cairo_t* cc, int forLayer) {
     }
 
     cairo_restore(cc);
-}
-
-/** ***********************************************************
- ** This method updates the bulbs randomly to produce
- ** Twinkling effect.
- **/
-gboolean updateLightsFrame(__attribute__
-    ((unused)) void* data) {
-    if (Flags.shutdownRequested) {
-        return false;
-    }
-
-    // Change 1 out of 5 bulbs.
-    int colorType = getFirstUserSelectedColor();
-    if (colorType != GRAYED) {
-        for (int i = 0; i < getBulbCount(); i++) {
-            if (randomIntegerUpTo(5) == 0) {
-                mBulbColorBright[i] = getTwinklingBright(colorType);
-                mBulbColorNormal[i] = getTwinklingNormal(colorType);
-                mBulbColorDark[i] = getTwinklingDark(colorType);
-            }
-            colorType = getNextUserSelectedColorAfter(colorType);
-        }
-    }
-
-    return true;
-}
-
-/** ***********************************************************
- ** This method erases the bulbs from the display screen.
- **/
-void eraseLightsFrame() {
-    if (!Flags.ShowLights) {
-        return;
-    }
-
-    // Get width & height of user selected shape.
-    int lightWidth = 0, lightHeight = 0;
-    sscanf(mLightShapeList[Flags.LightsShape][0], "%d %d",
-        &lightWidth, &lightHeight);
-
-    for (int i = 0; i < getBulbCount(); i++) {
-        clearDisplayArea(mGlobal.display, mGlobal.SnowWin,
-            mLightXPos[i], mLightYPos[i],
-            lightWidth, lightHeight,
-            mGlobal.xxposures);
-    }
 }
 
 /** ***********************************************************

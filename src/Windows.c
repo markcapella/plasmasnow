@@ -315,9 +315,9 @@ void updateDisplayDimensions() {
     mGlobal.SnowWinDepth = d;
 
     updateFallenSnowDesktopItemHeight();
-    clearAndRedrawScenery();
     updateFallenSnowDesktopItemDepth();
 
+    clearAndRedrawScenery();
     if (!mGlobal.isDoubleBuffered) {
         clearGlobalSnowWindow();
     }
