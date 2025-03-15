@@ -227,6 +227,10 @@ void eraseLightsFrame() {
  ** This method initializes the lazy-loaded Lights module.
  **/
 void initLightsModule() {
+    if (mLightsThreadActive) {
+        return;
+    }
+
     // Set all structures.
     setAllBulbPositions();
     setAllBulbLayers();
@@ -244,6 +248,10 @@ void initLightsModule() {
  ** This method uninitializes the Lights module.
  **/
 void uninitLightsModule() {
+    if (!mLightsThreadActive) {
+        return;
+    }
+
     // Clear the update thread.
     g_source_remove(mLightsThreadId);
 
