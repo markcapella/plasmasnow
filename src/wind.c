@@ -19,22 +19,22 @@
 #-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-# 
 */
-
-#include <gtk/gtk.h>
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <gtk/gtk.h>
+
+#include "PlasmaSnow.h"
+
 #include "ClockHelper.h"
-#include "debug.h"
 #include "Flags.h"
 #include "Utils.h"
 #include "wind.h"
 #include "Windows.h"
-#include "PlasmaSnow.h"
 
 
-static void SetWhirl(void);
-static void SetWindTimer(void);
+static void SetWhirl();
+static void SetWindTimer();
 static int do_wind();
 static int do_newwind();
 
@@ -52,7 +52,6 @@ void wind_ui() {
     if (Flags.WindNow) {
         Flags.WindNow = 0;
         mGlobal.Wind = 2;
-        P("Gust: %d\n", Flags.Changes);
     }
 }
 
@@ -61,7 +60,6 @@ void draw_wind() {
 }
 
 int do_newwind() {
-    P("newwind\n");
     if (Flags.shutdownRequested) {
         return FALSE;
     }
@@ -102,11 +100,9 @@ int do_newwind() {
         break;
     }
     return TRUE;
-    // (void) d;
 }
 
 int do_wind() {
-    P("wind\n");
     if (Flags.shutdownRequested) {
         return FALSE;
     }
@@ -159,9 +155,7 @@ int do_wind() {
             //                   after on average WhirlTimerStart secs
         }
     }
-    P("Wind: %d %f\n", mGlobal.Wind, mGlobal.NewWind);
     return TRUE;
-    // (void) d;
 }
 
 void SetWhirl() { mGlobal.Whirl = 0.01 * Flags.WhirlFactor * WHIRL; }

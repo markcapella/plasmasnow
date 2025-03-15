@@ -24,11 +24,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+// Plasmasnow headers.
+#include "PlasmaSnow.h"
+
 #include "birds.h"
 #include "docs.h"
 #include "doit.h"
 #include "Flags.h"
-#include "PlasmaSnow.h"
 #include "safe_malloc.h"
 #include "selfrep.h"
 #include "Utils.h"
@@ -40,8 +42,8 @@ FLAGS OldFlags;
 FLAGS DefaultFlags;
 FLAGS VintageFlags;
 
-static void ReadFlags(void);
-static void SetDefaultFlags(void);
+static void ReadFlags();
+static void SetDefaultFlags();
 static void findflag(FILE *f, const char *x, char **value);
 
 static long int S2Int(char *s) // string to integer

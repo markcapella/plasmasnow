@@ -32,11 +32,11 @@ extern "C" {
 
     void set_insert(void *key);
     void set_erase(void *key);
-    void set_clear(void);
+    void set_clear();
 
-    void set_begin(void);
-    void* set_next(void);
-    unsigned int set_size(void);
+    void set_begin();
+    void* set_next();
+    unsigned int set_size();
 #ifdef __cplusplus
 }
 #endif

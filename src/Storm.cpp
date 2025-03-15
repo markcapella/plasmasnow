@@ -24,14 +24,15 @@
 
 #include <X11/Xlib.h>
 
+// Plasmasnow headers.
+#include "PlasmaSnow.h"
+
 #include "ClockHelper.h"
 #include "ColorPicker.h"
 #include "FallenSnow.h"
 #include "Flags.h"
 #include "ixpm.h"
 #include "MainWindow.h"
-#include "pixmaps.h"
-#include "PlasmaSnow.h"
 #include "snow_includes.h"
 #include "Storm.h"
 #include "StormItem.h"

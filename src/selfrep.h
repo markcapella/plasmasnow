@@ -20,4 +20,4 @@
 #-# 
  */
 #pragma once
-extern void selfrep(void);
+extern void selfrep();

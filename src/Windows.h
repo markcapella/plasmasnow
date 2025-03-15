@@ -36,14 +36,14 @@
 extern "C" {
 #endif
 
-    void addWindowsModuleToMainloop(void);
+    void addWindowsModuleToMainloop();
 
     int isWorkspaceActive();
 
     void initDisplayDimensions();
-    void updateDisplayDimensions(void);
+    void updateDisplayDimensions();
 
-    void setWorkspaceBackground(void);
+    void setWorkspaceBackground();
     int getXineramaScreenInfo(Display *display,
         int xscreen, int *x, int *y, int *w, int *h);
 

@@ -19,20 +19,19 @@
 #-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-# 
 */
-#include "ixpm.h"
-#include "debug.h"
-#include "safe_malloc.h"
-#include "Utils.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "ixpm.h"
+#include "safe_malloc.h"
+#include "Utils.h"
+
 
 cairo_region_t* gregionfromxpm(const char **data, int flop, float scale) {
     int w, h;
     sscanf(data[0], "%d %d", &w, &h);
-    P("gregionfromxpm: w:%d h:%d\n", w, h);
 
     GdkPixbuf *pixbuf;
     GdkPixbuf *pixbuf1 = gdk_pixbuf_new_from_xpm_data(data);
@@ -100,11 +99,9 @@ void xpm_set_color(char **data, char ***out, int *lines, const char *color) {
 
     strcat(x[2], ". c ");
     strcat(x[2], color);
-    P("c: [%s]\n", x[2]);
 
     for (j = 3; j < n + 3; j++) {
         x[j] = strdup(data[j]);
-        P("%d %s\n", j, x[j]);
     }
     *lines = n + 3;
 }

@@ -36,7 +36,7 @@
 static char *replace_all(const char *s, const char *needle, const char *rep);
 static void manout(const char *flag, const char *txt, ...);
 static int doman;
-static void printdescription(void);
+static void printdescription();
 
 
 /** *********************************************************************
@@ -265,11 +265,8 @@ void docs_usage(int man) {
     } else {
         printf("\n  Scenery options:\n\n");
     }
-    manout("-treetype <n>[,<n> ...]",
-        "Choose tree types: minimum 0, maximum %d (default: %s).", NUM_BASE_SCENE_TYPES,
+    manout("-treetype <n>[,<n> ...]", "Choose tree types: (default: %s).",
         F(TreeType));
-    manout(" ", "Thanks to Carla Vermin for numbers >=3!");
-    manout(" ", "Credits: Image by b0red on Pixabay.");
     manout(
         "-treetype all", "(Default) Use all non-vintage available tree types.");
     manout("-tc <c>",

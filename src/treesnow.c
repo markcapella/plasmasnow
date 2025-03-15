@@ -28,10 +28,10 @@
 
 #include <gtk/gtk.h>
 
-#include "Blowoff.h"
-#include "debug.h"
-#include "Flags.h"
 #include "PlasmaSnow.h"
+
+#include "Blowoff.h"
+#include "Flags.h"
 #include "safe_malloc.h"
 #include "scenery.h"
 #include "Storm.h"

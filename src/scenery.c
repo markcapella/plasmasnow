@@ -30,14 +30,13 @@
 
 #include <gtk/gtk.h>
 
+// Plasmasnow headers.
 #include "ColorPicker.h"
 #include "csvpos.h"
-#include "debug.h"
 #include "FallenSnow.h"
 #include "Flags.h"
 #include "ixpm.h"
 #include "MainWindow.h"
-#include "pixmaps.h"
 #include "safe_malloc.h"
 #include "scenery.h"
 #include "treesnow.h"
@@ -49,6 +48,15 @@
  * Module globals and consts.
  */
 #define DEFAULTTREETYPE 2
+
+
+#define NUM_SCENE_COLOR_TREES 1
+#define NUM_SCENE_GRID_ITEMS  9
+#define NUM_BASE_SCENE_TYPES  NUM_SCENE_COLOR_TREES + NUM_SCENE_GRID_ITEMS
+
+#define NUM_EXTRA_SCENE_ITEMS 1
+#define NUM_ALL_SCENE_TYPES   NUM_BASE_SCENE_TYPES + NUM_EXTRA_SCENE_ITEMS
+
 
 static int NTrees = 0;
 static int TreeRead = 0;
@@ -78,6 +86,25 @@ static float MinScale = 0.6;
 static int mRemoveFluffAttempts = 0;
 static int mCurrentAppScale = 100;
 
+// Individual Shapes.
+#include "Pixmaps/tannenbaum.xpm"
+#include "Pixmaps/twoTrees.xpm"
+#include "Pixmaps/cloverLeaf.xpm"
+#include "Pixmaps/huis4.xpm"
+#include "Pixmaps/potOfGold.xpm"
+#include "Pixmaps/moose.xpm"
+#include "Pixmaps/snowtree.xpm"
+#include "Pixmaps/polarbear.xpm"
+#include "Pixmaps/candycane.xpm"
+#include "Pixmaps/stPaddyHat.xpm"
+#include "Pixmaps/extratree.xpm"
+
+// Shape array.
+XPM_TYPE** mSceneryShapeList[NUM_ALL_SCENE_TYPES] = {
+    tannenbaum_xpm, twoTrees_xpm, cloverLeaf_xpm, huis4_xpm,
+    potOfGold_xpm, moose_xpm, snowtree_xpm, polarbear_xpm,
+    candycane_xpm, stPaddyHat_xpm, extratree_xpm
+};
 
 /***********************************************************
  * Main Scenery methods.
@@ -131,11 +158,11 @@ void initSceneryPixmaps() {
     for (int i = 0; i < 2; i++) {
         for (int tt = 0; tt <= NUM_BASE_SCENE_TYPES; tt++) {
             iXpmCreatePixmapFromData(mGlobal.display,
-                mGlobal.SnowWin, xpmtrees[tt],
+                mGlobal.SnowWin, mSceneryShapeList[tt],
                 &mColorableTreePixmap[tt][i],
                 &TreeMaskPixmap[tt][i], &attributes, i);
 
-            sscanf(xpmtrees[tt][0], "%d %d",
+            sscanf(mSceneryShapeList[tt][0], "%d %d",
                 &TreeWidth[tt], &TreeHeight[tt]);
         }
     }
@@ -162,7 +189,7 @@ void initSceneryModuleSurfaces() {
                 tree->scale);
         } else {
             tree->surface = getNewScenerySurface(tree->rev,
-                (const char**) xpmtrees[tree->type],
+                (const char**) mSceneryShapeList[tree->type],
                 tree->scale);
         }
     }
@@ -379,7 +406,7 @@ int updateSceneryFrame() {
                     tree->rev, tree->scale);
                 break;
             default:
-                r = gregionfromxpm(xpmtrees[tt], tree->rev,
+                r = gregionfromxpm(mSceneryShapeList[tt], tree->rev,
                     tree->scale);
                 break;
         }
@@ -432,8 +459,8 @@ void updateColorTree() {
         imageStringLength * sizeof(char*));
 
     // XPM indexs @ 0, 1 & 2.
-    imageString[0] = strdup(xpmtrees[0][0]);
-    imageString[1] = strdup(xpmtrees[0][1]);
+    imageString[0] = strdup(mSceneryShapeList[0][0]);
+    imageString[1] = strdup(mSceneryShapeList[0][1]);
 
     imageString[2] = strdup(". c ");
     imageString[2] = (char*) realloc(imageString[2],
@@ -442,7 +469,7 @@ void updateColorTree() {
 
     // XPM indexs @ 3 .. n.
     for (int i = 3; i < imageStringLength; i++) {
-        imageString[i] = strdup(xpmtrees[0][i]);
+        imageString[i] = strdup(mSceneryShapeList[0][i]);
     }
 
     XpmAttributes attributes;
@@ -455,7 +482,7 @@ void updateColorTree() {
         iXpmCreatePixmapFromData(mGlobal.display, mGlobal.SnowWin,
             (const char**) imageString, &mColorableTreePixmap[0][i],
             &TreeMaskPixmap[0][i], &attributes, i);
-        sscanf(xpmtrees[0][0], "%d %d", &TreeWidth[0], &TreeHeight[0]);
+        sscanf(mSceneryShapeList[0][0], "%d %d", &TreeWidth[0], &TreeHeight[0]);
     }
 
     for (int i = 0; i < NTrees; i++) {

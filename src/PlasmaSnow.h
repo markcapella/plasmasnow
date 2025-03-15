@@ -172,13 +172,6 @@ typedef struct {
 /***********************************************************
  * Scenery consts.
  */
-#define NUM_SCENE_COLOR_TREES 1
-#define NUM_SCENE_GRID_ITEMS  9
-#define NUM_BASE_SCENE_TYPES  NUM_SCENE_COLOR_TREES + NUM_SCENE_GRID_ITEMS
-
-#define NUM_EXTRA_SCENE_ITEMS 1
-#define NUM_ALL_SCENE_TYPES   NUM_BASE_SCENE_TYPES + NUM_EXTRA_SCENE_ITEMS
-
 typedef struct SceneryInfo {
         int x; // x position
         int y; // y position

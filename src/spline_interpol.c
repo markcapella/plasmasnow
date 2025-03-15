@@ -20,11 +20,13 @@
 #-# 
  * */
 #define GSL_INTERP_MESSAGE
-#include "spline_interpol.h"
-#include "debug.h"
+
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_spline.h>
 #include <pthread.h>
+
+#include "spline_interpol.h"
+
 
 void spline_interpol(const double *px, int np, const double *py,
     const double *x, int nx, double *y) {

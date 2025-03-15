@@ -77,7 +77,7 @@ extern "C" {
     // Main "draw frame" routine for fallen snow.
     void drawFallenSnowFrame(cairo_t*);
 
-    // Fallensnow egeneral helpers.
+    // Fallensnow general helpers.
     FallenSnow* findFallenSnowItemByWindow(Window);
     void eraseFallenSnow(FallenSnow*);
     void eraseFallenSnowPartial(FallenSnow*, int x, int w);
@@ -86,6 +86,7 @@ extern "C" {
     void removeFallenSnowFromWindow(Window);
     int removeAndFreeFallenSnowForWindow(FallenSnow**,
         Window);
+
     void generateFallenSnowFlakes(FallenSnow* fsnow,
         int xPos, int xWidth, float vy, bool limitToMax);
 

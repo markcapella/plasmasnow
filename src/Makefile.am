@@ -54,7 +54,7 @@ plasmasnow_SOURCES = \
 		ClockHelper.c ColorPicker.c csvpos.c docs.c dsimple.c \
 		FallenSnow.c Flags.c hashtable.cpp ixpm.c kdtree.c \
 		Lights.cpp LoadMeasure.c MainWindow.c mainstub.cpp \
-		meteor.c MsgBox.cpp moon.c pixmaps.c safe_malloc.c \
+		meteor.c MsgBox.cpp moon.c safe_malloc.c \
 		Santa.c scenery.c selfrep.c SplashPage.cpp \
 		spline_interpol.c Stars.c Storm.cpp StormItem.cpp \
 		StormWindow.c treesnow.c ui.glade Utils.c wind.c \

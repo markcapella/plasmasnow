@@ -29,11 +29,10 @@
 #include <X11/xpm.h>
 #include <gtk/gtk.h>
 
-#include "debug.h"
+// Plasmasnow headers.
 #include "Flags.h"
 #include "ixpm.h"
 #include "moon.h"
-#include "pixmaps.h"
 #include "safe_malloc.h"
 #include "Santa.h"
 #include "Utils.h"
@@ -69,6 +68,109 @@ static cairo_surface_t* Santa_surfaces
 static float Speed[] = {
     SANTASPEED0, SANTASPEED1, SANTASPEED2,
     SANTASPEED3, SANTASPEED4
+};
+
+#include "Pixmaps/BigSanta1.xpm"
+#include "Pixmaps/BigSanta2.xpm"
+#include "Pixmaps/BigSanta3.xpm"
+#include "Pixmaps/BigSanta4.xpm"
+XPM_TYPE** BigSanta[] = {
+    BigSanta1, BigSanta2, BigSanta3, BigSanta4
+};
+
+#include "Pixmaps/BigSantaRudolf1.xpm"
+#include "Pixmaps/BigSantaRudolf2.xpm"
+#include "Pixmaps/BigSantaRudolf3.xpm"
+#include "Pixmaps/BigSantaRudolf4.xpm"
+XPM_TYPE** BigSantaRudolf[] = {
+    BigSantaRudolf1, BigSantaRudolf2, BigSantaRudolf3,
+    BigSantaRudolf4
+};
+
+#include "Pixmaps/BigSanta81.xpm"
+#include "Pixmaps/BigSanta82.xpm"
+#include "Pixmaps/BigSanta83.xpm"
+#include "Pixmaps/BigSanta84.xpm"
+
+XPM_TYPE** BigSanta8[] = {
+    BigSanta81, BigSanta82, BigSanta83, BigSanta84};
+
+#include "Pixmaps/BigSantaRudolf81.xpm"
+#include "Pixmaps/BigSantaRudolf82.xpm"
+#include "Pixmaps/BigSantaRudolf83.xpm"
+#include "Pixmaps/BigSantaRudolf84.xpm"
+
+XPM_TYPE** BigSantaRudolf8[] = {
+    BigSantaRudolf81, BigSantaRudolf82,
+    BigSantaRudolf83, BigSantaRudolf84
+};
+
+#include "Pixmaps/MediumSanta1.xpm"
+#include "Pixmaps/MediumSanta2.xpm"
+#include "Pixmaps/MediumSanta3.xpm"
+#include "Pixmaps/MediumSanta4.xpm"
+
+XPM_TYPE** MediumSanta[] = {
+    MediumSanta1, MediumSanta2,
+    MediumSanta3, MediumSanta4
+};
+
+#include "Pixmaps/MediumSantaRudolf1.xpm"
+#include "Pixmaps/MediumSantaRudolf2.xpm"
+#include "Pixmaps/MediumSantaRudolf3.xpm"
+#include "Pixmaps/MediumSantaRudolf4.xpm"
+
+XPM_TYPE** MediumSantaRudolf[] = {
+    MediumSantaRudolf1, MediumSantaRudolf2,
+    MediumSantaRudolf3, MediumSantaRudolf4
+};
+
+#include "Pixmaps/RegularSanta1.xpm"
+#include "Pixmaps/RegularSanta2.xpm"
+#include "Pixmaps/RegularSanta3.xpm"
+#include "Pixmaps/RegularSanta4.xpm"
+
+XPM_TYPE** RegularSanta[] = {
+    RegularSanta1, RegularSanta2,
+    RegularSanta3, RegularSanta4
+};
+
+#include "Pixmaps/RegularSantaRudolf1.xpm"
+#include "Pixmaps/RegularSantaRudolf2.xpm"
+#include "Pixmaps/RegularSantaRudolf3.xpm"
+#include "Pixmaps/RegularSantaRudolf4.xpm"
+
+XPM_TYPE** RegularSantaRudolf[] = {
+    RegularSantaRudolf1, RegularSantaRudolf2,
+    RegularSantaRudolf3, RegularSantaRudolf4
+};
+
+#include "Pixmaps/AltSanta1.xpm"
+#include "Pixmaps/AltSanta2.xpm"
+#include "Pixmaps/AltSanta3.xpm"
+#include "Pixmaps/AltSanta4.xpm"
+
+XPM_TYPE** AltSanta[] = {
+    AltSanta1, AltSanta2, AltSanta3, AltSanta4
+};
+
+#include "Pixmaps/AltSantaRudolf1.xpm"
+#include "Pixmaps/AltSantaRudolf2.xpm"
+#include "Pixmaps/AltSantaRudolf3.xpm"
+#include "Pixmaps/AltSantaRudolf4.xpm"
+
+XPM_TYPE** AltSantaRudolf[] = {
+    AltSantaRudolf1, AltSantaRudolf2,
+    AltSantaRudolf3, AltSantaRudolf4
+};
+
+// so: Santas[type][rudolf][animation]
+XPM_TYPE** *Santas[MAXSANTA + 1][2] = {
+    {RegularSanta, RegularSantaRudolf},
+    {MediumSanta, MediumSantaRudolf},
+    {BigSanta, BigSantaRudolf},
+    {BigSanta8, BigSantaRudolf8},
+    {AltSanta, AltSantaRudolf}
 };
 
 

@@ -800,7 +800,7 @@ unsigned int xdo_get_input_state(const xdo_t *xdo);
  *
  * @returns array of strings.
  */
-const char **xdo_get_symbol_map(void);
+const char **xdo_get_symbol_map();
 
 /* active modifiers stuff */
 

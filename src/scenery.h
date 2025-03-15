@@ -25,6 +25,8 @@
 #include <gtk/gtk.h>
 
 
+extern XPM_TYPE** mSceneryShapeList[];
+
 void initSceneryModule();
 void setSceneryScale();
 void initSceneryPixmaps();

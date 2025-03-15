@@ -19,7 +19,6 @@
 #-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-# 
 */
-#include <gsl/gsl_sort.h>
 #include <math.h>
 #include <pthread.h>
 #include <stdbool.h>
@@ -33,11 +32,13 @@
 
 #include <gtk/gtk.h>
 
-#include "debug.h"
+#include <gsl/gsl_sort.h>
+
+#include "PlasmaSnow.h"
+
 #include "Flags.h"
 #include "meteor.h"
 #include "mygettext.h"
-#include "PlasmaSnow.h"
 #include "safe_malloc.h"
 #include "Utils.h"
 #include "version.h"
@@ -267,7 +268,6 @@ void rgba2color(GdkRGBA *c, char **s) {
     *s = (char *)malloc(8);
     sprintf(*s, "#%02lx%02lx%02lx", lrint(c->red * 255), lrint(c->green * 255),
         lrint(c->blue * 255));
-    P("rgba2color %s %d\n", *s, strlen(*s));
 }
 
 /** *********************************************************************
@@ -302,12 +302,10 @@ void randomuniqarray(double *a, int n, double d, unsigned short *seed) {
     int i;
     if (seed) {
 
-        P("seed != NULL\n");
         for (i = 0; i < n; i++) {
             a[i] = erand48(seed);
         }
     } else {
-        P("seed = NULL\n");
         for (i = 0; i < n; i++) {
             a[i] = drand48();
         }
@@ -407,19 +405,14 @@ Window largest_window_with_name(xdo_t *myxdo, const char *name) {
     Window *windows = NULL;
     unsigned int nwindows;
     xdo_search_windows(myxdo, &search, &windows, &nwindows);
-    P("nwindows: %s %d\n", search.winname, nwindows);
 
     Window w = 0;
     unsigned int maxsize = 0;
     for (unsigned int i = 0; i < nwindows; i++) {
         unsigned int width, height;
         xdo_get_window_size(myxdo, windows[i], &width, &height);
-        P("window: 0x%lx %d %d\n", windows[i], width, height);
 
         unsigned int size = width * height;
-        P("width %d height %d size %d prev maxsize %d\n",
-            width, height, size, maxsize);
-
         if (size <= maxsize) {
             continue;
         }

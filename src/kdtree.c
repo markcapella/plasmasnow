@@ -136,7 +136,7 @@ static void hyperrect_extend(struct kdhyperrect *rect, const double *pos);
 static double hyperrect_dist_sq(struct kdhyperrect *rect, const double *pos);
 
 #ifdef USE_LIST_NODE_ALLOCATOR
-static struct res_node *alloc_resnode(void);
+static struct res_node *alloc_resnode();
 static void free_resnode(struct res_node *);
 #else
 #define alloc_resnode() (res_node *)malloc(sizeof(struct res_node))

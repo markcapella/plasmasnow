@@ -31,6 +31,9 @@
 
 #include <gtk/gtk.h>
 
+// Plasmasnow headers.
+#include "PlasmaSnow.h"
+
 #include "birdglobals.h"
 #include "birds.h"
 #include "ClockHelper.h"
@@ -41,7 +44,6 @@
 #include "ixpm.h"
 #include "kdtree.h"
 #include "MainWindow.h"
-#include "pixmaps.h"
 #include "Santa.h"
 #include "Utils.h"
 #include "Windows.h"
@@ -75,13 +77,13 @@ typedef struct _Birdtype {
 
 struct _blobals blobals;
 
-static void createAttractionPointSurface(void);
-static void birds_init_color(void);
+static void createAttractionPointSurface();
+static void birds_init_color();
 static void birds_set_attraction_point_relative(float x, float y, float z);
-static void birds_set_scale(void);
-static void birds_set_speed(void);
-static void clear_flags(void);
-static void show_attr(void);
+static void birds_set_scale();
+static void birds_set_speed();
+static void clear_flags();
+static void show_attr();
 static float attr_maxz(float y);
 
 static int randomlyChangeAttractionPoint();
@@ -91,7 +93,7 @@ static void *updateBirdSpeed();
 static int do_wings();
 
 static void init_bird_pixbufs(const char *color);
-static void main_window(void);
+static void main_window();
 static void normalize_speed(BirdType *bird, float speed);
 static void prefxyz(BirdType *bird, float d, float e, float x, float y, float z,
     float *prefx, float *prefy, float *prefz);
@@ -100,8 +102,8 @@ static void i2r(BirdType *bird);
 static int attrbird_erase(int force);
 static void init_birds(int start);
 static void init_bird(BirdType *bird);
-static int lock(void);
-static int unlock(void);
+static int lock();
+static int unlock();
 
 static float time_update_pos_birds = 0.01;
 static float time_update_speed_birds = 0.20;
@@ -114,6 +116,44 @@ static BirdType attrbird;
 
 static sem_t sem;
 
+
+/* front bird */
+#include "Pixmaps/bird1.xpm"
+#include "Pixmaps/bird2.xpm"
+#include "Pixmaps/bird3.xpm"
+#include "Pixmaps/bird4.xpm"
+#include "Pixmaps/bird5.xpm"
+#include "Pixmaps/bird6.xpm"
+#include "Pixmaps/bird7.xpm"
+#include "Pixmaps/bird8.xpm"
+
+/* side bird */
+#include "Pixmaps/birdl1.xpm"
+#include "Pixmaps/birdl2.xpm"
+#include "Pixmaps/birdl3.xpm"
+#include "Pixmaps/birdl4.xpm"
+#include "Pixmaps/birdl5.xpm"
+#include "Pixmaps/birdl6.xpm"
+#include "Pixmaps/birdl7.xpm"
+#include "Pixmaps/birdl8.xpm"
+
+/* oblique bird */
+#include "Pixmaps/birdd1.xpm"
+#include "Pixmaps/birdd2.xpm"
+#include "Pixmaps/birdd3.xpm"
+#include "Pixmaps/birdd4.xpm"
+#include "Pixmaps/birdd5.xpm"
+#include "Pixmaps/birdd6.xpm"
+#include "Pixmaps/birdd7.xpm"
+#include "Pixmaps/birdd8.xpm"
+
+XPM_TYPE** birds_xpm[] = {
+    bird1_xpm, bird2_xpm, bird3_xpm, bird4_xpm, bird5_xpm,
+    bird6_xpm, bird7_xpm, bird8_xpm, birdl1_xpm, birdl2_xpm, birdl3_xpm,
+    birdl4_xpm, birdl5_xpm, birdl6_xpm, birdl7_xpm, birdl8_xpm, birdd1_xpm,
+    birdd2_xpm, birdd3_xpm, birdd4_xpm, birdd5_xpm, birdd6_xpm, birdd7_xpm,
+    birdd8_xpm
+};
 
 void birds_ui() {
 
@@ -412,7 +452,6 @@ void *updateBirdSpeed() {
         usleep((useconds_t) (time_update_speed_birds * 1.0e6));
     }
     return NULL;
-    // (void) d;
 }
 
 int do_update_pos_birds() {
@@ -440,7 +479,6 @@ int do_update_pos_birds() {
     unlock();
 
     return TRUE;
-    // (void) d;
 }
 
 int birds_draw(cairo_t *cr) {
@@ -789,7 +827,6 @@ static int do_wings() {
     unlock();
 
     return TRUE;
-    // (void) d;
 }
 
 void birds_set_attraction_point_relative(float x, float y, float z) {
@@ -813,8 +850,6 @@ void birds_set_speed() {
 }
 
 int do_main_window() {
-    // (void) d;
-
     if (blobals.maxix != (int)mGlobal.SnowWinWidth ||
         blobals.maxiz != (int)mGlobal.SnowWinHeight) {
         main_window();

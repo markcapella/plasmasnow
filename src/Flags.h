@@ -21,9 +21,13 @@
 */
 #pragma once
 
+#include <X11/Xlib.h>
+
+#include "PlasmaSnow.h"
+
 #include "doit.h"
 #include "safe_malloc.h"
-#include <X11/Xlib.h>
+
 
 #define UIDO(_x, _y)                                                           \
     if (Flags._x != OldFlags._x) {                                             \
@@ -66,5 +70,5 @@ extern FLAGS DefaultFlags;
 extern FLAGS VintageFlags;
 
 extern int HandleFlags(int argc, char *argv[]);
-extern void InitFlags(void);
-extern void WriteFlags(void);
+extern void InitFlags();
+extern void WriteFlags();

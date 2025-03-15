@@ -24,14 +24,15 @@
 #include <stdlib.h>
 
 #include <X11/Intrinsic.h>
+
 #include <gtk/gtk.h>
 
+#include "PlasmaSnow.h"
+
 #include "ClockHelper.h"
-#include "debug.h"
 #include "Flags.h"
 #include "MainWindow.h"
 #include "meteor.h"
-#include "PlasmaSnow.h"
 #include "Storm.h"
 #include "Utils.h"
 #include "Windows.h"

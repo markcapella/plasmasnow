@@ -159,6 +159,9 @@
 
 #include <gtk/gtk.h>
 
+// Plasmasnow headers.
+#include "PlasmaSnow.h"
+
 #include "Application.h"
 #include "birds.h"
 #include "ClockHelper.h"
@@ -169,10 +172,9 @@
 #include "Lights.h"
 #include "MainWindow.h"
 #include "mygettext.h"
-#include "pixmaps.h"
-#include "PlasmaSnow.h"
 #include "safe_malloc.h"
 #include "Santa.h"
+#include "scenery.h"
 #include "Storm.h"
 #include "ui_xml.h"
 #include "Utils.h"
@@ -189,7 +191,6 @@
 // Flip and rebuild :)
 #undef DEBUG
 
-#include "debug.h"
 #endif /* NEWLINE */
 
 #ifdef __cplusplus
@@ -237,6 +238,9 @@ GtkStyleContext* mStyleContext;
 
 char* lang[100];
 int nlang;
+
+// Individual Shapes.
+#include "Pixmaps/plasmasnow.xpm"
 
 
 /***********************************************************
@@ -932,7 +936,7 @@ static void init_tree_pixmaps() {
     GtkImage *image;
     GdkPixbuf *pixbuf;
 #define TREE(x)                                                                \
-    NEWLINE pixbuf = gdk_pixbuf_new_from_xpm_data((const char **)xpmtrees[x]); \
+    NEWLINE pixbuf = gdk_pixbuf_new_from_xpm_data((const char**) mSceneryShapeList[x]); \
     NEWLINE image =                                                            \
         GTK_IMAGE(gtk_builder_get_object(builder, "treeimage" #x));            \
     NEWLINE gtk_image_set_from_pixbuf(image, pixbuf);                          \
@@ -949,7 +953,7 @@ static void init_hello_pixmaps() {
     GtkImage *aboutPlasmaLogo =
         GTK_IMAGE(gtk_builder_get_object(builder, "id-plasmasnowLogo"));
     GdkPixbuf *aboutPlasmaPixbug =
-        gdk_pixbuf_new_from_xpm_data((XPM_TYPE **) plasmasnow_logo);
+        gdk_pixbuf_new_from_xpm_data((XPM_TYPE **) mPlasmasnowLogoShape);
     gtk_image_set_from_pixbuf(aboutPlasmaLogo, aboutPlasmaPixbug);
 
     g_object_unref(aboutPlasmaPixbug);

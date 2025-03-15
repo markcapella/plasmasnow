@@ -24,11 +24,12 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+// Plasmasnow headers.
+#include "PlasmaSnow.h"
+
 #include "FallenSnow.h"
 #include "Flags.h"
 #include "hashtable.h"
-#include "pixmaps.h"
-#include "PlasmaSnow.h"
 #include "Storm.h"
 #include "StormItem.h"
 #include "Utils.h"

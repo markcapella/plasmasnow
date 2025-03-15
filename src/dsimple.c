@@ -74,7 +74,7 @@ static void Fatal_Error(const char *, ...) _X_NORETURN
 
 static char *Get_Display_Name(int *, char **);
 static Display *Open_Display(const char *);
-static void Close_Display(void);
+static void Close_Display();
 
 // added:
 static void usage() {

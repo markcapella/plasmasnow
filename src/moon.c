@@ -20,35 +20,46 @@
 #-# 
 */
 
-#include "moon.h"
-#include "debug.h"
-#include "Flags.h"
-#include "pixmaps.h"
-#include "Utils.h"
-#include "Windows.h"
-#include <gtk/gtk.h>
 #include <math.h>
 #include <pthread.h>
 #include <stdlib.h>
+
+#include <gtk/gtk.h>
+
+#include "Flags.h"
+#include "Utils.h"
+#include "moon.h"
+#include "Windows.h"
+
 
 #define LEAVE_IF_INACTIVE \
     if (!Flags.Moon || !isWorkspaceActive()) \
     return TRUE
 
-static int do_umoon();
-static void init_moon_surface();
-static void init_halo_surface();
-static void halo_draw(cairo_t *cr);
-static void halo_erase();
+int do_umoon();
+void init_moon_surface();
+void init_halo_surface();
+void halo_draw(cairo_t *cr);
+void halo_erase();
 
-static cairo_surface_t *moon_surface = NULL;
-static cairo_surface_t *halo_surface = NULL;
-static double haloR; // radius of halo in pixels
+cairo_surface_t *moon_surface = NULL;
+cairo_surface_t *halo_surface = NULL;
+double haloR; // radius of halo in pixels
 
-static double OldmoonX;
-static double OldmoonY;
+double OldmoonX;
+double OldmoonY;
 
-static float moonScale;
+float moonScale;
+
+// Individual Shapes.
+#include "Pixmaps/moon1.xpm"
+#include "Pixmaps/moon2.xpm"
+
+// Shape array.
+XPM_TYPE** mMoonShapeList[] = {
+    moon1_xpm,
+    moon2_xpm
+};
 
 
 /** *********************************************************************
@@ -124,7 +135,7 @@ void respondToMoonSettingsChanges() {
     }
 }
 
-static void init_moon_surface() {
+void init_moon_surface() {
     const GdkInterpType interpolation = GDK_INTERP_HYPER;
 
     if (Flags.MoonColor < 0) {
@@ -138,7 +149,7 @@ static void init_moon_surface() {
 
     static GdkPixbuf *pixbuf, *pixbufscaled;
     pixbuf = gdk_pixbuf_new_from_xpm_data(
-        (const char**) moons_xpm[whichmoon]);
+        (const char**) mMoonShapeList[whichmoon]);
 
     // standard moon is some percentage of window width
     const float p = 30.0;

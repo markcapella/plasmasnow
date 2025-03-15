@@ -24,13 +24,13 @@
 
 #include <gtk/gtk.h>
 
-void treesnow_init(void);
-void InitSnowOnTrees(void);
+void treesnow_init();
+void InitSnowOnTrees();
 
-void respondToTreesnowSettingsChanges(void);
+void respondToTreesnowSettingsChanges();
 
 int execTreesnowBackgroundThread();
-void ConvertOnTreeToFlakes(void);
-void reinit_treesnow_region(void);
+void ConvertOnTreeToFlakes();
+void reinit_treesnow_region();
 
 void treesnow_draw(cairo_t* cr);

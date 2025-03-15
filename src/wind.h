@@ -21,5 +21,5 @@
  */
 #pragma once
 
-extern void wind_init(void);
-extern void wind_ui(void);
+extern void wind_init();
+extern void wind_ui();

@@ -22,7 +22,7 @@
 #pragma once
 
 extern void docs_usage(int man);
-extern void displayPlasmaSnowDocumentation(void);
+extern void displayPlasmaSnowDocumentation();
 
 #define Q(a) #a
 #define EQ(a) Q(a)

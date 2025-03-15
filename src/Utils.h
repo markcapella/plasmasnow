@@ -45,7 +45,7 @@ extern "C" {
     FILE *HomeOpen(const char *file, const char *mode, char **path);
 
     void remove_from_mainloop(guint *tag);
-    void clearGlobalSnowWindow(void);
+    void clearGlobalSnowWindow();
     float fsignf(float x);
 
 
@@ -73,7 +73,7 @@ extern "C" {
     int ValidColor(const char *color);
     ssize_t mywrite(int fd, const void *buf, size_t count);
     float gaussf(float x, float mu, float sigma);
-    char *guess_language(void);
+    char *guess_language();
     Window largest_window_with_name(xdo_t *myxdo, const char *name);
     void fill_xdo_search(xdo_search_t *search);
 
@@ -81,12 +81,12 @@ extern "C" {
     double gaussian(
         double mean, double standard_deviation, double min, double max);
 
-    int is_little_endian(void);
-    void logAppVersion(void);
+    int is_little_endian();
+    void logAppVersion();
 
     void randomuniqarray(double *a, int n, double d, unsigned short *seed);
 
-    void traceback(void);
+    void traceback();
 
 #ifdef __cplusplus
 }

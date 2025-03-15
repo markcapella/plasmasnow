@@ -81,16 +81,13 @@ const LIGHT_COLOR_TYPE ORANGE = 5;
 const LIGHT_COLOR_TYPE BLUE = 6;
 const LIGHT_COLOR_TYPE PINK = 7;
 
-// Gray themed template LightShapes.
-#define SHAPE_LIST_COUNT 3
-
-// Individual Shapes.
+// Gray themed LightShapes.
 #include "Pixmaps/lightBulb.xpm"
 #include "Pixmaps/easterEggPlain.xpm"
 #include "Pixmaps/easterEgg.xpm"
 
 // Shape array.
-XPM_TYPE** mLightShapeList[SHAPE_LIST_COUNT] = {
+XPM_TYPE** mLightShapeList[] = {
     mLightShape,
     mEasterEggPlainShape,
     mEasterEggShape

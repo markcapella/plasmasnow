@@ -26,8 +26,8 @@
 #include <X11/Intrinsic.h>
 #include <gtk/gtk.h>
 
+// Plasmasnow headers.
 #include "Flags.h"
-#include "pixmaps.h"
 #include "safe_malloc.h"
 #include "Stars.h"
 #include "Utils.h"

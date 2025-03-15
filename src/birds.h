@@ -25,9 +25,11 @@
 
 #define NBIRDS_MAX 1000
 
+extern XPM_TYPE** birds_xpm[];
+
 extern int birds_draw(cairo_t *cr);
 extern int birds_erase(int force);
 
-extern void birds_init(void);
-extern void birds_ui(void);
-extern void birds_sem_init(void);
+extern void birds_init();
+extern void birds_ui();
+extern void birds_sem_init();
