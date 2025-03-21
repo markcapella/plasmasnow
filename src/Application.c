@@ -269,7 +269,6 @@ int startApplication(int argc, char *argv[]) {
 
     printf("Available languages are:\n%s.\n\n",
         LANGUAGES);
-
     printf("GTK version : %s\n", ui_gtk_version());
     printf("GTK required: %s\n\n", ui_gtk_required());
 
@@ -353,38 +352,6 @@ int startApplication(int argc, char *argv[]) {
         wasThereAnInvalidColor = true;
     }
 
-    if (!ValidColor(Flags.LightColorRed)) {
-        Flags.LightColorRed = strdup(DefaultFlags.LightColorRed);
-        wasThereAnInvalidColor = true;
-    }
-    if (!ValidColor(Flags.LightColorLime)) {
-        Flags.LightColorLime = strdup(DefaultFlags.LightColorLime);
-        wasThereAnInvalidColor = true;
-    }
-    if (!ValidColor(Flags.LightColorPurple)) {
-        Flags.LightColorPurple = strdup(DefaultFlags.LightColorPurple);
-        wasThereAnInvalidColor = true;
-    }
-    if (!ValidColor(Flags.LightColorCyan)) {
-        Flags.LightColorCyan = strdup(DefaultFlags.LightColorCyan);
-        wasThereAnInvalidColor = true;
-    }
-    if (!ValidColor(Flags.LightColorGreen)) {
-        Flags.LightColorGreen = strdup(DefaultFlags.LightColorGreen);
-        wasThereAnInvalidColor = true;
-    }
-    if (!ValidColor(Flags.LightColorOrange)) {
-        Flags.LightColorOrange = strdup(DefaultFlags.LightColorOrange);
-        wasThereAnInvalidColor = true;
-    }
-    if (!ValidColor(Flags.LightColorBlue)) {
-        Flags.LightColorBlue = strdup(DefaultFlags.LightColorBlue);
-        wasThereAnInvalidColor = true;
-    }
-    if (!ValidColor(Flags.LightColorPink)) {
-        Flags.LightColorPink = strdup(DefaultFlags.LightColorPink);
-        wasThereAnInvalidColor = true;
-    }
     if (wasThereAnInvalidColor) {
         WriteFlags();
     }
@@ -432,6 +399,7 @@ int startApplication(int argc, char *argv[]) {
     initBlowoffModule();
     wind_init();
     Santa_init();
+    initLightsModule();
     InitSnowOnTrees();
     treesnow_init();
     initSceneryModule();
@@ -816,7 +784,6 @@ int doAllUISettingsUpdates() {
     respondToStormSettingsChanges();
     respondToBlowoffSettingsChanges();
     respondToFallenSnowSettingsChanges();
-    respondToLightsSettingsChanges();
     respondToScenerySettingsChanges();
     respondToStarsSettingsChanges();
     respondToMeteorSettingsChanges();
@@ -1013,7 +980,7 @@ void RestartDisplay() {
     clearAllFallenSnowItems();
 
     initStarsModuleArrays();
-    respondToScreenSizeChanges();
+    onLightsScreenSizeChanged();
     clearAndRedrawScenery();
 
     if (!Flags.NoKeepSnowOnTrees && !Flags.NoTrees) {
@@ -1114,13 +1081,14 @@ void drawCairoWindowInternal(cairo_t* cc) {
 
     } else if (!mGlobal.isDoubleBuffered) {
         XFlush(mGlobal.display);
-        moon_erase(0);
-        Santa_erase(cc);
         eraseStarsFrame();
-        eraseLightsFrame();
-        birds_erase(0);
-        removeAllStormItemsInItemset();
+        moon_erase(0);
         eraseAuroraFrame();
+        eraseLightsFrame();
+
+        removeAllStormItems();
+        Santa_erase(cc);
+        birds_erase(0);
         XFlush(mGlobal.display);
     }
 
@@ -1138,25 +1106,23 @@ void drawCairoWindowInternal(cairo_t* cc) {
     // Do all module draws.
     if (isWorkspaceActive()) {
         drawStarsFrame(cc);
+        drawMeteorFrame(cc);
         moon_draw(cc);
         aurora_draw(cc);
-        drawMeteorFrame(cc);
-        drawSceneryFrame(cc);
-        birds_draw(cc);
-        treesnow_draw(cc);
-
-        drawAllStormItemsInItemset(cc);
 
         drawLowerLightsFrame(cc);
-        drawFallenSnowFrame(cc);
-        drawUpperLightsFrame(cc);
+        drawSceneryFrame(cc);
+        treesnow_draw(cc);
+        drawAllStormItems(cc);
 
-        // If Flags.FollowSanta, drawing of Santa
-        // is done in Birds module.
+        // If Flags.FollowSanta, Santa drawn in Birds.
         if (!Flags.ShowBirds || !Flags.FollowSanta) {
             Santa_draw(cc);
         }
+        birds_draw(cc);
 
+        drawFallenSnowFrame(cc);
+        drawUpperLightsFrame(cc);
     }
 
     // Draw app window outline.

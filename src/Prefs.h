@@ -1,9 +1,7 @@
 /* -copyright-
 #-# 
 #-# plasmasnow: Let it snow on your desktop
-#-# Copyright (C) 1984,1988,1990,1993-1995,2000-2001 Rick Jansen
-#-# 	      2019,2020,2021,2022,2023 Willem Vermin
-#-#          2024 Mark Capella
+#-# Copyright (C) 2024 Mark Capella
 #-# 
 #-# This program is free software: you can redistribute it and/or modify
 #-# it under the terms of the GNU General Public License as published by
@@ -21,25 +19,36 @@
 */
 #pragma once
 
+
+/***********************************************************
+ * Module Method stubs.
+ */
+
+// Public.
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-    StormItem* createStormItem(int type);
-    void addStormItem(StormItem*);
+    // Getters.
+    const char* getPref(const char* prefName);
+    void clearPref(const char* prefName);
 
-    int updateStormItemOnThread(StormItem*);
+    bool getBoolPref(const char* prefName, bool defaultValue);
+    int getIntPref(const char* prefName, int defaultValue);
+    const char* getStringPref(const char* prefName,
+        const char* defaultValue);
 
-    int drawAllStormItems(cairo_t*);
-    void eraseStormItem(StormItem*);
-    int removeAllStormItems();
-    void removeStormItem(StormItem*);
+    // Setters.
+    void putBoolPref(const char* prefName, bool boolValue);
+    void putIntPref(const char* prefName, int intValue);
+    void putStringPref(const char* prefName, const char* cptrValue);
 
-    bool isStormItemFallen(StormItem*,
-        int xPosition, int yPosition);
-    void setStormItemFluffState(StormItem*, float state);
+    // Private Helpers.
+    void getPrefsMapFromPrefsFile();
+    void putPrefsMapToPrefsFile();
 
-    void logStormItem(StormItem*);
+    void logAllPrefsInMap(char* msg);
+    void logPrefsFile();
 
 #ifdef __cplusplus
 }

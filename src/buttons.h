@@ -46,7 +46,6 @@
     BUTTON(togglecode, plasmasnow_celestials, Halo, 1)                              \
     BUTTON(togglecode, plasmasnow_celestials, Moon, 1)                              \
     BUTTON(togglecode, plasmasnow_santa, NoSanta, -1) /*i*/                         \
-    BUTTON(togglecode, plasmasnow_santa, ShowLights, 1) \
     BUTTON(togglecode, plasmasnow_snow, BlowSnow, 1)                                \
     BUTTON(togglecode, plasmasnow_snow, NoKeepSnowOnBottom, -1)        /*i*/        \
     BUTTON(togglecode, plasmasnow_snow, NoKeepSnowOnWindows, -1)        /*i*/       \

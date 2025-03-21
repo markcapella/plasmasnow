@@ -23,7 +23,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string>
 #include <sys/time.h>
 #include <vector>
 
@@ -33,15 +32,57 @@
 #include "Flags.h"
 #include "Lights.h"
 #include "MainWindow.h"
+#include "Prefs.h"
 #include "Utils.h"
 #include "Windows.h"
 
-using namespace std;
 
 
 /** ***********************************************************
  ** Module globals and consts.
  **/
+
+// Prefs values.
+const char* SHOW_LIGHTS_PREFNAME = "ShowLights";
+const bool SHOW_LIGHTS_DEFAULT = true;
+const char* LIGHTS_SHAPE_PREFNAME = "LightsShape";
+const int LIGHTS_SHAPE_DEFAULT = 2; // Fancy Egg
+
+const char* SHOW_LIGHT_COLOR_RED_PREFNAME = "ShowLightColorRed";
+const bool SHOW_LIGHT_COLOR_RED_DEFAULT = true;
+const char* SHOW_LIGHT_COLOR_LIME_PREFNAME = "ShowLightColorLime";
+const bool SHOW_LIGHT_COLOR_LIME_DEFAULT = false;
+const char* SHOW_LIGHT_COLOR_PURPLE_PREFNAME = "ShowLightColorPurple";
+const bool SHOW_LIGHT_COLOR_PURPLE_DEFAULT = false;
+const char* SHOW_LIGHT_COLOR_CYAN_PREFNAME = "ShowLightColorCyan";
+const bool SHOW_LIGHT_COLOR_CYAN_DEFAULT = false;
+const char* SHOW_LIGHT_COLOR_GREEN_PREFNAME = "ShowLightColorGreen";
+const bool SHOW_LIGHT_COLOR_GREEN_DEFAULT = true;
+const char* SHOW_LIGHT_COLOR_ORANGE_PREFNAME = "ShowLightColorOrange";
+const bool SHOW_LIGHT_COLOR_ORANGE_DEFAULT = false;
+const char* SHOW_LIGHT_COLOR_BLUE_PREFNAME = "ShowLightColorBlue";
+const bool SHOW_LIGHT_COLOR_BLUE_DEFAULT = true;
+const char* SHOW_LIGHT_COLOR_PINK_PREFNAME = "ShowLightColorPink";
+const bool SHOW_LIGHT_COLOR_PINK_DEFAULT = false;
+
+const char* LIGHT_COLOR_RED_PREFNAME = "LightColorRed";
+const char* LIGHT_COLOR_RED_DEFAULT = "#B00000";
+const char* LIGHT_COLOR_LIME_PREFNAME = "LightColorLime";
+const char* LIGHT_COLOR_LIME_DEFAULT = "#B0ff00";
+const char* LIGHT_COLOR_PURPLE_PREFNAME = "LightColorPurple";
+const char* LIGHT_COLOR_PURPLE_DEFAULT = "#B000ff";
+const char* LIGHT_COLOR_CYAN_PREFNAME = "LightColorCyan";
+const char* LIGHT_COLOR_CYAN_DEFAULT = "#B0ffff";
+const char* LIGHT_COLOR_GREEN_PREFNAME = "LightColorGreen";
+const char* LIGHT_COLOR_GREEN_DEFAULT = "#00B000";
+const char* LIGHT_COLOR_ORANGE_PREFNAME = "LightColorOrange";
+const char* LIGHT_COLOR_ORANGE_DEFAULT = "#ffB000";
+const char* LIGHT_COLOR_BLUE_PREFNAME = "LightColorBlue";
+const char* LIGHT_COLOR_BLUE_DEFAULT = "#00B0ff";
+const char* LIGHT_COLOR_PINK_PREFNAME = "LightColorPink";
+const char* LIGHT_COLOR_PINK_DEFAULT = "#ffB0ff";
+
+// Lights.
 const int LIGHT_SPACING_WIDTH = 15;
 
 const int BRIGHT_COLOR = 252;
@@ -92,7 +133,6 @@ XPM_TYPE** mLightShapeList[] = {
 };
 
 // Lights thread handler.
-bool mLightsThreadActive = false;
 guint mLightsThreadId = 0;
 
 // Bulb position arrays.
@@ -107,153 +147,33 @@ std::vector<GdkRGBA> mBulbColorDark;
 
 
 /** ***********************************************************
- ** Module global Public.
- **/
-
-/** ***********************************************************
- ** This method responds to user changing lights module
- ** bulb shape.
- **/
-void onLightsShapeChange(GtkComboBoxText *combo,
-     __attribute__((unused)) gpointer data) {
-    if (Flags.ShowLights) {
-        uninitLightsModule();
-    }
-
-    Flags.LightsShape = gtk_combo_box_get_active(
-        GTK_COMBO_BOX(combo));
-    WriteFlags();
-
-    if (Flags.ShowLights) {
-        initLightsModule();
-    }
-}
-
-/** ***********************************************************
- ** This method responds to the user changing all other
- ** lights module settings.
- **/
-void respondToLightsSettingsChanges() {
-    // Update pref.
-    UIDO(ShowLights, setAllBulbLayers(););
-
-    UIDO(ShowLightColorRed,
-        eraseLightsFrame(); setAllBulbColors(););
-    UIDO(ShowLightColorLime,
-        eraseLightsFrame(); setAllBulbColors(););
-    UIDO(ShowLightColorPurple,
-        eraseLightsFrame(); setAllBulbColors(););
-    UIDO(ShowLightColorCyan,
-        eraseLightsFrame(); setAllBulbColors(););
-    UIDO(ShowLightColorGreen,
-        eraseLightsFrame(); setAllBulbColors(););
-    UIDO(ShowLightColorOrange,
-        eraseLightsFrame(); setAllBulbColors(););
-    UIDO(ShowLightColorBlue,
-        eraseLightsFrame(); setAllBulbColors(););
-    UIDO(ShowLightColorPink,
-        eraseLightsFrame(); setAllBulbColors(););
-}
-
-/** ***********************************************************
- ** This method responds to OS screen size changes.
- **
- ** Lights module just "restrings" them left to right
- ** to fit the new screen width.
- **/
-void respondToScreenSizeChanges() {
-    setAllBulbPositions();
-}
-
-/** ***********************************************************
- ** This method draws the bulbs onto the display screen.
- **/
-void drawLowerLightsFrame(cairo_t* cc) {
-    drawLightsFrame(cc, 0);
-}
-void drawUpperLightsFrame(cairo_t* cc) {
-    drawLightsFrame(cc, 1);
-}
-
-/** ***********************************************************
- ** This method updates the bulbs randomly to produce
- ** Twinkling effect.
- **/
-gboolean updateLightsFrame(__attribute__ ((unused))
-    void* data) {
-
-    // Change 1 out of 5 bulbs.
-    int colorType = getFirstUserSelectedColor();
-    if (colorType != GRAYED) {
-        for (int i = 0; i < getBulbCount(); i++) {
-            if (randomIntegerUpTo(5) == 0) {
-                mBulbColorBright[i] = getTwinklingBright(colorType);
-                mBulbColorNormal[i] = getTwinklingNormal(colorType);
-                mBulbColorDark[i] = getTwinklingDark(colorType);
-            }
-            colorType = getNextUserSelectedColorAfter(colorType);
-        }
-    }
-
-    return true;
-}
-
-/** ***********************************************************
- ** This method erases the bulbs from the display screen.
- **/
-void eraseLightsFrame() {
-    if (!Flags.ShowLights) {
-        return;
-    }
-
-    // Get width & height of user selected shape.
-    int lightWidth = 0, lightHeight = 0;
-    sscanf(mLightShapeList[Flags.LightsShape][0], "%d %d",
-        &lightWidth, &lightHeight);
-
-    for (int i = 0; i < getBulbCount(); i++) {
-        clearDisplayArea(mGlobal.display, mGlobal.SnowWin,
-            mLightXPos[i], mLightYPos[i],
-            lightWidth, lightHeight,
-            mGlobal.xxposures);
-    }
-}
-
-/** ***********************************************************
- ** Module global Private.
- **/
-
-/** ***********************************************************
  ** This method initializes the lazy-loaded Lights module.
  **/
 void initLightsModule() {
-    if (mLightsThreadActive) {
-        return;
-    }
-
     // Set all structures.
     setAllBulbPositions();
     setAllBulbLayers();
     setAllBulbColors();
 
     // Start the update thread.
+    if (mLightsThreadId) {
+        g_source_remove(mLightsThreadId);
+        mLightsThreadId = None;
+    }
     const float LIGHTS_THREAD_DELAY_IN_MS = 0.5;
     mLightsThreadId = addMethodToMainloop(PRIORITY_DEFAULT,
         LIGHTS_THREAD_DELAY_IN_MS, updateLightsFrame);
-
-    mLightsThreadActive = true;
 }
 
 /** ***********************************************************
  ** This method uninitializes the Lights module.
  **/
 void uninitLightsModule() {
-    if (!mLightsThreadActive) {
-        return;
-    }
-
     // Clear the update thread.
-    g_source_remove(mLightsThreadId);
+    if (mLightsThreadId) {
+        g_source_remove(mLightsThreadId);
+        mLightsThreadId = None;
+    }
 
     // Clear all structures.
     mLightXPos.clear();
@@ -263,78 +183,25 @@ void uninitLightsModule() {
     mBulbColorBright.clear();
     mBulbColorNormal.clear();
     mBulbColorDark.clear();
-
-    mLightsThreadActive = false;
 }
 
 /** ***********************************************************
- ** This method sets each bulbs initial x/y position.
+ ** This method draws the bulbs onto the display screen.
  **/
-void setAllBulbPositions() {
-    mLightXPos.clear();
-    mLightYPos.clear();
-
-    // Get width of user selected shape.
-    int lightWidth = 0;
-    sscanf(mLightShapeList[Flags.LightsShape][0], "%d",
-        &lightWidth);
-
-    for (int i = 0; i < getBulbCount(); i++) {
-        const int XPOS = getFirstBulbXPos() + (i *
-            (lightWidth + LIGHT_SPACING_WIDTH));
-        const int YPOS = getYPosForBulbNumber(i);
-
-        mLightXPos.push_back(XPOS);
-        mLightYPos.push_back(YPOS);
-    }
+void drawLowerLightsFrame(cairo_t* cc) {
+    drawLightsFrame(cc, 0);
 }
 
-/** ***********************************************************
- ** This method sets each bulbs Upper/Lower layer flag.
- **/
-void setAllBulbLayers() {
-    mLightLayer.clear();
-
-    for (int i = 0; i < getBulbCount(); i++) {
-        mLightLayer.push_back(randomIntegerUpTo(2));
-    }
-}
-
-/** ***********************************************************
- ** This method sets each bulbs initial 3-color theme.
- **/
-void setAllBulbColors() {
-    mBulbColorBright.clear();
-    mBulbColorNormal.clear();
-    mBulbColorDark.clear();
-
-    int colorType = getFirstUserSelectedColor();
-
-    for (int i = 0; i < getBulbCount(); i++) {
-        mBulbColorBright.push_back(
-            getTwinklingBright(colorType));
-        mBulbColorNormal.push_back(
-            getTwinklingNormal(colorType));
-        mBulbColorDark.push_back(
-            getTwinklingDark(colorType));
-
-        if (colorType != GRAYED) {
-            colorType = getNextUserSelectedColorAfter(colorType);
-        }
-    }
+void drawUpperLightsFrame(cairo_t* cc) {
+    drawLightsFrame(cc, 1);
 }
 
 /** ***********************************************************
  ** This method draws the bulbs onto the display screen.
  **/
 void drawLightsFrame(cairo_t* cc, int forLayer) {
-    if (!Flags.ShowLights) {
+    if (!getShowLights()) {
         return;
-    }
-
-    // Lazy load Lights module on requested draw.
-    if (!mLightsThreadActive) {
-        initLightsModule();
     }
 
     cairo_save(cc);
@@ -377,13 +244,217 @@ void drawLightsFrame(cairo_t* cc, int forLayer) {
 }
 
 /** ***********************************************************
+ ** This method updates the bulbs randomly to produce
+ ** Twinkling effect.
+ **/
+gboolean updateLightsFrame(__attribute__ ((unused))
+    void* data) {
+
+    // Change 1 out of 5 bulbs.
+    int colorType = getFirstActiveLightsColor();
+    if (colorType != GRAYED) {
+        for (int i = 0; i < getBulbCount(); i++) {
+            if (randomIntegerUpTo(5) == 0) {
+                mBulbColorBright[i] = getTwinklingBright(colorType);
+                mBulbColorNormal[i] = getTwinklingNormal(colorType);
+                mBulbColorDark[i] = getTwinklingDark(colorType);
+            }
+            colorType = getNextActiveLightsColor(colorType);
+        }
+    }
+
+    return true;
+}
+
+/** ***********************************************************
+ ** This method erases the bulbs from the display screen.
+ **/
+void eraseLightsFrame() {
+    if (!getShowLights()) {
+        return;
+    }
+
+    // Get width & height of user selected shape.
+    int lightWidth = 0, lightHeight = 0;
+    sscanf(mLightShapeList[getLightsShape()][0], "%d %d",
+        &lightWidth, &lightHeight);
+
+    for (int i = 0; i < getBulbCount(); i++) {
+        clearDisplayArea(mGlobal.display, mGlobal.SnowWin,
+            mLightXPos[i], mLightYPos[i],
+            lightWidth, lightHeight,
+            mGlobal.xxposures);
+    }
+}
+
+/** ***********************************************************
+ ** This method responds to the user changing
+ ** ShowLights setting.
+ **/
+void onClickedShowLights() {
+    if (getShowLights()) {
+        uninitLightsModule();
+    }
+
+    putShowLights(!getShowLights());
+
+    if (getShowLights()) {
+        initLightsModule();
+    }
+}
+
+/** ***********************************************************
+ ** This method responds to user changing lights module
+ ** bulb shape.
+ **/
+void onChangedLightsShape(GtkComboBoxText *combo,
+     __attribute__((unused)) gpointer data) {
+    if (getShowLights()) {
+        uninitLightsModule();
+    }
+
+    putLightsShape(gtk_combo_box_get_active(
+        GTK_COMBO_BOX(combo)));
+
+    if (getShowLights()) {
+        initLightsModule();
+    }
+}
+
+/** ***********************************************************
+ ** These methods respond to users toggling
+ ** Show Lights Color settings.
+ **/
+void onClickedLightColorRed() {
+    putShowLightColorRed(!getShowLightColorRed());
+    setRedLightColorButtonStyles();
+
+    eraseLightsFrame();
+    setAllBulbColors();
+}
+
+void onClickedLightColorLime() {
+    putShowLightColorLime(!getShowLightColorLime());
+    setLimeLightColorButtonStyles();
+
+    eraseLightsFrame();
+    setAllBulbColors();
+}
+void onClickedLightColorPurple() {
+    putShowLightColorPurple(!getShowLightColorPurple());
+    setPurpleLightColorButtonStyles();
+
+    eraseLightsFrame();
+    setAllBulbColors();
+}
+void onClickedLightColorCyan() {
+    putShowLightColorCyan(!getShowLightColorCyan());
+    setCyanLightColorButtonStyles();
+
+    eraseLightsFrame();
+    setAllBulbColors();
+}
+void onClickedLightColorGreen() {
+    putShowLightColorGreen(!getShowLightColorGreen());
+    setGreenLightColorButtonStyles();
+
+    eraseLightsFrame();
+    setAllBulbColors();
+}
+void onClickedLightColorOrange() {
+    putShowLightColorOrange(!getShowLightColorOrange());
+    setOrangeLightColorButtonStyles();
+
+    eraseLightsFrame();
+    setAllBulbColors();
+}
+void onClickedLightColorBlue() {
+    putShowLightColorBlue(!getShowLightColorBlue());
+    setBlueLightColorButtonStyles();
+
+    eraseLightsFrame();
+    setAllBulbColors();
+}
+void onClickedLightColorPink() {
+    putShowLightColorPink(!getShowLightColorPink());
+    setPinkLightColorButtonStyles();
+
+    eraseLightsFrame();
+    setAllBulbColors();
+}
+
+/** ***********************************************************
+ ** This method responds to OS screen size changes.
+ **/
+void onLightsScreenSizeChanged() {
+    setAllBulbPositions();
+}
+
+/** ***********************************************************
+ ** This method sets each bulbs initial x/y position.
+ **/
+void setAllBulbPositions() {
+    mLightXPos.clear();
+    mLightYPos.clear();
+
+    // Get width of user selected shape.
+    int lightWidth = 0;
+    sscanf(mLightShapeList[getLightsShape()][0], "%d",
+        &lightWidth);
+
+    for (int i = 0; i < getBulbCount(); i++) {
+        const int XPOS = getFirstBulbXPos() + (i *
+            (lightWidth + LIGHT_SPACING_WIDTH));
+        const int YPOS = getYPosForBulbNumber(i);
+
+        mLightXPos.push_back(XPOS);
+        mLightYPos.push_back(YPOS);
+    }
+}
+
+/** ***********************************************************
+ ** This method sets each bulbs Upper/Lower layer flag.
+ **/
+void setAllBulbLayers() {
+    mLightLayer.clear();
+
+    for (int i = 0; i < getBulbCount(); i++) {
+        mLightLayer.push_back(randomIntegerUpTo(2));
+    }
+}
+
+/** ***********************************************************
+ ** This method sets each bulbs initial 3-color theme.
+ **/
+void setAllBulbColors() {
+    mBulbColorBright.clear();
+    mBulbColorNormal.clear();
+    mBulbColorDark.clear();
+
+    int colorType = getFirstActiveLightsColor();
+
+    for (int i = 0; i < getBulbCount(); i++) {
+        mBulbColorBright.push_back(
+            getTwinklingBright(colorType));
+        mBulbColorNormal.push_back(
+            getTwinklingNormal(colorType));
+        mBulbColorDark.push_back(
+            getTwinklingDark(colorType));
+
+        if (colorType != GRAYED) {
+            colorType = getNextActiveLightsColor(colorType);
+        }
+    }
+}
+
+/** ***********************************************************
  ** This method returns the number of bulbs
  ** to be displayed on screen.
  **/
 int getBulbCount() {
     // Get width of user selected shape.
     int lightWidth = 0;
-    sscanf(mLightShapeList[Flags.LightsShape][0], "%d",
+    sscanf(mLightShapeList[getLightsShape()][0], "%d",
         &lightWidth);
 
     const int ONE_LIGHT_AND_COLUMN_WIDTH =
@@ -401,7 +472,7 @@ int getBulbCount() {
 int getFirstBulbXPos() {
     // Get width of user selected shape.
     int lightWidth = 0;
-    sscanf(mLightShapeList[Flags.LightsShape][0], "%d",
+    sscanf(mLightShapeList[getLightsShape()][0], "%d",
         &lightWidth);
 
     const int ONE_LIGHT_AND_COLUMN_WIDTH =
@@ -431,28 +502,27 @@ int getYPosForBulbNumber(int lightNumber) {
  ** at least one colortype button for display when bulbs
  ** are on. Helps determine if bulbs should be grayed.
  **/
-bool hasTheUserSelectedAnyColors() {
-    return shouldShowLightColorRed() || shouldShowLightColorLime() ||
-        shouldShowLightColorPurple() || shouldShowLightColorCyan() ||
-        shouldShowLightColorGreen() || shouldShowLightColorOrange() ||
-        shouldShowLightColorBlue() || shouldShowLightColorPink();
+bool areAnyLightsColorTypesActive() {
+    return getShowLightColorRed() || getShowLightColorLime() ||
+        getShowLightColorPurple() || getShowLightColorCyan() ||
+        getShowLightColorGreen() || getShowLightColorOrange() ||
+        getShowLightColorBlue() || getShowLightColorPink();
 }
 
 /** ***********************************************************
  ** This method determines if a colortype is available
  ** at a start point as selected by the user list.
  **/
-bool hasUserSelectedColor(LIGHT_COLOR_TYPE colorType) {
-
+bool isLightColorTypeActive(LIGHT_COLOR_TYPE colorType) {
     switch (colorType) {
-        case RED: return shouldShowLightColorRed();
-        case LIME: return shouldShowLightColorLime();
-        case PURPLE: return shouldShowLightColorPurple();
-        case CYAN: return shouldShowLightColorCyan();
-        case GREEN: return shouldShowLightColorGreen();
-        case ORANGE: return shouldShowLightColorOrange();
-        case BLUE: return shouldShowLightColorBlue();
-        case PINK: return shouldShowLightColorPink();
+        case RED: return getShowLightColorRed();
+        case LIME: return getShowLightColorLime();
+        case PURPLE: return getShowLightColorPurple();
+        case CYAN: return getShowLightColorCyan();
+        case GREEN: return getShowLightColorGreen();
+        case ORANGE: return getShowLightColorOrange();
+        case BLUE: return getShowLightColorBlue();
+        case PINK: return getShowLightColorPink();
 
         default:
             return false;
@@ -463,20 +533,20 @@ bool hasUserSelectedColor(LIGHT_COLOR_TYPE colorType) {
  ** This method returns the first colortype available
  ** as selected by the user.
  **/
-LIGHT_COLOR_TYPE getFirstUserSelectedColor() {
+LIGHT_COLOR_TYPE getFirstActiveLightsColor() {
     // Find @ least one.
-    return hasTheUserSelectedAnyColors() ?
-        getNextUserSelectedColorAfter(GRAYED) : GRAYED;
+    return areAnyLightsColorTypesActive() ?
+        getNextActiveLightsColor(GRAYED) : GRAYED;
 }
 
 /** ***********************************************************
  ** This method returns the next colortype available
  ** other than the one mentioned.
  **/
-LIGHT_COLOR_TYPE getNextUserSelectedColorAfter(
+LIGHT_COLOR_TYPE getNextActiveLightsColor(
     LIGHT_COLOR_TYPE thisColor) {
     // Find @ least one.
-    if (!hasTheUserSelectedAnyColors()) {
+    if (!areAnyLightsColorTypesActive()) {
         return GRAYED;
     }
 
@@ -486,10 +556,10 @@ LIGHT_COLOR_TYPE getNextUserSelectedColorAfter(
     while (true) {
         thisColorIndex++;
         if (thisColorIndex == MAX_LIGHT_COLOR_TYPES) {
-            thisColorIndex = getFirstUserSelectedColor();
+            thisColorIndex = getFirstActiveLightsColor();
         }
 
-        if (hasUserSelectedColor((LIGHT_COLOR_TYPE)
+        if (isLightColorTypeActive((LIGHT_COLOR_TYPE)
             thisColorIndex)) {
             return thisColorIndex;
         }
@@ -523,7 +593,7 @@ void createColoredBulb(GdkRGBA bright, GdkRGBA normal,
     const int COLORSTRING_INDEX = 4;
 
     int dataStrings, colorStrings;
-    sscanf(mLightShapeList[Flags.LightsShape][0], "%*d %d %d",
+    sscanf(mLightShapeList[getLightsShape()][0], "%*d %d %d",
         &dataStrings, &colorStrings);
     const int ALL_STRINGS_COUNT = HEADERSTRING_COUNT +
         colorStrings + dataStrings;
@@ -537,7 +607,7 @@ void createColoredBulb(GdkRGBA bright, GdkRGBA normal,
     // target the XPM return area.
     for (int i = 0; i < COLORSTRING_INDEX; i++) {
         targetXPMArray[i] = strdup(mLightShapeList[
-            Flags.LightsShape][i]);
+            getLightsShape()][i]);
     }
 
     // Create the three color strings to XPM return area.
@@ -573,7 +643,7 @@ void createColoredBulb(GdkRGBA bright, GdkRGBA normal,
     for (int i = NEXT_COLOR_INDEX;
         i < ALL_STRINGS_COUNT; i++) {
         targetXPMArray[i] = strdup(mLightShapeList[
-            Flags.LightsShape][i]);
+            getLightsShape()][i]);
     }
 
     // Return resulting XPM Line count.
@@ -893,5 +963,155 @@ double getFuzzyRGBInt(double color) {
         color + randomIntegerUpTo(RANGE_ABOVE_AND_BELOW) :
         color - randomIntegerUpTo(RANGE_ABOVE_AND_BELOW);
 
-    return min(max(newColor, 0x00), 0xff);
+    return MIN(MAX(newColor, 0x00), 0xff);
+}
+
+/** ***********************************************************
+ ** This method resets all Lights module Prefs
+ ** to their default values.
+ **/
+void setAllLightsPrefsDefaults() {
+    if (getShowLights()) {
+        uninitLightsModule();
+    }
+
+    clearPref(SHOW_LIGHTS_PREFNAME);
+    clearPref(LIGHTS_SHAPE_PREFNAME);
+
+    clearPref(SHOW_LIGHT_COLOR_RED_PREFNAME);
+    clearPref(SHOW_LIGHT_COLOR_LIME_PREFNAME);
+    clearPref(SHOW_LIGHT_COLOR_PURPLE_PREFNAME);
+    clearPref(SHOW_LIGHT_COLOR_CYAN_PREFNAME);
+    clearPref(SHOW_LIGHT_COLOR_GREEN_PREFNAME);
+    clearPref(SHOW_LIGHT_COLOR_ORANGE_PREFNAME);
+    clearPref(SHOW_LIGHT_COLOR_BLUE_PREFNAME);
+    clearPref(SHOW_LIGHT_COLOR_PINK_PREFNAME);
+
+    clearPref(LIGHT_COLOR_RED_PREFNAME);
+    clearPref(LIGHT_COLOR_LIME_PREFNAME);
+    clearPref(LIGHT_COLOR_PURPLE_PREFNAME);
+    clearPref(LIGHT_COLOR_CYAN_PREFNAME);
+    clearPref(LIGHT_COLOR_GREEN_PREFNAME);
+    clearPref(LIGHT_COLOR_ORANGE_PREFNAME);
+    clearPref(LIGHT_COLOR_BLUE_PREFNAME);
+    clearPref(LIGHT_COLOR_PINK_PREFNAME);
+
+    if (getShowLights()) {
+        initLightsModule();
+    }
+}
+
+/** ***********************************************************
+ ** Getters for all Prefs values.
+ **/
+bool getShowLights() {
+    return getBoolPref(SHOW_LIGHTS_PREFNAME,
+        SHOW_LIGHTS_DEFAULT);
+}
+void putShowLights(bool boolValue) {
+    putBoolPref(SHOW_LIGHTS_PREFNAME, boolValue);
+}
+
+int getLightsShape() {
+    return getIntPref(LIGHTS_SHAPE_PREFNAME,
+        LIGHTS_SHAPE_DEFAULT);
+}
+void putLightsShape(int intValue) {
+    putIntPref(LIGHTS_SHAPE_PREFNAME, intValue);
+}
+
+bool getShowLightColorRed() {
+    return getBoolPref(SHOW_LIGHT_COLOR_RED_PREFNAME,
+        SHOW_LIGHT_COLOR_RED_DEFAULT);
+}
+void putShowLightColorRed(bool boolValue) {
+    putBoolPref(SHOW_LIGHT_COLOR_RED_PREFNAME, boolValue);
+}
+const char* getLightColorRed() {
+    return getStringPref(LIGHT_COLOR_RED_PREFNAME,
+        LIGHT_COLOR_RED_DEFAULT);
+}
+
+bool getShowLightColorLime() {
+    return getBoolPref(SHOW_LIGHT_COLOR_LIME_PREFNAME,
+        SHOW_LIGHT_COLOR_LIME_DEFAULT);
+}
+void putShowLightColorLime(bool boolValue) {
+    putBoolPref(SHOW_LIGHT_COLOR_LIME_PREFNAME, boolValue);
+}
+const char* getLightColorLime() {
+    return getStringPref(LIGHT_COLOR_LIME_PREFNAME,
+        LIGHT_COLOR_LIME_DEFAULT);
+}
+
+bool getShowLightColorPurple() {
+    return getBoolPref(SHOW_LIGHT_COLOR_PURPLE_PREFNAME,
+        SHOW_LIGHT_COLOR_PURPLE_DEFAULT);
+}
+void putShowLightColorPurple(bool boolValue) {
+    putBoolPref(SHOW_LIGHT_COLOR_PURPLE_PREFNAME, boolValue);
+}
+const char* getLightColorPurple() {
+    return getStringPref(LIGHT_COLOR_PURPLE_PREFNAME,
+        LIGHT_COLOR_PURPLE_DEFAULT);
+}
+
+bool getShowLightColorCyan() {
+    return getBoolPref(SHOW_LIGHT_COLOR_CYAN_PREFNAME,
+        SHOW_LIGHT_COLOR_CYAN_DEFAULT);
+}
+void putShowLightColorCyan(bool boolValue) {
+    putBoolPref(SHOW_LIGHT_COLOR_CYAN_PREFNAME, boolValue);
+}
+const char* getLightColorCyan() {
+    return getStringPref(LIGHT_COLOR_CYAN_PREFNAME,
+        LIGHT_COLOR_CYAN_DEFAULT);
+}
+
+bool getShowLightColorGreen() {
+    return getBoolPref(SHOW_LIGHT_COLOR_GREEN_PREFNAME,
+        SHOW_LIGHT_COLOR_GREEN_DEFAULT);
+}
+void putShowLightColorGreen(bool boolValue) {
+    putBoolPref(SHOW_LIGHT_COLOR_GREEN_PREFNAME, boolValue);
+}
+const char* getLightColorGreen() {
+    return getStringPref(LIGHT_COLOR_GREEN_PREFNAME,
+        LIGHT_COLOR_GREEN_DEFAULT);
+}
+
+bool getShowLightColorOrange() {
+    return getBoolPref(SHOW_LIGHT_COLOR_ORANGE_PREFNAME,
+        SHOW_LIGHT_COLOR_ORANGE_DEFAULT);
+}
+void putShowLightColorOrange(bool boolValue) {
+    putBoolPref(SHOW_LIGHT_COLOR_ORANGE_PREFNAME, boolValue);
+}
+const char* getLightColorOrange() {
+    return getStringPref(LIGHT_COLOR_ORANGE_PREFNAME,
+        LIGHT_COLOR_ORANGE_DEFAULT);
+}
+
+bool getShowLightColorBlue() {
+    return getBoolPref(SHOW_LIGHT_COLOR_BLUE_PREFNAME,
+        SHOW_LIGHT_COLOR_BLUE_DEFAULT);
+}
+void putShowLightColorBlue(bool boolValue) {
+    putBoolPref(SHOW_LIGHT_COLOR_BLUE_PREFNAME, boolValue);
+}
+const char* getLightColorBlue() {
+    return getStringPref(LIGHT_COLOR_BLUE_PREFNAME,
+        LIGHT_COLOR_BLUE_DEFAULT);
+}
+
+bool getShowLightColorPink() {
+    return getBoolPref(SHOW_LIGHT_COLOR_PINK_PREFNAME,
+        SHOW_LIGHT_COLOR_PINK_DEFAULT);
+}
+void putShowLightColorPink(bool boolValue) {
+    putBoolPref(SHOW_LIGHT_COLOR_PINK_PREFNAME, boolValue);
+}
+const char* getLightColorPink() {
+    return getStringPref(LIGHT_COLOR_PINK_PREFNAME,
+        LIGHT_COLOR_PINK_DEFAULT);
 }

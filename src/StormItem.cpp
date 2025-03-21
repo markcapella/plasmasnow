@@ -118,7 +118,7 @@ StormItem* createStormItem(int itemType) {
 /***********************************************************
  ** Itemset hashtable helper - Add new all items.
  **/
-void addStormItemToItemset(StormItem* stormItem) {
+void addStormItem(StormItem* stormItem) {
     set_insert(stormItem);
 
     addMethodWithArgToMainloop(PRIORITY_HIGH,
@@ -142,8 +142,8 @@ int updateStormItemOnThread(StormItem* stormItem) {
     // Candidate for removal?
     if (mGlobal.RemoveFluff) {
         if (stormItem->fluff || stormItem->isFrozen) {
-            eraseStormItemInItemset(stormItem);
-            removeStormItemInItemset(stormItem);
+            eraseStormItem(stormItem);
+            removeStormItem(stormItem);
             mStormItemBackgroundThreadIsActive = false;
             return false;
         }
@@ -151,8 +151,8 @@ int updateStormItemOnThread(StormItem* stormItem) {
 
     // Candidate for removal?
     if (getStallingNewStormItems()) {
-        eraseStormItemInItemset(stormItem);
-        removeStormItemInItemset(stormItem);
+        eraseStormItem(stormItem);
+        removeStormItem(stormItem);
         mStormItemBackgroundThreadIsActive = false;
         return false;
     }
@@ -160,8 +160,8 @@ int updateStormItemOnThread(StormItem* stormItem) {
     // Candidate for removal?
     if (stormItem->fluff &&
         stormItem->flufftimer > stormItem->flufftime) {
-        eraseStormItemInItemset(stormItem);
-        removeStormItemInItemset(stormItem);
+        eraseStormItem(stormItem);
+        removeStormItem(stormItem);
         mStormItemBackgroundThreadIsActive = false;
         return false;
     }
@@ -258,7 +258,7 @@ int updateStormItemOnThread(StormItem* stormItem) {
         // out of the window.
         if (newFlakeXPos < 0 ||
             newFlakeXPos >= mGlobal.SnowWinWidth) {
-            removeStormItemInItemset(stormItem);
+            removeStormItem(stormItem);
             mStormItemBackgroundThreadIsActive = false;
             return false;
         }
@@ -266,7 +266,7 @@ int updateStormItemOnThread(StormItem* stormItem) {
 
     // Remove stormItem if it falls below bottom of screen.
     if (newFlakeYPos >= mGlobal.SnowWinHeight) {
-        removeStormItemInItemset(stormItem);
+        removeStormItem(stormItem);
         mStormItemBackgroundThreadIsActive = false;
         return false;
     }
@@ -280,7 +280,7 @@ int updateStormItemOnThread(StormItem* stormItem) {
         lockFallenSnowBaseSemaphore();
         if (isStormItemFallen(stormItem, NEW_STORMITEM_INT_X_POS,
                 NEW_STORMITEM_INT_Y_POS)) {
-            removeStormItemInItemset(stormItem);
+            removeStormItem(stormItem);
             unlockFallenSnowBaseSemaphore();
             mStormItemBackgroundThreadIsActive = false;
             return false;
@@ -391,7 +391,7 @@ int updateStormItemOnThread(StormItem* stormItem) {
                 newflake->isFrozen = 1;
                 setStormItemFluffState(newflake, 8);
 
-                addStormItemToItemset(newflake);
+                addStormItem(newflake);
                 mStormItemBackgroundThreadIsActive = false;
                 return true;
             }
@@ -408,7 +408,7 @@ int updateStormItemOnThread(StormItem* stormItem) {
 /***********************************************************
  ** Itemset hashtable helper - Draw all items.
  **/
-int drawAllStormItemsInItemset(cairo_t* cr) {
+int drawAllStormItems(cairo_t* cr) {
     if (Flags.NoSnowFlakes) {
         return true;
     }
@@ -447,7 +447,7 @@ int drawAllStormItemsInItemset(cairo_t* cr) {
 /***********************************************************
  ** This method erases a single stormItem pixmap from the display.
  **/
-void eraseStormItemInItemset(StormItem* stormItem) {
+void eraseStormItem(StormItem* stormItem) {
     if (mGlobal.isDoubleBuffered) {
         return;
     }
@@ -465,12 +465,12 @@ void eraseStormItemInItemset(StormItem* stormItem) {
 /***********************************************************
  ** Itemset hashtable helper - Remove all items from the list.
  **/
-int removeAllStormItemsInItemset() {
+int removeAllStormItems() {
     set_begin();
 
     StormItem* stormItem;
     while ((stormItem = (StormItem*) set_next())) {
-        eraseStormItemInItemset(stormItem);
+        eraseStormItem(stormItem);
     }
 
     return true;
@@ -483,7 +483,7 @@ int removeAllStormItemsInItemset() {
  ** a 'return false;' to remove this stormItem from the g_timeout
  ** callback.
  **/
-void removeStormItemInItemset(StormItem* stormItem) {
+void removeStormItem(StormItem* stormItem) {
     if (stormItem->fluff) {
         mGlobal.FluffCount--;
     }

@@ -120,7 +120,7 @@ void ConvertOnTreeToFlakes() {
                 flake->xVelocity = mGlobal.NewWind / 2;
                 flake->yVelocity = 0;
                 flake->survivesScreenEdges = false;
-                addStormItemToItemset(flake);
+                addStormItem(flake);
             }
         }
     }

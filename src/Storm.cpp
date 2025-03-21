@@ -532,7 +532,7 @@ int updateStormOnThread() {
     if (DESIRED_FLAKES != 0) {
         for (int i = 0; i < DESIRED_FLAKES; i++) {
             StormItem* flake = createStormItem(-1);
-            addStormItemToItemset(flake);
+            addStormItem(flake);
         }
         mUpdateStormThreadPrevTime = NOW;
         mUpdateStormThreadStartTime = 0;

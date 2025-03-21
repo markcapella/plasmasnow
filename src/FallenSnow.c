@@ -688,7 +688,7 @@ void blowoffSnowFromFallen(FallenSnow* fsnow,
                         mGlobal.WindMax;
                     flake->yVelocity = -10;
 
-                    addStormItemToItemset(flake);
+                    addStormItem(flake);
                 }
                 eraseFallenSnowWindPixel(fsnow, i);
             }
@@ -758,21 +758,21 @@ void createPlowedStormItems(FallenSnow* fsnow, int xPos,
     for (int i = 0; i < PLOWED_ITEMS_TO_CREATE; i++) {
         StormItem* flake = createStormItem(-1);
         flake->survivesScreenEdges = false;
-        flake->xRealPosition = xPos;
+        flake->xRealPosition = xPos + i;
         flake->yRealPosition = yPos1;
         flake->xVelocity = -0.1 * fsignf(mGlobal.NewWind) *
             mGlobal.WindMax;
         flake->yVelocity = -randomIntegerUpTo(6) - 60;
-        addStormItemToItemset(flake);
+        addStormItem(flake);
 
         StormItem* flake2 = createStormItem(-1);
         flake2->survivesScreenEdges = false;
-        flake2->xRealPosition = xPos;
+        flake2->xRealPosition = xPos + i;
         flake2->yRealPosition = yPos2;
         flake2->xVelocity = -0.1 * fsignf(mGlobal.NewWind) *
             mGlobal.WindMax;
         flake2->yVelocity = -randomIntegerUpTo(6) - 60;
-        addStormItemToItemset(flake2);
+        addStormItem(flake2);
     }
 }
 
@@ -973,7 +973,7 @@ void generateFallenSnowFlakes(FallenSnow* fsnow,
                 flake->xVelocity = (Flags.NoWind) ?
                     0 : mGlobal.NewWind / 8;
                 flake->yVelocity = yVelocity;
-                addStormItemToItemset(flake);
+                addStormItem(flake);
             }
         }
     }

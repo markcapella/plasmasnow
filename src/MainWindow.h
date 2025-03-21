@@ -31,63 +31,72 @@
 extern "C" {
 #endif
 
-	void createMainWindow();
-	void applyMainWindowCSSTheme();
-	void addBusyStyleClass();
-	void removeBusyStyleClass();
-	void updateMainWindowTheme();
+    void setShowLightsButtonStyles();
+    void setRedLightColorButtonStyles();
+    void setLimeLightColorButtonStyles();
+    void setPurpleLightColorButtonStyles();
+    void setCyanLightColorButtonStyles();
+    void setGreenLightColorButtonStyles();
+    void setOrangeLightColorButtonStyles();
+    void setBlueLightColorButtonStyles();
+    void setPinkLightColorButtonStyles();
 
-	int getMainWindowWidth();
-	int getMainWindowHeight();
-	int getMainWindowXPos();
-	int getMainWindowYPos();
+    void createMainWindow();
+    void applyMainWindowCSSTheme();
+    void addBusyStyleClass();
+    void removeBusyStyleClass();
+    void updateMainWindowTheme();
 
-	char* getStormItemColor1Tag();
-	char* getStormItemColor2Tag();
-	char* getBirdsColorTag();
-	char* getTreeColorTag();
+    int getMainWindowWidth();
+    int getMainWindowHeight();
+    int getMainWindowXPos();
+    int getMainWindowYPos();
 
-	void updateMainWindowUI();
-	int ui_run_nomenu();
-	void handle_screen();
+    char* getStormItemColor1Tag();
+    char* getStormItemColor2Tag();
+    char* getBirdsColorTag();
+    char* getTreeColorTag();
 
-	void init_buttons();
-	void initAllButtonValues();
-	void set_buttons();
-	void connectAllButtonSignals();
-	void set_santa_buttons();
-	void set_tree_buttons();
+    void updateMainWindowUI();
+    int ui_run_nomenu();
+    void handle_screen();
 
-	void birdscb(GtkWidget* w, void* m);
-	void ui_gray_birds(int m);
-	void ui_set_birds_header(const char *text);
+    void init_buttons();
+    void initAllButtonValues();
+    void set_buttons();
+    void connectAllButtonSignals();
 
-	void setTabDefaults(int tab);
-	void setLabelText(GtkLabel* label, const gchar* str);
-	void handle_language(int restart);
-	void ui_set_celestials_header(const char *text);
-	void ui_set_sticky(int x);
-	void ui_gray_ww(const int m);
-	void ui_gray_below(const int m);
+    void setLightsShapeComboBoxStyle();
+    void connectLightsShapeComboBoxSignal();
+    void disconnectLightsShapeComboBoxSignal();
 
-	void handleFileChooserPreview(GtkFileChooser* file_chooser,
-	    gpointer data);
-	gboolean handleMainWindowStateEvents(GtkWidget* widget,
-	    GdkEventWindowState* event, gpointer user_data);
+    void setAllLightsButtonStyles();
+    void connectAllLightsButtonSignals();
+    void disconnectAllLightsButtonSignals();
 
-	int isGtkVersionValid();
-	char* ui_gtk_version();
-	char* ui_gtk_required();
+    void set_santa_buttons();
+    void set_tree_buttons();
 
-	// Helpers for LightColors Control Panel settings.
-	bool shouldShowLightColorRed();
-	bool shouldShowLightColorLime();
-	bool shouldShowLightColorPurple();
-	bool shouldShowLightColorCyan();
-	bool shouldShowLightColorGreen();
-	bool shouldShowLightColorOrange();
-	bool shouldShowLightColorBlue();
-	bool shouldShowLightColorPink();
+    void birdscb(GtkWidget* w, void* m);
+    void ui_gray_birds(int m);
+    void ui_set_birds_header(const char *text);
+
+    void setTabDefaults(int tab);
+    void setLabelText(GtkLabel* label, const gchar* str);
+    void handle_language(int restart);
+    void ui_set_celestials_header(const char *text);
+    void ui_set_sticky(int x);
+    void ui_gray_ww(const int m);
+    void ui_gray_below(const int m);
+
+    void handleFileChooserPreview(GtkFileChooser* file_chooser,
+        gpointer data);
+    gboolean handleMainWindowStateEvents(GtkWidget* widget,
+        GdkEventWindowState* event, gpointer user_data);
+
+    int isGtkVersionValid();
+    char* ui_gtk_version();
+    char* ui_gtk_required();
 
 #ifdef __cplusplus
 }
