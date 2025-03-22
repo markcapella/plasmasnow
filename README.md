@@ -68,7 +68,7 @@ a QT screen color picker that works on Plasma, dual snow colors,
 
 ## Acknowledgements.
 
-### markcapella@twcny.rr.com Rocks !
+### markjamescapella@proton.me Rocks !
 
 #### Yeah I do.
 &nbsp;

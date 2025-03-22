@@ -91,7 +91,6 @@ int updateBlowoffFrame() {
             isFallenSnowVisible(fsnow)) {
 
             // Check for Santa Blowoff interaction.
-            bool wasFallenBlownBySantaPlowing = false;
             if (!Flags.NoSanta && mGlobal.SantaPlowRegion) {
                 const int ACTUAL_FALLEN_MAX_HEIGHT =
                     getMaximumFallenSnowColumnHeight(fsnow);
@@ -100,13 +99,13 @@ int updateBlowoffFrame() {
                     fsnow->w, ACTUAL_FALLEN_MAX_HEIGHT);
                 if (IS_IT_IN == RectangleIn || IS_IT_IN == RectanglePart) {
                     blowoffPlowedSnowFromFallen(fsnow);
-                    wasFallenBlownBySantaPlowing = true;
+                    fsnow = fsnow->next;
+                    continue;
                 }
             }
-
+            
             // Check for normal blowoff interaction.
-            if (Flags.BlowSnow && !wasFallenBlownBySantaPlowing &&
-                randomIntegerUpTo(5) == 0) {
+            if (Flags.BlowSnow && randomIntegerUpTo(5) == 0) {
                 blowoffSnowFromFallen(fsnow, fsnow->w / 4, fsnow->h / 4);
             }
         }

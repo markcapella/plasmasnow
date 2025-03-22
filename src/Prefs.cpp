@@ -1,7 +1,9 @@
 /* -copyright-
 #-# 
 #-# plasmasnow: Let it snow on your desktop
-#-# Copyright (C) 2024 Mark Capella
+#-# Copyright (C) 1984,1988,1990,1993-1995,2000-2001 Rick Jansen
+#-# 	      2019,2020,2021,2022,2023 Willem Vermin
+#-#          2024 Mark Capella
 #-# 
 #-# This program is free software: you can redistribute it and/or modify
 #-# it under the terms of the GNU General Public License as published by
@@ -54,8 +56,11 @@ const char* getPref(const char* prefName) {
 }
 
 void clearPref(const char* prefName) {
-    string prefNameString = prefName;
+    if (!mPrefsLoaded) {
+        getPrefsMapFromPrefsFile();
+    }
 
+    string prefNameString = prefName;
     for (vector<pair<string, string>>::iterator it =
         mPrefsList.begin(); it != mPrefsList.end(); it++) {
         if ((*it).first.compare(prefNameString) == 0) {

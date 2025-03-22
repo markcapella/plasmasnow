@@ -3,11 +3,11 @@
 # This file is distributed under the same license as the plasmasnow package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: plasmasnow 4.2\n"
-"Report-Msgid-Bugs-To: markcapella@twcny.rr.com\n"
+"Project-Id-Version: plasmasnow 2025-03-20\n"
+"Report-Msgid-Bugs-To: markjamescapella@proton.me\n"
 "POT-Creation-Date: 2023-10-29 14:49-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
@@ -257,7 +257,7 @@ msgid "https://github.com/markcapella/plasmasnow"
 msgstr ""
 
 #: src/ui.glade:486
-msgid "    markcapella@twcny.rr.com"
+msgid "markjamescapella@proton.me"
 msgstr ""
 
 #: src/ui.glade:532

@@ -10,6 +10,7 @@
        <ul>
        <li> Snow </li>
        <li> Santa </li>
+       <li> Lights </li>
        <li> Moon </li>
        <li> Stars </li>
        <li> Sky </li>
@@ -44,6 +45,6 @@
   </screenshots>
   <project_license>gpl-3+</project_license>
   <developer_name>Mark Capella</developer_name>
-  <update_contact>markcapella@twcny.rr.com</update_contact>
+  <update_contact>markjamescapella@proton.me</update_contact>
 </component>
 
