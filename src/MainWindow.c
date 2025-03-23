@@ -933,7 +933,8 @@ void ui_set_celestials_header(const char *text) {
  **/
 
 void setTabDefaults(int tab) {
-    int h = human_interaction = 0;
+    int humanInteractionOriginal = human_interaction;
+    human_interaction = 0;
 
     // don't want to clear backgroundfile
     char *background = strdup(Flags.BackgroundFile);
@@ -1003,7 +1004,7 @@ void setTabDefaults(int tab) {
     }
 
     set_buttons();
-    human_interaction = h;
+    human_interaction = humanInteractionOriginal;
     free(background);
 }
 

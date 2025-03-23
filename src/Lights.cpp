@@ -971,12 +971,8 @@ double getFuzzyRGBInt(double color) {
  ** to their default values.
  **/
 void setAllLightsPrefsDefaults() {
-    if (getShowLights()) {
-        uninitLightsModule();
-    }
-
-    clearPref(SHOW_LIGHTS_PREFNAME);
-    clearPref(LIGHTS_SHAPE_PREFNAME);
+    putShowLights(false);
+    uninitLightsModule();
 
     clearPref(SHOW_LIGHT_COLOR_RED_PREFNAME);
     clearPref(SHOW_LIGHT_COLOR_LIME_PREFNAME);
@@ -996,6 +992,9 @@ void setAllLightsPrefsDefaults() {
     clearPref(LIGHT_COLOR_BLUE_PREFNAME);
     clearPref(LIGHT_COLOR_PINK_PREFNAME);
 
+    clearPref(LIGHTS_SHAPE_PREFNAME);
+
+    clearPref(SHOW_LIGHTS_PREFNAME);
     if (getShowLights()) {
         initLightsModule();
     }
