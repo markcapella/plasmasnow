@@ -99,14 +99,19 @@ int updateBlowoffFrame() {
                     fsnow->w, ACTUAL_FALLEN_MAX_HEIGHT);
                 if (IS_IT_IN == RectangleIn || IS_IT_IN == RectanglePart) {
                     blowoffPlowedSnowFromFallen(fsnow);
-                    fsnow = fsnow->next;
-                    continue;
                 }
             }
-            
+
             // Check for normal blowoff interaction.
             if (Flags.BlowSnow && randomIntegerUpTo(5) == 0) {
                 blowoffSnowFromFallen(fsnow, fsnow->w / 4, fsnow->h / 4);
+            }
+
+            // Check for normal blowoff interaction.
+            if (randomIntegerUpTo(40) == 0 &&
+                fsnow->winInfo.window &&
+                canFallenSnowDripRain(fsnow)) {
+                dripRainFromFallen(fsnow);
             }
         }
 

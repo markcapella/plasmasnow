@@ -39,8 +39,6 @@
 /***********************************************************
  ** Module globals and consts.
  **/
-#define INITIAL_Y_SPEED 120
-
 const double MAX_WIND_SENSITIVITY = 0.4;
 
 bool mStormItemBackgroundThreadIsActive = false;
@@ -65,52 +63,37 @@ StormItem* createStormItem(int itemType) {
     }
 
     StormItem* stormItem = (StormItem*) malloc(sizeof(StormItem));
+
     stormItem->shapeType = itemType;
-
-    // DEBUG Crashes this way
-    static int mDebugSnowWhatFlake = 5;
-    if ((int) stormItem->shapeType < 0) {
-        if (mDebugSnowWhatFlake-- > 0) {
-            printf("plasmasnow: Storm.c: createStormItem(%lu) "
-                "BAD !!! Invalid negative itemType : %i.\n",
-                (unsigned long) pthread_self(),
-                (int) stormItem->shapeType);
-        }
-    }
-    if ((int) stormItem->shapeType >= getAllStormItemsShapeCount()) {
-        if (mDebugSnowWhatFlake-- > 0) {
-            printf("plasmasnow: Storm.c: createStormItem(%lu) "
-                "BAD !!! Invalid positive itemType : %i.\n",
-                (unsigned long) pthread_self(),
-                (int) stormItem->shapeType);
-        }
-    }
-
-    const int ITEM_WIDTH = getStormItemSurfaceWidth(stormItem->shapeType);
-    const int ITEM_HEIGHT = getStormItemSurfaceHeight(stormItem->shapeType);
-
-    stormItem->xRealPosition = randomIntegerUpTo(
-        mGlobal.SnowWinWidth - ITEM_WIDTH);
-    stormItem->yRealPosition = -randomIntegerUpTo(
-        mGlobal.SnowWinHeight / 10) - ITEM_HEIGHT;
-
+    const int ITEM_WIDTH =
+        getStormItemSurfaceWidth(stormItem->shapeType);
+    const int ITEM_HEIGHT =
+        getStormItemSurfaceHeight(stormItem->shapeType);
     stormItem->color = getStormShapeColor();
-    stormItem->survivesScreenEdges = true;
-    stormItem->isFrozen = 0;
 
+    stormItem->isFrozen = 0;
     stormItem->fluff = 0;
     stormItem->flufftimer = 0;
     stormItem->flufftime = 0;
+
+    stormItem->massValue = drand48() + 0.1;
+    const int INITIAL_Y_SPEED = 120;
+    stormItem->initialYVelocity = INITIAL_Y_SPEED *
+        sqrt(stormItem->massValue);
 
     stormItem->xVelocity = (Flags.NoWind) ?
         0 : randomIntegerUpTo(mGlobal.NewWind) / 2;
     stormItem->yVelocity = stormItem->initialYVelocity;
 
-    stormItem->massValue = drand48() + 0.1;
-    stormItem->initialYVelocity = INITIAL_Y_SPEED *
-        sqrt(stormItem->massValue);
     stormItem->windSensitivity = drand48() *
         MAX_WIND_SENSITIVITY;
+
+    stormItem->survivesScreenEdges = true;
+
+    stormItem->xRealPosition = randomIntegerUpTo(
+        mGlobal.SnowWinWidth - ITEM_WIDTH);
+    stormItem->yRealPosition = -randomIntegerUpTo(
+        mGlobal.SnowWinHeight / 10) - ITEM_HEIGHT;
 
     return stormItem;
 }
@@ -230,7 +213,8 @@ int updateStormItemOnThread(StormItem* stormItem) {
     }
 
     // Update stormItem speed in Y Direction.
-    stormItem->yVelocity += INITIAL_Y_SPEED * (drand48() - 0.4) * 0.1;
+    stormItem->yVelocity += stormItem->initialYVelocity *
+        (drand48() - 0.4) * 0.1;
     if (stormItem->yVelocity > stormItem->initialYVelocity * 1.5) {
         stormItem->yVelocity = stormItem->initialYVelocity * 1.5;
     }
@@ -374,24 +358,20 @@ int updateStormItemOnThread(StormItem* stormItem) {
                 }
             }
 
-            // TODO: Huh? who?
-            // Do not erase: this gives bad effects
-            // in fvwm-like desktops.
+            // Don't erase flake. Freeze it and blow it off.
             if (found) {
                 stormItem->isFrozen = 1;
                 setStormItemFluffState(stormItem, 0.6);
 
                 StormItem* newflake = (Flags.VintageFlakes) ?
                     createStormItem(0) : createStormItem(-1);
-
-                newflake->xRealPosition = xfound;
-                newflake->yRealPosition = yfound -
-                    getStormItemSurfaceHeight(1) * 0.3f; // oh noes.
-
                 newflake->isFrozen = 1;
                 setStormItemFluffState(newflake, 8);
-
+                newflake->xRealPosition = xfound;
+                newflake->yRealPosition = yfound -
+                    getStormItemSurfaceHeight(1) * 0.3f;
                 addStormItem(newflake);
+
                 mStormItemBackgroundThreadIsActive = false;
                 return true;
             }
@@ -526,18 +506,13 @@ bool isStormItemFallen(StormItem* stormItem,
         // StormItem hits first FallenItem & we're done.
         const int ITEM_WIDTH = getStormItemSurfaceWidth(stormItem->shapeType);
 
-        int istart = xPosition - fsnow->x;
-        if (istart < 0) {
-            istart = 0;
-        }
-        int imax = istart + ITEM_WIDTH;
-        if (imax > fsnow->w) {
-            imax = fsnow->w;
-        }
+        const int istart = MAX(xPosition - fsnow->x, 0);
+        const int imax = MIN(istart + ITEM_WIDTH, fsnow->w);
 
         for (int i = istart; i < imax; i++) {
             if (yPosition > fsnow->y - fsnow->columnHeightList[i] - 1) {
-                if (fsnow->columnHeightList[i] < fsnow->columnMaxHeightList[i]) {
+                if (fsnow->columnHeightList[i] <
+                    fsnow->columnMaxHeightList[i]) {
                     updateFallenSnowWithSnow(fsnow,
                         xPosition - fsnow->x, ITEM_WIDTH);
                 }

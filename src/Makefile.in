@@ -687,7 +687,7 @@ TOASCII = $(top_srcdir)/src/toascii.sh
 
 # /usr/local
 gamesdir = $(exec_prefix)/games
-plasmasnow_CPPFLAGS = $(GTK_CFLAGS) $(X11_CFLAGS) $(GSL_CFLAGS) \
+plasmasnow_CPPFLAGS = $(GTK_CFLAGS) -g3 $(X11_CFLAGS) $(GSL_CFLAGS) \
 	-DLOCALEDIR=\"$(LOCALEDIR)\" -DLANGUAGES='"$(LANGUAGES)"' \
 	$(am__append_1) $(am__append_2)
 plasmasnow_LDADD = libxdo.a $(GTK_LIBS) $(X11_LIBS) \
@@ -708,12 +708,14 @@ plasmasnow_SOURCES = \
 		StormWindow.c treesnow.c ui.glade Utils.c wind.c \
 		Windows.c WindowVector.c WinInfo.c
 
-nodist_plasmasnow_SOURCES = ui_xml.h snow_includes.h
+nodist_plasmasnow_SOURCES = ui_xml.h StormItemShapeIncludes.h
 @MAKESELFREP_FALSE@tarfile_inc = 
 @MAKESELFREP_TRUE@tarfile_inc = tarfile.inc
-BUILT_SOURCES = ui_xml.h snow_includes.h $(tarfile_inc)
+BUILT_SOURCES = ui_xml.h StormItemShapeIncludes.h $(tarfile_inc)
 tarfile = $(top_builddir)/$(PACKAGE)-$(VERSION).tar.gz
-EXTRA_DIST = gen_snow_includes.sh gen_ui_xml.sh tocc.sh toascii.sh xdo-copyright 
+EXTRA_DIST = generateStormItemShapeIncludes.sh gen_ui_xml.sh \
+	tocc.sh toascii.sh xdo-copyright 
+
 TESTS = test1.sh
 
 # usr/local/share
@@ -723,7 +725,7 @@ appicon_DATA = Pixmaps/plasmasnow.png \
 	Pixmaps/plasmasnowcolorpicker.xpm
 
 man6_MANS = plasmasnow.6
-CLEANFILES = plasmasnow.6 ui_xml.h snow_includes.h \
+CLEANFILES = plasmasnow.6 ui_xml.h StormItemShapeIncludes.h \
 	plasmasnow_out_2 plasmasnow_out_3 \
 	changelog.inc tarfile.inc toascii toascii.c
 
@@ -2087,7 +2089,8 @@ $(tarfile):
 @MAKESELFREP_TRUE@tarfile.inc: $(tarfile) $(TOASCII)
 @MAKESELFREP_TRUE@	@echo "Converting tarfile:"
 @MAKESELFREP_TRUE@	ls -l $(tarfile)
-@MAKESELFREP_TRUE@	export CC="$(CC)"; export CFLAGS="$(CFLAGS)"; $(TOASCII) < $(tarfile) > $@ 
+@MAKESELFREP_TRUE@	export CC="$(CC)"; export CFLAGS="$(CFLAGS)"; \
+@MAKESELFREP_TRUE@		$(TOASCII) < $(tarfile) > $@ 
 @MAKESELFREP_FALSE@	tarfile.inc: 
 @MAKESELFREP_FALSE@	echo "No selfrep compiled in" | $(TOASCII) > $@
 
@@ -2095,9 +2098,9 @@ ui_xml.h: ui.glade $(top_srcdir)/src/gen_ui_xml.sh
 	@echo ">>> ui.glade Creating $@ from $<"
 	$(top_srcdir)/src/gen_ui_xml.sh $(top_srcdir)
 
-snow_includes.h: Pixmaps
+StormItemShapeIncludes.h: Pixmaps
 	@echo ">>> Pixmaps Creating $@"
-	$(top_srcdir)/src/gen_snow_includes.sh $(top_srcdir)
+	$(top_srcdir)/src/generateStormItemShapeIncludes.sh $(top_srcdir)
 
 install-data-local:
 	cp 'Pixmaps/plasmasnow.png' /usr/share/icons/hicolor/48x48/apps/

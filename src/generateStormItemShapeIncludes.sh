@@ -1,5 +1,5 @@
-/* XPM */
-/* -copyright- 
+#!/bin/sh
+# -copyright-
 #-# 
 #-# plasmasnow: Let it snow on your desktop
 #-# Copyright (C) 1984,1988,1990,1993-1995,2000-2001 Rick Jansen
@@ -19,19 +19,21 @@
 #-# You should have received a copy of the GNU General Public License
 #-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-# 
- */
-XPM_TYPE *snow4_xpm[] = {
-/* columns rows colors chars-per-pixel */
-"8 8 2 1 ",
-"  c None",
-". c black",
-/* pixels */
-" .   .  ",
-".. . .. ",
-"  . .   ",
-" . . .  ",
-"  . .   ",
-".. . .. ",
-" .   .  ",
-"        "
-};
+root="${1:-..}"
+out="StormItemShapeIncludes.h"
+
+echo "#pragma once" > "$out"
+echo "/* -""copyright-" >> "$out"
+echo "*/" >> "$out"
+
+ls "$root/src/Pixmaps"/stormItem*.xpm | sed "s/^/#include \"/;s/$/\"/" >> "$out"
+
+echo "#define ALL_STORMITEM_SHAPEFILE_NAMES \\" >> "$out"
+for i in $(seq `ls "$root/src/Pixmaps"/stormItem*.xpm | wc -l`) ; do 
+   printf 'STORMITEM_SHAPEFILE_NAME(%d) \\\n' `expr $i - 1` ;
+done >> "$out"
+
+echo >> "$out"
+
+if [ -x "$root/addcopyright.sh" ] ; then \
+   "$root/addcopyright.sh" "$out"  ; fi

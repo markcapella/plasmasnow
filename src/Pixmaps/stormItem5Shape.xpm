@@ -20,18 +20,18 @@
 #-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-# 
  */
-XPM_TYPE *snow1_xpm[] = {
+XPM_TYPE* stormItem5Shape[] = {
 /* columns rows colors chars-per-pixel */
 "8 8 2 1 ",
 "  c None",
 ". c black",
 /* pixels */
-" .   .  ",
-".. . .. ",
 "  . .   ",
-" . . .  ",
+"   .    ",
+".  .  . ",
+" .. ..  ",
+".  .  . ",
+"   .    ",
 "  . .   ",
-".. . .. ",
-" .   .  ",
 "        "
 };

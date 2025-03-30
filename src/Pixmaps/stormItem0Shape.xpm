@@ -1,5 +1,5 @@
-#!/bin/sh
-# -copyright-
+/* XPM */
+/* -copyright- 
 #-# 
 #-# plasmasnow: Let it snow on your desktop
 #-# Copyright (C) 1984,1988,1990,1993-1995,2000-2001 Rick Jansen
@@ -19,15 +19,14 @@
 #-# You should have received a copy of the GNU General Public License
 #-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-# 
-root="${1:-..}"
-out="snow_includes.h"
-echo "#pragma once" > "$out"
-echo "/* -""copyright-" >> "$out"
-echo "*/" >> "$out"
-ls "$root/src/Pixmaps"/flake*.xpm | sed "s/^/#include \"/;s/$/\"/" >> "$out"
-echo "#define ALL_STORM_FILENAMES \\" >> "$out"
-for i in $(seq `ls "$root/src/Pixmaps"/flake*.xpm | wc -l`) ; do 
-   printf 'STORM_SHAPE_FILENAME(%d) \\\n' `expr $i - 1` ;
-done >> "$out"
-echo >> "$out"
-if [ -x "$root/addcopyright.sh" ] ; then "$root/addcopyright.sh" "$out"  ; fi
+ */
+XPM_TYPE* stormItem0Shape[] = {
+/* columns rows colors chars-per-pixel */
+"3 3 2 1 ",
+"  c None",
+". c black",
+/* pixels */
+". .",
+" . ",
+". ."
+};

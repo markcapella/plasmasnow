@@ -27,7 +27,7 @@ TOASCII  = $(top_srcdir)/src/toascii.sh
 gamesdir = $(exec_prefix)/games
 games_PROGRAMS = plasmasnow
 
-plasmasnow_CPPFLAGS = $(GTK_CFLAGS) \
+plasmasnow_CPPFLAGS = $(GTK_CFLAGS) -g3 \
 	$(X11_CFLAGS) $(GSL_CFLAGS) -DLOCALEDIR=\"$(LOCALEDIR)\" \
 	-DLANGUAGES='"$(LANGUAGES)"'
 plasmasnow_LDADD = libxdo.a $(GTK_LIBS) $(X11_LIBS) \
@@ -60,7 +60,7 @@ plasmasnow_SOURCES = \
 		StormWindow.c treesnow.c ui.glade Utils.c wind.c \
 		Windows.c WindowVector.c WinInfo.c
 
-nodist_plasmasnow_SOURCES = ui_xml.h snow_includes.h
+nodist_plasmasnow_SOURCES = ui_xml.h StormItemShapeIncludes.h
 
 if MAKESELFREP
 tarfile_inc = tarfile.inc
@@ -68,7 +68,7 @@ else
 tarfile_inc =
 endif
 
-BUILT_SOURCES = ui_xml.h snow_includes.h $(tarfile_inc)
+BUILT_SOURCES = ui_xml.h StormItemShapeIncludes.h $(tarfile_inc)
 
 tarfile = $(top_builddir)/$(PACKAGE)-$(VERSION).tar.gz
 
@@ -79,22 +79,24 @@ if MAKESELFREP
 tarfile.inc: $(tarfile) $(TOASCII)
 	@echo "Converting tarfile:"
 	ls -l $(tarfile)
-	export CC="$(CC)"; export CFLAGS="$(CFLAGS)"; $(TOASCII) < $(tarfile) > $@ 
+	export CC="$(CC)"; export CFLAGS="$(CFLAGS)"; \
+		$(TOASCII) < $(tarfile) > $@ 
 else
 	tarfile.inc: 
 	echo "No selfrep compiled in" | $(TOASCII) > $@
 endif
 
 
-EXTRA_DIST = gen_snow_includes.sh gen_ui_xml.sh tocc.sh toascii.sh xdo-copyright 
+EXTRA_DIST = generateStormItemShapeIncludes.sh gen_ui_xml.sh \
+	tocc.sh toascii.sh xdo-copyright 
 
 ui_xml.h: ui.glade $(top_srcdir)/src/gen_ui_xml.sh
 	@echo ">>> ui.glade Creating $@ from $<"
 	$(top_srcdir)/src/gen_ui_xml.sh $(top_srcdir)
 
-snow_includes.h: Pixmaps
+StormItemShapeIncludes.h: Pixmaps
 	@echo ">>> Pixmaps Creating $@"
-	$(top_srcdir)/src/gen_snow_includes.sh $(top_srcdir)
+	$(top_srcdir)/src/generateStormItemShapeIncludes.sh $(top_srcdir)
 
 install-data-local:
 	cp 'Pixmaps/plasmasnow.png' /usr/share/icons/hicolor/48x48/apps/
@@ -123,6 +125,6 @@ man6_MANS = plasmasnow.6
 plasmasnow.6: plasmasnow
 	./plasmasnow -manpage > $@
 
-CLEANFILES = plasmasnow.6 ui_xml.h snow_includes.h \
+CLEANFILES = plasmasnow.6 ui_xml.h StormItemShapeIncludes.h \
 	plasmasnow_out_2 plasmasnow_out_3 \
 	changelog.inc tarfile.inc toascii toascii.c

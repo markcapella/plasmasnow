@@ -115,11 +115,11 @@ void ConvertOnTreeToFlakes() {
             int numberOfFlakesToMake = getNumberOfFlakesToBlowoff();
             for (int k = 0; k < numberOfFlakesToMake; k++) {
                 StormItem* flake = createStormItem(-1);
+                flake->survivesScreenEdges = false;
                 flake->xRealPosition = mGlobal.SnowOnTrees[i].x;
                 flake->yRealPosition = mGlobal.SnowOnTrees[i].y - 5 * j;
                 flake->xVelocity = mGlobal.NewWind / 2;
                 flake->yVelocity = 0;
-                flake->survivesScreenEdges = false;
                 addStormItem(flake);
             }
         }

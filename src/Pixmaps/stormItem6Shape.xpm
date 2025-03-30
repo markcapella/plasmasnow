@@ -20,7 +20,7 @@
 #-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-# 
  */
-XPM_TYPE *snow6_xpm[] = {
+XPM_TYPE* stormItem6Shape[] = {
 /* columns rows colors chars-per-pixel */
 "3 3 2 1 ",
 "  c None",

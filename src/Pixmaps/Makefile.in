@@ -344,13 +344,6 @@ cloverLeaf.xpm \
 easterEggPlain.xpm \
 easterEgg.xpm \
 extratree.xpm \
-flake0.xpm \
-flake1.xpm \
-flake2.xpm \
-flake3.xpm \
-flake4.xpm \
-flake5.xpm \
-flake6.xpm \
 garland.xpm \
 greenTree.xpm \
 huis4.xpm \
@@ -381,6 +374,14 @@ RegularSantaRudolf3.xpm \
 RegularSantaRudolf4.xpm \
 rendier.xpm \
 snowtree.xpm \
+stormItem0Shape.xpm \
+stormItem1Shape.xpm \
+stormItem2Shape.xpm \
+stormItem3Shape.xpm \
+stormItem4Shape.xpm \
+stormItem5Shape.xpm \
+stormItem6Shape.xpm \
+stormItem7Shape.xpm \
 stPaddyHat.xpm \
 tannenbaum.xpm \
 twoTrees.xpm 

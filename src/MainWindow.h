@@ -31,16 +31,6 @@
 extern "C" {
 #endif
 
-    void setShowLightsButtonStyles();
-    void setRedLightColorButtonStyles();
-    void setLimeLightColorButtonStyles();
-    void setPurpleLightColorButtonStyles();
-    void setCyanLightColorButtonStyles();
-    void setGreenLightColorButtonStyles();
-    void setOrangeLightColorButtonStyles();
-    void setBlueLightColorButtonStyles();
-    void setPinkLightColorButtonStyles();
-
     void createMainWindow();
     void applyMainWindowCSSTheme();
     void addBusyStyleClass();
@@ -52,31 +42,21 @@ extern "C" {
     int getMainWindowXPos();
     int getMainWindowYPos();
 
-    char* getStormItemColor1Tag();
-    char* getStormItemColor2Tag();
-    char* getBirdsColorTag();
-    char* getTreeColorTag();
-
     void updateMainWindowUI();
+
+    int isGtkVersionValid();
+    char* ui_gtk_version();
+    char* ui_gtk_required();
+
     int ui_run_nomenu();
     void handle_screen();
-
     void init_buttons();
     void initAllButtonValues();
     void set_buttons();
     void connectAllButtonSignals();
 
-    void setLightsShapeComboBoxStyle();
-    void connectLightsShapeComboBoxSignal();
-    void disconnectLightsShapeComboBoxSignal();
-
-    void setAllLightsButtonStyles();
-    void connectAllLightsButtonSignals();
-    void disconnectAllLightsButtonSignals();
-
     void set_santa_buttons();
     void set_tree_buttons();
-
     void birdscb(GtkWidget* w, void* m);
     void ui_gray_birds(int m);
     void ui_set_birds_header(const char *text);
@@ -94,9 +74,27 @@ extern "C" {
     gboolean handleMainWindowStateEvents(GtkWidget* widget,
         GdkEventWindowState* event, gpointer user_data);
 
-    int isGtkVersionValid();
-    char* ui_gtk_version();
-    char* ui_gtk_required();
+    char* getStormItemColor1Tag();
+    char* getStormItemColor2Tag();
+    char* getBirdsColorTag();
+    char* getTreeColorTag();
+
+    void connectLightsShapeComboBoxSignal();
+    void connectAllLightsButtonSignals();
+    void disconnectLightsShapeComboBoxSignal();
+    void disconnectAllLightsButtonSignals();
+
+    void setAllLightsButtonStyles();
+    void setLightsShapeComboBoxStyle();
+    void setShowLightsButtonStyles();
+    void setRedLightColorButtonStyles();
+    void setLimeLightColorButtonStyles();
+    void setPurpleLightColorButtonStyles();
+    void setCyanLightColorButtonStyles();
+    void setGreenLightColorButtonStyles();
+    void setOrangeLightColorButtonStyles();
+    void setBlueLightColorButtonStyles();
+    void setPinkLightColorButtonStyles();
 
 #ifdef __cplusplus
 }

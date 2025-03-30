@@ -114,8 +114,8 @@ echo "creating changelog.inc:"
 echo "creating tarfile.inc:"
 echo "No tar file available" | ./toascii.sh > tarfile.inc || exit 1
 
-echo "Creating snow_includes.h:"
-./gen_snow_includes.sh .. || exit 1
+echo "Creating StormItemShapeIncludes.h:"
+./generateStormItemShapeIncludes.sh .. || exit 1
 
 echo "Creating ui_xml.h:"
 ./gen_ui_xml.sh .. || exit 1

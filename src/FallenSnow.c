@@ -90,7 +90,7 @@ void initFallenSnowModule() {
 }
 
 /** *********************************************************************
- ** This method sets ColumnMaxHeightList for all FallenSnow items.
+ ** This method sets Column MaxHeight List for all FallenSnow items.
  **/
 int updateFallenSnowMaxColumnHeightThread() {
     if (softLockFallenSnowBaseSemaphore(3,
@@ -113,26 +113,21 @@ int updateFallenSnowMaxColumnHeightThread() {
  ** threads: locking by caller
  **/
 void setColumnMaxHeightListForFallen(FallenSnow* fallen) {
-    const int W = fallen->w;
-    const int H = fallen->h;
-    const int WINDOW = fallen->winInfo.window;
-
-    short int* columnMaxHeightList = fallen->columnMaxHeightList;
-
     #define N 6
+
     double splinex[N];
     double spliney[N];
     randomuniqarray(splinex, N, 0.0000001, NULL);
 
     for (int i = 0; i < N; i++) {
-        splinex[i] *= (W - 1);
+        splinex[i] *= (fallen->w - 1);
         spliney[i] = drand48();
     }
 
     splinex[0] = 0;
-    splinex[N - 1] = W - 1;
+    splinex[N - 1] = fallen->w - 1;
 
-    if (WINDOW == None) {
+    if (fallen->winInfo.window == None) {
         spliney[0] = 1.0;
         spliney[N - 1] = 1.0;
     } else {
@@ -140,17 +135,21 @@ void setColumnMaxHeightListForFallen(FallenSnow* fallen) {
         spliney[N - 1] = 0;
     }
 
-    double* xIndexArray = (double*) malloc(W * sizeof(double));
-    for (int i = 0; i < W; i++) {
+    double* xIndexArray = (double*) malloc(
+        fallen->w * sizeof(double));
+    for (int i = 0; i < fallen->w; i++) {
         xIndexArray[i] = i;
     }
 
-    double* yResultArray = (double*) malloc(W * sizeof(double));
-    spline_interpol(splinex, N, spliney, xIndexArray, W, yResultArray);
+    double* yResultArray = (double*) malloc(
+        fallen->w * sizeof(double));
+    spline_interpol(splinex, N, spliney, xIndexArray,
+        fallen->w, yResultArray);
     free(xIndexArray);
 
-    for (int i = 0; i < W; i++) {
-        columnMaxHeightList[i] = H * yResultArray[i];
+    short int* columnMaxHeightList = fallen->columnMaxHeightList;
+    for (int i = 0; i < fallen->w; i++) {
+        columnMaxHeightList[i] = fallen->h * yResultArray[i];
         if (columnMaxHeightList[i] < 2) {
             columnMaxHeightList[i] = 2;
         }
@@ -160,7 +159,8 @@ void setColumnMaxHeightListForFallen(FallenSnow* fallen) {
 }
 
 /** *********************************************************************
- ** This method changes a fallen snow items ColumnHeightList height down.
+ ** This method changes a fallen snow items ColumnHeightList height
+ ** down under max.
  **/
 int updateFallenSnowColumnHeightThread(__attribute__((unused))
     void* dummy) {
@@ -571,7 +571,7 @@ void updateFallenSnowDesktopItemHeight() {
 
 /** *********************************************************************
  ** This method updates fallensnow items with impact
- ** of a flake.
+ ** of a stormItem.
  **/
 void updateFallenSnowWithSnow(FallenSnow* fsnow,
     int position, int width) {
@@ -591,14 +591,8 @@ void updateFallenSnowWithSnow(FallenSnow* fsnow,
     tempHeightArray = (short int*)
         malloc(sizeof(* tempHeightArray) * (width + 2));
 
-    int imin = position;
-    if (imin < 0) {
-        imin = 0;
-    }
-    int imax = position + width;
-    if (imax > fsnow->w) {
-        imax = fsnow->w;
-    }
+    const int imin = MAX(position, 0);
+    const int imax = MIN(position + width, fsnow->w);
 
     int k = 0;
     for (int i = imin - 1; i <= imax; i++) {
@@ -665,8 +659,7 @@ void updateFallenSnowWithSnow(FallenSnow* fsnow,
  ** This method updates fallensnow items with impact
  ** of wind.
  **/
-void blowoffSnowFromFallen(FallenSnow* fsnow,
-    int w, int h) {
+void blowoffSnowFromFallen(FallenSnow* fsnow, int w, int h) {
     const int x = randomIntegerUpTo(fsnow->w - w);
 
     for (int i = x; i < x + w; i++) {
@@ -676,19 +669,16 @@ void blowoffSnowFromFallen(FallenSnow* fsnow,
                 const int numberOfFlakesToMake =
                     getNumberOfFlakesToBlowoff();
                 for (int j = 0; j < numberOfFlakesToMake; j++) {
-                    StormItem* flake = createStormItem(-1);
-                    flake->survivesScreenEdges =
+                    StormItem* stormItem = createStormItem(-1);
+                    stormItem->survivesScreenEdges =
                         (fsnow->winInfo.window == 0);
-
-                    flake->xRealPosition = fsnow->x + i;
-                    flake->yRealPosition = fsnow->y -
+                    stormItem->xRealPosition = fsnow->x + i;
+                    stormItem->yRealPosition = fsnow->y -
                         fsnow->columnHeightList[i] - drand48() * 4;
-
-                    flake->xVelocity = 0.25 * fsignf(mGlobal.NewWind) *
+                    stormItem->xVelocity = 0.25 * fsignf(mGlobal.NewWind) *
                         mGlobal.WindMax;
-                    flake->yVelocity = -10;
-
-                    addStormItem(flake);
+                    stormItem->yVelocity = -10;
+                    addStormItem(stormItem);
                 }
                 eraseFallenSnowWindPixel(fsnow, i);
             }
@@ -753,23 +743,23 @@ void createPlowedStormItems(FallenSnow* fsnow, int xPos,
 
     // Create up to 10 blown items in an upper and
     // lower stream.
-    const int PLOWED_ITEMS_TO_CREATE = 20;
+    const int PLOWED_ITEMS_TO_CREATE = 15;
 
     for (int i = 0; i < PLOWED_ITEMS_TO_CREATE; i++) {
-        StormItem* flake = createStormItem(-1);
-        flake->survivesScreenEdges = false;
-        flake->xRealPosition = xPos + i;
-        flake->yRealPosition = yPos1;
-        flake->xVelocity = -0.1 * fsignf(mGlobal.NewWind) *
+        StormItem* stormItem = createStormItem(-1);
+        stormItem->survivesScreenEdges = false;
+        stormItem->xRealPosition = xPos + i;
+        stormItem->yRealPosition = yPos1;
+        stormItem->xVelocity = -0.05 * fsignf(mGlobal.NewWind) *
             mGlobal.WindMax;
-        flake->yVelocity = -randomIntegerUpTo(6) - 60;
-        addStormItem(flake);
+        stormItem->yVelocity = -randomIntegerUpTo(6) - 60;
+        addStormItem(stormItem);
 
         StormItem* flake2 = createStormItem(-1);
         flake2->survivesScreenEdges = false;
         flake2->xRealPosition = xPos + i;
         flake2->yRealPosition = yPos2;
-        flake2->xVelocity = -0.1 * fsignf(mGlobal.NewWind) *
+        flake2->xVelocity = -0.05 * fsignf(mGlobal.NewWind) *
             mGlobal.WindMax;
         flake2->yVelocity = -randomIntegerUpTo(6) - 60;
         addStormItem(flake2);
@@ -858,6 +848,72 @@ int getMaximumFallenSnowColumnHeight(FallenSnow* fsnow) {
         }
     }
     return maxHeight;
+}
+
+/** *********************************************************************
+ ** This method determines if we can drip rain from
+ ** a fallen snow item.
+ **/
+bool canFallenSnowDripRain(FallenSnow* fsnow) {
+    const int MULTIPLE_OF_WIDTH = fsnow->w * 8;
+
+    int snowWeight = 0;
+    for (int i = 0; i < fsnow->w; i++) {
+        snowWeight += fsnow->columnHeightList[i];
+        if (snowWeight >= MULTIPLE_OF_WIDTH) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/** *********************************************************************
+ ** This method drips rain from a fallen snow item.
+ **/
+void dripRainFromFallen(FallenSnow* fsnow) {
+    const int STORMITEM_RAIN_TYPE = 7;
+
+    StormItem* stormItem = createStormItem(STORMITEM_RAIN_TYPE);
+    const int ITEM_WIDTH =
+        getStormItemSurfaceWidth(stormItem->shapeType);
+    const int ITEM_HEIGHT =
+        getStormItemSurfaceHeight(stormItem->shapeType);
+
+    stormItem->xRealPosition = doesFallenDripFromLeft(fsnow) ?
+        fsnow->x - ITEM_WIDTH : fsnow->x + fsnow->w;
+    stormItem->yRealPosition = fsnow->y;
+
+    stormItem->massValue *= 4;
+    stormItem->xVelocity = 0;
+    stormItem->windSensitivity = 0;
+
+    stormItem->initialYVelocity = 300;
+    stormItem->yVelocity = stormItem->initialYVelocity;
+    addStormItem(stormItem);
+}
+
+/** *********************************************************************
+ **
+ **/
+bool doesFallenDripFromLeft(FallenSnow* fsnow) {
+    // Nonsense consumer gets rando results.
+    // "Maybe it does, maybe it doesn't".
+    if (fsnow->w < 2) {
+        return randomIntegerUpTo(2);
+    }
+
+    int leftSideWeight = 0;
+    int rightSideWeight = 0;
+
+    const int MID_POINT = fsnow->w / 2;
+    for (int i = 0; i < fsnow->w; i++) {
+        leftSideWeight += (i <= MID_POINT) ? 
+            fsnow->columnHeightList[i] : 0;
+        rightSideWeight += (i > MID_POINT) ? 
+            fsnow->columnHeightList[i] : 0;
+    }
+
+    return leftSideWeight >= rightSideWeight;
 }
 
 /** *********************************************************************
@@ -959,21 +1015,21 @@ void generateFallenSnowFlakes(FallenSnow* fsnow,
                     continue;
                 }
 
-                // Avoid runaway flake generation during plowing.
+                // Avoid runaway stormItem generation during plowing.
                 if (limitToMax &&
                     mGlobal.stormItemCount >= MAX_FLAKES_TO_GENERATE) {
                     return;
                 }
 
-                StormItem* flake = createStormItem(-1);
-                flake->survivesScreenEdges = false;
-                flake->xRealPosition = fsnow->x + i +
+                StormItem* stormItem = createStormItem(-1);
+                stormItem->survivesScreenEdges = false;
+                stormItem->xRealPosition = fsnow->x + i +
                     16 * (drand48() - 0.5);
-                flake->yRealPosition = fsnow->y - j - 8;
-                flake->xVelocity = (Flags.NoWind) ?
+                stormItem->yRealPosition = fsnow->y - j - 8;
+                stormItem->xVelocity = (Flags.NoWind) ?
                     0 : mGlobal.NewWind / 8;
-                flake->yVelocity = yVelocity;
-                addStormItem(flake);
+                stormItem->yVelocity = yVelocity;
+                addStormItem(stormItem);
             }
         }
     }

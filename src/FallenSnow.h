@@ -69,6 +69,11 @@ extern "C" {
     void blowoffSnowFromFallen(FallenSnow*, int w, int h);
     void eraseFallenSnowWindPixel(FallenSnow*, int x);
 
+    // Dripping rain interactions.
+    bool canFallenSnowDripRain(FallenSnow*);
+    void dripRainFromFallen(FallenSnow*);
+    bool doesFallenDripFromLeft(FallenSnow*);
+
     // Santa plow interations.
     void blowoffPlowedSnowFromFallen(FallenSnow* fsnow);
     void createPlowedStormItems(FallenSnow* fsnow, int xPos,

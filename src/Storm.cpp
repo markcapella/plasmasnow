@@ -33,7 +33,7 @@
 #include "Flags.h"
 #include "ixpm.h"
 #include "MainWindow.h"
-#include "snow_includes.h"
+#include "StormItemShapeIncludes.h"
 #include "Storm.h"
 #include "StormItem.h"
 #include "StormItemSurface.h"
@@ -65,13 +65,15 @@ char*** mAllStormItemsShapeList = NULL;
 
 StormItemSurface* mAllStormItemSurfacesList = NULL;
 
-
-#define STORM_SHAPE_FILENAME(x) snow##x##_xpm,
+#define STORMITEM_SHAPEFILE_NAME(x) stormItem##x##Shape,
 int mResourcesShapeCount = 0;
-XPM_TYPE** mResourcesShapes[] = {ALL_STORM_FILENAMES NULL};
-#undef STORM_SHAPE_FILENAME
+XPM_TYPE** mResourcesShapes[] = {
+    ALL_STORMITEM_SHAPEFILE_NAMES
+    NULL
+};
+#undef STORMITEM_SHAPEFILE_NAME
 
-// Flake color helper methods.
+// StormItem color helper methods.
 int mStormItemColorToggle = 0;
 GdkRGBA mStormItemColor;
 
@@ -527,10 +529,10 @@ int updateStormOnThread() {
     }
 
     // Start time when actually generating flakes.
-    const int DESIRED_FLAKES = lrint((UPDATE_ELAPSED_TIME +
+    const int DESIRED_STORMITEMS = lrint((UPDATE_ELAPSED_TIME +
         mUpdateStormThreadStartTime) * mStormItemsPerSecond);
-    if (DESIRED_FLAKES != 0) {
-        for (int i = 0; i < DESIRED_FLAKES; i++) {
+    if (DESIRED_STORMITEMS) {
+        for (int i = 0; i < DESIRED_STORMITEMS; i++) {
             StormItem* flake = createStormItem(-1);
             addStormItem(flake);
         }
