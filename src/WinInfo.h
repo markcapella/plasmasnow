@@ -25,7 +25,22 @@
 
 #include <X11/Xlib.h>
 
-#include "PlasmaSnow.h"
+
+/***********************************************************
+ * App WinInfo helper objects.
+ */
+typedef struct _WinInfo {
+        Window window;
+        long ws;           // workspace
+
+        int x, y;          // x,y coordinates
+        int xa, ya;        // x,y coordinates absolute
+        unsigned int w, h; // width, height
+
+        bool sticky; // is visible on all workspaces
+        bool dock;   // is a "dock" (panel)
+        bool hidden; // is hidden / iconized
+} WinInfo;
 
 
 /***********************************************************

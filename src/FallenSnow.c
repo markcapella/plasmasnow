@@ -78,9 +78,11 @@ WindowVector mDeferredWindowRemovesList;
 void initFallenSnowModule() {
     clearAllFallenSnowItems();
 
+    #define time_change_bottom 300.0
     addMethodToMainloop(PRIORITY_DEFAULT,
         time_change_bottom, updateFallenSnowMaxColumnHeightThread);
 
+    #define time_adjust_bottom (time_change_bottom / 20)
     addMethodToMainloop(PRIORITY_DEFAULT,
         time_adjust_bottom, updateFallenSnowColumnHeightThread);
 
@@ -168,12 +170,27 @@ int updateFallenSnowColumnHeightThread(__attribute__((unused))
 
     FallenSnow* fsnow = mGlobal.FsnowFirst;
     while (fsnow) {
+        // UpdateAllocate arrays & members.
+        fsnow->tallestColumnIndex = 0;
+        fsnow->tallestColumnHeight = 0;
+        fsnow->tallestColumnMax = UINT_MAX;
+
         for (int i = 0; i < fsnow->w; i++) {
             if (fsnow->columnHeightList[i] >
                 fsnow->columnMaxHeightList[i]) {
                 fsnow->columnHeightList[i]--;
             }
+
+            if (fsnow->columnHeightList[i] > 
+                fsnow->tallestColumnHeight) {
+                fsnow->tallestColumnIndex = i;
+                fsnow->tallestColumnHeight =
+                    fsnow->columnHeightList[i];
+                fsnow->tallestColumnMax =
+                    fsnow->columnMaxHeightList[i];
+            }
         }
+
         fsnow = fsnow->next;
     }
 
@@ -306,11 +323,9 @@ void removePlowedSnowFromFallen(FallenSnow* fsnow) {
         return;
     }
 
-    const int ACTUAL_FALLEN_MAX_HEIGHT =
-        getMaximumFallenSnowColumnHeight(fsnow);
     const bool IS_IT_IN = XRectInRegion(mGlobal.SantaPlowRegion,
-        fsnow->x, fsnow->y - ACTUAL_FALLEN_MAX_HEIGHT,
-        fsnow->w, ACTUAL_FALLEN_MAX_HEIGHT);
+        fsnow->x, fsnow->y - fsnow->tallestColumnHeight,
+        fsnow->w, fsnow->tallestColumnHeight);
     if (IS_IT_IN != RectangleIn && IS_IT_IN != RectanglePart) {
         return;
     }
@@ -576,15 +591,6 @@ void updateFallenSnowDesktopItemHeight() {
 void updateFallenSnowWithSnow(FallenSnow* fsnow,
     int position, int width) {
 
-    if (!isWorkspaceActive() || Flags.NoSnowFlakes ||
-        (Flags.NoKeepSnowOnWindows && Flags.NoKeepSnowOnBottom)) {
-        return;
-    }
-
-    if (!canSnowCollectOnFallen(fsnow)) {
-        return;
-    }
-
     // tempHeightArray will contain the columnHeightList values
     // corresponding with position-1 .. position+width (inclusive).
     short int* tempHeightArray;
@@ -823,7 +829,7 @@ void eraseFallenSnow(FallenSnow* fsnow) {
 }
 
 /** *********************************************************************
- ** This method erases a fallensnow display area.
+ ** This method partially erases a fallensnow display area.
  **/
 void eraseFallenSnowPartial(FallenSnow* fsnow,
     int xstart, int width) {
@@ -837,34 +843,12 @@ void eraseFallenSnowPartial(FallenSnow* fsnow,
 }
 
 /** *********************************************************************
- ** This method returns the largest actual column height
- ** in a FallenSnow list.
- **/
-int getMaximumFallenSnowColumnHeight(FallenSnow* fsnow) {
-    int maxHeight = 0;
-    for (int i = 0; i < fsnow->w; i++) {
-        if (maxHeight < fsnow->columnHeightList[i]) {
-            maxHeight = fsnow->columnHeightList[i];
-        }
-    }
-    return maxHeight;
-}
-
-/** *********************************************************************
  ** This method determines if we can drip rain from
  ** a fallen snow item.
  **/
 bool canFallenSnowDripRain(FallenSnow* fsnow) {
-    const int MULTIPLE_OF_WIDTH = fsnow->w * 8;
-
-    int snowWeight = 0;
-    for (int i = 0; i < fsnow->w; i++) {
-        snowWeight += fsnow->columnHeightList[i];
-        if (snowWeight >= MULTIPLE_OF_WIDTH) {
-            return true;
-        }
-    }
-    return false;
+    return fsnow->tallestColumnHeight >=
+        fsnow->tallestColumnMax;
 }
 
 /** *********************************************************************
@@ -883,37 +867,32 @@ void dripRainFromFallen(FallenSnow* fsnow) {
         fsnow->x - ITEM_WIDTH : fsnow->x + fsnow->w;
     stormItem->yRealPosition = fsnow->y;
 
-    stormItem->massValue *= 4;
     stormItem->xVelocity = 0;
     stormItem->windSensitivity = 0;
 
-    stormItem->initialYVelocity = 300;
+    stormItem->initialYVelocity = 280 +
+        randomIntegerUpTo(40);
     stormItem->yVelocity = stormItem->initialYVelocity;
     addStormItem(stormItem);
 }
 
 /** *********************************************************************
- **
+ ** Returns if fallen drips from left side. Fallen drips from side
+ ** with the tallest snow column.
  **/
 bool doesFallenDripFromLeft(FallenSnow* fsnow) {
-    // Nonsense consumer gets rando results.
-    // "Maybe it does, maybe it doesn't".
-    if (fsnow->w < 2) {
-        return randomIntegerUpTo(2);
+    // Exact midpoint drips either way.
+    const int HALF_COLUMN_WIDTH = fsnow->w / 2;
+
+    // Odd width fallensnows have exact midpoints.
+    if (HALF_COLUMN_WIDTH * 2 < fsnow->w) {
+        const int MIDPOINT_COLUMN = HALF_COLUMN_WIDTH + 1;
+        if (MIDPOINT_COLUMN == fsnow->tallestColumnIndex) {
+            return randomIntegerUpTo(2);
+        }
     }
 
-    int leftSideWeight = 0;
-    int rightSideWeight = 0;
-
-    const int MID_POINT = fsnow->w / 2;
-    for (int i = 0; i < fsnow->w; i++) {
-        leftSideWeight += (i <= MID_POINT) ? 
-            fsnow->columnHeightList[i] : 0;
-        rightSideWeight += (i > MID_POINT) ? 
-            fsnow->columnHeightList[i] : 0;
-    }
-
-    return leftSideWeight >= rightSideWeight;
+    return fsnow->tallestColumnIndex < HALF_COLUMN_WIDTH;
 }
 
 /** *********************************************************************
@@ -1328,51 +1307,56 @@ void clearAllFallenSnowItems() {
  ** onto the linked-list.
  **/
 void pushFallenSnowItem(FallenSnow** fallenSnowArray,
-    WinInfo* winInfo, int x, int y, int w, int h) {
+    WinInfo* winInfo, int x, int y, int w, int maxHeight) {
     // "Too-narrow" windows cause issues.
     if (w < MINIMUM_SPLINE_WIDTH) {
         return;
     }
 
     // Allocate new object.
-    FallenSnow* fallenSnowListItem = (FallenSnow*)
+    FallenSnow* fsnow = (FallenSnow*)
         malloc(sizeof(FallenSnow));
 
-    fallenSnowListItem->winInfo = *winInfo;
+    fsnow->winInfo = *winInfo;
 
-    fallenSnowListItem->x = x;
-    fallenSnowListItem->y = y;
-    fallenSnowListItem->w = w;
-    fallenSnowListItem->h = h;
+    fsnow->x = x;
+    fsnow->y = y;
+    fsnow->w = w;
+    fsnow->h = maxHeight;
 
-    fallenSnowListItem->prevx = 0;
-    fallenSnowListItem->prevy = 0;
-    fallenSnowListItem->prevw = 10;
-    fallenSnowListItem->prevh = 10;
+    fsnow->prevx = 0;
+    fsnow->prevy = 0;
+    fsnow->prevw = 10;
+    fsnow->prevh = 10;
 
-    fallenSnowListItem->surfaceColor = getNextStormShapeColorAsRGB();
+    fsnow->surfaceColor = getNextStormShapeColorAsRGB();
 
-    fallenSnowListItem->renderedSurfaceA =
-        cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w, h);
-    fallenSnowListItem->renderedSurfaceB =
-        cairo_surface_create_similar(fallenSnowListItem->renderedSurfaceA,
-        CAIRO_CONTENT_COLOR_ALPHA, w, h);
+    fsnow->renderedSurfaceA =
+        cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w, maxHeight);
+    fsnow->renderedSurfaceB =
+        cairo_surface_create_similar(fsnow->renderedSurfaceA,
+        CAIRO_CONTENT_COLOR_ALPHA, w, maxHeight);
 
-    // Allocate arrays.
-    fallenSnowListItem->columnHeightList    = (short int *)
-        malloc(sizeof(*(fallenSnowListItem->columnHeightList)) * w);
-    fallenSnowListItem->columnMaxHeightList = (short int *)
-        malloc(sizeof(*(fallenSnowListItem->columnMaxHeightList)) * w);
+    // Allocate arrays & members.
+    fsnow->tallestColumnIndex = 0;
+    fsnow->tallestColumnHeight = 0;
+    fsnow->tallestColumnMax = UINT_MAX;
+
+    fsnow->columnHeightList = (short int *)
+        malloc(sizeof(*(fsnow->columnHeightList)) * w);
+    fsnow->columnMaxHeightList = (short int *)
+        malloc(sizeof(*(fsnow->columnMaxHeightList)) * w);
 
     // Fill arrays & init Maximums.
     for (int i = 0; i < w; i++) {
-        fallenSnowListItem->columnHeightList[i] = 0;
-        fallenSnowListItem->columnMaxHeightList[i] = h;
+        fsnow->columnHeightList[i] = 0;
+        fsnow->columnMaxHeightList[i] = maxHeight;
     }
-    setColumnMaxHeightListForFallen(fallenSnowListItem);
 
-    fallenSnowListItem->next = *fallenSnowArray;
-    *fallenSnowArray = fallenSnowListItem;
+    setColumnMaxHeightListForFallen(fsnow);
+
+    fsnow->next = *fallenSnowArray;
+    *fallenSnowArray = fsnow;
 }
 
 /** *********************************************************************

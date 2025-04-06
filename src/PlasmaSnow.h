@@ -31,7 +31,8 @@
 // Gtk Libs.
 #include <gtk/gtk.h>
 
-// XDO Lib.
+// App Libs.
+#include "FallenSnow.h"
 #include "xdo.h"
 
 
@@ -98,10 +99,7 @@
 #define time_ustar 2.00    // time between updating stars
 #define time_wind 0.10     // time between starting or ending wind
 #define time_wupdate 0.02  // time between getting windows information
-#define time_change_bottom 300.0 // time between changing desired heights
 
-// time between adjusting height of bottom snow
-#define time_adjust_bottom (time_change_bottom / 20)
 // time between recompute fallen snow surfaces
 #define TIME_BETWWEEN_FALLENSNOW_THREADS 0.01
 
@@ -126,7 +124,7 @@ typedef struct {
         bool survivesScreenEdges;
         bool isFrozen;
 
-        unsigned int fluff;
+        bool fluff;
         float flufftimer;
         float flufftime;
 
@@ -214,46 +212,6 @@ typedef struct _StarCoordinate {
 
 
 /***********************************************************
- * App WinInfo helper objects.
- */
-typedef struct _WinInfo {
-        Window window;
-        long ws;           // workspace
-
-        int x, y;          // x,y coordinates
-        int xa, ya;        // x,y coordinates absolute
-        unsigned int w, h; // width, height
-
-        unsigned int sticky BITS(1); // is visible on all workspaces
-        unsigned int dock BITS(1);   // is a "dock" (panel)
-        unsigned int hidden BITS(1); // is hidden / iconized
-} WinInfo;
-
-
-/***********************************************************
- * Global Fallensnow helper objects.
- */
-typedef struct _FallenSnow {
-        WinInfo winInfo;          // winInfo None == bottom.
-        struct _FallenSnow* next; // pointer to next item.
-
-        short int x, y;           // X, Y array.
-        short int w, h;           // W, H array.
-
-        int prevx, prevy;         // x, y of last draw.
-        int prevw, prevh;         // w, h of last draw.
-
-        GdkRGBA surfaceColor;     // Color array.
-
-        cairo_surface_t* renderedSurfaceA;
-        cairo_surface_t* renderedSurfaceB;
-
-        short int* columnHeightList;    // actual heights.
-        short int* columnMaxHeightList; // desired heights.
-} FallenSnow;
-
-
-/***********************************************************
  * Global helper objects.
  */
 extern struct _mGlobal {
@@ -263,13 +221,13 @@ extern struct _mGlobal {
         int IsCompiz;
         int IsWayland;
 
-        Bool isDoubleBuffered;
-        Bool useDoubleBuffers;
+        bool isDoubleBuffered;
+        bool useDoubleBuffers;
 
-        Bool hasDestopWindow;
+        bool hasDestopWindow;
         char* DesktopSession;
 
-        Bool hasTransparentWindow;
+        bool hasTransparentWindow;
         char* mPlasmaWindowTitle;
 
         int WindowOffsetX;
@@ -278,7 +236,7 @@ extern struct _mGlobal {
 
         int WindowsChanged;
 
-        Bool xxposures;
+        bool xxposures;
         int XscreensaverMode;
         int ForceRestart;
         double cpufactor;

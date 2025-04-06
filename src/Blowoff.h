@@ -22,8 +22,8 @@
 #pragma once
 
 void initBlowoffModule();
-
 void respondToBlowoffSettingsChanges();
-
 int updateBlowoffFrame();
+
 int getNumberOfFlakesToBlowoff();
+bool getShowDrip();

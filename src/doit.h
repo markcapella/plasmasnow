@@ -67,7 +67,7 @@
     DOIT_I(BlowOffFactor, 40, 40)                                              \
     DOIT_I(BlowSnow, 1, 0)                                                     \
     DOIT_I(DesiredNumberOfTrees, 10, 6)                                        \
-    DOIT_I(FlakeCountMax, 300, 300)                                            \
+    DOIT_I(FlakeCountMax, 500, 500)                                            \
     DOIT_I(Halo, 1, 1)                                                         \
     DOIT_I(HaloBright, 25, 25)                                                 \
     DOIT_I(MaxOnTrees, 200, 200)                                               \

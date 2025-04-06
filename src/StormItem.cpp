@@ -71,8 +71,8 @@ StormItem* createStormItem(int itemType) {
         getStormItemSurfaceHeight(stormItem->shapeType);
     stormItem->color = getStormShapeColor();
 
-    stormItem->isFrozen = 0;
-    stormItem->fluff = 0;
+    stormItem->isFrozen = false;
+    stormItem->fluff = false;
     stormItem->flufftimer = 0;
     stormItem->flufftime = 0;
 
@@ -481,16 +481,16 @@ void removeStormItem(StormItem* stormItem) {
 bool isStormItemFallen(StormItem* stormItem,
     int xPosition, int yPosition) {
 
+    if (!isWorkspaceActive() ||
+        Flags.NoSnowFlakes ||
+        (Flags.NoKeepSnowOnWindows &&
+            Flags.NoKeepSnowOnBottom)) {
+        return false;
+    }
+
     FallenSnow* fsnow = mGlobal.FsnowFirst;
     while (fsnow) {
         if (fsnow->winInfo.hidden) {
-            fsnow = fsnow->next;
-            continue;
-        }
-
-        if (fsnow->winInfo.window != None &&
-            !isFallenSnowVisibleOnWorkspace(fsnow) &&
-            !fsnow->winInfo.sticky) {
             fsnow = fsnow->next;
             continue;
         }
@@ -502,28 +502,36 @@ bool isStormItemFallen(StormItem* stormItem,
             continue;
         }
 
+        if (fsnow->winInfo.window != None &&
+            !fsnow->winInfo.sticky &&
+            !isFallenSnowVisibleOnWorkspace(fsnow)) {
+            fsnow = fsnow->next;
+            continue;
+        }
+
+        if (!canSnowCollectOnFallen(fsnow)) {
+            return false;
+        }
+
         // Flake hits first FallenSnow & we're done.
         // StormItem hits first FallenItem & we're done.
-        const int ITEM_WIDTH = getStormItemSurfaceWidth(stormItem->shapeType);
+        const int ITEM_WIDTH = getStormItemSurfaceWidth(
+            stormItem->shapeType);
 
-        const int istart = MAX(xPosition - fsnow->x, 0);
-        const int imax = MIN(istart + ITEM_WIDTH, fsnow->w);
+        const int START = MAX(xPosition - fsnow->x, 0);
+        const int END = MIN(START + ITEM_WIDTH, fsnow->w);
 
-        for (int i = istart; i < imax; i++) {
-            if (yPosition > fsnow->y - fsnow->columnHeightList[i] - 1) {
+        for (int i = START; i < END; i++) {
+            if (yPosition > fsnow->y -
+                fsnow->columnHeightList[i] - 1) {
                 if (fsnow->columnHeightList[i] <
                     fsnow->columnMaxHeightList[i]) {
                     updateFallenSnowWithSnow(fsnow,
                         xPosition - fsnow->x, ITEM_WIDTH);
                 }
 
-                if (canSnowCollectOnFallen(fsnow)) {
-                    setStormItemFluffState(stormItem, .9);
-                    if (!stormItem->fluff) {
-                        return true;
-                    }
-                }
-                return false;
+                setStormItemFluffState(stormItem, .9);
+                return true;
             }
         }
 
@@ -562,4 +570,3 @@ void logStormItem(StormItem* stormItem) {
         stormItem->windSensitivity, stormItem->isFrozen,
         stormItem->fluff, stormItem->flufftimer, stormItem->flufftime);
 }
-

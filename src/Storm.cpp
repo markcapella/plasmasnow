@@ -44,11 +44,13 @@
 /***********************************************************
  ** Module globals and consts.
  **/
-const int RANDOM_STORMITEM_COUNT = 300;
-const int STORMITEMS_PERSEC_PERPIXEL = 30;
+// Number of unique random flake shapes to
+// have available.
+const int RANDOM_STORMITEM_COUNT = 50;
 
-const float STORM_ITEM_SPEED_ADJUSTMENT = 0.7;
 const float STORM_ITEM_SIZE_ADJUSTMENT = 0.8;
+const float STORM_ITEM_SPEED_ADJUSTMENT = 0.7;
+const int STORMITEMS_PERSEC_PERPIXEL = 30;
 
 bool mUpdateStormThreadInitialized = false;
 double mUpdateStormThreadPrevTime = 0;
@@ -58,7 +60,6 @@ bool mStallingNewStormItems = false;
 
 float mStormItemsPerSecond = 0.0;
 float mStormItemsSpeedFactor = 0.0;
-int mPreviousStormScale = 100;
 
 int mAllStormItemsShapeCount = 0;
 char*** mAllStormItemsShapeList = NULL;
@@ -77,6 +78,7 @@ XPM_TYPE** mResourcesShapes[] = {
 int mStormItemColorToggle = 0;
 GdkRGBA mStormItemColor;
 
+int mPreviousStormScale = 100;
 bool mStormBackgroundThreadIsActive = false;
 
 
@@ -161,122 +163,149 @@ void getAllStormItemsShapeList() {
     mAllStormItemsShapeList = newShapesList;
 }
 
-/***********************************************************
+/** *********************************************************************
  ** This method generated a random xpm pixmap
  ** with dimensions xpmWidth x xpmHeight.
  **
  ** The stormItem will be rotated, so the w and h of the resulting
  ** xpm will be different from the input w and h.
  **/
-void getRandomStormItemShape(int w, int h, char*** xpm) {
-    const char c = '.';
+void getRandomStormItemShape(int xpmWidth, int xpmHeight,
+    char*** xpm) {
 
-    int nmax = w * h;
-    float *x, *y;
+    // Initialize with @ least one pixel.
+    const int XPM_ITEM_COUNT = xpmWidth * xpmHeight;
+    const int XPM_BYTE_COUNT = XPM_ITEM_COUNT * sizeof(float);
 
-    x = (float *)malloc(nmax * sizeof(float));
-    y = (float *)malloc(nmax * sizeof(float));
+    float* itemXArray = (float*) malloc(XPM_BYTE_COUNT);
+    float* itemYArray = (float*) malloc(XPM_BYTE_COUNT);
 
-    int i, j;
-    float w2 = 0.5 * w;
-    float h2 = 0.5 * h;
+    int itemArrayLength = 1;
+    itemXArray[0] = 0;
+    itemYArray[0] = 0;
 
-    y[0] = 0;
-    x[0] = 0; // to have at least one pixel in the centre
-    int n = 1;
-    for (i = 0; i < h; i++) {
-        float yy = i;
-        if (yy > h2) {
-            yy = h - yy;
-        }
-        float py = 2 * yy / h;
-        for (j = 0; j < w; j++) {
-            float xx = j;
-            if (xx > w2) {
-                xx = w - xx;
+    // Pre-calc for faster loop.
+    const float HALF_XPM_WIDTH = 0.5 * xpmWidth;
+    const float HALF_XPM_HEIGHT = 0.5 * xpmHeight;
+
+    // Loop.
+    for (int h = 0; h < xpmHeight; h++) {
+        const float ROTATE_HEIGHT = (h > HALF_XPM_HEIGHT) ?
+            xpmHeight - h : h;
+        const float PROBABILITY_Y = 2 * ROTATE_HEIGHT /
+            xpmHeight;
+
+        for (int w = 0; w < xpmWidth; w++) {
+            const float ROTATE_WIDTH = (w > HALF_XPM_WIDTH) ?
+                xpmWidth - w : w;
+            const float PROBABILITY_X = 2 * ROTATE_WIDTH /
+                xpmWidth;
+
+            // Maybe push arrayItem.
+            const float THIS_PROBABILITY = 1.1 -
+                (PROBABILITY_X * PROBABILITY_Y);
+            if (drand48() <= THIS_PROBABILITY) {
+                continue;
             }
-            float px = 2 * xx / w;
-            float p = 1.1 - (px * py);
-            // printf("%d %d %f %f %f %f %f\n",j,i,y,x,px,py,p);
-            if (drand48() > p) {
-                if (n < nmax) {
-                    y[n] = i - w2;
-                    x[n] = j - h2;
-                    n++;
-                }
+
+            if (itemArrayLength >= XPM_ITEM_COUNT) {
+                continue;
             }
-        }
-    }
-    // rotate points with a random angle 0 .. pi
-    float a = drand48() * 355.0 / 113.0;
-    float *xa, *ya;
-    xa = (float *)malloc(n * sizeof(float));
-    ya = (float *)malloc(n * sizeof(float));
-
-    for (i = 0; i < n; i++) {
-        xa[i] = x[i] * cosf(a) - y[i] * sinf(a);
-        ya[i] = x[i] * sinf(a) + y[i] * cosf(a);
+            itemYArray[itemArrayLength] = h - HALF_XPM_WIDTH;
+            itemXArray[itemArrayLength] = w - HALF_XPM_HEIGHT;
+            itemArrayLength++;
+         }
     }
 
-    float xmin = xa[0];
-    float xmax = xa[0];
-    float ymin = ya[0];
-    float ymax = ya[0];
+    // Rotate points with a random angle 0 .. pi. (Rick Magic?)
+    const float randomAngle = drand48() * M_PI;
+    const float cosRandomAngle = cosf(randomAngle);
+    const float sinRandomAngle = sinf(randomAngle);
 
-    for (i = 0; i < n; i++) {
-        // smallest xa:
-        if (xa[i] < xmin) {
-            xmin = xa[i];
+    // Init array & null terminate.
+    const int ROTATED_BYTE_COUNT = itemArrayLength * sizeof(float);
+    float* rotatedXArray = (float*) malloc(ROTATED_BYTE_COUNT);
+    float* rotatedYArray = (float*) malloc(ROTATED_BYTE_COUNT);
+
+    // Copy array and rotate.
+    for (int i = 0; i < itemArrayLength; i++) {
+        rotatedXArray[i] = itemXArray[i] * cosRandomAngle -
+            itemYArray[i] * sinRandomAngle;
+        rotatedYArray[i] = itemXArray[i] * sinRandomAngle +
+            itemYArray[i] * cosRandomAngle;
+    }
+
+    // Find min height and width of rotated XPM Image.
+    float xmin = rotatedXArray[0];
+    float xmax = rotatedXArray[0];
+    float ymin = rotatedYArray[0];
+    float ymax = rotatedYArray[0];
+
+    for (int i = 0; i < itemArrayLength; i++) {
+        if (rotatedXArray[i] < xmin) {
+            xmin = rotatedXArray[i];
         }
-        // etc ..
-        if (xa[i] > xmax) {
-            xmax = xa[i];
+        if (rotatedXArray[i] > xmax) {
+            xmax = rotatedXArray[i];
         }
-        if (ya[i] < ymin) {
-            ymin = ya[i];
+        if (rotatedYArray[i] < ymin) {
+            ymin = rotatedYArray[i];
         }
-        if (ya[i] > ymax) {
-            ymax = ya[i];
+        if (rotatedYArray[i] > ymax) {
+            ymax = rotatedYArray[i];
         }
     }
 
+    // Expand 1x1 image to 1x2.
     int nw = ceilf(xmax - xmin + 1);
     int nh = ceilf(ymax - ymin + 1);
     if (nw == 1 && nh == 1) {
         nh = 2;
     }
 
-    *xpm = (char **)malloc((nh + 3) * sizeof(char *));
-    char **X = *xpm;
+    // Create XPM commmand strings. 1 Size header
+    // and two header color codes.
+    const int NUMBER_HEADER_STRINGS = 3;
+    const int XPM_STRING_COUNT = (NUMBER_HEADER_STRINGS + nh) *
+        sizeof(char*);
 
-    X[0] = (char *)malloc(80 * sizeof(char));
-    snprintf(X[0], 80, "%d %d 2 1", nw, nh);
+    *xpm = (char**) malloc(XPM_STRING_COUNT);
 
-    X[1] = strdup("  c None");
-    X[2] = (char *)malloc(80 * sizeof(char));
-    snprintf(X[2], 80, "%c c black", c);
+    char** xpmOutString = *xpm;
+    xpmOutString[0] = (char*) malloc(80 * sizeof(char));
+    snprintf(xpmOutString[0], 80, "%d %d 2 1", nw, nh);
 
-    int offset = 3;
-    for (i = 0; i < nh; i++) {
-        X[i + offset] = (char *)malloc((nw + 1) * sizeof(char));
+    xpmOutString[1] = strdup("  c None");
+
+    xpmOutString[2] = (char*) malloc(80 * sizeof(char));
+    const char PERIOD_CHAR = '.';
+    snprintf(xpmOutString[2], 80, "%c c black", PERIOD_CHAR);
+
+    for (int i = 0; i < nh; i++) {
+        xpmOutString[i + NUMBER_HEADER_STRINGS] =
+            (char*) malloc((nw + 1) * sizeof(char));
     }
 
-    for (i = 0; i < nh; i++) {
-        for (j = 0; j < nw; j++) {
-            X[i + offset][j] = ' ';
+    for (int i = 0; i < nh; i++) {
+        for (int j = 0; j < nw; j++) {
+            xpmOutString[i + NUMBER_HEADER_STRINGS] [j] = ' ';
         }
-        X[i + offset][nw] = 0;
+        xpmOutString[i + NUMBER_HEADER_STRINGS] [nw] = 0;
     }
 
-    for (i = 0; i < n; i++) {
-        X[offset + (int)(ya[i] - ymin)][(int)(xa[i] - xmin)] = c;
+    for (int i = 0; i < itemArrayLength; i++) {
+        const int FY = (int) rotatedYArray[i] - ymin +
+            NUMBER_HEADER_STRINGS;
+        const int FX = (int) rotatedXArray[i] - xmin;
+
+        xpmOutString[FY][FX] = PERIOD_CHAR;
     }
 
-    free(x);
-    free(y);
+    free(itemXArray);
+    free(itemYArray);
 
-    free(xa);
-    free(ya);
+    free(rotatedXArray);
+    free(rotatedYArray);
 }
 
 /** ***********************************************************
@@ -318,19 +347,17 @@ void respondToStormSettingsChanges() {
         }
     );
 
-    UIDO(SnowFlakesFactor,
-        setStormItemsPerSecond();
+    UIDO(ShapeSizeFactor,
+        resetAllStormItemsShapeSizeAndColor();
+        Flags.VintageFlakes = 0;
     );
-
     UIDO(mStormItemsSpeedFactor,
         setStormItemsSpeedFactor();
     );
 
     UIDO(FlakeCountMax, );
-
-    UIDO(ShapeSizeFactor,
-        resetAllStormItemsShapeSizeAndColor();
-        Flags.VintageFlakes = 0;
+    UIDO(SnowFlakesFactor,
+        setStormItemsPerSecond();
     );
 
     UIDOS(StormItemColor1,

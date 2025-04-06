@@ -21,17 +21,36 @@
 */
 #pragma once
 
-#include <pthread.h>
-#include <semaphore.h>
-#include <stdbool.h>
-#include <stdlib.h>
+#include "WinInfo.h"
 
-#include <X11/Intrinsic.h>
-#include <X11/Xlib.h>
 
-#include <gtk/gtk.h>
+/***********************************************************
+ * Global Fallensnow helper objects.
+ */
+typedef struct _FallenSnow {
+        WinInfo winInfo;          // winInfo None == bottom.
+        struct _FallenSnow* next; // pointer to next item.
 
-#include "PlasmaSnow.h"
+        short int x, y;           // X, Y array.
+        short int w, h;           // W, H array.
+
+        int prevx, prevy;         // x, y of last draw.
+        int prevw, prevh;         // w, h of last draw.
+
+        GdkRGBA surfaceColor;     // Color array.
+
+        cairo_surface_t* renderedSurfaceA;
+        cairo_surface_t* renderedSurfaceB;
+
+        unsigned tallestColumnIndex;
+        unsigned tallestColumnHeight;
+        unsigned tallestColumnMax;
+
+        short int* columnHeightList;    // actual heights.
+        short int* columnMaxHeightList; // desired heights.
+
+} FallenSnow;
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -86,7 +105,6 @@ extern "C" {
     FallenSnow* findFallenSnowItemByWindow(Window);
     void eraseFallenSnow(FallenSnow*);
     void eraseFallenSnowPartial(FallenSnow*, int x, int w);
-    int getMaximumFallenSnowColumnHeight(FallenSnow*);
     void removeFallenSnowFromAllWindows();
     void removeFallenSnowFromWindow(Window);
     int removeAndFreeFallenSnowForWindow(FallenSnow**,

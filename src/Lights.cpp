@@ -37,7 +37,6 @@
 #include "Windows.h"
 
 
-
 /** ***********************************************************
  ** Module globals and consts.
  **/
@@ -160,9 +159,9 @@ void initLightsModule() {
         g_source_remove(mLightsThreadId);
         mLightsThreadId = None;
     }
-    const float LIGHTS_THREAD_DELAY_IN_MS = 0.5;
+    const float LIGHTS_THREAD_DELAY_IN_SEC = 0.5;
     mLightsThreadId = addMethodToMainloop(PRIORITY_DEFAULT,
-        LIGHTS_THREAD_DELAY_IN_MS, updateLightsFrame);
+        LIGHTS_THREAD_DELAY_IN_SEC, updateLightsFrame);
 }
 
 /** ***********************************************************
@@ -1001,7 +1000,7 @@ void setAllLightsPrefsDefaults() {
 }
 
 /** ***********************************************************
- ** Getters for all Prefs values.
+ ** Getters & Setters for all Prefs values.
  **/
 bool getShowLights() {
     return getBoolPref(SHOW_LIGHTS_PREFNAME,

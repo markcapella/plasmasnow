@@ -20,6 +20,7 @@
 #-# 
  */
 #include <math.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -29,6 +30,7 @@
 #include "FallenSnow.h"
 #include "Flags.h"
 #include "PlasmaSnow.h"
+#include "Prefs.h"
 #include "Utils.h"
 #include "Windows.h"
 
@@ -37,6 +39,11 @@
  ** Module globals and consts.
  **/
 int mBlowOffLockCounter = 0;
+
+// Prefs values.
+const char* SHOW_DRIP_PREFNAME = "ShowDrip";
+const bool SHOW_DRIP_DEFAULT = true;
+
 
 /** *********************************************************************
  ** This method initializes the Blowoff module.
@@ -54,14 +61,6 @@ void initBlowoffModule() {
 void respondToBlowoffSettingsChanges() {
     UIDO(BlowSnow, );
     UIDO(BlowOffFactor, );
-}
-
-/** *********************************************************************
- ** This method gets a random number up to blowoff factor
- ** for each blowoff event.
- **/
-int getNumberOfFlakesToBlowoff() {
-    return Flags.BlowOffFactor * 0.04 * drand48();
 }
 
 /** *********************************************************************
@@ -92,26 +91,31 @@ int updateBlowoffFrame() {
 
             // Check for Santa Blowoff interaction.
             if (!Flags.NoSanta && mGlobal.SantaPlowRegion) {
-                const int ACTUAL_FALLEN_MAX_HEIGHT =
-                    getMaximumFallenSnowColumnHeight(fsnow);
                 const bool IS_IT_IN = XRectInRegion(mGlobal.SantaPlowRegion,
-                    fsnow->x, fsnow->y - ACTUAL_FALLEN_MAX_HEIGHT,
-                    fsnow->w, ACTUAL_FALLEN_MAX_HEIGHT);
-                if (IS_IT_IN == RectangleIn || IS_IT_IN == RectanglePart) {
+                    fsnow->x, fsnow->y - fsnow->tallestColumnHeight,
+                    fsnow->w, fsnow->tallestColumnHeight);
+                if (IS_IT_IN == RectangleIn ||
+                    IS_IT_IN == RectanglePart) {
                     blowoffPlowedSnowFromFallen(fsnow);
+                    fsnow = fsnow->next;
+                    continue;
                 }
             }
 
             // Check for normal blowoff interaction.
             if (Flags.BlowSnow && randomIntegerUpTo(5) == 0) {
                 blowoffSnowFromFallen(fsnow, fsnow->w / 4, fsnow->h / 4);
+                fsnow = fsnow->next;
+                continue;
             }
 
             // Check for normal blowoff interaction.
-            if (randomIntegerUpTo(40) == 0 &&
-                fsnow->winInfo.window &&
+            if (getShowDrip() && fsnow->winInfo.window &&
+                randomIntegerUpTo(40) == 0 &&
                 canFallenSnowDripRain(fsnow)) {
                 dripRainFromFallen(fsnow);
+                fsnow = fsnow->next;
+                continue;
             }
         }
 
@@ -120,4 +124,20 @@ int updateBlowoffFrame() {
 
     unlockFallenSnowBaseSemaphore();
     return true;
+}
+
+/** *********************************************************************
+ ** This method gets a random number up to blowoff factor
+ ** for each blowoff event.
+ **/
+int getNumberOfFlakesToBlowoff() {
+    return Flags.BlowOffFactor * 0.04 * drand48();
+}
+
+/** ***********************************************************
+ ** Getters & Setters for all Prefs values.
+ **/
+bool getShowDrip() {
+    return getBoolPref(SHOW_DRIP_PREFNAME,
+        SHOW_DRIP_DEFAULT);
 }
