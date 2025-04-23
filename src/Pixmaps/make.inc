@@ -111,6 +111,8 @@ stormItem4Shape.xpm \
 stormItem5Shape.xpm \
 stormItem6Shape.xpm \
 stormItem7Shape.xpm \
+stormItem8Shape.xpm \
+stormItem9Shape.xpm \
 stPaddyHat.xpm \
 tannenbaum.xpm \
 twoTrees.xpm 

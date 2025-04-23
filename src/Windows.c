@@ -607,9 +607,6 @@ void onWindowCreated(XEvent* event) {
     // Update our list to include the created one.
     getWinInfoForAllWindows();
 
-    // printf("onWindowCreated() : ");
-    // logWinInfoForWindow(event->xcreatewindow.window);
-
     // Is this a signature of a transient Plasma DRAG Window
     // being created? If not, early exit.
     //     Event:  se? 0  w [0x01886367]  pw [0x00000764]
@@ -646,16 +643,12 @@ void onWindowCreated(XEvent* event) {
  ** This method handles X11 Windows being reparented.
  **/
 void onWindowReparent(__attribute__((unused)) XEvent* event) {
-    // printf("onWindowReparent(%i) : ", event->xreparent.type);
-    // logWinInfoForWindow(event->xreparent.event);
 }
 
 /** *********************************************************************
  ** This method handles X11 Windows being moved, sized, changed.
  **/
 void onConfigureNotify(__attribute__((unused)) XEvent* event) {
-    // printf("onConfigureNotify(%i) : ", event->xconfigure.type);
-    // logWinInfoForWindow(event->xconfigure.event);
 }
 
 /** *********************************************************************
@@ -666,9 +659,6 @@ void onConfigureNotify(__attribute__((unused)) XEvent* event) {
 void onWindowMapped(XEvent* event) {
     // Update our list for visibility change.
     getWinInfoForAllWindows();
-
-    // printf("onWindowMapped(%i) : ", event->xmap.type);
-    // logWinInfoForWindow(event->xmap.event);
 
     // Determine window drag state.
     if (!isWindowBeingDragged()) {
@@ -726,16 +716,12 @@ void onWindowMapped(XEvent* event) {
  ** This method handles X11 Windows being focused In.
  **/
 void onWindowFocused(__attribute__((unused)) XEvent* event) {
-    // printf("onWindowFocused() : ");
-    // logWinInfoForWindow(event->xfocus.window);
 }
 
 /** *********************************************************************
  ** This method handles X11 Windows being focused In.
  **/
 void onWindowBlurred(__attribute__((unused)) XEvent* event) {
-    // printf("onWindowBlurred() : ");
-    // logWinInfoForWindow(event->xfocus.window);
 }
 
 /** *********************************************************************
@@ -747,9 +733,6 @@ void onWindowUnmapped(__attribute__((unused)) XEvent* event) {
     // Update our list for visibility change.
     getWinInfoForAllWindows();
 
-    // printf("onWindowUnmapped(%i) : ", event->xunmap.type);
-    // logWinInfoForWindow(event->xunmap.event);
-
     // Clear window drag state.
     if (isWindowBeingDragged()) {
         clearAllDragFields();
@@ -760,9 +743,6 @@ void onWindowUnmapped(__attribute__((unused)) XEvent* event) {
  ** This method handles X11 Windows being destroyed.
  **/
 void onWindowDestroyed(__attribute__((unused)) XEvent* event) {
-    // printf("onWindowDestroyed() : ");
-    // logWinInfoForWindow(event->xdestroywindow.event);
-
     // Update our list to reflect the destroyed one.
     getWinInfoForAllWindows();
 
@@ -776,8 +756,6 @@ void onWindowDestroyed(__attribute__((unused)) XEvent* event) {
  ** This method handles all other X11 Windows events.
  **/
 void onWindowClientMessage(__attribute__((unused)) XEvent* event) {
-    // printf("onWindowClientMessage(%i) : ", event->xany.type);
-    // logWinInfoForWindow(event->xany.window);
 }
 
 /** *********************************************************************

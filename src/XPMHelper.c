@@ -24,9 +24,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "ixpm.h"
+// Plasmasnow headers.
 #include "safe_malloc.h"
 #include "Utils.h"
+#include "XPMHelper.h"
 
 
 cairo_region_t* gregionfromxpm(const char **data, int flop, float scale) {
@@ -80,29 +81,30 @@ cairo_region_t* gregionfromxpm(const char **data, int flop, float scale) {
 // change the second color to color and put the result in out.
 // lines will become the number of lines in out, comes in handy
 // when wanting to free out.
-void xpm_set_color(char **data, char ***out, int *lines, const char *color) {
-    int n;
+void xpm_set_color(char** data, char*** out,
+    int* lines, const char* color) {
 
+    int n;
     sscanf(data[0], "%*d %d", &n);
     assert(n + 3 > 0);
 
-    *out = (char **)malloc(sizeof(char *) * (n + 3));
+    *out = (char**) malloc(sizeof(char*) * (n + 3));
 
-    char **x = *out;
-    int j;
-    for (j = 0; j < 2; j++) {
+    char** x = *out;
+    for (int j = 0; j < 2; j++) {
         x[j] = strdup(data[j]);
     }
 
-    x[2] = (char *)malloc(5 + strlen(color));
+    x[2] = (char *) malloc(5 + strlen(color));
     x[2][0] = '\0';
 
     strcat(x[2], ". c ");
     strcat(x[2], color);
 
-    for (j = 3; j < n + 3; j++) {
+    for (int j = 3; j < n + 3; j++) {
         x[j] = strdup(data[j]);
     }
+
     *lines = n + 3;
 }
 

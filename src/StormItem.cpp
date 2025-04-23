@@ -50,16 +50,27 @@ const float mWindSpeedMaxArray[] =
 /***********************************************************
  ** This method creates a basic StormItem from itemType.
  **/
-StormItem* createStormItem(int itemType) {
+StormItem* createStormItem(int itemType, int typeColor) {
 
     // If itemType < 0, create random itemType.
-    const int RESOURCES_SHAPE_COUNT =
-        getResourcesShapeCount();
     if (itemType < 0) {
-        itemType = Flags.VintageFlakes ?
-            RESOURCES_SHAPE_COUNT * drand48() :
-            RESOURCES_SHAPE_COUNT + drand48() *
-                (getAllStormItemsShapeCount() - RESOURCES_SHAPE_COUNT);
+        if (Flags.VintageFlakes) {
+            if (typeColor < 0) {
+                itemType = getXPMFileShapeCount() * drand48();
+            } else {
+                const int HALF = getXPMFileShapeCount() * drand48() / 2;
+                itemType = HALF * 2 + typeColor;
+            }
+        } else {
+            if (typeColor < 0) {
+                itemType = getXPMFileShapeCount() +
+                    getRandomFlakeShapeCount() * drand48();
+            } else {
+                const int HALF = getRandomFlakeShapeCount() * drand48() / 2;
+                itemType = getXPMFileShapeCount() +
+                    HALF * 2 + typeColor;
+            }
+        }
     }
 
     StormItem* stormItem = (StormItem*) malloc(sizeof(StormItem));
@@ -69,7 +80,6 @@ StormItem* createStormItem(int itemType) {
         getStormItemSurfaceWidth(stormItem->shapeType);
     const int ITEM_HEIGHT =
         getStormItemSurfaceHeight(stormItem->shapeType);
-    stormItem->color = getStormShapeColor();
 
     stormItem->isFrozen = false;
     stormItem->fluff = false;
@@ -364,7 +374,7 @@ int updateStormItemOnThread(StormItem* stormItem) {
                 setStormItemFluffState(stormItem, 0.6);
 
                 StormItem* newflake = (Flags.VintageFlakes) ?
-                    createStormItem(0) : createStormItem(-1);
+                    createStormItem(0, -1) : createStormItem(-1, -1);
                 newflake->isFrozen = 1;
                 setStormItemFluffState(newflake, 8);
                 newflake->xRealPosition = xfound;
@@ -526,6 +536,10 @@ bool isStormItemFallen(StormItem* stormItem,
                 fsnow->columnHeightList[i] - 1) {
                 if (fsnow->columnHeightList[i] <
                     fsnow->columnMaxHeightList[i]) {
+                    // First snowflake sets color of Fallensnow.
+                    if (fsnow->snowColor == -1) {
+                        fsnow->snowColor = stormItem->shapeType & 1;
+                    }
                     updateFallenSnowWithSnow(fsnow,
                         xPosition - fsnow->x, ITEM_WIDTH);
                 }
@@ -562,10 +576,13 @@ void setStormItemFluffState(StormItem* stormItem, float t) {
  ** This method prints a StormItem's detail.
  **/
 void logStormItem(StormItem* stormItem) {
-    printf("plasmasnow: Storm.c: stormItem: "
-        "%p xRealPos: %6.0f yRealPos: %6.0f xVelocity: %6.0f yVelocity: %6.0f ws: %f "
-        "isFrozen: %d fluff: %6.0d ftr: %8.3f ft: %8.3f\n",
-        (void*) stormItem, stormItem->xRealPosition, stormItem->yRealPosition,
+    printf("plasmasnow: Storm.c: stormItem: %p "
+        "xRealPos: %6.0f yRealPos: %6.0f "
+        "xVelocity: %6.0f yVelocity: %6.0f "
+        "ws: %f isFrozen: %d "
+        "fluff: %6.0d ftr: %8.3f ft: %8.3f\n",
+        (void*) stormItem,
+        stormItem->xRealPosition, stormItem->yRealPosition,
         stormItem->xVelocity, stormItem->yVelocity,
         stormItem->windSensitivity, stormItem->isFrozen,
         stormItem->fluff, stormItem->flufftimer, stormItem->flufftime);

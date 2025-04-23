@@ -37,7 +37,7 @@ typedef struct _FallenSnow {
         int prevx, prevy;         // x, y of last draw.
         int prevw, prevh;         // w, h of last draw.
 
-        GdkRGBA surfaceColor;     // Color array.
+        int snowColor;
 
         cairo_surface_t* renderedSurfaceA;
         cairo_surface_t* renderedSurfaceB;
@@ -86,7 +86,6 @@ extern "C" {
 
     // Wind interactions.
     void blowoffSnowFromFallen(FallenSnow*, int w, int h);
-    void eraseFallenSnowWindPixel(FallenSnow*, int x);
 
     // Dripping rain interactions.
     bool canFallenSnowDripRain(FallenSnow*);
@@ -102,7 +101,7 @@ extern "C" {
     void drawFallenSnowFrame(cairo_t*);
 
     // Fallensnow general helpers.
-    FallenSnow* findFallenSnowItemByWindow(Window);
+    FallenSnow* getFallenForWindow(Window);
     void eraseFallenSnow(FallenSnow*);
     void eraseFallenSnowPartial(FallenSnow*, int x, int w);
     void removeFallenSnowFromAllWindows();

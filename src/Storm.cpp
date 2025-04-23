@@ -31,7 +31,6 @@
 #include "ColorPicker.h"
 #include "FallenSnow.h"
 #include "Flags.h"
-#include "ixpm.h"
 #include "MainWindow.h"
 #include "StormItemShapeIncludes.h"
 #include "Storm.h"
@@ -39,18 +38,22 @@
 #include "StormItemSurface.h"
 #include "Utils.h"
 #include "Windows.h"
+#include "XPMHelper.h"
 
 
 /***********************************************************
  ** Module globals and consts.
  **/
-// Number of unique random flake shapes to
-// have available.
-const int RANDOM_STORMITEM_COUNT = 50;
+char*** mAllStormItemsShapeList = NULL;
 
-const float STORM_ITEM_SIZE_ADJUSTMENT = 0.8;
-const float STORM_ITEM_SPEED_ADJUSTMENT = 0.7;
-const int STORMITEMS_PERSEC_PERPIXEL = 30;
+StormItemSurface* mAllStormItemSurfacesList = NULL;
+
+#define STORMITEM_SHAPEFILE_NAME(x) stormItem##x##Shape,
+XPM_TYPE** mXPMFileShapes[] = {
+    ALL_STORMITEM_SHAPEFILE_NAMES
+    NULL
+};
+#undef STORMITEM_SHAPEFILE_NAME
 
 bool mUpdateStormThreadInitialized = false;
 double mUpdateStormThreadPrevTime = 0;
@@ -61,37 +64,17 @@ bool mStallingNewStormItems = false;
 float mStormItemsPerSecond = 0.0;
 float mStormItemsSpeedFactor = 0.0;
 
-int mAllStormItemsShapeCount = 0;
-char*** mAllStormItemsShapeList = NULL;
-
-StormItemSurface* mAllStormItemSurfacesList = NULL;
-
-#define STORMITEM_SHAPEFILE_NAME(x) stormItem##x##Shape,
-int mResourcesShapeCount = 0;
-XPM_TYPE** mResourcesShapes[] = {
-    ALL_STORMITEM_SHAPEFILE_NAMES
-    NULL
-};
-#undef STORMITEM_SHAPEFILE_NAME
-
-// StormItem color helper methods.
-int mStormItemColorToggle = 0;
-GdkRGBA mStormItemColor;
-
 int mPreviousStormScale = 100;
-bool mStormBackgroundThreadIsActive = false;
 
 
 /***********************************************************
  ** This method initializes the storm module.
  **/
 void initStormModule() {
-    mResourcesShapeCount = getResourcesShapeCount();
+    createStormItemsShapeList();
+    createStormItemsSurfacesList();
 
-    getAllStormItemsShapeList();
-    getAllStormItemSurfacesList();
     setAllStormItemsShapeSizeAndColor();
-
     setStormItemsSpeedFactor();
     setStormItemsPerSecond();
 
@@ -100,34 +83,12 @@ void initStormModule() {
         (GSourceFunc) updateStormOnThread);
 }
 
-/** ***********************************************************
- ** Helper returns count of locally available XPM StormItems.
- **/
-int getResourcesShapeCount() {
-    int count = 0;
-    while (mResourcesShapes[count]) {
-        count++;
-    }
-
-    return count;
-}
-
-/** ***********************************************************
- ** Storm class getter/setters for mAllStormItemsShapeCount.
- **/
-int getAllStormItemsShapeCount() {
-    return mAllStormItemsShapeCount;
-}
-void setAllStormItemsShapeCount(int count) {
-    mAllStormItemsShapeCount = count;
-}
-
 /***********************************************************
  ** This method loads and/or creates stormItem
  ** pixmap images combined from pre-loaded images
  ** and runtime generated ones.
  **/
-void getAllStormItemsShapeList() {
+void createStormItemsShapeList() {
     // Remove any existing Shape list.
     if (mAllStormItemsShapeList) {
         for (int i = 0; i < getAllStormItemsShapeCount(); i++) {
@@ -136,31 +97,68 @@ void getAllStormItemsShapeList() {
         free(mAllStormItemsShapeList);
     }
 
-    // Create new combined Shape list.
-    const int RESOURCES_SHAPE_COUNT =
-        getResourcesShapeCount();
-    setAllStormItemsShapeCount(RESOURCES_SHAPE_COUNT +
-        RANDOM_STORMITEM_COUNT);
+    // Set colors & add resource images
+    // to new shapes list.
     char*** newShapesList = (char***) malloc(
         getAllStormItemsShapeCount() * sizeof(char**));
-
-    // First, set colors for loaded resource images.
     int lineCount;
-    for (int i = 0; i < mResourcesShapeCount; i++) {
-        xpm_set_color((char**) mResourcesShapes[i],
+    for (int i = 0; i < getXPMFileShapeCount(); i++) {
+        xpm_set_color((char**) mXPMFileShapes[i],
             &newShapesList[i], &lineCount, "snow");
     }
 
-    // Then create new StormItems (snow) generated randomly.
-    for (int i = 0; i < RANDOM_STORMITEM_COUNT; i++) {
+    // Then create new random snow flakes &
+    // add to new shapes list.
+    for (int i = 0; i < getRandomFlakeShapeCount(); i++) {
         const int SIZE = Flags.ShapeSizeFactor;
         const int WIDTH = SIZE + (SIZE * drand48());
         const int HEIGHT = SIZE + (SIZE * drand48());
         getRandomStormItemShape(WIDTH, HEIGHT,
-            &newShapesList[i + mResourcesShapeCount]);
+            &newShapesList[getXPMFileShapeCount() + i]);
     }
 
     mAllStormItemsShapeList = newShapesList;
+}
+
+/** ***********************************************************
+ ** This method initializes a ShapeSurface array for each Resource
+ ** shape & Random shape in the StormItem Shapes Array.
+ **/
+void createStormItemsSurfacesList() {
+    mAllStormItemSurfacesList = (StormItemSurface*) malloc(
+        getAllStormItemsShapeCount() * sizeof(StormItemSurface));
+
+    for (int i = 0; i < getAllStormItemsShapeCount(); i++) {
+        mAllStormItemSurfacesList[i].surface = NULL;
+    }
+}
+
+/** ***********************************************************
+ ** Helper returns count of locally available XPM StormItems.
+ **/
+int getXPMFileShapeCount() {
+    int count = 0;
+    while (mXPMFileShapes[count]) {
+        count++;
+    }
+
+    return count;
+}
+
+/** ***********************************************************
+ ** Helper returns count of randomly generated StormItems.
+ **/
+int getRandomFlakeShapeCount() {
+    return 50;
+}
+
+/** ***********************************************************
+ ** Helper returns count of all locally available &
+ ** randomly generated StormItems..
+ **/
+int getAllStormItemsShapeCount() {
+    return getXPMFileShapeCount() +
+        getRandomFlakeShapeCount();
 }
 
 /** *********************************************************************
@@ -308,29 +306,25 @@ void getRandomStormItemShape(int xpmWidth, int xpmHeight,
     free(rotatedYArray);
 }
 
-/** ***********************************************************
- ** This method initializes a ShapeSurface array for each Resource
- ** shape & Random shape in the StormItem Shapes Array.
+/***********************************************************
+ ** This method returns the width of a stormitem shapeType.
  **/
-void getAllStormItemSurfacesList() {
-    mAllStormItemSurfacesList = (StormItemSurface*) malloc(
-        getAllStormItemsShapeCount() * sizeof(StormItemSurface));
-
-    for (int i = 0; i < getAllStormItemsShapeCount(); i++) {
-        mAllStormItemSurfacesList[i].surface = NULL;
-    }
-}
-
 int getStormItemSurfaceWidth(unsigned shapeType) {
     return mAllStormItemSurfacesList
         [shapeType].width;
 }
 
+/***********************************************************
+ ** This method returns the height of a stormitem shapeType.
+ **/
 int getStormItemSurfaceHeight(unsigned shapeType) {
     return mAllStormItemSurfacesList
         [shapeType].height;
 }
 
+/***********************************************************
+ ** This method returns the surface of a stormitem shapeType.
+ **/
 cairo_surface_t* getStormItemSurface(
     unsigned shapeType) {
     return mAllStormItemSurfacesList
@@ -348,14 +342,20 @@ void respondToStormSettingsChanges() {
     );
 
     UIDO(ShapeSizeFactor,
-        resetAllStormItemsShapeSizeAndColor();
+        createStormItemsShapeList();
+        setAllStormItemsShapeSizeAndColor();
+        if (!mGlobal.isDoubleBuffered) {
+            clearGlobalSnowWindow();
+        }
         Flags.VintageFlakes = 0;
     );
+
     UIDO(mStormItemsSpeedFactor,
         setStormItemsSpeedFactor();
     );
 
     UIDO(FlakeCountMax, );
+
     UIDO(SnowFlakesFactor,
         setStormItemsPerSecond();
     );
@@ -420,6 +420,8 @@ float getStormItemsSpeedFactor() {
  ** This method sets the desired speed of the StormItem.
  **/
 void setStormItemsSpeedFactor() {
+    const float STORM_ITEM_SPEED_ADJUSTMENT = 0.7;
+
     if (Flags.mStormItemsSpeedFactor < 10) {
         mStormItemsSpeedFactor = 0.01 * 10;
     } else {
@@ -433,21 +435,11 @@ void setStormItemsSpeedFactor() {
  ** This method sets a Items-Per-Second throttle rate.
  **/
 void setStormItemsPerSecond() {
+    const int STORMITEMS_PERSEC_PERPIXEL = 30;
+
     mStormItemsPerSecond = mGlobal.SnowWinWidth * 0.0015 *
         Flags.SnowFlakesFactor * 0.001 *
         STORMITEMS_PERSEC_PERPIXEL * getStormItemsSpeedFactor();
-}
-
-/***********************************************************
- ** This method sets the desired size of the StormItem.
- **/
-void resetAllStormItemsShapeSizeAndColor() {
-    getAllStormItemsShapeList();
-    setAllStormItemsShapeSizeAndColor();
-
-    if (!mGlobal.isDoubleBuffered) {
-        clearGlobalSnowWindow();
-    }
 }
 
 /** ***********************************************************
@@ -455,6 +447,10 @@ void resetAllStormItemsShapeSizeAndColor() {
  ** such as color.
  **/
 void setAllStormItemsShapeSizeAndColor() {
+    const float STORM_ITEM_SIZE_ADJUSTMENT = 0.8;
+
+    int colorToggle = 0;
+
     for (int i = 0; i < getAllStormItemsShapeCount(); i++) {
         // Get item base w/h, and rando shrink w/h.
         // Items stuck on sceney removes itself this way.
@@ -478,8 +474,9 @@ void setAllStormItemsShapeSizeAndColor() {
         char** shapeString;
         int lineCount;
         xpm_set_color(mAllStormItemsShapeList[i],
-            &shapeString, &lineCount,
-            getNextStormShapeColorAsString());
+            &shapeString, &lineCount, colorToggle ?
+                Flags.StormItemColor2 : Flags.StormItemColor1);
+        colorToggle = colorToggle ? 0 : 1;
 
         // Get new item draw surface &
         // destroy existing surface.
@@ -515,23 +512,18 @@ void setAllStormItemsShapeSizeAndColor() {
  ** This method adds a batch of items to the Storm window.
  **/
 int updateStormOnThread() {
-    mStormBackgroundThreadIsActive = true;
-
     if (Flags.shutdownRequested) {
-        mStormBackgroundThreadIsActive = false;
         return false;
     }
 
     const double NOW = getWallClockMono();
     if (mStallingNewStormItems) {
         mUpdateStormThreadPrevTime = NOW;
-        mStormBackgroundThreadIsActive = false;
         return true;
     }
 
     if (!isWorkspaceActive() || Flags.NoSnowFlakes) {
         mUpdateStormThreadPrevTime = NOW;
-        mStormBackgroundThreadIsActive = false;
         return true;
     }
 
@@ -551,7 +543,6 @@ int updateStormOnThread() {
         mUpdateStormThreadPrevTime = NOW;
         printf("plasmasnow: Storm.c: updateStormOnThread() "
             "detected a thread stall (?).\n");
-        mStormBackgroundThreadIsActive = false;
         return true;
     }
 
@@ -560,12 +551,11 @@ int updateStormOnThread() {
         mUpdateStormThreadStartTime) * mStormItemsPerSecond);
     if (DESIRED_STORMITEMS) {
         for (int i = 0; i < DESIRED_STORMITEMS; i++) {
-            StormItem* flake = createStormItem(-1);
+            StormItem* flake = createStormItem(-1, -1);
             addStormItem(flake);
         }
         mUpdateStormThreadPrevTime = NOW;
         mUpdateStormThreadStartTime = 0;
-        mStormBackgroundThreadIsActive = false;
         return true;
     }
 
@@ -573,7 +563,6 @@ int updateStormOnThread() {
     mUpdateStormThreadPrevTime = NOW;
     mUpdateStormThreadStartTime += UPDATE_ELAPSED_TIME;
 
-    mStormBackgroundThreadIsActive = false;
     return true;
 }
 
@@ -594,64 +583,4 @@ int stallCreatingStormItems() {
 
     mStallingNewStormItems = (mGlobal.stormItemCount > 0);
     return mStallingNewStormItems;
-}
-
-/***********************************************************
- ** These are helper methods for StormShapeColor.
- **/
-GdkRGBA getStormShapeColor() {
-    return mStormItemColor;
-}
-
-void setStormShapeColor(GdkRGBA itemColor) {
-    mStormItemColor = itemColor;
-}
-
-/***********************************************************
- ** These are helper methods for ItemColor.
- **/
-GdkRGBA getNextStormShapeColorAsRGB() {
-    // Toggle color switch.
-    mStormItemColorToggle = (mStormItemColorToggle == 0) ? 1 : 0;
-
-    // Update color.
-    GdkRGBA nextColor;
-    if (mStormItemColorToggle == 0) {
-        gdk_rgba_parse(&nextColor, Flags.StormItemColor1);
-    } else {
-        gdk_rgba_parse(&nextColor, Flags.StormItemColor2);
-    }
-    setStormShapeColor(nextColor);
-
-    return nextColor;
-}
-
-/***********************************************************
- ** These are helper methods for ItemColor.
- **/
-GdkRGBA getRGBAFromString(char* colorString) {
-    GdkRGBA result;
-    gdk_rgba_parse(&result, colorString);
-    return result;
-}
-
-/***********************************************************
- ** These are helper methods for ItemColor.
- **/
-char* getNextStormShapeColorAsString() {
-    // Toggle color switch.
-    mStormItemColorToggle = (mStormItemColorToggle == 0) ? 1 : 0;
-
-    // Update color.
-    GdkRGBA nextColor;
-    if (mStormItemColorToggle == 0) {
-        gdk_rgba_parse(&nextColor, Flags.StormItemColor1);
-    } else {
-        gdk_rgba_parse(&nextColor, Flags.StormItemColor2);
-    }
-    setStormShapeColor(nextColor);
-
-    // Return result as string.
-    return (mStormItemColorToggle == 0) ?
-        Flags.StormItemColor1 : Flags.StormItemColor2;
 }

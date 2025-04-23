@@ -489,13 +489,16 @@ void renderFallenSnow(FallenSnow* fsnow) {
                     cairo_close_path(cr);
                     cairo_stroke_preserve(cr);
 
-                    // Change to surface fill color and size.
+                    // Change to fill color and size.
                     cairo_set_line_width(cr, 1);
-                    cairo_set_source_rgb(cr, fsnow->surfaceColor.red,
-                        fsnow->surfaceColor.green, fsnow->surfaceColor.blue);
+                    const GdkRGBA FILL_COLOR =  getRGBAFromString(
+                        fsnow->snowColor < 1 ? Flags.StormItemColor1 :
+                        Flags.StormItemColor2);
+                    cairo_set_source_rgb(cr, FILL_COLOR.red,
+                        FILL_COLOR.green, FILL_COLOR.blue);
                     cairo_fill(cr);
 
-                    // Reset to topmost outline color and size.
+                    // Reset to outline color and size.
                     cairo_set_line_width(cr, 6);
                     cairo_set_source_rgb(cr, OUTLINE_COLOR_WHITE.red,
                         OUTLINE_COLOR_WHITE.green, OUTLINE_COLOR_WHITE.blue);
@@ -578,7 +581,7 @@ void updateFallenSnowDesktopItemDepth() {
  ** This method sets sets desktops fallensnow item maximum height.
  **/
 void updateFallenSnowDesktopItemHeight() {
-    FallenSnow* fsnow = findFallenSnowItemByWindow(None);
+    FallenSnow* fsnow = getFallenForWindow(None);
     if (fsnow) {
         fsnow->y = mGlobal.SnowWinHeight;
     }
@@ -669,45 +672,91 @@ void blowoffSnowFromFallen(FallenSnow* fsnow, int w, int h) {
     const int x = randomIntegerUpTo(fsnow->w - w);
 
     for (int i = x; i < x + w; i++) {
-        if (fsnow->columnHeightList[i] > h) {
+        if (!fsnow->columnHeightList[i] > h) {
+            continue;
+        }
 
-            if (!Flags.NoWind && mGlobal.Wind != 0 && drand48() > 0.5) {
-                const int numberOfFlakesToMake =
-                    getNumberOfFlakesToBlowoff();
-                for (int j = 0; j < numberOfFlakesToMake; j++) {
-                    StormItem* stormItem = createStormItem(-1);
-                    stormItem->survivesScreenEdges =
-                        (fsnow->winInfo.window == 0);
-                    stormItem->xRealPosition = fsnow->x + i;
-                    stormItem->yRealPosition = fsnow->y -
-                        fsnow->columnHeightList[i] - drand48() * 4;
-                    stormItem->xVelocity = 0.25 * fsignf(mGlobal.NewWind) *
-                        mGlobal.WindMax;
-                    stormItem->yVelocity = -10;
-                    addStormItem(stormItem);
+        if (!Flags.NoWind && mGlobal.Wind != 0 && drand48() > 0.5) {
+            const int NUMBER_FLAKES = getNumberOfFlakesToBlowoff();
+
+            for (int j = 0; j < NUMBER_FLAKES; j++) {
+                StormItem* stormItem = createStormItem(-1, fsnow->snowColor);
+                stormItem->survivesScreenEdges =
+                    (fsnow->winInfo.window == 0);
+                stormItem->xRealPosition = fsnow->x + i;
+                stormItem->yRealPosition = fsnow->y -
+                    fsnow->columnHeightList[i] - drand48() * 4;
+                stormItem->xVelocity = 0.25 * fsignf(mGlobal.NewWind) *
+                    mGlobal.WindMax;
+                stormItem->yVelocity = -10;
+                addStormItem(stormItem);
+            }
+
+            // Reduce height of column that was blown off.
+            if (fsnow->columnHeightList[i] > 0) {
+                if (!mGlobal.isDoubleBuffered) {
+                    clearDisplayArea(mGlobal.display, mGlobal.SnowWin,
+                        fsnow->x + i, fsnow->y - fsnow->columnHeightList[i],
+                        1, 1, mGlobal.xxposures);
                 }
-                eraseFallenSnowWindPixel(fsnow, i);
+                fsnow->columnHeightList[i]--;
             }
         }
     }
 }
 
 /** *********************************************************************
- ** This method erases a single screen pixel.
- ** threads: locking by caller
+ ** This method determines if we can drip rain from
+ ** a fallen snow item.
  **/
-void eraseFallenSnowWindPixel(FallenSnow *fsnow, int x) {
-    if (fsnow->columnHeightList[x] <= 0) {
-        return;
+bool canFallenSnowDripRain(FallenSnow* fsnow) {
+    return fsnow->tallestColumnHeight >=
+        fsnow->tallestColumnMax;
+}
+
+/** *********************************************************************
+ ** This method drips rain from a fallen snow item.
+ **/
+void dripRainFromFallen(FallenSnow* fsnow) {
+    const int STORMITEM_RAIN_TYPE =
+        fsnow->snowColor < 1 ? 8 : 9;
+
+    StormItem* stormItem = createStormItem(STORMITEM_RAIN_TYPE, -1);
+    const int ITEM_WIDTH =
+        getStormItemSurfaceWidth(stormItem->shapeType);
+    const int ITEM_HEIGHT =
+        getStormItemSurfaceHeight(stormItem->shapeType);
+
+    stormItem->xRealPosition = doesFallenDripFromLeft(fsnow) ?
+        fsnow->x - ITEM_WIDTH : fsnow->x + fsnow->w;
+    stormItem->yRealPosition = fsnow->y;
+
+    stormItem->xVelocity = 0;
+    stormItem->windSensitivity = 0;
+
+    stormItem->initialYVelocity = 280 +
+        randomIntegerUpTo(40);
+    stormItem->yVelocity = stormItem->initialYVelocity;
+    addStormItem(stormItem);
+}
+
+/** *********************************************************************
+ ** Returns if fallen drips from left side. Fallen drips from side
+ ** with the tallest snow column.
+ **/
+bool doesFallenDripFromLeft(FallenSnow* fsnow) {
+    // Exact midpoint drips either way.
+    const int HALF_COLUMN_WIDTH = fsnow->w / 2;
+
+    // Odd width fallensnows have exact midpoints.
+    if (HALF_COLUMN_WIDTH * 2 < fsnow->w) {
+        const int MIDPOINT_COLUMN = HALF_COLUMN_WIDTH + 1;
+        if (MIDPOINT_COLUMN == fsnow->tallestColumnIndex) {
+            return randomIntegerUpTo(2);
+        }
     }
 
-    if (!mGlobal.isDoubleBuffered) {
-        clearDisplayArea(mGlobal.display, mGlobal.SnowWin,
-            fsnow->x + x, fsnow->y - fsnow->columnHeightList[x],
-            1, 1, mGlobal.xxposures);
-    }
-
-    fsnow->columnHeightList[x]--;
+    return fsnow->tallestColumnIndex < HALF_COLUMN_WIDTH;
 }
 
 /** *********************************************************************
@@ -749,10 +798,10 @@ void createPlowedStormItems(FallenSnow* fsnow, int xPos,
 
     // Create up to 10 blown items in an upper and
     // lower stream.
-    const int PLOWED_ITEMS_TO_CREATE = 15;
+    const int PLOWED_ITEMS_TO_CREATE = getNumberOfFlakesToPlowoff();
 
     for (int i = 0; i < PLOWED_ITEMS_TO_CREATE; i++) {
-        StormItem* stormItem = createStormItem(-1);
+        StormItem* stormItem = createStormItem(-1, fsnow->snowColor);
         stormItem->survivesScreenEdges = false;
         stormItem->xRealPosition = xPos + i;
         stormItem->yRealPosition = yPos1;
@@ -761,14 +810,14 @@ void createPlowedStormItems(FallenSnow* fsnow, int xPos,
         stormItem->yVelocity = -randomIntegerUpTo(6) - 60;
         addStormItem(stormItem);
 
-        StormItem* flake2 = createStormItem(-1);
-        flake2->survivesScreenEdges = false;
-        flake2->xRealPosition = xPos + i;
-        flake2->yRealPosition = yPos2;
-        flake2->xVelocity = -0.05 * fsignf(mGlobal.NewWind) *
+        StormItem* stormItem2 = createStormItem(-1, fsnow->snowColor);
+        stormItem2->survivesScreenEdges = false;
+        stormItem2->xRealPosition = xPos + i;
+        stormItem2->yRealPosition = yPos2;
+        stormItem2->xVelocity = -0.05 * fsignf(mGlobal.NewWind) *
             mGlobal.WindMax;
-        flake2->yVelocity = -randomIntegerUpTo(6) - 60;
-        addStormItem(flake2);
+        stormItem2->yVelocity = -randomIntegerUpTo(6) - 60;
+        addStormItem(stormItem2);
     }
 }
 
@@ -806,19 +855,18 @@ void drawFallenSnowFrame(cairo_t* cr) {
 }
 
 /** *********************************************************************
- ** This method returns a fallensnow area for a window.
+ ** This method returns the number of FallenSnow items
+ ** in the linked list.
  **/
-FallenSnow* findFallenSnowItemByWindow(Window window) {
-    FallenSnow* fallenSnow = mGlobal.FsnowFirst;
-
-    while (fallenSnow) {
-        if (fallenSnow->winInfo.window == window) {
-            return fallenSnow;
+FallenSnow* getFallenForWindow(Window window) {
+    for (FallenSnow* fallen = mGlobal.FsnowFirst;
+        fallen; fallen = fallen->next) {
+        if (fallen->winInfo.window == window) {
+            return fallen;
         }
-        fallenSnow = fallenSnow->next;
     }
 
-    return NULL;
+    return None;
 }
 
 /** *********************************************************************
@@ -843,59 +891,6 @@ void eraseFallenSnowPartial(FallenSnow* fsnow,
 }
 
 /** *********************************************************************
- ** This method determines if we can drip rain from
- ** a fallen snow item.
- **/
-bool canFallenSnowDripRain(FallenSnow* fsnow) {
-    return fsnow->tallestColumnHeight >=
-        fsnow->tallestColumnMax;
-}
-
-/** *********************************************************************
- ** This method drips rain from a fallen snow item.
- **/
-void dripRainFromFallen(FallenSnow* fsnow) {
-    const int STORMITEM_RAIN_TYPE = 7;
-
-    StormItem* stormItem = createStormItem(STORMITEM_RAIN_TYPE);
-    const int ITEM_WIDTH =
-        getStormItemSurfaceWidth(stormItem->shapeType);
-    const int ITEM_HEIGHT =
-        getStormItemSurfaceHeight(stormItem->shapeType);
-
-    stormItem->xRealPosition = doesFallenDripFromLeft(fsnow) ?
-        fsnow->x - ITEM_WIDTH : fsnow->x + fsnow->w;
-    stormItem->yRealPosition = fsnow->y;
-
-    stormItem->xVelocity = 0;
-    stormItem->windSensitivity = 0;
-
-    stormItem->initialYVelocity = 280 +
-        randomIntegerUpTo(40);
-    stormItem->yVelocity = stormItem->initialYVelocity;
-    addStormItem(stormItem);
-}
-
-/** *********************************************************************
- ** Returns if fallen drips from left side. Fallen drips from side
- ** with the tallest snow column.
- **/
-bool doesFallenDripFromLeft(FallenSnow* fsnow) {
-    // Exact midpoint drips either way.
-    const int HALF_COLUMN_WIDTH = fsnow->w / 2;
-
-    // Odd width fallensnows have exact midpoints.
-    if (HALF_COLUMN_WIDTH * 2 < fsnow->w) {
-        const int MIDPOINT_COLUMN = HALF_COLUMN_WIDTH + 1;
-        if (MIDPOINT_COLUMN == fsnow->tallestColumnIndex) {
-            return randomIntegerUpTo(2);
-        }
-    }
-
-    return fsnow->tallestColumnIndex < HALF_COLUMN_WIDTH;
-}
-
-/** *********************************************************************
  ** When dragging a window we shake fallen snow off it.
  ** Here, we don't know the window, so we shake them all off.
  **/
@@ -911,7 +906,7 @@ void removeFallenSnowFromAllWindows() {
  **/
 void removeFallenSnowFromWindow(Window window) {
     FallenSnow* fallenListItem =
-        findFallenSnowItemByWindow(window);
+        getFallenForWindow(window);
     if (!fallenListItem) {
         return;
     }
@@ -987,20 +982,22 @@ void generateFallenSnowFlakes(FallenSnow* fsnow,
         const int J_MAX = fsnow->columnHeightList[i];
 
         for (int j = 0; j < J_MAX; j++) {
-            const int kMax = getNumberOfFlakesToBlowoff();
+            const int DROPOFF_COUNT =
+                getNumberOfFlakesToDropoff();
 
-            for (int k = 0; k < kMax; k++) {
+            for (int k = 0; k < DROPOFF_COUNT; k++) {
                 if (drand48() >= 0.15) {
                     continue;
                 }
 
-                // Avoid runaway stormItem generation during plowing.
-                if (limitToMax &&
-                    mGlobal.stormItemCount >= MAX_FLAKES_TO_GENERATE) {
+                // Avoid runaway stormItems during plowing.
+                if (limitToMax && mGlobal.stormItemCount >=
+                    MAX_FLAKES_TO_GENERATE) {
                     return;
                 }
 
-                StormItem* stormItem = createStormItem(-1);
+                StormItem* stormItem =
+                    createStormItem(-1, fsnow->snowColor);
                 stormItem->survivesScreenEdges = false;
                 stormItem->xRealPosition = fsnow->x + i +
                     16 * (drand48() - 0.5);
@@ -1044,7 +1041,7 @@ void doWinInfoWSHides() {
     WinInfo* addedWinInfo = mGlobal.winInfoList;
 
     for (int i = 0; i < mGlobal.winInfoListLength; i++) {
-        FallenSnow* fsnow = findFallenSnowItemByWindow(
+        FallenSnow* fsnow = getFallenForWindow(
             addedWinInfo->window);
 
         if (fsnow) {
@@ -1067,7 +1064,12 @@ void doWinInfoInitialAdds() {
     WinInfo* addedWinInfo = mGlobal.winInfoList;
 
     for (int i = 0; i < mGlobal.winInfoListLength; i++) {
-        FallenSnow* fsnow = findFallenSnowItemByWindow(
+        if (addedWinInfo->hidden) {
+            addedWinInfo++;
+            continue;
+        }
+
+        FallenSnow* fsnow = getFallenForWindow(
             addedWinInfo->window);
 
         if (!fsnow) {
@@ -1075,16 +1077,16 @@ void doWinInfoInitialAdds() {
                 addedWinInfo->y > 0 && !addedWinInfo->dock &&
                 !isWindowBeingDragged()) {
 
-                // When Chrome starts, it has a transparent window for
-                // several seconds. This causes a fallensnow to collect
-                // snow above a seemingly missing window. To fix, we'll
-                // delay the fallensnow item add until Chrome actually
-                // provides (draws) any window data.
+                // When Chrome / Chromium starts, it has a transparent
+                // window for several seconds. This causes a fallensnow
+                // to collect snow above a seemingly missing window.
+                // To fix, we'll delay the pushFallenSnowItem() until
+                // the app actually provides (draws) any window data.
                 XClassHint classHints;
                 XGetClassHint(mGlobal.display, addedWinInfo->window,
                     &classHints);
-                if (strcmp(classHints.res_name, "google-chrome") == 0 &&
-                    strcmp(classHints.res_class, "Google-chrome") == 0) {
+                if (strcmp(classHints.res_class, "Google-chrome") == 0 ||
+                     strcmp(classHints.res_class, "Chromium") == 0) {
                     // Bypass if transparent (matches background).
                     if (windowIsTransparent(addedWinInfo->window)) {
                         addedWinInfo++;
@@ -1107,12 +1109,12 @@ void doWinInfoInitialAdds() {
 
 /** *********************************************************************
  ** This method determines if a window is transparent to the user to help
- ** with a Chrome startup bug.
+ ** with a Chrome / Chromium startup bug.
  **
  ** The window is transparent if a representative block of data
  ** at a certain window position is all zeros.
  **
- ** You can check the whole window size, I prefer this
+ ** You can check the whole window size. I prefer this
  ** shorter / faster version.
  **/
 bool windowIsTransparent(Window window) {
@@ -1237,7 +1239,7 @@ void doWinInfoProgrammaticRemoves() {
     WinInfo* removeWinInfo = mGlobal.winInfoList;
 
     for (int i = 0; i < mGlobal.winInfoListLength; i++) {
-        FallenSnow* fsnow = findFallenSnowItemByWindow(
+        FallenSnow* fsnow = getFallenForWindow(
             removeWinInfo->window);
 
         if (fsnow) {
@@ -1324,12 +1326,12 @@ void pushFallenSnowItem(FallenSnow** fallenSnowArray,
     fsnow->w = w;
     fsnow->h = maxHeight;
 
+    fsnow->snowColor = -1; // Unassigned.
+
     fsnow->prevx = 0;
     fsnow->prevy = 0;
     fsnow->prevw = 10;
     fsnow->prevh = 10;
-
-    fsnow->surfaceColor = getNextStormShapeColorAsRGB();
 
     fsnow->renderedSurfaceA =
         cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w, maxHeight);

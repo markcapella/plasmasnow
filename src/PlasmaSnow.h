@@ -91,7 +91,7 @@
 #define time_sendevent 0.5          // time between sendEvent() calls
 #define time_sfallen 2.30           // time between smoothing of fallen snow
 #define time_show_range_etc 0.50    // time between showing range etc.
-#define time_snow_on_trees 0.50     // time between redrawings of snow on trees
+#define TIME_BETWEEN_SCENERY_BLOWOFF_FRAME_UPDATES 0.50     // time between redrawings of snow on trees
 
 #define time_testing 2.10  // time between testing code
 #define time_umoon 0.04    // time between update position of moon
@@ -117,33 +117,6 @@
 #define WHIRL            150
 #define MAXVISWORKSPACES 100 // should be enough...
 
-typedef struct {
-        unsigned shapeType;
-        GdkRGBA color;
-
-        bool survivesScreenEdges;
-        bool isFrozen;
-
-        bool fluff;
-        float flufftimer;
-        float flufftime;
-
-        // Position values.
-        float xRealPosition;
-        float yRealPosition;
-
-        // Ater draw.
-        int xIntPosition;
-        int yIntPosition;
-
-        // Physics.
-        float massValue;
-        float windSensitivity;
-        float initialYVelocity;
-
-        float xVelocity;
-        float yVelocity;
-} StormItem;
 
 /***********************************************************
  * Santa consts.

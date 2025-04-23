@@ -270,6 +270,15 @@ void rgba2color(GdkRGBA *c, char **s) {
         lrint(c->blue * 255));
 }
 
+/***********************************************************
+ ** These are helper methods for ItemColor.
+ **/
+GdkRGBA getRGBAFromString(char* colorString) {
+    GdkRGBA result;
+    gdk_rgba_parse(&result, colorString);
+    return result;
+}
+
 /** *********************************************************************
  ** This method ...
  **/

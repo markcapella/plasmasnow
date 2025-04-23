@@ -35,13 +35,13 @@
 #include "csvpos.h"
 #include "FallenSnow.h"
 #include "Flags.h"
-#include "ixpm.h"
 #include "MainWindow.h"
 #include "safe_malloc.h"
 #include "scenery.h"
 #include "treesnow.h"
 #include "Utils.h"
 #include "Windows.h"
+#include "XPMHelper.h"
 
 
 /***********************************************************

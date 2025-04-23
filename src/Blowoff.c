@@ -50,7 +50,7 @@ const bool SHOW_DRIP_DEFAULT = true;
  **/
 void initBlowoffModule() {
     addMethodToMainloop(PRIORITY_DEFAULT,
-        TIME_BETWEEN_BLOWOFF_FRAME_UPDATES,
+        TIME_BETWEEN_SCENERY_BLOWOFF_FRAME_UPDATES,
         updateBlowoffFrame);
 }
 
@@ -103,7 +103,7 @@ int updateBlowoffFrame() {
             }
 
             // Check for normal blowoff interaction.
-            if (Flags.BlowSnow && randomIntegerUpTo(5) == 0) {
+            if (Flags.BlowSnow && randomIntegerUpTo(6) == 0) {
                 blowoffSnowFromFallen(fsnow, fsnow->w / 4, fsnow->h / 4);
                 fsnow = fsnow->next;
                 continue;
@@ -128,9 +128,25 @@ int updateBlowoffFrame() {
 
 /** *********************************************************************
  ** This method gets a random number up to blowoff factor
- ** for each blowoff event.
+ ** for each Blowoff event.
  **/
 int getNumberOfFlakesToBlowoff() {
+    return Flags.BlowOffFactor * 0.04 * drand48();
+}
+
+/** *********************************************************************
+ ** This method gets a random number up to blowoff factor
+ ** for each Plowoff event.
+ **/
+int getNumberOfFlakesToPlowoff() {
+    return 15 + randomIntegerUpTo(6);
+}
+
+/** *********************************************************************
+ ** This method gets a random number up to blowoff factor
+ ** for each Dropoff event.
+ **/
+int getNumberOfFlakesToDropoff() {
     return Flags.BlowOffFactor * 0.04 * drand48();
 }
 

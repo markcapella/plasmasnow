@@ -360,8 +360,6 @@ int startApplication(int argc, char *argv[]) {
     showSplashPage();
     updateWindowsList();
 
-    setStormShapeColor(getRGBAFromString(
-        Flags.StormItemColor1));
     StartStormWindow();
 
     // Init all Global Flags.

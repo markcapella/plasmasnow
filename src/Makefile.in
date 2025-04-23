@@ -130,9 +130,8 @@ am_plasmasnow_OBJECTS = plasmasnow-Application.$(OBJEXT) \
 	plasmasnow-ColorPicker.$(OBJEXT) plasmasnow-csvpos.$(OBJEXT) \
 	plasmasnow-docs.$(OBJEXT) plasmasnow-dsimple.$(OBJEXT) \
 	plasmasnow-FallenSnow.$(OBJEXT) plasmasnow-Flags.$(OBJEXT) \
-	plasmasnow-hashtable.$(OBJEXT) plasmasnow-ixpm.$(OBJEXT) \
-	plasmasnow-kdtree.$(OBJEXT) plasmasnow-Lights.$(OBJEXT) \
-	plasmasnow-LoadMeasure.$(OBJEXT) \
+	plasmasnow-hashtable.$(OBJEXT) plasmasnow-kdtree.$(OBJEXT) \
+	plasmasnow-Lights.$(OBJEXT) plasmasnow-LoadMeasure.$(OBJEXT) \
 	plasmasnow-MainWindow.$(OBJEXT) plasmasnow-mainstub.$(OBJEXT) \
 	plasmasnow-meteor.$(OBJEXT) plasmasnow-MsgBox.$(OBJEXT) \
 	plasmasnow-moon.$(OBJEXT) plasmasnow-Prefs.$(OBJEXT) \
@@ -145,7 +144,7 @@ am_plasmasnow_OBJECTS = plasmasnow-Application.$(OBJEXT) \
 	plasmasnow-StormWindow.$(OBJEXT) plasmasnow-treesnow.$(OBJEXT) \
 	plasmasnow-Utils.$(OBJEXT) plasmasnow-wind.$(OBJEXT) \
 	plasmasnow-Windows.$(OBJEXT) plasmasnow-WindowVector.$(OBJEXT) \
-	plasmasnow-WinInfo.$(OBJEXT)
+	plasmasnow-WinInfo.$(OBJEXT) plasmasnow-XPMHelper.$(OBJEXT)
 nodist_plasmasnow_OBJECTS =
 plasmasnow_OBJECTS = $(am_plasmasnow_OBJECTS) \
 	$(nodist_plasmasnow_OBJECTS)
@@ -192,13 +191,13 @@ am__depfiles_remade = ./$(DEPDIR)/libxdo_a-xdo.Po \
 	./$(DEPDIR)/plasmasnow-WinInfo.Po \
 	./$(DEPDIR)/plasmasnow-WindowVector.Po \
 	./$(DEPDIR)/plasmasnow-Windows.Po \
+	./$(DEPDIR)/plasmasnow-XPMHelper.Po \
 	./$(DEPDIR)/plasmasnow-birds.Po \
 	./$(DEPDIR)/plasmasnow-clientwin.Po \
 	./$(DEPDIR)/plasmasnow-csvpos.Po \
 	./$(DEPDIR)/plasmasnow-docs.Po \
 	./$(DEPDIR)/plasmasnow-dsimple.Po \
 	./$(DEPDIR)/plasmasnow-hashtable.Po \
-	./$(DEPDIR)/plasmasnow-ixpm.Po \
 	./$(DEPDIR)/plasmasnow-kdtree.Po \
 	./$(DEPDIR)/plasmasnow-mainstub.Po \
 	./$(DEPDIR)/plasmasnow-meteor.Po \
@@ -700,13 +699,13 @@ libxdo_a_SOURCES = xdo.c xdo_search.c xdo.h xdo_util.h xdo_version.h
 plasmasnow_SOURCES = \
 		Application.c Aurora.c birds.c Blowoff.c clientwin.c \
 		ClockHelper.c ColorPicker.c csvpos.c docs.c dsimple.c \
-		FallenSnow.c Flags.c hashtable.cpp ixpm.c kdtree.c \
+		FallenSnow.c Flags.c hashtable.cpp kdtree.c \
 		Lights.cpp LoadMeasure.c MainWindow.c mainstub.cpp \
 		meteor.c MsgBox.cpp moon.c Prefs.cpp safe_malloc.c \
 		Santa.c scenery.c selfrep.c SplashPage.cpp \
 		spline_interpol.c Stars.c Storm.cpp StormItem.cpp \
 		StormWindow.c treesnow.c ui.glade Utils.c wind.c \
-		Windows.c WindowVector.c WinInfo.c
+		Windows.c WindowVector.c WinInfo.c XPMHelper.c
 
 nodist_plasmasnow_SOURCES = ui_xml.h StormItemShapeIncludes.h
 @MAKESELFREP_FALSE@tarfile_inc = 
@@ -848,13 +847,13 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-WinInfo.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-WindowVector.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-Windows.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-XPMHelper.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-birds.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-clientwin.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-csvpos.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-docs.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-dsimple.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-hashtable.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-ixpm.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-kdtree.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-mainstub.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-meteor.Po@am__quote@ # am--include-marker
@@ -1081,20 +1080,6 @@ plasmasnow-Flags.obj: Flags.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='Flags.c' object='plasmasnow-Flags.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o plasmasnow-Flags.obj `if test -f 'Flags.c'; then $(CYGPATH_W) 'Flags.c'; else $(CYGPATH_W) '$(srcdir)/Flags.c'; fi`
-
-plasmasnow-ixpm.o: ixpm.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT plasmasnow-ixpm.o -MD -MP -MF $(DEPDIR)/plasmasnow-ixpm.Tpo -c -o plasmasnow-ixpm.o `test -f 'ixpm.c' || echo '$(srcdir)/'`ixpm.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/plasmasnow-ixpm.Tpo $(DEPDIR)/plasmasnow-ixpm.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ixpm.c' object='plasmasnow-ixpm.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o plasmasnow-ixpm.o `test -f 'ixpm.c' || echo '$(srcdir)/'`ixpm.c
-
-plasmasnow-ixpm.obj: ixpm.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT plasmasnow-ixpm.obj -MD -MP -MF $(DEPDIR)/plasmasnow-ixpm.Tpo -c -o plasmasnow-ixpm.obj `if test -f 'ixpm.c'; then $(CYGPATH_W) 'ixpm.c'; else $(CYGPATH_W) '$(srcdir)/ixpm.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/plasmasnow-ixpm.Tpo $(DEPDIR)/plasmasnow-ixpm.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ixpm.c' object='plasmasnow-ixpm.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o plasmasnow-ixpm.obj `if test -f 'ixpm.c'; then $(CYGPATH_W) 'ixpm.c'; else $(CYGPATH_W) '$(srcdir)/ixpm.c'; fi`
 
 plasmasnow-kdtree.o: kdtree.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT plasmasnow-kdtree.o -MD -MP -MF $(DEPDIR)/plasmasnow-kdtree.Tpo -c -o plasmasnow-kdtree.o `test -f 'kdtree.c' || echo '$(srcdir)/'`kdtree.c
@@ -1347,6 +1332,20 @@ plasmasnow-WinInfo.obj: WinInfo.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='WinInfo.c' object='plasmasnow-WinInfo.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o plasmasnow-WinInfo.obj `if test -f 'WinInfo.c'; then $(CYGPATH_W) 'WinInfo.c'; else $(CYGPATH_W) '$(srcdir)/WinInfo.c'; fi`
+
+plasmasnow-XPMHelper.o: XPMHelper.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT plasmasnow-XPMHelper.o -MD -MP -MF $(DEPDIR)/plasmasnow-XPMHelper.Tpo -c -o plasmasnow-XPMHelper.o `test -f 'XPMHelper.c' || echo '$(srcdir)/'`XPMHelper.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/plasmasnow-XPMHelper.Tpo $(DEPDIR)/plasmasnow-XPMHelper.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='XPMHelper.c' object='plasmasnow-XPMHelper.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o plasmasnow-XPMHelper.o `test -f 'XPMHelper.c' || echo '$(srcdir)/'`XPMHelper.c
+
+plasmasnow-XPMHelper.obj: XPMHelper.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT plasmasnow-XPMHelper.obj -MD -MP -MF $(DEPDIR)/plasmasnow-XPMHelper.Tpo -c -o plasmasnow-XPMHelper.obj `if test -f 'XPMHelper.c'; then $(CYGPATH_W) 'XPMHelper.c'; else $(CYGPATH_W) '$(srcdir)/XPMHelper.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/plasmasnow-XPMHelper.Tpo $(DEPDIR)/plasmasnow-XPMHelper.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='XPMHelper.c' object='plasmasnow-XPMHelper.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o plasmasnow-XPMHelper.obj `if test -f 'XPMHelper.c'; then $(CYGPATH_W) 'XPMHelper.c'; else $(CYGPATH_W) '$(srcdir)/XPMHelper.c'; fi`
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -1932,13 +1931,13 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/plasmasnow-WinInfo.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-WindowVector.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-Windows.Po
+	-rm -f ./$(DEPDIR)/plasmasnow-XPMHelper.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-birds.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-clientwin.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-csvpos.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-docs.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-dsimple.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-hashtable.Po
-	-rm -f ./$(DEPDIR)/plasmasnow-ixpm.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-kdtree.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-mainstub.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-meteor.Po
@@ -2019,13 +2018,13 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/plasmasnow-WinInfo.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-WindowVector.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-Windows.Po
+	-rm -f ./$(DEPDIR)/plasmasnow-XPMHelper.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-birds.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-clientwin.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-csvpos.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-docs.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-dsimple.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-hashtable.Po
-	-rm -f ./$(DEPDIR)/plasmasnow-ixpm.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-kdtree.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-mainstub.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-meteor.Po

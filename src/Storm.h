@@ -26,37 +26,34 @@ extern "C" {
 #endif
 
     void initStormModule();
-    int getResourcesShapeCount();
 
+    void createStormItemsShapeList();
+    void createStormItemsSurfacesList();
+
+    int getXPMFileShapeCount();
+    int getRandomFlakeShapeCount();
     int getAllStormItemsShapeCount();
-    void setAllStormItemsShapeCount(int count);
 
-    void getAllStormItemsShapeList();
     void getRandomStormItemShape(int w, int h, char*** xpm);
 
-    void getAllStormItemSurfacesList();
     int getStormItemSurfaceWidth(unsigned shapeType);
     int getStormItemSurfaceHeight(unsigned shapeType);
     cairo_surface_t* getStormItemSurface(
         unsigned shapeType);
 
     void respondToStormSettingsChanges();
+
     float getStormItemsSpeedFactor();
     void setStormItemsSpeedFactor();
+
     void setStormItemsPerSecond();
-    void resetAllStormItemsShapeSizeAndColor();
+
     void setAllStormItemsShapeSizeAndColor();
 
     int updateStormOnThread();
+
     bool getStallingNewStormItems();
     int stallCreatingStormItems();
-
-    GdkRGBA getStormShapeColor();
-    void setStormShapeColor(GdkRGBA);
-
-    GdkRGBA getNextStormShapeColorAsRGB();
-    GdkRGBA getRGBAFromString(char*);
-    char* getNextStormShapeColorAsString();
 
 #ifdef __cplusplus
 }

@@ -1,4 +1,5 @@
-/* -copyright-
+/* XPM */
+/* -copyright- 
 #-# 
 #-# plasmasnow: Let it snow on your desktop
 #-# Copyright (C) 1984,1988,1990,1993-1995,2000-2001 Rick Jansen
@@ -19,14 +20,27 @@
 #-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-# 
  */
-#pragma once
-
-void initBlowoffModule();
-void respondToBlowoffSettingsChanges();
-int updateBlowoffFrame();
-
-int getNumberOfFlakesToBlowoff();
-int getNumberOfFlakesToPlowoff();
-int getNumberOfFlakesToDropoff();
-
-bool getShowDrip();
+XPM_TYPE* stormItem9Shape[] = {
+"11 19 2 1",
+" 	c None",
+".	c #000000",
+"     .     ",
+"    ...    ",
+"    ...    ",
+"   .....   ",
+"  .......  ",
+"  .......  ",
+" ......... ",
+" ......... ",
+"...........",
+"...........",
+"...........",
+"...........",
+".. ..... ..",
+".. ..... ..",
+"..  ...  ..",
+"...     ...",
+" ...   ... ",
+" ......... ",
+"   ......  "
+};

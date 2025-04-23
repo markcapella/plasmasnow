@@ -21,11 +21,39 @@
 */
 #pragma once
 
+typedef struct {
+        unsigned shapeType;
+
+        bool survivesScreenEdges;
+        bool isFrozen;
+
+        bool fluff;
+        float flufftimer;
+        float flufftime;
+
+        // Position values.
+        float xRealPosition;
+        float yRealPosition;
+
+        // Ater draw.
+        int xIntPosition;
+        int yIntPosition;
+
+        // Physics.
+        float massValue;
+        float windSensitivity;
+        float initialYVelocity;
+
+        float xVelocity;
+        float yVelocity;
+} StormItem;
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-    StormItem* createStormItem(int type);
+    StormItem* createStormItem(int type, int typeColor);
     void addStormItem(StormItem*);
 
     int updateStormItemOnThread(StormItem*);

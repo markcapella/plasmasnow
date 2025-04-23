@@ -45,7 +45,6 @@
 /** *********************************************************************
  ** Module globals and consts.
  **/
-bool mTreesnowBackgroundThreadIsActive = false;
 
 
 /** *********************************************************************
@@ -54,7 +53,8 @@ bool mTreesnowBackgroundThreadIsActive = false;
 void treesnow_init() {
     mGlobal.gSnowOnTreesRegion = cairo_region_create();
     addMethodToMainloop(PRIORITY_DEFAULT,
-        time_snow_on_trees, execTreesnowBackgroundThread);
+        TIME_BETWEEN_SCENERY_BLOWOFF_FRAME_UPDATES,
+        execTreesnowBackgroundThread);
 }
 
 /** *********************************************************************
@@ -85,25 +85,20 @@ void respondToTreesnowSettingsChanges() {
  ** This method ...
  **/
 int execTreesnowBackgroundThread() {
-    mTreesnowBackgroundThreadIsActive = true;
-
     if (Flags.shutdownRequested) {
-        mTreesnowBackgroundThreadIsActive = false;
-        return FALSE;
+        return false;
     }
 
     if ((!isWorkspaceActive() || Flags.NoSnowFlakes ||
         Flags.NoKeepSnowOnTrees || Flags.NoTrees)) {
-        mTreesnowBackgroundThreadIsActive = false;
-        return TRUE;
+        return true;
     }
 
     if (mGlobal.Wind == 2) {
         ConvertOnTreeToFlakes();
     }
 
-    bool mTreesnowBackgroundThreadIsActive = false;
-    return TRUE;
+    return true;
 }
 
 /***********************************************************
@@ -114,7 +109,7 @@ void ConvertOnTreeToFlakes() {
         for (int j = 0; j < 2; j++) {
             int numberOfFlakesToMake = getNumberOfFlakesToBlowoff();
             for (int k = 0; k < numberOfFlakesToMake; k++) {
-                StormItem* flake = createStormItem(-1);
+                StormItem* flake = createStormItem(-1, -1);
                 flake->survivesScreenEdges = false;
                 flake->xRealPosition = mGlobal.SnowOnTrees[i].x;
                 flake->yRealPosition = mGlobal.SnowOnTrees[i].y - 5 * j;

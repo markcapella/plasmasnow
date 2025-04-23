@@ -31,13 +31,13 @@
 
 // Plasmasnow headers.
 #include "Flags.h"
-#include "ixpm.h"
 #include "moon.h"
 #include "safe_malloc.h"
 #include "Santa.h"
 #include "Utils.h"
 #include "wind.h"
 #include "Windows.h"
+#include "XPMHelper.h"
 
 
 const float LocalScale = 0.6;

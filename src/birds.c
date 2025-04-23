@@ -41,25 +41,23 @@
 #include "doitb.h"
 #include "Flags.h"
 #include "hashtable.h"
-#include "ixpm.h"
 #include "kdtree.h"
 #include "MainWindow.h"
 #include "Santa.h"
 #include "Utils.h"
 #include "Windows.h"
+#include "XPMHelper.h"
+
 
 #define NWINGS 8
 #define NBIRDPIXBUFS (3 * NWINGS)
 
-
 /* Surface to store current scribbles */
-
 static GdkPixbuf *bird_pixbufs[NBIRDPIXBUFS];
 static cairo_surface_t *attrsurface = NULL;
 
-static int
-    Nbirds; // is copied from Flags.Nbirds in init_birds. We cannot have that
-//                  // Nbirds is changed outside init_birds
+static int Nbirds; // is copied from Flags.Nbirds in init_birds.
+// We cannot have that Nbirds is changed outside init_birds
 
 typedef struct _Birdtype {
         float x, y, z; // position, meters
