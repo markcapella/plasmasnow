@@ -792,7 +792,7 @@ void blowoffPlowedSnowFromFallen(FallenSnow* fsnow) {
  **/
 void createPlowedStormItems(FallenSnow* fsnow, int xPos,
     int yPos1, int yPos2) {
-    if (!Flags.BlowSnow || Flags.NoSnowFlakes) {
+    if (Flags.NoSnowFlakes) {
         return;
     }
 
@@ -915,7 +915,7 @@ void removeFallenSnowFromWindow(Window window) {
 
     eraseFallenSnow(fallenListItem);
     generateFallenSnowFlakes(fallenListItem, 0,
-        fallenListItem->w, -15.0, false);
+        fallenListItem->w, -15.0);
     removeAndFreeFallenSnowForWindow(&mGlobal.FsnowFirst,
         fallenListItem->winInfo.window);
 
@@ -966,8 +966,8 @@ int removeAndFreeFallenSnowForWindow(FallenSnow** list,
  ** threads: locking by caller
  **/
 void generateFallenSnowFlakes(FallenSnow* fsnow,
-    int xPos, int xWidth, float yVelocity, bool limitToMax) {
-    if (!Flags.BlowSnow || Flags.NoSnowFlakes) {
+    int xPos, int xWidth, float yVelocity) {
+    if (Flags.NoSnowFlakes) {
         return;
     }
 
@@ -990,13 +990,7 @@ void generateFallenSnowFlakes(FallenSnow* fsnow,
                     continue;
                 }
 
-                // Avoid runaway stormItems during plowing.
-                if (limitToMax && mGlobal.stormItemCount >=
-                    MAX_FLAKES_TO_GENERATE) {
-                    return;
-                }
-
-                StormItem* stormItem =
+               StormItem* stormItem =
                     createStormItem(-1, fsnow->snowColor);
                 stormItem->survivesScreenEdges = false;
                 stormItem->xRealPosition = fsnow->x + i +
@@ -1167,7 +1161,7 @@ void doWinInfoRemoves() {
                 fsnow->winInfo.window)) {
                 eraseFallenSnow(fsnow);
                 generateFallenSnowFlakes(fsnow, 0, fsnow->w,
-                    15.0, false);
+                    15.0);
                 removeAndFreeFallenSnowForWindow(
                     &mGlobal.FsnowFirst, fsnow->winInfo.window);
             }
@@ -1183,7 +1177,7 @@ void doWinInfoRemoves() {
                 fsnow->winInfo.window)) {
                 eraseFallenSnow(fsnow);
                 generateFallenSnowFlakes(fsnow, 0, fsnow->w,
-                    15.0, false);
+                    15.0);
                 removeAndFreeFallenSnowForWindow(
                     &mGlobal.FsnowFirst, fsnow->winInfo.window);
             }
@@ -1201,7 +1195,7 @@ void doWinInfoRemoves() {
                 fsnow->winInfo.window)) {
                 eraseFallenSnow(fsnow);
                 generateFallenSnowFlakes(fsnow, 0, fsnow->w,
-                    -15.0, false);
+                    -15.0);
                 removeAndFreeFallenSnowForWindow(
                     &mGlobal.FsnowFirst, fsnow->winInfo.window);
             }
@@ -1219,7 +1213,7 @@ void doWinInfoRemoves() {
                 fsnow->winInfo.window)) {
                 eraseFallenSnow(fsnow);
                 generateFallenSnowFlakes(fsnow, 0, fsnow->w,
-                    -15.0, false);
+                    -15.0);
                 removeAndFreeFallenSnowForWindow(
                     &mGlobal.FsnowFirst, fsnow->winInfo.window);
             }
@@ -1252,7 +1246,7 @@ void doWinInfoProgrammaticRemoves() {
                     fsnow->winInfo.window)) {
                     eraseFallenSnow(fsnow);
                     generateFallenSnowFlakes(fsnow, 0, fsnow->w,
-                        20.0, false);
+                        20.0);
                     removeAndFreeFallenSnowForWindow(
                         &mGlobal.FsnowFirst, fsnow->winInfo.window);
                 }

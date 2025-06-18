@@ -24,7 +24,7 @@
 #-# 
 
 AC_PREREQ([2.69])
-AC_INIT([plasmasnow], [2025.04.23], [markjamescapella@proton.me])
+AC_INIT([plasmasnow], [2025.06.18], [markjamescapella@proton.me])
 AC_CONFIG_SRCDIR([src/PlasmaSnow.h])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE
@@ -139,7 +139,6 @@ AC_CHECK_HEADERS([unordered_set])
 AC_LANG_POP([C++])
 
 PKG_CHECK_MODULES(GTK, [gtk+-3.0 gmodule-2.0])
-PKG_CHECK_MODULES(QT, [Qt5Core])
 PKG_CHECK_MODULES(X11, [x11 xft xpm xt xext xproto xinerama xtst xkbcommon])
 PKG_CHECK_MODULES(GSL, [gsl])
 

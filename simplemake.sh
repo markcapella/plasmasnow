@@ -57,7 +57,6 @@ QT_CINCLUDES="-I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gn
 FLAGS="$(QT_CFLAGS) $(QT_CINCLUDES) $(FLAGS)"
 
 # Linker Flags
-QT_LIBS="/usr/lib/x86_64-linux-gnu/libQt5Core.so /usr/lib/x86_64-linux-gnu/libQt5Gui.so /usr/lib/x86_64-linux-gnu/libQt5Widgets.so"
 # FLAGS= ? ..............
 #
 ### Qt Dev Package

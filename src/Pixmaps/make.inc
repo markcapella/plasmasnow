@@ -28,6 +28,7 @@ AltSantaRudolf1.xpm \
 AltSantaRudolf2.xpm \
 AltSantaRudolf3.xpm \
 AltSantaRudolf4.xpm \
+americanFlag.xpm \
 BigSanta1.xpm \
 BigSanta2.xpm \
 BigSanta3.xpm \
@@ -93,6 +94,7 @@ plasmasnowsplash.xpm \
 plasmasnow.xpm \
 polarbear.xpm \
 potOfGold.xpm \
+pumpkin.xpm \
 RegularSanta1.xpm \
 RegularSanta2.xpm \
 RegularSanta3.xpm \
@@ -102,6 +104,7 @@ RegularSantaRudolf2.xpm \
 RegularSantaRudolf3.xpm \
 RegularSantaRudolf4.xpm \
 rendier.xpm \
+rocket.xpm \
 snowtree.xpm \
 stormItem0Shape.xpm \
 stormItem1Shape.xpm \

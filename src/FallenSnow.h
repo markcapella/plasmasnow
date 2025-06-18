@@ -110,7 +110,7 @@ extern "C" {
         Window);
 
     void generateFallenSnowFlakes(FallenSnow* fsnow,
-        int xPos, int xWidth, float vy, bool limitToMax);
+        int xPos, int xWidth, float vy);
 
     // WinInfo change watchers.
     void doAllFallenSnowWinInfoUpdates();

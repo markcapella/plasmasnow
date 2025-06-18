@@ -45,7 +45,7 @@
 const char* SHOW_LIGHTS_PREFNAME = "ShowLights";
 const bool SHOW_LIGHTS_DEFAULT = true;
 const char* LIGHTS_SHAPE_PREFNAME = "LightsShape";
-const int LIGHTS_SHAPE_DEFAULT = 2; // Fancy Egg
+const int LIGHTS_SHAPE_DEFAULT = 0; // Xmas Lights
 
 const char* SHOW_LIGHT_COLOR_RED_PREFNAME = "ShowLightColorRed";
 const bool SHOW_LIGHT_COLOR_RED_DEFAULT = true;
@@ -123,12 +123,18 @@ const LIGHT_COLOR_TYPE PINK = 7;
 #include "Pixmaps/lightBulb.xpm"
 #include "Pixmaps/easterEggPlain.xpm"
 #include "Pixmaps/easterEgg.xpm"
+#include "Pixmaps/americanFlag.xpm"
+#include "Pixmaps/rocket.xpm"
+#include "Pixmaps/pumpkin.xpm"
 
 // Shape array.
 XPM_TYPE** mLightShapeList[] = {
     mLightShape,
     mEasterEggPlainShape,
-    mEasterEggShape
+    mEasterEggShape,
+    mAmericanFlag,
+    mRocket,
+    mPumpkin
 };
 
 // Lights thread handler.
@@ -149,16 +155,18 @@ std::vector<GdkRGBA> mBulbColorDark;
  ** This method initializes the lazy-loaded Lights module.
  **/
 void initLightsModule() {
+    // Clear the update thread.
+    if (mLightsThreadId) {
+        g_source_remove(mLightsThreadId);
+        mLightsThreadId = None;
+    }
+
     // Set all structures.
     setAllBulbPositions();
     setAllBulbLayers();
     setAllBulbColors();
 
     // Start the update thread.
-    if (mLightsThreadId) {
-        g_source_remove(mLightsThreadId);
-        mLightsThreadId = None;
-    }
     const float LIGHTS_THREAD_DELAY_IN_SEC = 0.5;
     mLightsThreadId = addMethodToMainloop(PRIORITY_DEFAULT,
         LIGHTS_THREAD_DELAY_IN_SEC, updateLightsFrame);

@@ -52,41 +52,17 @@ const float mWindSpeedMaxArray[] =
  **/
 StormItem* createStormItem(int itemType, int typeColor) {
 
-    // If itemType < 0, create random itemType.
-    if (itemType < 0) {
-        if (Flags.VintageFlakes) {
-            if (typeColor < 0) {
-                itemType = getXPMFileShapeCount() * drand48();
-            } else {
-                const int HALF = getXPMFileShapeCount() * drand48() / 2;
-                itemType = HALF * 2 + typeColor;
-            }
-        } else {
-            if (typeColor < 0) {
-                itemType = getXPMFileShapeCount() +
-                    getRandomFlakeShapeCount() * drand48();
-            } else {
-                const int HALF = getRandomFlakeShapeCount() * drand48() / 2;
-                itemType = getXPMFileShapeCount() +
-                    HALF * 2 + typeColor;
-            }
-        }
-    }
-
     StormItem* stormItem = (StormItem*) malloc(sizeof(StormItem));
-
-    stormItem->shapeType = itemType;
-    const int ITEM_WIDTH =
-        getStormItemSurfaceWidth(stormItem->shapeType);
-    const int ITEM_HEIGHT =
-        getStormItemSurfaceHeight(stormItem->shapeType);
+    stormItem->shapeType = getStormItemShapeType(itemType, typeColor);
 
     stormItem->isFrozen = false;
     stormItem->fluff = false;
+    stormItem->survivesScreenEdges = true;
     stormItem->flufftimer = 0;
     stormItem->flufftime = 0;
 
     stormItem->massValue = drand48() + 0.1;
+
     const int INITIAL_Y_SPEED = 120;
     stormItem->initialYVelocity = INITIAL_Y_SPEED *
         sqrt(stormItem->massValue);
@@ -98,7 +74,10 @@ StormItem* createStormItem(int itemType, int typeColor) {
     stormItem->windSensitivity = drand48() *
         MAX_WIND_SENSITIVITY;
 
-    stormItem->survivesScreenEdges = true;
+    const int ITEM_WIDTH =
+        getStormItemSurfaceWidth(stormItem->shapeType);
+    const int ITEM_HEIGHT =
+        getStormItemSurfaceHeight(stormItem->shapeType);
 
     stormItem->xRealPosition = randomIntegerUpTo(
         mGlobal.SnowWinWidth - ITEM_WIDTH);
@@ -106,6 +85,45 @@ StormItem* createStormItem(int itemType, int typeColor) {
         mGlobal.SnowWinHeight / 10) - ITEM_HEIGHT;
 
     return stormItem;
+}
+
+/***********************************************************
+ ** This method returns a shape type index as requested:
+ **
+ **    itemType, typeColor
+ **       -1        -1     == random shape, random color.
+ **       -1        0/1    == random shape, desired color.
+ **       >0        n/a    == desired shape, random color.
+ **/
+int getStormItemShapeType(int itemType, int typeColor) {
+    if (itemType >= 0) {
+        return itemType;
+    }
+
+    // Vintage Shape type.
+    if (Flags.VintageFlakes) {
+        // Random Vintage shape, random color.
+        if (typeColor < 0) {
+            return getXPMFileShapeCount() * drand48();
+        } else {
+            // Random Vintage shape, desired color.
+            const int HALF = getXPMFileShapeCount() *
+                drand48() / 2;
+            return HALF * 2 + typeColor;
+        }
+    }
+
+    // Modern Shape type.
+    if (typeColor < 0) {
+        // Random Modern shape, random color.
+        return getXPMFileShapeCount() +
+            getRandomFlakeShapeCount() * drand48();
+    }
+
+    // Random Modern shape, desired color.
+    const int HALF = getRandomFlakeShapeCount() *
+        drand48() / 2;
+    return getXPMFileShapeCount() + HALF * 2 + typeColor;
 }
 
 /***********************************************************

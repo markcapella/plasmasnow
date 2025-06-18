@@ -19,10 +19,6 @@
 #-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-# 
 */
-#ifdef HAVE_CONFIG_H
-    #include <config.h>
-#endif
-
 // Std C Lib headers.
 #include <ctype.h>
 #include <fcntl.h>
@@ -65,7 +61,6 @@
 #include "Flags.h"
 #include "Lights.h"
 #include "LoadMeasure.h"
-#include "mainstub.h"
 #include "MainWindow.h"
 #include "meteor.h"
 #include "moon.h"
@@ -134,15 +129,25 @@ int mX11LastErrorCode = 0;
 
 
 /** *********************************************************************
- ** main.c: 
+ ** Application linker entry.
+ **/
+int main(int argc, char *argv[]) {
+    startApplication(argc, argv);
+
+    stopApplication();
+}
+
+/** *********************************************************************
+ ** Main application start.
  **/
 int startApplication(int argc, char *argv[]) {
     signal(SIGINT, appShutdownHook);
     signal(SIGTERM, appShutdownHook);
     signal(SIGHUP, appShutdownHook);
 
-    // Set up random,
-    srand48((int) (fmod(getWallClockReal() * 1.0e6, 1.0e8)));
+    // Seed random.
+    srand48((int) (fmod(getWallClockReal() *
+        1.0e6, 1.0e8)));
 
     // Cleaar space for app Global struct.
     memset(&mGlobal, 0, sizeof(mGlobal));
@@ -438,15 +443,22 @@ int startApplication(int argc, char *argv[]) {
 
     gtk_main();
 
-    // Display termination messages to MessageBox or STDOUT.
+    return false;
+}
+
+/** *********************************************************************
+ ** Main application stop.
+ **/
+void stopApplication() {
     printf("%splasmasnow: gtk_main() Finishes.%s\n",
         COLOR_BLUE, COLOR_NORMAL);
     printf("%s\nThanks for using plasmasnow, you rock !%s\n",
         COLOR_GREEN, COLOR_NORMAL);
 
-    // More terminates.
     removeFallenSnowFromAllWindows();
+
     uninitLightsModule();
+
     if (mSnowWindowTitlebarName) {
         free(mSnowWindowTitlebarName);
     }
@@ -463,8 +475,6 @@ int startApplication(int argc, char *argv[]) {
         setenv("plasmasnow_RESTART", "yes", 1);
         execvp(Argv[0], Argv);
     }
-
-    return 0;
 }
 
 /** *********************************************************************
@@ -1002,7 +1012,9 @@ void appShutdownHook(int signalNumber) {
     printf("%splasmasnow: Shutdown by Signal Handler : %i.%s\n",
         COLOR_YELLOW, signalNumber, COLOR_NORMAL);
 
-    Flags.shutdownRequested = 1;
+    stopApplication();
+
+    Flags.shutdownRequested = true;
 }
 
 /** *********************************************************************

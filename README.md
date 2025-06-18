@@ -30,7 +30,7 @@ a QT screen color picker that works on Plasma, dual snow colors,
 
 ### Install Pre-reqs.
 
-    sudo apt install git automake libx11-dev libxft-dev libxpm-dev libxt-dev libxext-dev x11proto-dev libxinerama-dev libxtst-dev libxkbcommon-dev libgsl-dev appmenu-gtk3-module
+    sudo apt install git build-essential libglib2.0-dev libgtk-3-dev gettext automake libx11-dev libxft-dev libxpm-dev libxt-dev libxext-dev x11proto-dev libxinerama-dev libxtst-dev libxkbcommon-dev libgsl-dev appmenu-gtk3-module
 
 ### Clone plasmasnow working source folder.
 

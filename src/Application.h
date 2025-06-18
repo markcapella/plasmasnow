@@ -19,14 +19,19 @@
 #-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-# 
 */
+#pragma once
 
-/***********************************************************
- * Module Method stubs.
- */
+#include <X11/Intrinsic.h>
+#include <gtk/gtk.h>
+#include <cairo-xlib.h>
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+    int startApplication(int argc, char *argv[]);
+    void stopApplication();
 
     void HandleCpuFactor();
     void RestartDisplay();

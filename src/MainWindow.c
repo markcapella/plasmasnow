@@ -19,126 +19,8 @@
 #-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-# 
 */
-
-/* How to implement a new button
- *
- * The generation of code to add a button and/or a flag is dependent
- * on definitions in 'doit.h' and 'buttons.h'.
- *
- * doit.h
- *
- *   definition of names of flags, together with default values and vintage
- *   values example: DOIT_I(HaloBright           ,25         ,25         )
- *
- *   DOIT_I: for flags with an integer value
- *   DOIT_L: for flags with a large value (for example a window-id)
- *   DOIT_S: for flags with a char* value (colors, mostly)
- *
- *   Macro DOIT will call macro's that are not meant for read/write from
- *   .plasmasnowrc Macro DOIT_ALL calls all DOIT_* macro's This will result in:
- *
- *   flags.h: creation of member HaloBright in type FLAGS  (see flags.h) see
- *   flags.c: definition of default value in DefaultFlags.HaloBright  (25)
- *            definition of vintage value in VintageFlags.Halobright  (0)
- *            definition of WriteFlags() to write the flags to .plasmasnowrc
- *            definition of ReadFlags() to read flags from .plasmasnowrc
- *
- * buttons.h
- *   definition of button-related entities.
- *
- *   example:
- *     BUTTON(scalecode      ,plasmasnow_celestials  ,HaloBright           ,1  )
- *     this takes care that flag 'HaloBright' is associated with a button
- *     in the 'celestials' tab with the glade-id 'id-HaloBright' and that a
- *     value of 1 is used in the expansion of scalecode. In this case, the
- * button should be a GtkScale button.
- *
- *   The macro ALL_BUTTONS takes care that scalecode is called as
- *     scalecode(plasmasnow_celestials,HaloBright,1)
- *     and that all other BUTTON macro's are called
- *
- *   The following types of buttons are implemented:
- *     GtkScale (macro scalecode)
- *     GtkToggle(macro togglecode)
- *     GtkColor (macro colorcode)
- *
- *   In this way, the following items are generated:
- *
- *     ui.c:
- *       define type Buttons, containing all flags in buttons.h
- *       associate the elements of Buttons with the corresponding
- *         glade-id's
- *
- *       define call-backs
- *         these call backs have names like 'button_plasmasnow_celestials_HaloBright'
- *         the code ensures that for example Flags.HaloBright gets the value
- *         of the corresponding button.
- *
- *       create a function initAllButtonValues(), that sets all buttons in the
- * state defined by the corresponding Flags. For example, if Flags.HaloBright =
- * 40, the corresponding GtkScale button will be set to this value.
- *
- *       connects signals of buttons to the corresponding call-backs, for
- *         example, button with glade-id 'id-HaloBright', when changed, will
- * result in a call of button_plasmasnow_celestials_HaloBright().
- *
- *       create function setTabDefaults(int tab, int vintage) that gives the
- *         buttons in the given tab (for example 'plasmasnow_celestials') and the
- *         corresponding flags their default (vintage = 0) or vintage
- *
- * (vintage=1) value. One will notice, that some buttons need extra care, for
- * example flag TreeType in plasmasnow_scenery.
- *
- *   glade, ui.glade
- *
- *     Glade is used to maintain 'ui.glade', where the creation of the tabs and
- * the placement of the buttons is arranged. For the buttons in 'buttons.h' a
- * callback is arranged in 'ui.c', so in general there is no need to do
- * something with the 'signals' properties of these buttons. Things that are
- * needed:
- *
- *       - the id, for example: id-HaloBright
- *       - button text, maybe using a GtkLabel
- *       - tooltip
- *       - for scale buttons: a GtkScale, defining for example min and max
- * values
- *       - placement
- *       - for few buttons: a css class.
- *
- *     In Makefile.am, ui.glade is converted to an include file: ui_xml.h
- *     So, when compiled, the program does not need an external file for it's
- *     GtkBuilder.
- *
- *   Handling of changed flags.
- *
- *     In 'flags.h' the macros UIDO and UIDOS are defined. They take care of the
- *     standard action to be used when a flag has been changed: simply copy
- *     the new value to OldFlags and increment Flags.Changes. OldFlags is
- *     initialized at the start of the program, and is used to check if a flag
- * has been changed.
- *
- *     UIDO (for integer valued flags) and UIDOS (for char* valued flags) take
- *     two parameters:
- *
- *     - the name of the flag to check
- *     - C-code to execute if the value of the flag has been changed.
- *
- *     In main.c the flags in the 'settings' tab are handled, and calls are
- *     made to for example respondToScenerySettingsChanges() which is supposed to handle flags
- *     related with the 'scenery' tab. If Flags.Changes > 0, the flags are
- * written to .plasmasnowrc.
- *
- *   Documentation of flags
- *
- *     This is taken care of in 'docs.c'.
- *
- */
-
 #include "buttons.h"
 #include <pthread.h>
-
-// undef NEWLINE if one wants to examine the by cpp generated code:
-// cpp  ui.c | sed 's/NEWLINE/\n/g'
 
 #define NEWLINE
 // #undef NEWLINE
@@ -448,8 +330,8 @@ static struct _button {
 
 #define ID "id"
 
-#define togglecode(type, name, m)                                              \
-    NEWLINE Button.name =                                                      \
+#define togglecode(type, name, m) \
+    NEWLINE Button.name = \
         GTK_WIDGET(gtk_builder_get_object(builder, ID "-" #name));
 
 #define scalecode togglecode
@@ -1302,11 +1184,17 @@ void createMainWindow() {
     mLightsShapeComboBox = GTK_COMBO_BOX_TEXT(
         gtk_builder_get_object(builder, "id-LightsShape"));
     gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(
-        mLightsShapeComboBox), "    Xmas Lights ");
+        mLightsShapeComboBox), "     Xmas Lights ");
     gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(
         mLightsShapeComboBox), "Plain Easter Eggs ");
     gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(
-        mLightsShapeComboBox), "    Easter Eggs ");
+        mLightsShapeComboBox), "     Easter Eggs ");
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(
+        mLightsShapeComboBox), "     Anerican Flag");
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(
+        mLightsShapeComboBox), "     July Rockets ");
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(
+        mLightsShapeComboBox), " Halloween Pumpkins ");
 
     setAllLightsButtonStyles();
     setLightsShapeComboBoxStyle();

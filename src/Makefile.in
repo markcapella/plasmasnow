@@ -132,12 +132,11 @@ am_plasmasnow_OBJECTS = plasmasnow-Application.$(OBJEXT) \
 	plasmasnow-FallenSnow.$(OBJEXT) plasmasnow-Flags.$(OBJEXT) \
 	plasmasnow-hashtable.$(OBJEXT) plasmasnow-kdtree.$(OBJEXT) \
 	plasmasnow-Lights.$(OBJEXT) plasmasnow-LoadMeasure.$(OBJEXT) \
-	plasmasnow-MainWindow.$(OBJEXT) plasmasnow-mainstub.$(OBJEXT) \
-	plasmasnow-meteor.$(OBJEXT) plasmasnow-MsgBox.$(OBJEXT) \
-	plasmasnow-moon.$(OBJEXT) plasmasnow-Prefs.$(OBJEXT) \
-	plasmasnow-safe_malloc.$(OBJEXT) plasmasnow-Santa.$(OBJEXT) \
-	plasmasnow-scenery.$(OBJEXT) plasmasnow-selfrep.$(OBJEXT) \
-	plasmasnow-SplashPage.$(OBJEXT) \
+	plasmasnow-MainWindow.$(OBJEXT) plasmasnow-meteor.$(OBJEXT) \
+	plasmasnow-MsgBox.$(OBJEXT) plasmasnow-moon.$(OBJEXT) \
+	plasmasnow-Prefs.$(OBJEXT) plasmasnow-safe_malloc.$(OBJEXT) \
+	plasmasnow-Santa.$(OBJEXT) plasmasnow-scenery.$(OBJEXT) \
+	plasmasnow-selfrep.$(OBJEXT) plasmasnow-SplashPage.$(OBJEXT) \
 	plasmasnow-spline_interpol.$(OBJEXT) \
 	plasmasnow-Stars.$(OBJEXT) plasmasnow-Storm.$(OBJEXT) \
 	plasmasnow-StormItem.$(OBJEXT) \
@@ -199,7 +198,6 @@ am__depfiles_remade = ./$(DEPDIR)/libxdo_a-xdo.Po \
 	./$(DEPDIR)/plasmasnow-dsimple.Po \
 	./$(DEPDIR)/plasmasnow-hashtable.Po \
 	./$(DEPDIR)/plasmasnow-kdtree.Po \
-	./$(DEPDIR)/plasmasnow-mainstub.Po \
 	./$(DEPDIR)/plasmasnow-meteor.Po \
 	./$(DEPDIR)/plasmasnow-moon.Po \
 	./$(DEPDIR)/plasmasnow-safe_malloc.Po \
@@ -590,8 +588,6 @@ PTHREAD_CC = @PTHREAD_CC@
 PTHREAD_CFLAGS = @PTHREAD_CFLAGS@
 PTHREAD_CXX = @PTHREAD_CXX@
 PTHREAD_LIBS = @PTHREAD_LIBS@
-QT_CFLAGS = @QT_CFLAGS@
-QT_LIBS = @QT_LIBS@
 RANLIB = @RANLIB@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
@@ -700,7 +696,7 @@ plasmasnow_SOURCES = \
 		Application.c Aurora.c birds.c Blowoff.c clientwin.c \
 		ClockHelper.c ColorPicker.c csvpos.c docs.c dsimple.c \
 		FallenSnow.c Flags.c hashtable.cpp kdtree.c \
-		Lights.cpp LoadMeasure.c MainWindow.c mainstub.cpp \
+		Lights.cpp LoadMeasure.c MainWindow.c \
 		meteor.c MsgBox.cpp moon.c Prefs.cpp safe_malloc.c \
 		Santa.c scenery.c selfrep.c SplashPage.cpp \
 		spline_interpol.c Stars.c Storm.cpp StormItem.cpp \
@@ -855,7 +851,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-dsimple.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-hashtable.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-kdtree.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-mainstub.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-meteor.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-moon.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-safe_malloc.Po@am__quote@ # am--include-marker
@@ -1388,20 +1383,6 @@ plasmasnow-Lights.obj: Lights.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Lights.cpp' object='plasmasnow-Lights.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o plasmasnow-Lights.obj `if test -f 'Lights.cpp'; then $(CYGPATH_W) 'Lights.cpp'; else $(CYGPATH_W) '$(srcdir)/Lights.cpp'; fi`
-
-plasmasnow-mainstub.o: mainstub.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT plasmasnow-mainstub.o -MD -MP -MF $(DEPDIR)/plasmasnow-mainstub.Tpo -c -o plasmasnow-mainstub.o `test -f 'mainstub.cpp' || echo '$(srcdir)/'`mainstub.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/plasmasnow-mainstub.Tpo $(DEPDIR)/plasmasnow-mainstub.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='mainstub.cpp' object='plasmasnow-mainstub.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o plasmasnow-mainstub.o `test -f 'mainstub.cpp' || echo '$(srcdir)/'`mainstub.cpp
-
-plasmasnow-mainstub.obj: mainstub.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT plasmasnow-mainstub.obj -MD -MP -MF $(DEPDIR)/plasmasnow-mainstub.Tpo -c -o plasmasnow-mainstub.obj `if test -f 'mainstub.cpp'; then $(CYGPATH_W) 'mainstub.cpp'; else $(CYGPATH_W) '$(srcdir)/mainstub.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/plasmasnow-mainstub.Tpo $(DEPDIR)/plasmasnow-mainstub.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='mainstub.cpp' object='plasmasnow-mainstub.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o plasmasnow-mainstub.obj `if test -f 'mainstub.cpp'; then $(CYGPATH_W) 'mainstub.cpp'; else $(CYGPATH_W) '$(srcdir)/mainstub.cpp'; fi`
 
 plasmasnow-MsgBox.o: MsgBox.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT plasmasnow-MsgBox.o -MD -MP -MF $(DEPDIR)/plasmasnow-MsgBox.Tpo -c -o plasmasnow-MsgBox.o `test -f 'MsgBox.cpp' || echo '$(srcdir)/'`MsgBox.cpp
@@ -1939,7 +1920,6 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/plasmasnow-dsimple.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-hashtable.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-kdtree.Po
-	-rm -f ./$(DEPDIR)/plasmasnow-mainstub.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-meteor.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-moon.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-safe_malloc.Po
@@ -2026,7 +2006,6 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/plasmasnow-dsimple.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-hashtable.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-kdtree.Po
-	-rm -f ./$(DEPDIR)/plasmasnow-mainstub.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-meteor.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-moon.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-safe_malloc.Po

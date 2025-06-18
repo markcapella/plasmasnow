@@ -53,7 +53,9 @@ typedef struct {
 extern "C" {
 #endif
 
-    StormItem* createStormItem(int type, int typeColor);
+    StormItem* createStormItem(int itemType, int typeColor);
+    int getStormItemShapeType(int itemType, int typeColor);
+    
     void addStormItem(StormItem*);
 
     int updateStormItemOnThread(StormItem*);
