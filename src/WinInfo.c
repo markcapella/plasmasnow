@@ -75,6 +75,7 @@ WinInfo* getWinInfoForWindow(Window window) {
 void getWinInfoForAllWindows() {
     if (mGlobal.winInfoList) {
         free(mGlobal.winInfoList);
+        mGlobal.winInfoListLength = 0;
     }
 
     getInitialWinInfoList(&mGlobal.winInfoList,

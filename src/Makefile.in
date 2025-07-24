@@ -109,8 +109,7 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am__installdirs = "$(DESTDIR)$(gamesdir)" "$(DESTDIR)$(man6dir)" \
-	"$(DESTDIR)$(appicondir)"
+am__installdirs = "$(DESTDIR)$(gamesdir)" "$(DESTDIR)$(appicondir)"
 PROGRAMS = $(games_PROGRAMS)
 LIBRARIES = $(noinst_LIBRARIES)
 ARFLAGS = cru
@@ -279,9 +278,6 @@ am__uninstall_files_from_dir = { \
     || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
-man6dir = $(mandir)/man6
-NROFF = nroff
-MANS = $(man6_MANS)
 DATA = $(appicon_DATA)
 RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
   distclean-recursive maintainer-clean-recursive
@@ -719,7 +715,6 @@ appicon_DATA = Pixmaps/plasmasnow.png \
 	Pixmaps/plasmasnowsplash.xpm \
 	Pixmaps/plasmasnowcolorpicker.xpm
 
-man6_MANS = plasmasnow.6
 CLEANFILES = plasmasnow.6 ui_xml.h StormItemShapeIncludes.h \
 	plasmasnow_out_2 plasmasnow_out_3 \
 	changelog.inc tarfile.inc toascii toascii.c
@@ -1453,47 +1448,6 @@ plasmasnow-StormItem.obj: StormItem.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='StormItem.cpp' object='plasmasnow-StormItem.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o plasmasnow-StormItem.obj `if test -f 'StormItem.cpp'; then $(CYGPATH_W) 'StormItem.cpp'; else $(CYGPATH_W) '$(srcdir)/StormItem.cpp'; fi`
-install-man6: $(man6_MANS)
-	@$(NORMAL_INSTALL)
-	@list1='$(man6_MANS)'; \
-	list2=''; \
-	test -n "$(man6dir)" \
-	  && test -n "`echo $$list1$$list2`" \
-	  || exit 0; \
-	echo " $(MKDIR_P) '$(DESTDIR)$(man6dir)'"; \
-	$(MKDIR_P) "$(DESTDIR)$(man6dir)" || exit 1; \
-	{ for i in $$list1; do echo "$$i"; done;  \
-	if test -n "$$list2"; then \
-	  for i in $$list2; do echo "$$i"; done \
-	    | sed -n '/\.6[a-z]*$$/p'; \
-	fi; \
-	} | while read p; do \
-	  if test -f $$p; then d=; else d="$(srcdir)/"; fi; \
-	  echo "$$d$$p"; echo "$$p"; \
-	done | \
-	sed -e 'n;s,.*/,,;p;h;s,.*\.,,;s,^[^6][0-9a-z]*$$,6,;x' \
-	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,' | \
-	sed 'N;N;s,\n, ,g' | { \
-	list=; while read file base inst; do \
-	  if test "$$base" = "$$inst"; then list="$$list $$file"; else \
-	    echo " $(INSTALL_DATA) '$$file' '$(DESTDIR)$(man6dir)/$$inst'"; \
-	    $(INSTALL_DATA) "$$file" "$(DESTDIR)$(man6dir)/$$inst" || exit $$?; \
-	  fi; \
-	done; \
-	for i in $$list; do echo "$$i"; done | $(am__base_list) | \
-	while read files; do \
-	  test -z "$$files" || { \
-	    echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(man6dir)'"; \
-	    $(INSTALL_DATA) $$files "$(DESTDIR)$(man6dir)" || exit $$?; }; \
-	done; }
-
-uninstall-man6:
-	@$(NORMAL_UNINSTALL)
-	@list='$(man6_MANS)'; test -n "$(man6dir)" || exit 0; \
-	files=`{ for i in $$list; do echo "$$i"; done; \
-	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^6][0-9a-z]*$$,6,;x' \
-	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
-	dir='$(DESTDIR)$(man6dir)'; $(am__uninstall_files_from_dir)
 install-appiconDATA: $(appicon_DATA)
 	@$(NORMAL_INSTALL)
 	@list='$(appicon_DATA)'; test -n "$(appicondir)" || list=; \
@@ -1839,10 +1793,10 @@ check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) check-recursive
-all-am: Makefile $(PROGRAMS) $(LIBRARIES) $(MANS) $(DATA)
+all-am: Makefile $(PROGRAMS) $(LIBRARIES) $(DATA)
 installdirs: installdirs-recursive
 installdirs-am:
-	for dir in "$(DESTDIR)$(gamesdir)" "$(DESTDIR)$(man6dir)" "$(DESTDIR)$(appicondir)"; do \
+	for dir in "$(DESTDIR)$(gamesdir)" "$(DESTDIR)$(appicondir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: $(BUILT_SOURCES)
@@ -1945,7 +1899,7 @@ info: info-recursive
 info-am:
 
 install-data-am: install-appiconDATA install-data-local \
-	install-gamesPROGRAMS install-man
+	install-gamesPROGRAMS
 
 install-dvi: install-dvi-recursive
 
@@ -1961,7 +1915,7 @@ install-info: install-info-recursive
 
 install-info-am:
 
-install-man: install-man6
+install-man:
 
 install-pdf: install-pdf-recursive
 
@@ -2030,9 +1984,7 @@ ps: ps-recursive
 ps-am:
 
 uninstall-am: uninstall-appiconDATA uninstall-gamesPROGRAMS \
-	uninstall-local uninstall-man
-
-uninstall-man: uninstall-man6
+	uninstall-local
 
 .MAKE: $(am__recursive_targets) all check check-am install install-am \
 	install-exec install-strip
@@ -2046,14 +1998,13 @@ uninstall-man: uninstall-man6
 	install-data install-data-am install-data-local install-dvi \
 	install-dvi-am install-exec install-exec-am \
 	install-gamesPROGRAMS install-html install-html-am \
-	install-info install-info-am install-man install-man6 \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	installdirs-am maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-compile mostlyclean-generic pdf pdf-am \
-	ps ps-am recheck tags tags-am uninstall uninstall-am \
-	uninstall-appiconDATA uninstall-gamesPROGRAMS uninstall-local \
-	uninstall-man uninstall-man6
+	install-info install-info-am install-man install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	installcheck installcheck-am installdirs installdirs-am \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic pdf pdf-am ps ps-am \
+	recheck tags tags-am uninstall uninstall-am \
+	uninstall-appiconDATA uninstall-gamesPROGRAMS uninstall-local
 
 .PRECIOUS: Makefile
 
@@ -2094,8 +2045,6 @@ changelog.inc: $(top_srcdir)/ChangeLog $(TOCC)
 plasmasnow-docs.$(OBJEXT): changelog.inc
 
 plasmasnow-selfrep.$(OBJEXT): $(tarfile_inc)
-plasmasnow.6: plasmasnow
-	./plasmasnow -manpage > $@
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -45,7 +45,7 @@
 const char* SHOW_LIGHTS_PREFNAME = "ShowLights";
 const bool SHOW_LIGHTS_DEFAULT = true;
 const char* LIGHTS_SHAPE_PREFNAME = "LightsShape";
-const int LIGHTS_SHAPE_DEFAULT = 0; // Xmas Lights
+const int LIGHTS_SHAPE_DEFAULT = 39; // Xmas Lights
 
 const char* SHOW_LIGHT_COLOR_RED_PREFNAME = "ShowLightColorRed";
 const bool SHOW_LIGHT_COLOR_RED_DEFAULT = true;
@@ -120,21 +120,101 @@ const LIGHT_COLOR_TYPE BLUE = 6;
 const LIGHT_COLOR_TYPE PINK = 7;
 
 // Gray themed LightShapes.
-#include "Pixmaps/lightBulb.xpm"
-#include "Pixmaps/easterEggPlain.xpm"
-#include "Pixmaps/easterEgg.xpm"
-#include "Pixmaps/americanFlag.xpm"
-#include "Pixmaps/rocket.xpm"
-#include "Pixmaps/pumpkin.xpm"
+#include "Pixmaps/AmericanBulb.xpm"
+#include "Pixmaps/BalloonsBulb.xpm"
+#include "Pixmaps/CandleBulb.xpm"
+#include "Pixmaps/CloverBulb.xpm"
+#include "Pixmaps/ColonyHatBulb.xpm"
+#include "Pixmaps/DottedEggBulb.xpm"
+#include "Pixmaps/DrinksBulb.xpm"
+#include "Pixmaps/EasterBunnyBulb.xpm"
+#include "Pixmaps/EasterChickBulb.xpm"
+#include "Pixmaps/EasterEggBulb.xpm"
+#include "Pixmaps/EasterSignBulb.xpm"
+#include "Pixmaps/FancyCloverBulb.xpm"
+#include "Pixmaps/FireworksBulb.xpm"
+#include "Pixmaps/FlowerVaseBulb.xpm"
+#include "Pixmaps/GhostBulb.xpm"
+#include "Pixmaps/HalloweenBulb.xpm"
+#include "Pixmaps/HeartBulb.xpm"
+#include "Pixmaps/HeartsBulb.xpm"
+#include "Pixmaps/HeartStarBulb.xpm"
+#include "Pixmaps/IrishBulb.xpm"
+#include "Pixmaps/IrishHatBulb.xpm"
+#include "Pixmaps/LobsterBulb.xpm"
+#include "Pixmaps/LobsterUpBulb.xpm"
+#include "Pixmaps/NewYearsBulb.xpm"
+#include "Pixmaps/PartyBulb.xpm"
+#include "Pixmaps/PlainEasterEggBulb.xpm"
+#include "Pixmaps/PotOfGoldBulb.xpm"
+#include "Pixmaps/PumpkinBulb.xpm"
+#include "Pixmaps/PumpkinPieBulb.xpm"
+#include "Pixmaps/RibbonsBulb.xpm"
+#include "Pixmaps/RocketBulb.xpm"
+#include "Pixmaps/SantaBootsBulb.xpm"
+#include "Pixmaps/SkullBulb.xpm"
+#include "Pixmaps/SnowFlakeBulb.xpm"
+#include "Pixmaps/SparklyCandleBulb.xpm"
+#include "Pixmaps/StarsBulb.xpm"
+#include "Pixmaps/TurkeyLeftBulb.xpm"
+#include "Pixmaps/TurkeyRightBulb.xpm"
+#include "Pixmaps/WavyEggBulb.xpm"
+#include "Pixmaps/XmasBulb.xpm"
+#include "Pixmaps/XmasFancyBulb.xpm"
+#include "Pixmaps/XmasHollyBulb.xpm"
+#include "Pixmaps/XmasRoundBulb.xpm"
+#include "Pixmaps/XmasStrandBulb.xpm"
+#include "Pixmaps/XmasThreeBulb.xpm"
+#include "Pixmaps/XmasWreathBulb.xpm"
 
 // Shape array.
 XPM_TYPE** mLightShapeList[] = {
-    mLightShape,
-    mEasterEggPlainShape,
-    mEasterEggShape,
-    mAmericanFlag,
-    mRocket,
-    mPumpkin
+    AmericanBulb,
+    BalloonsBulb,
+    CandleBulb,
+    CloverBulb,
+    ColonyHatBulb,
+    DottedEggBulb,
+    DrinksBulb,
+    EasterBunnyBulb,
+    EasterChickBulb,
+    EasterEggBulb,
+    EasterSignBulb,
+    FancyCloverBulb,
+    FireworksBulb,
+    FlowerVaseBulb,
+    GhostBulb,
+    HalloweenBulb,
+    HeartBulb,
+    HeartsBulb,
+    HeartStarBulb,
+    IrishBulb,
+    IrishHatBulb,
+    LobsterBulb,
+    LobsterUpBulb,
+    NewYearsBulb,
+    PartyBulb,
+    PlainEasterEggBulb,
+    PotOfGoldBulb,
+    PumpkinBulb,
+    PumpkinPieBulb,
+    RibbonsBulb,
+    RocketBulb,
+    SantaBootsBulb,
+    SkullBulb,
+    SnowFlakeBulb,
+    SparklyCandleBulb,
+    StarsBulb,
+    TurkeyLeftBulb,
+    TurkeyRightBulb,
+    WavyEggBulb,
+    XmasBulb,
+    XmasFancyBulb,
+    XmasHollyBulb,
+    XmasRoundBulb,
+    XmasStrandBulb,
+    XmasThreeBulb,
+    XmasWreathBulb
 };
 
 // Lights thread handler.
@@ -581,20 +661,6 @@ void createColoredBulb(GdkRGBA bright, GdkRGBA normal,
      GdkRGBA dark, char*** targetXPM,
     int* targetLineCount) {
 
-    char brightColorValue[16];
-    char normalColorValue[16];
-    char darkColorValue[16];
-
-    snprintf(brightColorValue, 16, "#%02x%02x%02x",
-        (int) bright.red, (int) bright.green,
-        (int) bright.blue);
-    snprintf(normalColorValue, 16, "#%02x%02x%02x",
-        (int) normal.red, (int) normal.green,
-        (int) normal.blue);
-    snprintf(darkColorValue, 16, "#%02x%02x%02x",
-        (int) dark.red, (int) dark.green,
-        (int) dark.blue);
-
     // Get source image attributes.
     const int HEADERSTRING_COUNT = 1;
     const int COLORSTRING_INDEX = 4;
@@ -617,10 +683,14 @@ void createColoredBulb(GdkRGBA bright, GdkRGBA normal,
             getLightsShape()][i]);
     }
 
-    // Create the three color strings to XPM return area.
-    const char* BRIGHT_COLOR_KEY = "- c ";
-    const char* NORMAL_COLOR_KEY = "% c ";
-    const char* DARK_COLOR_KEY = ", c ";
+    // Create the BRIGHT color string.
+    char brightColorValue[16];
+    snprintf(brightColorValue, 16, "#%02x%02x%02x",
+        (int) bright.red, (int) bright.green,
+        (int) bright.blue);
+
+    const char* BRIGHT_COLOR_KEY = strndup(mLightShapeList[
+            getLightsShape()][COLORSTRING_INDEX + 0], 4);
 
     targetXPMArray[COLORSTRING_INDEX + 0] = (char*) malloc(
         strlen(BRIGHT_COLOR_KEY) + strlen(brightColorValue) + 1);
@@ -628,11 +698,29 @@ void createColoredBulb(GdkRGBA bright, GdkRGBA normal,
     strcat(targetXPMArray[COLORSTRING_INDEX + 0], BRIGHT_COLOR_KEY);
     strcat(targetXPMArray[COLORSTRING_INDEX + 0], brightColorValue);
 
+    // Create the NORMAL color string.
+    char normalColorValue[16];
+    snprintf(normalColorValue, 16, "#%02x%02x%02x",
+        (int) normal.red, (int) normal.green,
+        (int) normal.blue);
+
+    const char* NORMAL_COLOR_KEY = strndup(mLightShapeList[
+            getLightsShape()][COLORSTRING_INDEX + 1], 4);
+
     targetXPMArray[COLORSTRING_INDEX + 1] = (char*) malloc(
         strlen(NORMAL_COLOR_KEY) + strlen(normalColorValue) + 1);
     targetXPMArray[COLORSTRING_INDEX + 1][0] = '\0';
     strcat(targetXPMArray[COLORSTRING_INDEX + 1], NORMAL_COLOR_KEY);
     strcat(targetXPMArray[COLORSTRING_INDEX + 1], normalColorValue);
+
+    // Create the DARK color string.
+    char darkColorValue[16];
+    snprintf(darkColorValue, 16, "#%02x%02x%02x",
+        (int) dark.red, (int) dark.green,
+        (int) dark.blue);
+
+    const char* DARK_COLOR_KEY = strndup(mLightShapeList[
+            getLightsShape()][COLORSTRING_INDEX + 2], 4);
 
     targetXPMArray[COLORSTRING_INDEX + 2] = (char*) malloc(
         strlen(DARK_COLOR_KEY) + strlen(darkColorValue) + 1);

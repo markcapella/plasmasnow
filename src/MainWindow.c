@@ -125,9 +125,60 @@ int nlang;
 // Individual Shapes.
 #include "Pixmaps/plasmasnow.xpm"
 
+// Bulb Shape names.
+const char* CHOSEN_BULB_NAMES[] = {
+    "American Bulb",
+    "Balloons Bulb",
+    "Candle Bulb",
+    "Clover Bulb",
+    "Colony Hat Bulb",
+    "Dotted Egg Bulb",
+    "Drinks Bulb",
+    "Easter Bunny Bulb",
+    "Easter Chick Bulb",
+    "Easter Egg Bulb",
+    "Easter Sign Bulb",
+    "Fancy Clover Bulb",
+    "Fireworks Bulb",
+    "Flower Vase Bulb",
+    "Ghost Bulb",
+    "Halloween Bulb",
+    "Heart Bulb",
+    "Hearts Bulb",
+    "Heart Star Bulb",
+    "Irish Bulb",
+    "Irish Hat Bulb",
+    "Lobster Bulb",
+    "Lobster Up Bulb",
+    "New Years Bulb",
+    "Party Bulb",
+    "Plain Easter Egg Bulb",
+    "Pot Of Gold Bulb",
+    "Pumpkin Bulb",
+    "Pumpkin Pie Bulb",
+    "Ribbons Bulb",
+    "Rocket Bulb",
+    "Santa Boots Bulb",
+    "Skull Bulb",
+    "Snow Flake Bulb",
+    "Sparkly Candle Bulb",
+    "Stars Bulb",
+    "Turkey Left Bulb",
+    "Turkey Right Bulb",
+    "Wavy Egg Bulb",
+    "Xmas Bulb",
+    "Xmas Fancy Bulb",
+    "Xmas Holly Bulb",
+    "Xmas Round Bulb",
+    "Xmas Strand Bulb",
+    "Xmas Three Bulb",
+    "Xmas Wreath Bulb",
+    ""
+};
+
 guint mClickedShowLightsHandler = None;
 
-GtkComboBoxText* mLightsShapeComboBox = None;
+GtkComboBoxText* mChosenBulbComboBox = None;
 guint mClickedLightsShapeComboBoxHandler = None;
 
 guint mClickedLightColorRedHandler = None;
@@ -910,7 +961,7 @@ void setAllLightsButtonStyles() {
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 void setLightsShapeComboBoxStyle() {
-    gtk_combo_box_set_active(GTK_COMBO_BOX(mLightsShapeComboBox),
+    gtk_combo_box_set_active(GTK_COMBO_BOX(mChosenBulbComboBox),
         getLightsShape());
 }
 
@@ -1181,20 +1232,17 @@ void createMainWindow() {
     /**
      ** StormShapes ComboBox.
      **/
-    mLightsShapeComboBox = GTK_COMBO_BOX_TEXT(
+    mChosenBulbComboBox = GTK_COMBO_BOX_TEXT(
         gtk_builder_get_object(builder, "id-LightsShape"));
-    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(
-        mLightsShapeComboBox), "     Xmas Lights ");
-    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(
-        mLightsShapeComboBox), "Plain Easter Eggs ");
-    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(
-        mLightsShapeComboBox), "     Easter Eggs ");
-    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(
-        mLightsShapeComboBox), "     Anerican Flag");
-    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(
-        mLightsShapeComboBox), "     July Rockets ");
-    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(
-        mLightsShapeComboBox), " Halloween Pumpkins ");
+
+    for (int i = 0; strcmp(CHOSEN_BULB_NAMES[i], "") != 0; i++) {
+        gtk_combo_box_text_append_text(
+            GTK_COMBO_BOX_TEXT(mChosenBulbComboBox),
+            CHOSEN_BULB_NAMES[i]);
+    }
+
+    gtk_combo_box_set_active(GTK_COMBO_BOX(
+        mChosenBulbComboBox), getLightsShape());
 
     setAllLightsButtonStyles();
     setLightsShapeComboBoxStyle();
@@ -1477,13 +1525,13 @@ void connectLightsShapeComboBoxSignal() {
     disconnectLightsShapeComboBoxSignal();
 
     mClickedLightsShapeComboBoxHandler = g_signal_connect(
-        mLightsShapeComboBox, "changed",
+        mChosenBulbComboBox, "changed",
         G_CALLBACK(onChangedLightsShape), NULL);
 }
 
 void disconnectLightsShapeComboBoxSignal() {
     if (mClickedLightsShapeComboBoxHandler) {
-        g_signal_handler_disconnect(mLightsShapeComboBox,
+        g_signal_handler_disconnect(mChosenBulbComboBox,
             mClickedLightsShapeComboBoxHandler);
         mClickedLightsShapeComboBoxHandler = None;
     }

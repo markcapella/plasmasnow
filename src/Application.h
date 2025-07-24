@@ -49,7 +49,7 @@ extern "C" {
         GtkWidget*, cairo_t*, gpointer);
     void rectangle_draw(cairo_t*);
 
-    int StartStormWindow();
+    int startStormWindow();
 
     void SetWindowScale();
     int handlePendingX11Events();

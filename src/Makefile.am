@@ -121,10 +121,6 @@ appicon_DATA=Pixmaps/plasmasnow.png \
 	Pixmaps/plasmasnowsplash.xpm \
 	Pixmaps/plasmasnowcolorpicker.xpm
 
-man6_MANS = plasmasnow.6
-plasmasnow.6: plasmasnow
-	./plasmasnow -manpage > $@
-
 CLEANFILES = plasmasnow.6 ui_xml.h StormItemShapeIncludes.h \
 	plasmasnow_out_2 plasmasnow_out_3 \
 	changelog.inc tarfile.inc toascii toascii.c

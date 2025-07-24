@@ -368,7 +368,7 @@
         <property name="vhomogeneous">False</property>
         <property name="transition-duration">0</property>
         <child>
-          <!-- n-columns=5 n-rows=8 -->
+          <!-- n-columns=5 n-rows=9 -->
           <object class="GtkGrid" id="grid_about">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
@@ -586,8 +586,31 @@
               </object>
               <packing>
                 <property name="left-attach">0</property>
+                <property name="top-attach">8</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">Holidays Light shapes mostly derived from images @ https://www.flaticon.com/</property>
+              </object>
+              <packing>
+                <property name="left-attach">2</property>
                 <property name="top-attach">7</property>
               </packing>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
             </child>
             <child>
               <placeholder/>

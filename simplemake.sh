@@ -128,10 +128,7 @@ $CXX -c *.cpp $FLAGS || exit 1
 echo "creating plasmasnow in directory $PWD:"
 $CXX -o plasmasnow *.o $FLAGS || exit 1
 
-echo "creating manpage in directory $PWD as plasmasnow.6:"
-./plasmasnow -H > plasmasnow.6 || exit 1
-
 echo
 echo " ********************************************************************"
-echo " ** It seems that you compiled plasmasnow successfully.                 **"
+echo " ** It seems that you compiled plasmasnow successfully.            **"
 echo " ********************************************************************"

@@ -86,7 +86,7 @@
 #include "xdo_search.h"
 
 
-/** *********************************************************************
+/** ************************************************
  ** Module globals and consts.
  **/
 
@@ -128,7 +128,7 @@ int mX11ErrorCount = 0;
 int mX11LastErrorCode = 0;
 
 
-/** *********************************************************************
+/** ************************************************
  ** Application linker entry.
  **/
 int main(int argc, char *argv[]) {
@@ -137,7 +137,7 @@ int main(int argc, char *argv[]) {
     stopApplication();
 }
 
-/** *********************************************************************
+/** ************************************************
  ** Main application start.
  **/
 int startApplication(int argc, char *argv[]) {
@@ -289,18 +289,6 @@ int startApplication(int argc, char *argv[]) {
         COLOR_BLUE, getDesktopSession() ? getDesktopSession() :
         "was not", COLOR_NORMAL);
 
-    // Log Wayland info.
-    const bool isWaylandPresent = getenv("WAYLAND_DISPLAY") &&
-        getenv("WAYLAND_DISPLAY") [0];
-    if (isWaylandPresent) {
-        printf("%splasmasnow: Wayland display was "
-            "detected - FATAL.%s\n", COLOR_RED, COLOR_NORMAL);
-        displayMessageBox(100, 200, 600, 66, "plasmasnow",
-            "Oh noes! plasmasnow is an x11 app, & can\'t "
-            "be run on a Wayland desktop.");
-        return 1;
-    }
-
     // Init GTK & x11 backend, ensure valid version.
     setenv("GDK_BACKEND", "x11", 1);
     gtk_init(&argc, &argv);
@@ -365,7 +353,7 @@ int startApplication(int argc, char *argv[]) {
     showSplashPage();
     updateWindowsList();
 
-    StartStormWindow();
+    startStormWindow();
 
     // Init all Global Flags.
     #define DOIT_I(x, d, v) OldFlags.x = Flags.x;
@@ -446,7 +434,7 @@ int startApplication(int argc, char *argv[]) {
     return false;
 }
 
-/** *********************************************************************
+/** ************************************************
  ** Main application stop.
  **/
 void stopApplication() {
@@ -456,18 +444,13 @@ void stopApplication() {
         COLOR_GREEN, COLOR_NORMAL);
 
     removeFallenSnowFromAllWindows();
-
+    clearColorPicker();
     uninitLightsModule();
-
-    if (mSnowWindowTitlebarName) {
-        free(mSnowWindowTitlebarName);
-    }
 
     XClearWindow(mGlobal.display, mGlobal.SnowWin);
     XFlush(mGlobal.display);
 
     XCloseDisplay(mGlobal.display);
-    clearColorPicker();
 
     // If Restarting due to display change.
     if (mDoRestartDueToDisplayChange) {
@@ -477,17 +460,19 @@ void stopApplication() {
     }
 }
 
-/** *********************************************************************
+/** ************************************************
  ** Get our X11 Window, ask the user to select one.
  **/
 void getX11Window(Window *resultWin) {
     // Ask user ask to point to a window and click to select.
     if (Flags.XWinInfoHandling) {
-        printf(_("plasmasnow: getX11Window() Point to a window and click ...\n"));
+        printf(_("plasmasnow: getX11Window() Point "
+            "to a window and click ...\n"));
         fflush(stdout);
 
         // Wait for user to click mouse.
-        int rc = xdo_select_window_with_click(mGlobal.xdo, resultWin);
+        int rc = xdo_select_window_with_click(
+            mGlobal.xdo, resultWin);
         if (rc != XDO_ERROR) {
             // Var "resultWin" has result.
             return;
@@ -503,7 +488,7 @@ void getX11Window(Window *resultWin) {
     return;
 }
 
-/** *********************************************************************
+/** ************************************************
  ** This method gets the desktop session type from env vars.
  **/
 char* getDesktopSession() {
@@ -522,11 +507,12 @@ char* getDesktopSession() {
     return desktopsession;
 }
 
-/** *********************************************************************
+/** ************************************************
  ** This method starts / creates the main storm window.
  **/
-int StartStormWindow() {
-    mGlobal.Rootwindow = DefaultRootWindow(mGlobal.display);
+int startStormWindow() {
+    mGlobal.Rootwindow = DefaultRootWindow(
+        mGlobal.display);
 
     mGlobal.hasDestopWindow = false;
     mGlobal.hasTransparentWindow = false;
@@ -671,7 +657,7 @@ int StartStormWindow() {
     return TRUE;
 }
 
-/** *********************************************************************
+/** ************************************************
  ** Cairo specific.
  **/
 void handleX11CairoDisplayChange() {
@@ -741,7 +727,7 @@ void handleX11CairoDisplayChange() {
     }
 }
 
-/** *********************************************************************
+/** ************************************************
  ** Set the Transparent Window Sticky Flag.
  **/
 void setTransparentWindowStickyState(int isSticky) {
@@ -757,7 +743,7 @@ void setTransparentWindowStickyState(int isSticky) {
     }
 }
 
-/** *********************************************************************
+/** ************************************************
  ** TODO:
  **/
 void respondToWorkspaceSettingsChange() {
@@ -774,7 +760,7 @@ void respondToWorkspaceSettingsChange() {
     ui_set_sticky(Flags.AllWorkspaces);
 }
 
-/** *********************************************************************
+/** ************************************************
  * here we are handling the buttons in ui
  * Ok, this is a long list, and could be implemented more efficient.
  * But, doAllUISettingsUpdates is called not too frequently, so....
@@ -826,7 +812,7 @@ int doAllUISettingsUpdates() {
     return TRUE;
 }
 
-/** *********************************************************************
+/** ************************************************
  * If we are snowing in the desktop, we check if the size has changed,
  * this can happen after changing of the displays settings
  * If the size has been changed, we refresh the app.
@@ -860,11 +846,12 @@ int onTimerEventDisplayChanged() {
     return -1;
 }
 
-/** *********************************************************************
+/** ************************************************
  ** This method handles xlib11 event notifications.
  ** Undergoing heavy renovation 2024 Rocks !
  **
- ** https://www.x.org/releases/current/doc/libX11/libX11/libX11.html#Events
+ ** https://www.x.org/releases/current/doc/
+ **     libX11/libX11/libX11.html#Events
  **/
 int handlePendingX11Events() {
     if (Flags.shutdownRequested) {
@@ -979,7 +966,7 @@ int handlePendingX11Events() {
     return TRUE;
 }
 
-/** *********************************************************************
+/** ************************************************
  ** This method ...
  **/
 void RestartDisplay() {
@@ -1005,7 +992,7 @@ void RestartDisplay() {
     }
 }
 
-/** *********************************************************************
+/** ************************************************
  ** This method logs signal event shutdowns as fyi.
  **/
 void appShutdownHook(int signalNumber) {
@@ -1017,7 +1004,7 @@ void appShutdownHook(int signalNumber) {
     Flags.shutdownRequested = true;
 }
 
-/** *********************************************************************
+/** ************************************************
  ** This method traps and handles X11 errors.
  **
  ** Primarily, we close the app if the system doesn't seem sane.
@@ -1047,7 +1034,7 @@ int handleX11ErrorEvent(Display* dpy, XErrorEvent* event) {
     return 0;
 }
 
-/** *********************************************************************
+/** ************************************************
  ** This method id the draw callback.
  **/
 gboolean handleTransparentWindowDrawEvents(
@@ -1058,7 +1045,7 @@ gboolean handleTransparentWindowDrawEvents(
     return FALSE;
 }
 
-/** *********************************************************************
+/** ************************************************
  ** This method ...
  **/
 int drawCairoWindow(void* cc) {
@@ -1066,7 +1053,7 @@ int drawCairoWindow(void* cc) {
     return TRUE;
 }
 
-/** *********************************************************************
+/** ************************************************
  ** Due to instabilities at the start of app, stars is
  ** repeated a few times. This is not harmful. We do not draw
  ** anything the first few times this function is called.
@@ -1144,7 +1131,7 @@ void drawCairoWindowInternal(cairo_t* cc) {
     XFlush(mGlobal.display);
 }
 
-/** *********************************************************************
+/** ************************************************
  ** This method ...
  **/
 void SetWindowScale() {
@@ -1160,7 +1147,7 @@ void SetWindowScale() {
     }
 }
 
-/** *********************************************************************
+/** ************************************************
  ** This method ...
  **/
 int handleDisplayConfigurationChange() {
@@ -1190,7 +1177,7 @@ int handleDisplayConfigurationChange() {
     return TRUE;
 }
 
-/** *********************************************************************
+/** ************************************************
  ** This method ...
  **/
 int drawTransparentWindow(gpointer widget) {
@@ -1203,7 +1190,7 @@ int drawTransparentWindow(gpointer widget) {
     return TRUE;
 }
 
-/** *********************************************************************
+/** ************************************************
  ** This method handles callbacks for cpufactor
  **/
 void HandleCpuFactor() {
@@ -1219,7 +1206,7 @@ void HandleCpuFactor() {
     addWindowDrawMethodToMainloop();
 }
 
-/** *********************************************************************
+/** ************************************************
  ** This method...
  **/
 void addWindowDrawMethodToMainloop() {
@@ -1240,7 +1227,7 @@ void addWindowDrawMethodToMainloop() {
         time_draw_all, drawCairoWindow, mCairoWindow);
 }
 
-/** *********************************************************************
+/** ************************************************
  ** This method ...
  **/
 void rectangle_draw(cairo_t *cr) {
@@ -1258,7 +1245,7 @@ void rectangle_draw(cairo_t *cr) {
     cairo_restore(cr);
 }
 
-/** *********************************************************************
+/** ************************************************
  ** This method ...
  **/
 int do_stopafter() {
@@ -1268,7 +1255,7 @@ int do_stopafter() {
     return FALSE;
 }
 
-/** *********************************************************************
+/** ************************************************
  ** This method ...
  **/
 void mybindtestdomain() {
@@ -1365,7 +1352,7 @@ void mybindtestdomain() {
 
 }
 
-/** *********************************************************************
+/** ************************************************
  ** This method checks if the desktop is currently visible.
  **/
 bool isDesktopVisible() {
@@ -1391,7 +1378,7 @@ bool isDesktopVisible() {
     return result;
 }
 
-/** *********************************************************************
+/** ************************************************
  ** This method returns the number of the current workspace,
  ** where the OS allows multiple / virtual workspaces.
  **/
@@ -1452,7 +1439,7 @@ long int getCurrentWorkspaceNumber() {
     return resultCode;
 }
 
-/** *********************************************************************
+/** ************************************************
  ** This method determines is we're a Gnome session, vs KDE.
  **/
 bool isThisAGnomeSession() {
