@@ -79,12 +79,12 @@ void initFallenSnowModule() {
     clearAllFallenSnowItems();
 
     #define time_change_bottom 300.0
-    addMethodToMainloop(PRIORITY_DEFAULT,
-        time_change_bottom, updateFallenSnowMaxColumnHeightThread);
+    addMethodToMainloop(PRIORITY_DEFAULT, time_change_bottom,
+        (GSourceFunc) updateFallenSnowMaxColumnHeightThread);
 
     #define time_adjust_bottom (time_change_bottom / 20)
-    addMethodToMainloop(PRIORITY_DEFAULT,
-        time_adjust_bottom, updateFallenSnowColumnHeightThread);
+    addMethodToMainloop(PRIORITY_DEFAULT, time_adjust_bottom,
+        (GSourceFunc) updateFallenSnowColumnHeightThread);
 
     // Start main background thread looper & exit.
     pthread_create(&mFallenSnowBackgroundThread, NULL,
@@ -164,8 +164,8 @@ void setColumnMaxHeightListForFallen(FallenSnow* fallen) {
  ** This method changes a fallen snow items ColumnHeightList height
  ** down under max.
  **/
-int updateFallenSnowColumnHeightThread(__attribute__((unused))
-    void* dummy) {
+int updateFallenSnowColumnHeightThread(
+    __attribute__((unused)) void* args) {
     lockFallenSnowBaseSemaphore();
 
     FallenSnow* fsnow = mGlobal.FsnowFirst;
@@ -201,7 +201,7 @@ int updateFallenSnowColumnHeightThread(__attribute__((unused))
 /** *********************************************************************
  ** This method is FallenSnow background thread looper.
  **/
-void* startFallenSnowBackgroundThread() {
+void* startFallenSnowBackgroundThread(void* args) {
     while (true) {
         if (Flags.shutdownRequested) {
             pthread_exit(NULL);

@@ -136,7 +136,7 @@ void initSceneryModule() {
     initSceneryPixmaps();
 
     addMethodToMainloop(PRIORITY_DEFAULT, time_initbaum,
-        updateSceneryFrame);
+        (GSourceFunc) updateSceneryFrame);
 }
 
 /***********************************************************

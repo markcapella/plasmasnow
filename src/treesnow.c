@@ -54,7 +54,7 @@ void treesnow_init() {
     mGlobal.gSnowOnTreesRegion = cairo_region_create();
     addMethodToMainloop(PRIORITY_DEFAULT,
         TIME_BETWEEN_SCENERY_BLOWOFF_FRAME_UPDATES,
-        execTreesnowBackgroundThread);
+        (GSourceFunc) execTreesnowBackgroundThread);
 }
 
 /** *********************************************************************

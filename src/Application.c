@@ -403,20 +403,20 @@ int startApplication(int argc, char *argv[]) {
     startLoadMeasureBackgroundThread();
 
     addMethodToMainloop(PRIORITY_DEFAULT, time_displaychanged,
-        onTimerEventDisplayChanged);
+        (GSourceFunc) onTimerEventDisplayChanged);
 
     addMethodToMainloop(PRIORITY_DEFAULT, time_display_dimensions,
-        handleDisplayConfigurationChange);
+        (GSourceFunc) handleDisplayConfigurationChange);
 
     addMethodToMainloop(PRIORITY_DEFAULT, CONFIGURE_WINDOW_EVENT_TIME,
-        handlePendingX11Events);
+        (GSourceFunc) handlePendingX11Events);
 
     addMethodToMainloop(PRIORITY_HIGH, TIME_BETWEEEN_UI_SETTINGS_UPDATES,
-        doAllUISettingsUpdates);
+        (GSourceFunc) doAllUISettingsUpdates);
 
     if (Flags.StopAfter > 0) {
         addMethodToMainloop(PRIORITY_DEFAULT, Flags.StopAfter,
-            do_stopafter);
+            (GSourceFunc) do_stopafter);
     }
 
     HandleCpuFactor();
@@ -1201,7 +1201,7 @@ void HandleCpuFactor() {
     }
 
     addMethodToMainloop(PRIORITY_HIGH, time_init_snow,
-        stallCreatingStormItems);
+        (GSourceFunc) stallCreatingStormItems);
 
     addWindowDrawMethodToMainloop();
 }

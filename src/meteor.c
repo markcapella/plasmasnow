@@ -65,8 +65,10 @@ void initMeteorModule() {
     gdk_rgba_parse(&colors[3], "#f0d0a0");
     gdk_rgba_parse(&colors[4], "#f0d040");
 
-    addMethodToMainloop(PRIORITY_DEFAULT, time_emeteor, eraseMeteorFrame);
-    addMethodToMainloop(PRIORITY_DEFAULT, 0.1, updateMeteorFrame);
+    addMethodToMainloop(PRIORITY_DEFAULT, time_emeteor,
+        (GSourceFunc) eraseMeteorFrame);
+    addMethodToMainloop(PRIORITY_DEFAULT, 0.1,
+        (GSourceFunc) updateMeteorFrame);
 }
 
 /** *********************************************************************
@@ -138,9 +140,11 @@ int updateMeteorFrame() {
         Flags.MeteorFrequency = DefaultFlags.MeteorFrequency;
     }
 
-    float t = (0.5 + drand48()) * (Flags.MeteorFrequency *
-        (0.1 - time_meteor) / 100 + time_meteor);
-    addMethodToMainloop(PRIORITY_DEFAULT, t, updateMeteorFrame);
+    const float T = (0.5 + drand48()) *
+        (Flags.MeteorFrequency * (0.1 - time_meteor) /
+            100 + time_meteor);
+    addMethodToMainloop(PRIORITY_DEFAULT, T,
+        (GSourceFunc) updateMeteorFrame);
 
     return FALSE;
 }

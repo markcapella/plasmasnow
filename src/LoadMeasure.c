@@ -55,7 +55,7 @@ double mLoadMeasurePrevThreadStart = 0;
 void startLoadMeasureBackgroundThread() {
     addMethodToMainloop(PRIORITY_DEFAULT,
         TIME_BETWEEN_LOADMEASURE_UPDATES,
-        updateLoadMeasureThread);
+        (GSourceFunc) updateLoadMeasureThread);
 }
 
 /** *********************************************************************

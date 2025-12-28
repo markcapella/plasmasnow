@@ -78,12 +78,12 @@ void addWindowsModuleToMainloop() {
         getCurrentWorkspaceData();
 
         addMethodToMainloop(PRIORITY_DEFAULT, time_wupdate,
-            updateWindowsList);
+            (GSourceFunc) updateWindowsList);
     }
 
     if (!mGlobal.isDoubleBuffered) {
         addMethodToMainloop(PRIORITY_DEFAULT, time_sendevent,
-            do_sendevent);
+            (GSourceFunc) do_sendevent);
     }
 }
 

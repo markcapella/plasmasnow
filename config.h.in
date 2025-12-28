@@ -4,13 +4,13 @@
    language is requested. */
 #undef ENABLE_NLS
 
-/* Define to 1 if you have the `alarm' function. */
+/* Define to 1 if you have the 'alarm' function. */
 #undef HAVE_ALARM
 
 /* Define to 1 if you have the <assert.h> header file. */
 #undef HAVE_ASSERT_H
 
-/* Define to 1 if you have the `backtrace' function. */
+/* Define to 1 if you have the 'backtrace' function. */
 #undef HAVE_BACKTRACE
 
 /* Define to 1 if you have the Mac OS X function
@@ -34,19 +34,19 @@
 /* Define if the GNU gettext() function is already present or preinstalled. */
 #undef HAVE_GETTEXT
 
-/* Define to 1 if you have the `gettimeofday' function. */
+/* Define to 1 if you have the 'gettimeofday' function. */
 #undef HAVE_GETTIMEOFDAY
 
-/* Define to 1 if you have the `gsl_interp_akima' function. */
+/* Define to 1 if you have the 'gsl_interp_akima' function. */
 #undef HAVE_GSL_INTERP_AKIMA
 
-/* Define to 1 if you have the `gsl_interp_cspline' function. */
+/* Define to 1 if you have the 'gsl_interp_cspline' function. */
 #undef HAVE_GSL_INTERP_CSPLINE
 
-/* Define to 1 if you have the `gsl_interp_linear' function. */
+/* Define to 1 if you have the 'gsl_interp_linear' function. */
 #undef HAVE_GSL_INTERP_LINEAR
 
-/* Define to 1 if you have the `gsl_interp_steffen' function. */
+/* Define to 1 if you have the 'gsl_interp_steffen' function. */
 #undef HAVE_GSL_INTERP_STEFFEN
 
 /* Define if you have the iconv() function and it works. */
@@ -73,7 +73,7 @@
 /* Define to 1 if you have the <signal.h> header file. */
 #undef HAVE_SIGNAL_H
 
-/* Define to 1 if you have the `sqrt' function. */
+/* Define to 1 if you have the 'sqrt' function. */
 #undef HAVE_SQRT
 
 /* Define to 1 if you have the <stdarg.h> header file. */
@@ -88,10 +88,10 @@
 /* Define to 1 if you have the <stdlib.h> header file. */
 #undef HAVE_STDLIB_H
 
-/* Define to 1 if you have the `strchr' function. */
+/* Define to 1 if you have the 'strchr' function. */
 #undef HAVE_STRCHR
 
-/* Define to 1 if you have the `strdup' function. */
+/* Define to 1 if you have the 'strdup' function. */
 #undef HAVE_STRDUP
 
 /* Define to 1 if you have the <strings.h> header file. */
@@ -100,10 +100,10 @@
 /* Define to 1 if you have the <string.h> header file. */
 #undef HAVE_STRING_H
 
-/* Define to 1 if you have the `strstr' function. */
+/* Define to 1 if you have the 'strstr' function. */
 #undef HAVE_STRSTR
 
-/* Define to 1 if you have the `strtol' function. */
+/* Define to 1 if you have the 'strtol' function. */
 #undef HAVE_STRTOL
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
@@ -121,13 +121,13 @@
 /* Define to 1 if you have the <unordered_set> header file. */
 #undef HAVE_UNORDERED_SET
 
-/* Define to 1 if you have the `XdbeAllocateBackBufferName' function. */
+/* Define to 1 if you have the 'XdbeAllocateBackBufferName' function. */
 #undef HAVE_XDBEALLOCATEBACKBUFFERNAME
 
-/* Define to 1 if you have the `XineramaQueryScreens' function. */
+/* Define to 1 if you have the 'XineramaQueryScreens' function. */
 #undef HAVE_XINERAMAQUERYSCREENS
 
-/* Define to 1 if the system has the type `_Bool'. */
+/* Define to 1 if the system has the type '_Bool'. */
 #undef HAVE__BOOL
 
 /* Name of package */
@@ -155,7 +155,7 @@
    your system. */
 #undef PTHREAD_CREATE_JOINABLE
 
-/* Define to 1 if all of the C90 standard headers exist (not just the ones
+/* Define to 1 if all of the C89 standard headers exist (not just the ones
    required in a freestanding environment). This macro is provided for
    backward compatibility; new code need not use it. */
 #undef STDC_HEADERS
@@ -163,5 +163,5 @@
 /* Version number of package */
 #undef VERSION
 
-/* Define to `unsigned int' if <sys/types.h> does not define. */
+/* Define as 'unsigned int' if <stddef.h> doesn't define. */
 #undef size_t

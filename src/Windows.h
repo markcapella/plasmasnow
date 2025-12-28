@@ -88,7 +88,7 @@ extern "C" {
     void onWindowClientMessage(XEvent*);
 
     // Windows life-cycle helper methods.
-    bool isMouseClickedAndHeldInWindow();
+    bool isMouseClickedAndHeldInWindow(Window);
 
     // Window dragging methods.
     void clearAllDragFields();

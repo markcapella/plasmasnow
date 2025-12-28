@@ -248,8 +248,9 @@ void initLightsModule() {
 
     // Start the update thread.
     const float LIGHTS_THREAD_DELAY_IN_SEC = 0.5;
-    mLightsThreadId = addMethodToMainloop(PRIORITY_DEFAULT,
-        LIGHTS_THREAD_DELAY_IN_SEC, updateLightsFrame);
+    mLightsThreadId = addMethodToMainloop(
+        PRIORITY_DEFAULT, LIGHTS_THREAD_DELAY_IN_SEC,
+        (GSourceFunc) updateLightsFrame);
 }
 
 /** ***********************************************************

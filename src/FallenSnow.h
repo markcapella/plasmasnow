@@ -64,10 +64,10 @@ extern "C" {
     void setColumnMaxHeightListForFallen(FallenSnow*);
 
     // FallenSnow columnHeight Thread.
-    int updateFallenSnowColumnHeightThread();
+    int updateFallenSnowColumnHeightThread(void* args);
 
     // Fallensnow main Thread.
-    void* startFallenSnowBackgroundThread();
+    void* startFallenSnowBackgroundThread(void* args);
     int execFallenSnowBackgroundThread();
     int canSnowCollectOnFallen(FallenSnow*);
     bool isFallenSnowVisible(FallenSnow*);

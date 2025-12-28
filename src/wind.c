@@ -41,8 +41,10 @@ static int do_newwind();
 void wind_init() {
     SetWhirl();
     SetWindTimer();
-    addMethodToMainloop(PRIORITY_DEFAULT, time_newwind, do_newwind);
-    addMethodToMainloop(PRIORITY_DEFAULT, time_wind, do_wind);
+    addMethodToMainloop(PRIORITY_DEFAULT, time_newwind,
+        (GSourceFunc) do_newwind);
+    addMethodToMainloop(PRIORITY_DEFAULT, time_wind,
+        (GSourceFunc) do_wind);
 }
 
 void wind_ui() {

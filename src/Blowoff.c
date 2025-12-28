@@ -51,7 +51,7 @@ const bool SHOW_DRIP_DEFAULT = true;
 void initBlowoffModule() {
     addMethodToMainloop(PRIORITY_DEFAULT,
         TIME_BETWEEN_SCENERY_BLOWOFF_FRAME_UPDATES,
-        updateBlowoffFrame);
+        (GSourceFunc) updateBlowoffFrame);
 }
 
 /** *********************************************************************

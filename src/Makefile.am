@@ -24,7 +24,7 @@ TOCC     = $(top_srcdir)/src/tocc.sh
 TOASCII  = $(top_srcdir)/src/toascii.sh
 
 # /usr/local
-gamesdir = $(exec_prefix)/games
+gamesdir = $(exec_prefix)/bin
 games_PROGRAMS = plasmasnow
 
 plasmasnow_CPPFLAGS = $(GTK_CFLAGS) -g3 \

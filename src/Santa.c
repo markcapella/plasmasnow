@@ -251,7 +251,8 @@ void Santa_init() {
     }
 
     ResetSanta();
-    addMethodToMainloop(PRIORITY_HIGH, time_usanta, do_usanta);
+    addMethodToMainloop(PRIORITY_HIGH, time_usanta,
+        (GSourceFunc) do_usanta);
 }
 
 /** *********************************************************************

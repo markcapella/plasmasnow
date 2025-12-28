@@ -87,7 +87,7 @@ static float attr_maxz(float y);
 static int randomlyChangeAttractionPoint();
 static int do_main_window();
 static int do_update_pos_birds();
-static void *updateBirdSpeed();
+static void* updateBirdSpeed(void* arg);
 static int do_wings();
 
 static void init_bird_pixbufs(const char *color);
@@ -197,7 +197,7 @@ void birds_ui() {
          init_birds(start);
     );
 
-    UIDO(FollowSanta, if (!Flags.FollowSanta) randomlyChangeAttractionPoint(NULL););
+    UIDO(FollowSanta, if (!Flags.FollowSanta) randomlyChangeAttractionPoint(););
 }
 
 void birds_sem_init() { sem_init(&sem, 0, 1); }
@@ -305,7 +305,7 @@ void createAttractionPointSurface() {
 
 void birds_set_scale() { createAttractionPointSurface(); }
 
-void *updateBirdSpeed() {
+void* updateBirdSpeed(void* arg) {
     while (1) {
         if (!(Flags.shutdownRequested || (!Flags.ShowBirds || blobals.freeze || !isWorkspaceActive()))) {
 
@@ -851,7 +851,7 @@ int do_main_window() {
     if (blobals.maxix != (int)mGlobal.SnowWinWidth ||
         blobals.maxiz != (int)mGlobal.SnowWinHeight) {
         main_window();
-        randomlyChangeAttractionPoint(NULL);
+        randomlyChangeAttractionPoint();
     }
 
     return TRUE;
@@ -996,22 +996,23 @@ void birds_init() {
         blobals.freeze = 0;
         blobals.maxx = 1000; // meters
         blobals.bird_scale = 64;
-
         blobals.prefdweight = 1;
 
         clear_flags();
+
         addMethodToMainloop(PRIORITY_HIGH, time_update_pos_birds,
-            do_update_pos_birds);
+            (GSourceFunc) do_update_pos_birds);
         addMethodToMainloop(PRIORITY_HIGH, time_wings,
-            do_wings);
+            (GSourceFunc) do_wings);
         addMethodToMainloop(PRIORITY_DEFAULT, time_change_attr,
-            randomlyChangeAttractionPoint);
+            (GSourceFunc) randomlyChangeAttractionPoint);
         addMethodToMainloop(PRIORITY_DEFAULT, time_main_window,
-            do_main_window);
+            (GSourceFunc) do_main_window);
 
         static pthread_t thread;
 
-        pthread_create(&thread, NULL, updateBirdSpeed, NULL);
+        pthread_create(&thread, NULL,
+            updateBirdSpeed, NULL);
         main_window();
     }
 
@@ -1035,7 +1036,7 @@ void birds_init() {
     birds_set_speed();
 
     init_birds(0);
-    randomlyChangeAttractionPoint(NULL);
+    randomlyChangeAttractionPoint();
 
     createAttractionPointSurface();
 }

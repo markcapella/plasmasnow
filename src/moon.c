@@ -70,7 +70,8 @@ void moon_init(void) {
 
     init_moon_surface();
 
-    addMethodToMainloop(PRIORITY_DEFAULT, time_umoon, do_umoon);
+    addMethodToMainloop(PRIORITY_DEFAULT, time_umoon,
+        (GSourceFunc) do_umoon);
 
     mGlobal.moonX = (mGlobal.SnowWinWidth - 2 * mGlobal.moonR) * drand48();
     mGlobal.moonY = mGlobal.moonR + drand48() * mGlobal.moonR;

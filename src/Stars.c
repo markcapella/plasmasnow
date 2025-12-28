@@ -69,7 +69,7 @@ void initStarsModule() {
     initStarsModuleSurfaces();
 
     addMethodToMainloop(PRIORITY_DEFAULT, time_ustar,
-        updateStarsFrame);
+        (GSourceFunc) updateStarsFrame);
 }
 
 /** *********************************************************************
