@@ -189,7 +189,7 @@ typedef struct _StarCoordinate {
  */
 extern struct _mGlobal {
         bool noSplashScreen;
-        char *Language;
+        char* Language;
 
         int IsCompiz;
         int IsWayland;
@@ -215,12 +215,12 @@ extern struct _mGlobal {
         double cpufactor;
 
         // Cairo defs.
-        cairo_region_t *TreeRegion;
-        cairo_region_t *gSnowOnTreesRegion;
+        cairo_region_t* TreeRegion;
+        cairo_region_t* gSnowOnTreesRegion;
 
         // Display defs.
         Display* display;
-        xdo_t *xdo;
+        xdo_t* xdo;
         int Screen;
 
         // Root window defs.

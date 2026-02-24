@@ -32,3 +32,7 @@ double getWallClockReal() {
 double getWallClockMono() {
     return (double) g_get_monotonic_time() * 1.0e-6;
 }
+
+double getWallClockInMillseconds() {
+    return (double) g_get_monotonic_time() * 1.0e-3;
+}

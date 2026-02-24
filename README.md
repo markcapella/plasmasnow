@@ -30,7 +30,13 @@ a QT screen color picker that works on Plasma, dual snow colors,
 
 ### Install Pre-reqs.
 
+For Debian systems:
+
     sudo apt install git build-essential libglib2.0-dev libgtk-3-dev gettext automake libx11-dev libxft-dev libxpm-dev libxt-dev libxext-dev x11proto-dev libxinerama-dev libxtst-dev libxkbcommon-dev libgsl-dev appmenu-gtk3-module
+
+For Fedora systems:
+
+    sudo dnf install git gcc gcc-c++ make glib2-devel gtk3-devel gdk-pixbuf2-modules-extra gettext automake libX11-devel libXft-devel libXpm-devel libXt-devel libXext-devel xorg-x11-proto-devel libXinerama-devel libXtst-devel libxkbcommon-devel gsl-devel unity-gtk3-module
 
 ### Clone plasmasnow working source folder.
 
@@ -42,6 +48,7 @@ a QT screen color picker that works on Plasma, dual snow colors,
 &nbsp;
 
 ## Basic development.
+* aclocal && autoconf && automake
 * ./configure
 * make
 

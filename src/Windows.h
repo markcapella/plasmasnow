@@ -72,7 +72,6 @@ extern "C" {
     void setActiveAppYPos(int);
 
     // Windows life-cycle methods.
-    void onCursorChange(XEvent*);
     void onAppWindowChange(Window);
 
     void onWindowCreated(XEvent*);

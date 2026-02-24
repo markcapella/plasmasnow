@@ -5372,7 +5372,7 @@ Deactivated: use default colors.</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
-                    <property name="tooltip-text" translatable="yes">To draw an outline around the snow window.</property>
+                    <property name="tooltip-text" translatable="yes">To display a Plasmasnow splash screen during startup.</property>
                     <property name="double-buffered">False</property>
                     <property name="halign">end</property>
                     <property name="valign">center</property>

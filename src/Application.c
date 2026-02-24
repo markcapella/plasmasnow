@@ -91,7 +91,7 @@
  **/
 
 // Change to 1 for better analysis.
-#define DO_SYNCH_DEBUG 0
+const bool ARE_WE_DEBUGGING = false;
 
 struct _mGlobal mGlobal;
 char **Argv;
@@ -124,7 +124,6 @@ int mPrevSnowWinHeight = 0;
 
 int mX11MaxErrorCount = 500;
 int mX11ErrorCount = 0;
-
 int mX11LastErrorCode = 0;
 
 
@@ -144,6 +143,7 @@ int startApplication(int argc, char *argv[]) {
     signal(SIGINT, appShutdownHook);
     signal(SIGTERM, appShutdownHook);
     signal(SIGHUP, appShutdownHook);
+    signal(SIGKILL, appShutdownHook);
 
     // Seed random.
     srand48((int) (fmod(getWallClockReal() *
@@ -152,9 +152,8 @@ int startApplication(int argc, char *argv[]) {
     // Cleaar space for app Global struct.
     memset(&mGlobal, 0, sizeof(mGlobal));
 
-    // Titlebar string, but not one.
     mGlobal.noSplashScreen = false;
-    mGlobal.mPlasmaWindowTitle = "";
+    mGlobal.mPlasmaWindowTitle = "plasmasnow";
 
     mGlobal.cpufactor = 1.0;
     mGlobal.WindowScale = 1.0;
@@ -162,7 +161,7 @@ int startApplication(int argc, char *argv[]) {
     mGlobal.MaxFlakeHeight = 0;
     mGlobal.MaxFlakeWidth = 0;
 
-    mGlobal.stormItemCount = 0; /* # active flakes */
+    mGlobal.stormItemCount = 0;
     mGlobal.FluffCount = 0;
 
     mGlobal.SnowWin = 0;
@@ -301,13 +300,17 @@ int startApplication(int argc, char *argv[]) {
 
     mGlobal.display = XOpenDisplay(Flags.DisplayName);
     if (mGlobal.display == NULL) {
-        printf("plasmasnow: X11 Does not seem to be "
-            "available - FATAL.\n");
-        displayMessageBox(100, 200, 360, 66, "plasmasnow",
-            "X11 Does not seem to be available - FATAL.");
-        return 1;
+        printf("%splasmasnow: X11 Does not seem to be "
+            "available (Are you Wayland?) FATAL.%s\n",
+            COLOR_RED, COLOR_NORMAL);
+        return true; // Error.
     }
+    mGlobal.Screen = DefaultScreen(mGlobal.display);
 
+    XSynchronize(mGlobal.display, ARE_WE_DEBUGGING);
+    XSetErrorHandler(handleX11ErrorEvent);
+
+    // Ensure XDO Access also.
     mGlobal.xdo = xdo_new_with_opened_display(
         mGlobal.display, NULL, 0);
     if (mGlobal.xdo == NULL) {
@@ -315,19 +318,12 @@ int startApplication(int argc, char *argv[]) {
         displayMessageBox(100, 200, 284, 66, "plasmasnow",
             "XDO reports no displays - FATAL.");
         XCloseDisplay(mGlobal.display);
-        return 1;
+        return true; // Error.
     }
-
-    mGlobal.xdo->debug = 0;
-
-    XSynchronize(mGlobal.display, DO_SYNCH_DEBUG);
-    XSetErrorHandler(handleX11ErrorEvent);
-
-    mGlobal.Screen = DefaultScreen(mGlobal.display);
+    mGlobal.xdo->debug = ARE_WE_DEBUGGING;
 
     // Default any colors a user may have set in .plasmasnowrc.
     int wasThereAnInvalidColor = false;
-
     if (!ValidColor(Flags.StormItemColor1)) {
         Flags.StormItemColor1 = strdup(DefaultFlags.StormItemColor1);
         wasThereAnInvalidColor = true;
@@ -344,7 +340,6 @@ int startApplication(int argc, char *argv[]) {
         Flags.TreeColor = strdup(DefaultFlags.TreeColor);
         wasThereAnInvalidColor = true;
     }
-
     if (wasThereAnInvalidColor) {
         WriteFlags();
     }
@@ -352,8 +347,8 @@ int startApplication(int argc, char *argv[]) {
     // Show aplash page & start Storming.
     showSplashPage();
     updateWindowsList();
-
     startStormWindow();
+    hideSplashPage();
 
     // Init all Global Flags.
     #define DOIT_I(x, d, v) OldFlags.x = Flags.x;
@@ -371,8 +366,6 @@ int startApplication(int argc, char *argv[]) {
     XSelectInput(mGlobal.display, EVENT_WINDOW,
         StructureNotifyMask | SubstructureNotifyMask |
         FocusChangeMask | ButtonPressMask);
-    XFixesSelectCursorInput(mGlobal.display, EVENT_WINDOW,
-        XFixesDisplayCursorNotifyMask);
 
     clearGlobalSnowWindow();
     if (!Flags.NoMenu && !mGlobal.XscreensaverMode) {
@@ -449,7 +442,6 @@ void stopApplication() {
 
     XClearWindow(mGlobal.display, mGlobal.SnowWin);
     XFlush(mGlobal.display);
-
     XCloseDisplay(mGlobal.display);
 
     // If Restarting due to display change.
@@ -631,13 +623,10 @@ int startStormWindow() {
         xdo_move_window(mGlobal.xdo, mGlobal.SnowWin,
             mWantMoveToX, mWantMoveToY);
     }
-
     if (!_xdo_is_window_visible(mGlobal.xdo, mGlobal.SnowWin)) {
         xdo_wait_for_window_map_state(mGlobal.xdo, mGlobal.SnowWin,
             IsViewable);
     }
-    hideSplashPage();
-
     initDisplayDimensions();
 
     // Report log.
@@ -916,11 +905,14 @@ int handlePendingX11Events() {
                 break;
 
             case ButtonPress:
+                if (!isColorPickerActive()) {
+                    break;
+                }
+
                 Window root_return, child_return;
                 int root_x_return, root_y_return;
                 int xPosResult, yPosResult;
                 unsigned int pointerState;
-
                 if (XQueryPointer(mGlobal.display,
                     DefaultRootWindow(mGlobal.display), &root_return,
                     &child_return, &root_x_return, &root_y_return,
@@ -942,23 +934,11 @@ int handlePendingX11Events() {
                         XFree(windowImage);
                     }
                 }
-
                 setColorPickerResultAvailable(true);
                 XUngrabPointer(mGlobal.display, CurrentTime);
                 break;
 
             default:
-                // Perform XFixes action.
-                int xfixes_event_base;
-                int xfixes_error_base;
-                if (XFixesQueryExtension(mGlobal.display,
-                    &xfixes_event_base, &xfixes_error_base)) {
-                    switch (event.type - xfixes_event_base) {
-                        case XFixesCursorNotify:
-                            onCursorChange(&event);
-                            break;
-                    }
-                }
                 break;
         }
     }
@@ -996,23 +976,26 @@ void RestartDisplay() {
  ** This method logs signal event shutdowns as fyi.
  **/
 void appShutdownHook(int signalNumber) {
-    printf("%splasmasnow: Shutdown by Signal Handler : %i.%s\n",
-        COLOR_YELLOW, signalNumber, COLOR_NORMAL);
-
-    stopApplication();
+    printf("%splasmasnow: Signal Handler Shutdown "
+        "by : [ %i ].%s\n", COLOR_YELLOW,
+        signalNumber, COLOR_NORMAL);
 
     Flags.shutdownRequested = true;
+    stopApplication();
 }
 
 /** ************************************************
  ** This method traps and handles X11 errors.
  **
- ** Primarily, we close the app if the system doesn't seem sane.
+ ** Primarily, we close the app if the system
+ ** doesn't seem sane, & silence x11 errors that
+ ** are handled by the app.
  **/
 int handleX11ErrorEvent(Display* dpy, XErrorEvent* event) {
     // Save error & quit early if simply BadWindow.
     mX11LastErrorCode = event->error_code;
     if (mX11LastErrorCode == BadWindow ||
+        mX11LastErrorCode == BadAccess ||
         mX11LastErrorCode == BadMatch) {
         return 0;
     }
@@ -1447,10 +1430,8 @@ bool isThisAGnomeSession() {
     for (char* eachChar = desktop; *eachChar; ++eachChar) {
         *eachChar = tolower(*eachChar);
     }
-    if (strstr(desktop, "gnome") ||
-        strstr(desktop, "ubuntu")) {
-        return true;
-    }
+    return (strstr(desktop, "gnome") ||
+            strstr(desktop, "ubuntu"));
 }
 
 

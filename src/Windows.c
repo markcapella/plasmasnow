@@ -575,14 +575,6 @@ void setActiveAppYPos(int yPos) {
 }
 
 /** *********************************************************************
- ** This method handles XFixes XFixesCursorNotify Cursor change events.
- **/
-void onCursorChange(__attribute__((unused)) XEvent* event) {
-    // XFixesCursorNotifyEvent* cursorEvent =
-    //     (XFixesCursorNotifyEvent*) event;
-}
-
-/** *********************************************************************
  ** This method handles X11 Window focus (activation status) change.
  **/
 void onAppWindowChange(Window window) {

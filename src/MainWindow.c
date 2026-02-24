@@ -39,6 +39,7 @@
 #include <glib.h>
 #include <glib/gprintf.h>
 
+#include <gdk-pixbuf/gdk-pixbuf.h>
 #include <gtk/gtk.h>
 
 // Plasmasnow headers.
@@ -107,8 +108,8 @@ GtkContainer* birdsgrid;
 GtkContainer* moonbox;
 GtkImage* preview;
 
-int Nscreens;
-int HaveXinerama;
+bool mIsXineramaEnabled;
+int mXineramaScreenCount;
 
 #define nsbuffer 1024
 char sbuffer[nsbuffer];
@@ -205,7 +206,7 @@ void updateMainWindowUI() {
 }
 
 void handle_screen() {
-    if (HaveXinerama && Nscreens > 1) {
+    if (mIsXineramaEnabled && mXineramaScreenCount > 1) {
         mGlobal.ForceRestart = 1;
     }
 }
@@ -1155,6 +1156,13 @@ void createMainWindow() {
 
     gtk_window_set_title(GTK_WINDOW(mMainWindow),
         mGlobal.mPlasmaWindowTitle);
+
+    const char* PLASMASNOW_ICON =
+        "/usr/share/pixmaps/plasmasnow.png";
+    GError* error = NULL;
+    gtk_window_set_icon_from_file(GTK_WINDOW(mMainWindow),
+        PLASMASNOW_ICON, &error);
+
     if (getenv("plasmasnow_RESTART")) {
         gtk_window_set_position(GTK_WINDOW(mMainWindow),
             GTK_WIN_POS_CENTER_ALWAYS);
@@ -1189,26 +1197,27 @@ void createMainWindow() {
     g_signal_connect(GTK_FILE_CHOOSER(Button.BackgroundFile), "update-preview",
         G_CALLBACK(handleFileChooserPreview), preview);
 
-    XineramaScreenInfo* xininfo =
-        XineramaQueryScreens(mGlobal.display, &Nscreens);
-    HaveXinerama = (xininfo == NULL) ? 0 : 1;
-
     /**
      ** Monitors.
      **/
+    XineramaScreenInfo* xinInfo = XineramaQueryScreens(
+        mGlobal.display, &mXineramaScreenCount);
+    mIsXineramaEnabled = (xinInfo != NULL);
+    XFree(xinInfo);
+
     GtkComboBoxText* ScreenButton;
     ScreenButton =
         GTK_COMBO_BOX_TEXT(gtk_builder_get_object(builder, "id-Screen"));
 
-    if (Nscreens < 2) {
+    if (mXineramaScreenCount < 2) {
         gtk_widget_set_sensitive(GTK_WIDGET(ScreenButton), FALSE);
         Flags.Screen = -1;
     }
     if (Flags.Screen < -1) {
         Flags.Screen = -1;
     }
-    if (Flags.Screen >= Nscreens) {
-        Flags.Screen = Nscreens - 1;
+    if (Flags.Screen >= mXineramaScreenCount) {
+        Flags.Screen = mXineramaScreenCount - 1;
     }
 
     gtk_combo_box_text_remove_all(ScreenButton);
@@ -1216,15 +1225,13 @@ void createMainWindow() {
 
     char *s = NULL;
     int p = 0;
-    for (int i = 0; i < Nscreens; i++) {
+    for (int i = 0; i < mXineramaScreenCount; i++) {
         snprintf(sbuffer, nsbuffer, _("monitor %d"), i);
         s = (char *)realloc(s, p + 1 + strlen(sbuffer));
         strcpy(&s[p], sbuffer);
         gtk_combo_box_text_append_text(ScreenButton, &s[p]);
         p += 1 + strlen(sbuffer);
     }
-
-    XFree(xininfo);
 
     gtk_combo_box_set_active(GTK_COMBO_BOX(ScreenButton), Flags.Screen + 1);
     g_signal_connect(ScreenButton, "changed", G_CALLBACK(combo_screen), NULL);
@@ -1253,7 +1260,8 @@ void createMainWindow() {
      ** Languages.
      **/
     GtkComboBoxText *LangButton;
-    LangButton = GTK_COMBO_BOX_TEXT(gtk_builder_get_object(builder, "id-Lang"));
+    LangButton = GTK_COMBO_BOX_TEXT(
+        gtk_builder_get_object(builder, "id-Lang"));
 
     strcpy(sbuffer, _("Available languages are: "));
     strcat(sbuffer, LANGUAGES);

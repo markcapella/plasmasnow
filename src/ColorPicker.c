@@ -74,7 +74,7 @@ void startColorPicker(char* consumerTag,
     // Read XPM ColorPicker from file.
     mColorPickerAttributes.valuemask = XpmSize;
     XpmReadFileToImage(mGlobal.display,
-        "/usr/local/share/pixmaps/plasmasnowcolorpicker.xpm",
+        "/usr/share/pixmaps/plasmasnowcolorpicker.xpm",
         &mColorPickerImage, NULL, &mColorPickerAttributes);
 
     // Determine where to position ColorPicker.
@@ -139,33 +139,30 @@ void startColorPicker(char* consumerTag,
     XMapWindow(mGlobal.display, mColorPickerWindow);
     XMoveWindow(mGlobal.display, mColorPickerWindow,
         mColorPickerXPos, mColorPickerYPos);
-    XSelectInput(mGlobal.display, mColorPickerWindow,
-        ExposureMask);
 
     // Show SplashImage in the window. Consume X11 events.
     // Respond to Expose event for DRAW.
-    int exposedEventCount = 0;
-    const int EXPOSED_EVENT_COUNT_NEEDED =
-        isThisAGnomeSession() ? 1 : 3;
-    bool finalEventReceived = false;
+    XSelectInput(mGlobal.display, mColorPickerWindow,
+        ExposureMask);
 
-    while (!finalEventReceived) {
+    while (true) {
         XEvent event;
         XNextEvent(mGlobal.display, &event);
-        switch (event.type) {
-            case Expose:
-                if (++exposedEventCount >=
-                    EXPOSED_EVENT_COUNT_NEEDED) {
-                    XPutImage(mGlobal.display, mColorPickerWindow,
-                        XCreateGC(mGlobal.display, mColorPickerWindow,
-                        0, 0), mColorPickerWindowImage, 0, 0, 0, 0,
-                        mColorPickerAttributes.width,
-                        mColorPickerAttributes.height);
-                    finalEventReceived = true;
-                }
-                break;
+
+        if (event.type == Expose) {
+            const XExposeEvent* EVENT = (XExposeEvent*) &event;
+            if (XPending(mGlobal.display) == 0 &&
+                EVENT->width > 1 && EVENT->height > 1) {
+                XPutImage(mGlobal.display, mColorPickerWindow,
+                    XCreateGC(mGlobal.display, mColorPickerWindow, 0, 0),
+                    mColorPickerWindowImage, 0, 0, 0, 0,
+                    mColorPickerAttributes.width,
+                    mColorPickerAttributes.height);
+                break; // Finished
+            }
         }
     }
+
     XFlush(mGlobal.display);
 }
 

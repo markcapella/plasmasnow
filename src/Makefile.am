@@ -31,7 +31,7 @@ plasmasnow_CPPFLAGS = $(GTK_CFLAGS) -g3 \
 	$(X11_CFLAGS) $(GSL_CFLAGS) -DLOCALEDIR=\"$(LOCALEDIR)\" \
 	-DLANGUAGES='"$(LANGUAGES)"'
 plasmasnow_LDADD = libxdo.a $(GTK_LIBS) $(X11_LIBS) \
-	-lXfixes $(GSL_LIBS) $(LIBINTL) 
+	-lncurses $(GSL_LIBS) $(LIBINTL) 
 libxdo_a_CPPFLAGS = $(X11_CFLAGS)
 
 if USE_NLS
@@ -115,8 +115,8 @@ plasmasnow-docs.$(OBJEXT): changelog.inc
 
 plasmasnow-selfrep.$(OBJEXT): $(tarfile_inc)
 
-# usr/local/share
-appicondir=$(datadir)/pixmaps
+# usr/share
+appicondir=/usr/share/pixmaps
 appicon_DATA=Pixmaps/plasmasnow.png \
 	Pixmaps/plasmasnowsplash.xpm \
 	Pixmaps/plasmasnowcolorpicker.xpm

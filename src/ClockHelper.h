@@ -27,6 +27,7 @@ extern "C" {
 
     double getWallClockMono();
     double getWallClockReal();
+    double getWallClockInMillseconds();
 
 #ifdef __cplusplus
 }

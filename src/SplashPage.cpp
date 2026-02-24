@@ -21,6 +21,7 @@
 */
 #include <cstdio>
 #include <ctype.h>
+#include <iostream>
 #include <malloc.h>
 #include <unistd.h>
 
@@ -68,7 +69,7 @@ void showSplashPage() {
     // Read XPM SplashImage from file.
     mSplashAttributes.valuemask = XpmSize;
     XpmReadFileToImage(mGlobal.display,
-        "/usr/local/share/pixmaps/plasmasnowsplash.xpm",
+        "/usr/share/pixmaps/plasmasnowsplash.xpm",
         &mSplashImage, NULL, &mSplashAttributes);
 
     // Determine where to center Splash.
@@ -96,32 +97,28 @@ void showSplashPage() {
     XMoveWindow(mGlobal.display, mSplashWindow,
         CENTERED_X_POS, CENTERED_Y_POS);
 
-    // Gnome && KDE get different X11 event counts that
-    // determine when the SplashPage has been completely DRAWN.
-    const int EXPOSED_EVENTS_NEEDED =
-        isThisAGnomeSession() ? 1 : 3;
-
     // Show SplashImage in the window. Consume X11 events.
     // Respond to Expose event for DRAW.
     XSelectInput(mGlobal.display, mSplashWindow, ExposureMask);
-    int exposedEventCount = 0;
 
-    bool finalEventReceived = false;
-    while (!finalEventReceived) {
+    while (true) {
         XEvent event;
         XNextEvent(mGlobal.display, &event);
-        switch (event.type) {
-            case Expose:
-                if (++exposedEventCount >= EXPOSED_EVENTS_NEEDED) {
-                    finalEventReceived = true;
-                    XPutImage(mGlobal.display, mSplashWindow,
-                        XCreateGC(mGlobal.display, mSplashWindow, 0, 0),
-                        mSplashImage, 0, 0, 0, 0,
-                        mSplashAttributes.width,
-                        mSplashAttributes.height);
-                }
+
+        if (event.type == Expose) {
+            const XExposeEvent* EVENT = (XExposeEvent*) &event;
+            if (XPending(mGlobal.display) == 0 &&
+                EVENT->width > 1 && EVENT->height > 1) {
+                XPutImage(mGlobal.display, mSplashWindow,
+                    XCreateGC(mGlobal.display, mSplashWindow, 0, 0),
+                    mSplashImage, 0, 0, 0, 0,
+                    mSplashAttributes.width,
+                    mSplashAttributes.height);
+                break; // Finished
+            }
         }
     }
+
     XFlush(mGlobal.display);
 }
 
