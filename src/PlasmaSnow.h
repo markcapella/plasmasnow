@@ -57,8 +57,6 @@
 /***********************************************************
  * Timer consts.
  */
-#define time_aurora 1.0 // time between update of aurora
-
 // Time user is allowed to confirm app goes below all windows.
 #define TIME_BETWEEEN_UI_SETTINGS_UPDATES  0.25
 

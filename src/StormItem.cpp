@@ -71,6 +71,8 @@ StormItem* createStormItem(int itemType, int typeColor) {
         0 : randomIntegerUpTo(mGlobal.NewWind) / 2;
     stormItem->yVelocity = stormItem->initialYVelocity;
 
+    // Sensitivy 0 drips down window walls. Else,
+    // drops fall and blow in the wind.
     stormItem->windSensitivity = drand48() *
         MAX_WIND_SENSITIVITY;
 

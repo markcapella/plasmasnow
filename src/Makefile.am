@@ -50,11 +50,11 @@ noinst_LIBRARIES = libxdo.a
 libxdo_a_SOURCES = xdo.c xdo_search.c xdo.h xdo_util.h xdo_version.h
 
 plasmasnow_SOURCES = \
-		Application.c Aurora.c birds.c Blowoff.c clientwin.c \
+		Application.c birds.c Blowoff.c clientwin.c \
 		ClockHelper.c ColorPicker.c csvpos.c docs.c dsimple.c \
 		FallenSnow.c Flags.c hashtable.cpp kdtree.c \
 		Lights.cpp LoadMeasure.c MainWindow.c \
-		meteor.c MsgBox.cpp moon.c Prefs.cpp safe_malloc.c \
+		meteor.c moon.c Prefs.cpp safe_malloc.c \
 		Santa.c scenery.c selfrep.c SplashPage.cpp \
 		spline_interpol.c Stars.c Storm.cpp StormItem.cpp \
 		StormWindow.c treesnow.c ui.glade Utils.c wind.c \
@@ -100,11 +100,9 @@ StormItemShapeIncludes.h: Pixmaps
 
 install-data-local:
 	cp 'Pixmaps/plasmasnow.png' /usr/share/icons/hicolor/48x48/apps/
-	cp 'Pixmaps/plasmasnowbox.png' /usr/share/icons/hicolor/48x48/apps/
 
 uninstall-local:
 	rm -f /usr/share/icons/hicolor/48x48/apps/plasmasnow.png
-	rm -f /usr/share/icons/hicolor/48x48/apps/plasmasnowbox.png
 
 TESTS = test1.sh
 

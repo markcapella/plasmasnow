@@ -126,8 +126,8 @@ am_libxdo_a_OBJECTS = libxdo_a-xdo.$(OBJEXT) \
 	libxdo_a-xdo_search.$(OBJEXT)
 libxdo_a_OBJECTS = $(am_libxdo_a_OBJECTS)
 am_plasmasnow_OBJECTS = plasmasnow-Application.$(OBJEXT) \
-	plasmasnow-Aurora.$(OBJEXT) plasmasnow-birds.$(OBJEXT) \
-	plasmasnow-Blowoff.$(OBJEXT) plasmasnow-clientwin.$(OBJEXT) \
+	plasmasnow-birds.$(OBJEXT) plasmasnow-Blowoff.$(OBJEXT) \
+	plasmasnow-clientwin.$(OBJEXT) \
 	plasmasnow-ClockHelper.$(OBJEXT) \
 	plasmasnow-ColorPicker.$(OBJEXT) plasmasnow-csvpos.$(OBJEXT) \
 	plasmasnow-docs.$(OBJEXT) plasmasnow-dsimple.$(OBJEXT) \
@@ -135,10 +135,10 @@ am_plasmasnow_OBJECTS = plasmasnow-Application.$(OBJEXT) \
 	plasmasnow-hashtable.$(OBJEXT) plasmasnow-kdtree.$(OBJEXT) \
 	plasmasnow-Lights.$(OBJEXT) plasmasnow-LoadMeasure.$(OBJEXT) \
 	plasmasnow-MainWindow.$(OBJEXT) plasmasnow-meteor.$(OBJEXT) \
-	plasmasnow-MsgBox.$(OBJEXT) plasmasnow-moon.$(OBJEXT) \
-	plasmasnow-Prefs.$(OBJEXT) plasmasnow-safe_malloc.$(OBJEXT) \
-	plasmasnow-Santa.$(OBJEXT) plasmasnow-scenery.$(OBJEXT) \
-	plasmasnow-selfrep.$(OBJEXT) plasmasnow-SplashPage.$(OBJEXT) \
+	plasmasnow-moon.$(OBJEXT) plasmasnow-Prefs.$(OBJEXT) \
+	plasmasnow-safe_malloc.$(OBJEXT) plasmasnow-Santa.$(OBJEXT) \
+	plasmasnow-scenery.$(OBJEXT) plasmasnow-selfrep.$(OBJEXT) \
+	plasmasnow-SplashPage.$(OBJEXT) \
 	plasmasnow-spline_interpol.$(OBJEXT) \
 	plasmasnow-Stars.$(OBJEXT) plasmasnow-Storm.$(OBJEXT) \
 	plasmasnow-StormItem.$(OBJEXT) \
@@ -171,7 +171,6 @@ am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/libxdo_a-xdo.Po \
 	./$(DEPDIR)/libxdo_a-xdo_search.Po \
 	./$(DEPDIR)/plasmasnow-Application.Po \
-	./$(DEPDIR)/plasmasnow-Aurora.Po \
 	./$(DEPDIR)/plasmasnow-Blowoff.Po \
 	./$(DEPDIR)/plasmasnow-ClockHelper.Po \
 	./$(DEPDIR)/plasmasnow-ColorPicker.Po \
@@ -180,7 +179,6 @@ am__depfiles_remade = ./$(DEPDIR)/libxdo_a-xdo.Po \
 	./$(DEPDIR)/plasmasnow-Lights.Po \
 	./$(DEPDIR)/plasmasnow-LoadMeasure.Po \
 	./$(DEPDIR)/plasmasnow-MainWindow.Po \
-	./$(DEPDIR)/plasmasnow-MsgBox.Po \
 	./$(DEPDIR)/plasmasnow-Prefs.Po \
 	./$(DEPDIR)/plasmasnow-Santa.Po \
 	./$(DEPDIR)/plasmasnow-SplashPage.Po \
@@ -699,11 +697,11 @@ libxdo_a_CPPFLAGS = $(X11_CFLAGS)
 noinst_LIBRARIES = libxdo.a
 libxdo_a_SOURCES = xdo.c xdo_search.c xdo.h xdo_util.h xdo_version.h
 plasmasnow_SOURCES = \
-		Application.c Aurora.c birds.c Blowoff.c clientwin.c \
+		Application.c birds.c Blowoff.c clientwin.c \
 		ClockHelper.c ColorPicker.c csvpos.c docs.c dsimple.c \
 		FallenSnow.c Flags.c hashtable.cpp kdtree.c \
 		Lights.cpp LoadMeasure.c MainWindow.c \
-		meteor.c MsgBox.cpp moon.c Prefs.cpp safe_malloc.c \
+		meteor.c moon.c Prefs.cpp safe_malloc.c \
 		Santa.c scenery.c selfrep.c SplashPage.cpp \
 		spline_interpol.c Stars.c Storm.cpp StormItem.cpp \
 		StormWindow.c treesnow.c ui.glade Utils.c wind.c \
@@ -827,7 +825,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libxdo_a-xdo.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libxdo_a-xdo_search.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-Application.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-Aurora.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-Blowoff.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-ClockHelper.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-ColorPicker.Po@am__quote@ # am--include-marker
@@ -836,7 +833,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-Lights.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-LoadMeasure.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-MainWindow.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-MsgBox.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-Prefs.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-Santa.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmasnow-SplashPage.Po@am__quote@ # am--include-marker
@@ -926,20 +922,6 @@ plasmasnow-Application.obj: Application.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='Application.c' object='plasmasnow-Application.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o plasmasnow-Application.obj `if test -f 'Application.c'; then $(CYGPATH_W) 'Application.c'; else $(CYGPATH_W) '$(srcdir)/Application.c'; fi`
-
-plasmasnow-Aurora.o: Aurora.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT plasmasnow-Aurora.o -MD -MP -MF $(DEPDIR)/plasmasnow-Aurora.Tpo -c -o plasmasnow-Aurora.o `test -f 'Aurora.c' || echo '$(srcdir)/'`Aurora.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/plasmasnow-Aurora.Tpo $(DEPDIR)/plasmasnow-Aurora.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='Aurora.c' object='plasmasnow-Aurora.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o plasmasnow-Aurora.o `test -f 'Aurora.c' || echo '$(srcdir)/'`Aurora.c
-
-plasmasnow-Aurora.obj: Aurora.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT plasmasnow-Aurora.obj -MD -MP -MF $(DEPDIR)/plasmasnow-Aurora.Tpo -c -o plasmasnow-Aurora.obj `if test -f 'Aurora.c'; then $(CYGPATH_W) 'Aurora.c'; else $(CYGPATH_W) '$(srcdir)/Aurora.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/plasmasnow-Aurora.Tpo $(DEPDIR)/plasmasnow-Aurora.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='Aurora.c' object='plasmasnow-Aurora.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o plasmasnow-Aurora.obj `if test -f 'Aurora.c'; then $(CYGPATH_W) 'Aurora.c'; else $(CYGPATH_W) '$(srcdir)/Aurora.c'; fi`
 
 plasmasnow-birds.o: birds.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT plasmasnow-birds.o -MD -MP -MF $(DEPDIR)/plasmasnow-birds.Tpo -c -o plasmasnow-birds.o `test -f 'birds.c' || echo '$(srcdir)/'`birds.c
@@ -1388,20 +1370,6 @@ plasmasnow-Lights.obj: Lights.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Lights.cpp' object='plasmasnow-Lights.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o plasmasnow-Lights.obj `if test -f 'Lights.cpp'; then $(CYGPATH_W) 'Lights.cpp'; else $(CYGPATH_W) '$(srcdir)/Lights.cpp'; fi`
-
-plasmasnow-MsgBox.o: MsgBox.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT plasmasnow-MsgBox.o -MD -MP -MF $(DEPDIR)/plasmasnow-MsgBox.Tpo -c -o plasmasnow-MsgBox.o `test -f 'MsgBox.cpp' || echo '$(srcdir)/'`MsgBox.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/plasmasnow-MsgBox.Tpo $(DEPDIR)/plasmasnow-MsgBox.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='MsgBox.cpp' object='plasmasnow-MsgBox.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o plasmasnow-MsgBox.o `test -f 'MsgBox.cpp' || echo '$(srcdir)/'`MsgBox.cpp
-
-plasmasnow-MsgBox.obj: MsgBox.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT plasmasnow-MsgBox.obj -MD -MP -MF $(DEPDIR)/plasmasnow-MsgBox.Tpo -c -o plasmasnow-MsgBox.obj `if test -f 'MsgBox.cpp'; then $(CYGPATH_W) 'MsgBox.cpp'; else $(CYGPATH_W) '$(srcdir)/MsgBox.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/plasmasnow-MsgBox.Tpo $(DEPDIR)/plasmasnow-MsgBox.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='MsgBox.cpp' object='plasmasnow-MsgBox.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o plasmasnow-MsgBox.obj `if test -f 'MsgBox.cpp'; then $(CYGPATH_W) 'MsgBox.cpp'; else $(CYGPATH_W) '$(srcdir)/MsgBox.cpp'; fi`
 
 plasmasnow-Prefs.o: Prefs.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmasnow_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT plasmasnow-Prefs.o -MD -MP -MF $(DEPDIR)/plasmasnow-Prefs.Tpo -c -o plasmasnow-Prefs.o `test -f 'Prefs.cpp' || echo '$(srcdir)/'`Prefs.cpp
@@ -1880,7 +1848,6 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/libxdo_a-xdo.Po
 	-rm -f ./$(DEPDIR)/libxdo_a-xdo_search.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-Application.Po
-	-rm -f ./$(DEPDIR)/plasmasnow-Aurora.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-Blowoff.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-ClockHelper.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-ColorPicker.Po
@@ -1889,7 +1856,6 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/plasmasnow-Lights.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-LoadMeasure.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-MainWindow.Po
-	-rm -f ./$(DEPDIR)/plasmasnow-MsgBox.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-Prefs.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-Santa.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-SplashPage.Po
@@ -1966,7 +1932,6 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/libxdo_a-xdo.Po
 	-rm -f ./$(DEPDIR)/libxdo_a-xdo_search.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-Application.Po
-	-rm -f ./$(DEPDIR)/plasmasnow-Aurora.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-Blowoff.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-ClockHelper.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-ColorPicker.Po
@@ -1975,7 +1940,6 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/plasmasnow-Lights.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-LoadMeasure.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-MainWindow.Po
-	-rm -f ./$(DEPDIR)/plasmasnow-MsgBox.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-Prefs.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-Santa.Po
 	-rm -f ./$(DEPDIR)/plasmasnow-SplashPage.Po
@@ -2068,11 +2032,9 @@ StormItemShapeIncludes.h: Pixmaps
 
 install-data-local:
 	cp 'Pixmaps/plasmasnow.png' /usr/share/icons/hicolor/48x48/apps/
-	cp 'Pixmaps/plasmasnowbox.png' /usr/share/icons/hicolor/48x48/apps/
 
 uninstall-local:
 	rm -f /usr/share/icons/hicolor/48x48/apps/plasmasnow.png
-	rm -f /usr/share/icons/hicolor/48x48/apps/plasmasnowbox.png
 
 changelog.inc: $(top_srcdir)/ChangeLog $(TOCC)
 	$(TOCC) < $(top_srcdir)/ChangeLog > $@

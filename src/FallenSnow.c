@@ -732,7 +732,9 @@ void dripRainFromFallen(FallenSnow* fsnow) {
     stormItem->yRealPosition = fsnow->y;
 
     stormItem->xVelocity = 0;
-    stormItem->windSensitivity = 0;
+    const double MAX_WIND_SENSITIVITY = 0.4;
+    stormItem->windSensitivity = drand48() *
+        MAX_WIND_SENSITIVITY;
 
     stormItem->initialYVelocity = 280 +
         randomIntegerUpTo(40);

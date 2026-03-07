@@ -34,34 +34,6 @@
     <property name="step-increment">1</property>
     <property name="page-increment">10</property>
   </object>
-  <object class="GtkAdjustment" id="aurorabaseadjustment">
-    <property name="lower">10</property>
-    <property name="upper">95</property>
-    <property name="step-increment">1</property>
-    <property name="page-increment">10</property>
-  </object>
-  <object class="GtkAdjustment" id="aurorabrightnessadjustment">
-    <property name="upper">100</property>
-    <property name="step-increment">1</property>
-    <property name="page-increment">10</property>
-  </object>
-  <object class="GtkAdjustment" id="auroraheightadjustment">
-    <property name="upper">100</property>
-    <property name="step-increment">1</property>
-    <property name="page-increment">10</property>
-  </object>
-  <object class="GtkAdjustment" id="auroraspeedadjustment">
-    <property name="lower">10</property>
-    <property name="upper">100</property>
-    <property name="step-increment">1</property>
-    <property name="page-increment">10</property>
-  </object>
-  <object class="GtkAdjustment" id="aurorawidthadjustment">
-    <property name="lower">10</property>
-    <property name="upper">100</property>
-    <property name="step-increment">1</property>
-    <property name="page-increment">10</property>
-  </object>
   <object class="GtkFileFilter" id="backgroundchooserfilter">
     <patterns>
       <pattern>*.jpg</pattern>
@@ -4015,7 +3987,7 @@ NOTE: Santa has no knowledge of viewing distance, so when birds are following Sa
           </packing>
         </child>
         <child>
-          <!-- n-columns=5 n-rows=20 -->
+          <!-- n-columns=5 n-rows=16 -->
           <object class="GtkGrid" id="grid_sky">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
@@ -4091,7 +4063,7 @@ NOTE: Santa has no knowledge of viewing distance, so when birds are following Sa
               </object>
               <packing>
                 <property name="left-attach">0</property>
-                <property name="top-attach">4</property>
+                <property name="top-attach">6</property>
               </packing>
             </child>
             <child>
@@ -4103,49 +4075,7 @@ NOTE: Santa has no knowledge of viewing distance, so when birds are following Sa
               </object>
               <packing>
                 <property name="left-attach">0</property>
-                <property name="top-attach">9</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="vexpand">True</property>
-                <property name="label" translatable="yes">    </property>
-              </object>
-              <packing>
-                <property name="left-attach">0</property>
-                <property name="top-attach">10</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="width-request">60</property>
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="double-buffered">False</property>
-                <property name="valign">center</property>
-                <property name="label" translatable="yes">Brightness:</property>
-                <property name="xalign">0.89999997615814209</property>
-              </object>
-              <packing>
-                <property name="left-attach">3</property>
-                <property name="top-attach">12</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="width-request">80</property>
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="double-buffered">False</property>
-                <property name="valign">center</property>
-                <property name="label" translatable="yes">Speed:</property>
-                <property name="xalign">0.89999997615814209</property>
-              </object>
-              <packing>
-                <property name="left-attach">3</property>
-                <property name="top-attach">11</property>
+                <property name="top-attach">15</property>
               </packing>
             </child>
             <child>
@@ -4194,24 +4124,7 @@ NOTE: Santa has no knowledge of viewing distance, so when birds are following Sa
               </object>
               <packing>
                 <property name="left-attach">1</property>
-                <property name="top-attach">6</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToggleButton" id="id-ShowAurora">
-                <property name="label" translatable="yes">Aurora</property>
-                <property name="width-request">80</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">To show or not show aurora.
-Note: the aurora is best viewed using a dark background.</property>
-                <property name="double-buffered">False</property>
-                <property name="valign">center</property>
-              </object>
-              <packing>
-                <property name="left-attach">1</property>
-                <property name="top-attach">11</property>
+                <property name="top-attach">8</property>
               </packing>
             </child>
             <child>
@@ -4233,182 +4146,6 @@ Note: the aurora is best viewed using a dark background.</property>
               </packing>
             </child>
             <child>
-              <object class="GtkScale" id="id-AuroraSpeed">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">Animation speed of aurora.</property>
-                <property name="double-buffered">False</property>
-                <property name="valign">center</property>
-                <property name="adjustment">auroraspeedadjustment</property>
-                <property name="round-digits">0</property>
-                <property name="digits">0</property>
-                <property name="draw-value">False</property>
-                <property name="value-pos">left</property>
-              </object>
-              <packing>
-                <property name="left-attach">4</property>
-                <property name="top-attach">11</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkScale" id="id-AuroraBrightness">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">Brightness of aurora.</property>
-                <property name="double-buffered">False</property>
-                <property name="valign">center</property>
-                <property name="margin-top">8</property>
-                <property name="adjustment">aurorabrightnessadjustment</property>
-                <property name="round-digits">0</property>
-                <property name="digits">0</property>
-                <property name="draw-value">False</property>
-                <property name="value-pos">left</property>
-              </object>
-              <packing>
-                <property name="left-attach">4</property>
-                <property name="top-attach">12</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkScale" id="id-AuroraWidth">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">Width of aurora.</property>
-                <property name="double-buffered">False</property>
-                <property name="valign">center</property>
-                <property name="adjustment">aurorawidthadjustment</property>
-                <property name="round-digits">0</property>
-                <property name="digits">0</property>
-                <property name="draw-value">False</property>
-                <property name="value-pos">left</property>
-                <style>
-                  <class name="cpuload"/>
-                </style>
-              </object>
-              <packing>
-                <property name="left-attach">4</property>
-                <property name="top-attach">14</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkScale" id="id-AuroraHeight">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">Height of aurora.</property>
-                <property name="double-buffered">False</property>
-                <property name="valign">center</property>
-                <property name="margin-top">10</property>
-                <property name="adjustment">auroraheightadjustment</property>
-                <property name="round-digits">0</property>
-                <property name="digits">0</property>
-                <property name="draw-value">False</property>
-                <property name="value-pos">left</property>
-                <style>
-                  <class name="cpuload"/>
-                </style>
-              </object>
-              <packing>
-                <property name="left-attach">4</property>
-                <property name="top-attach">15</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="width-request">80</property>
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="double-buffered">False</property>
-                <property name="valign">center</property>
-                <property name="label" translatable="yes">Width:</property>
-                <property name="xalign">0.89999997615814209</property>
-              </object>
-              <packing>
-                <property name="left-attach">3</property>
-                <property name="top-attach">14</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="width-request">60</property>
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="double-buffered">False</property>
-                <property name="valign">center</property>
-                <property name="label" translatable="yes">Height:</property>
-                <property name="xalign">0.89999997615814209</property>
-              </object>
-              <packing>
-                <property name="left-attach">3</property>
-                <property name="top-attach">15</property>
-              </packing>
-            </child>
-            <child>
-              <!-- n-columns=3 n-rows=1 -->
-              <object class="GtkGrid">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="margin-top">7</property>
-                <property name="column-homogeneous">True</property>
-                <child>
-                  <object class="GtkRadioButton" id="id-AuroraLeft">
-                    <property name="label" translatable="yes">Left</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">True</property>
-                    <property name="tooltip-text" translatable="yes">Place aurora left on the screen.</property>
-                    <property name="double-buffered">False</property>
-                    <property name="halign">center</property>
-                    <property name="active">True</property>
-                    <property name="draw-indicator">False</property>
-                  </object>
-                  <packing>
-                    <property name="left-attach">0</property>
-                    <property name="top-attach">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkRadioButton" id="id-AuroraMiddle">
-                    <property name="label" translatable="yes">Middle</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">True</property>
-                    <property name="tooltip-text" translatable="yes">Place aurora in the middle of the screen.</property>
-                    <property name="double-buffered">False</property>
-                    <property name="halign">center</property>
-                    <property name="active">True</property>
-                    <property name="draw-indicator">False</property>
-                    <property name="group">id-AuroraLeft</property>
-                  </object>
-                  <packing>
-                    <property name="left-attach">1</property>
-                    <property name="top-attach">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkRadioButton" id="id-AuroraRight">
-                    <property name="label" translatable="yes">Right</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">True</property>
-                    <property name="tooltip-text" translatable="yes">Place aurora in the right of the screen.</property>
-                    <property name="double-buffered">False</property>
-                    <property name="halign">center</property>
-                    <property name="active">True</property>
-                    <property name="draw-indicator">False</property>
-                    <property name="group">id-AuroraLeft</property>
-                  </object>
-                  <packing>
-                    <property name="left-attach">2</property>
-                    <property name="top-attach">0</property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="left-attach">4</property>
-                <property name="top-attach">18</property>
-              </packing>
-            </child>
-            <child>
               <object class="GtkLabel">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
@@ -4418,18 +4155,6 @@ Note: the aurora is best viewed using a dark background.</property>
               <packing>
                 <property name="left-attach">0</property>
                 <property name="top-attach">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="vexpand">True</property>
-                <property name="label" translatable="yes">    </property>
-              </object>
-              <packing>
-                <property name="left-attach">0</property>
-                <property name="top-attach">13</property>
               </packing>
             </child>
             <child>
@@ -4444,7 +4169,7 @@ Note: the aurora is best viewed using a dark background.</property>
               </object>
               <packing>
                 <property name="left-attach">3</property>
-                <property name="top-attach">8</property>
+                <property name="top-attach">10</property>
               </packing>
             </child>
             <child>
@@ -4462,7 +4187,7 @@ Note: the aurora is best viewed using a dark background.</property>
               </object>
               <packing>
                 <property name="left-attach">4</property>
-                <property name="top-attach">8</property>
+                <property name="top-attach">10</property>
               </packing>
             </child>
             <child>
@@ -4478,7 +4203,7 @@ Note: the aurora is best viewed using a dark background.</property>
               </object>
               <packing>
                 <property name="left-attach">1</property>
-                <property name="top-attach">3</property>
+                <property name="top-attach">5</property>
               </packing>
             </child>
             <child>
@@ -4493,7 +4218,7 @@ Note: the aurora is best viewed using a dark background.</property>
               </object>
               <packing>
                 <property name="left-attach">3</property>
-                <property name="top-attach">3</property>
+                <property name="top-attach">5</property>
               </packing>
             </child>
             <child>
@@ -4511,24 +4236,7 @@ Note: the aurora is best viewed using a dark background.</property>
               </object>
               <packing>
                 <property name="left-attach">4</property>
-                <property name="top-attach">3</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToggleButton" id="id-MoonColor">
-                <property name="label" translatable="yes">Yellow</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">Choose between yellow-ish and white-ish moon.</property>
-                <property name="double-buffered">False</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="margin-bottom">5</property>
-              </object>
-              <packing>
-                <property name="left-attach">1</property>
-                <property name="top-attach">7</property>
+                <property name="top-attach">5</property>
               </packing>
             </child>
             <child>
@@ -4543,7 +4251,7 @@ Note: the aurora is best viewed using a dark background.</property>
               </object>
               <packing>
                 <property name="left-attach">3</property>
-                <property name="top-attach">6</property>
+                <property name="top-attach">8</property>
               </packing>
             </child>
             <child>
@@ -4558,7 +4266,7 @@ Note: the aurora is best viewed using a dark background.</property>
               </object>
               <packing>
                 <property name="left-attach">3</property>
-                <property name="top-attach">7</property>
+                <property name="top-attach">9</property>
               </packing>
             </child>
             <child>
@@ -4576,7 +4284,7 @@ Note: the aurora is best viewed using a dark background.</property>
               </object>
               <packing>
                 <property name="left-attach">4</property>
-                <property name="top-attach">6</property>
+                <property name="top-attach">8</property>
               </packing>
             </child>
             <child>
@@ -4594,65 +4302,67 @@ Note: the aurora is best viewed using a dark background.</property>
               </object>
               <packing>
                 <property name="left-attach">4</property>
+                <property name="top-attach">9</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="vexpand">True</property>
+                <property name="label" translatable="yes">    </property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="vexpand">True</property>
+                <property name="label" translatable="yes">    </property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">11</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="vexpand">True</property>
+                <property name="label" translatable="yes">    </property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">13</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="vexpand">True</property>
+                <property name="label" translatable="yes">    </property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">4</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="vexpand">True</property>
+                <property name="label" translatable="yes">    </property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
                 <property name="top-attach">7</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="width-request">80</property>
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="double-buffered">False</property>
-                <property name="valign">center</property>
-                <property name="label" translatable="yes">Lift:</property>
-                <property name="xalign">0.89999997615814209</property>
-              </object>
-              <packing>
-                <property name="left-attach">3</property>
-                <property name="top-attach">16</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkScale" id="id-AuroraBase">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">Lift Aurora above ground.</property>
-                <property name="double-buffered">False</property>
-                <property name="valign">center</property>
-                <property name="margin-top">10</property>
-                <property name="adjustment">aurorabaseadjustment</property>
-                <property name="round-digits">0</property>
-                <property name="digits">0</property>
-                <property name="draw-value">False</property>
-                <property name="value-pos">left</property>
-              </object>
-              <packing>
-                <property name="left-attach">4</property>
-                <property name="top-attach">16</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="vexpand">True</property>
-                <property name="label" translatable="yes">    </property>
-              </object>
-              <packing>
-                <property name="left-attach">0</property>
-                <property name="top-attach">17</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="vexpand">True</property>
-                <property name="label" translatable="yes">    </property>
-              </object>
-              <packing>
-                <property name="left-attach">0</property>
-                <property name="top-attach">5</property>
               </packing>
             </child>
             <child>
@@ -4666,45 +4376,25 @@ Note: the aurora is best viewed using a dark background.</property>
                 <property name="valign">center</property>
               </object>
               <packing>
-                <property name="left-attach">2</property>
-                <property name="top-attach">8</property>
+                <property name="left-attach">4</property>
+                <property name="top-attach">12</property>
               </packing>
             </child>
             <child>
-              <object class="GtkLabel">
+              <object class="GtkToggleButton" id="id-MoonColor">
+                <property name="label" translatable="yes">Yellow</property>
                 <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="vexpand">True</property>
-                <property name="label" translatable="yes">    </property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="tooltip-text" translatable="yes">Choose between yellow-ish and white-ish moon.</property>
+                <property name="double-buffered">False</property>
+                <property name="valign">center</property>
+                <property name="margin-bottom">5</property>
               </object>
               <packing>
-                <property name="left-attach">0</property>
-                <property name="top-attach">19</property>
+                <property name="left-attach">4</property>
+                <property name="top-attach">14</property>
               </packing>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
             </child>
             <child>
               <placeholder/>

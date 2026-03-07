@@ -355,26 +355,6 @@ void docs_usage(int man) {
         F(Halo));
     manout("-halobrightness <n>", "Brightness of halo (default: %d).",
         F(HaloBright));
-    manout("-aurora <n>", "To show (1) or not to show(0) aurora (default: %d).",
-        F(ShowAurora));
-    manout(".", "  On most desktops aurora works, but not on all. Try!");
-    manout("-auroraleft", "Place aurora in top left of screen.");
-    manout("-auroramiddle", "Place aurora in top middle of screen.");
-    manout("-auroraright", "Place aurora in top right of screen (default).");
-    manout("-aurorawidth <n>",
-        "Width of aurora in percentage of screen width (default: %d).",
-        F(AuroraWidth));
-    manout("-aurorabase <n>",
-        "Height of aurora's base line in percentage of screen height (default: "
-        "%d).",
-        F(AuroraBase));
-    manout("-auroraheight <n>", "Height of aurora (default: %d).",
-        F(AuroraHeight));
-    manout("-auroraspeed <n>", "Animation speed of aurora (default: %d).",
-        F(AuroraSpeed));
-    manout(".", "   10: about real value, 100: timelapse.");
-    manout("-aurorabrightness <n>", "Brightness of aurora (default: %d).",
-        F(AuroraBrightness));
 
     if (doman) {
         printf(".PP\n");
@@ -382,6 +362,7 @@ void docs_usage(int man) {
     } else {
         printf("\n  Fallen snow options:\n\n");
     }
+
     manout("-wsnowdepth <n>",
         "Maximum thickness of snow on top of windows (default: %d).",
         F(MaxWinSnowDepth));

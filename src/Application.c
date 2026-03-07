@@ -49,7 +49,6 @@
 #include "PlasmaSnow.h"
 
 #include "Application.h"
-#include "Aurora.h"
 #include "birds.h"
 #include "Blowoff.h"
 #include "ClockHelper.h"
@@ -64,7 +63,6 @@
 #include "MainWindow.h"
 #include "meteor.h"
 #include "moon.h"
-#include "MsgBox.h"
 #include "mygettext.h"
 #include "safe_malloc.h"
 #include "Santa.h"
@@ -149,61 +147,14 @@ int startApplication(int argc, char *argv[]) {
     srand48((int) (fmod(getWallClockReal() *
         1.0e6, 1.0e8)));
 
-    // Cleaar space for app Global struct.
-    memset(&mGlobal, 0, sizeof(mGlobal));
-
-    mGlobal.noSplashScreen = false;
-    mGlobal.mPlasmaWindowTitle = "plasmasnow";
-
-    mGlobal.cpufactor = 1.0;
-    mGlobal.WindowScale = 1.0;
-
-    mGlobal.MaxFlakeHeight = 0;
-    mGlobal.MaxFlakeWidth = 0;
-
-    mGlobal.stormItemCount = 0;
-    mGlobal.FluffCount = 0;
-
-    mGlobal.SnowWin = 0;
-    mGlobal.WindowOffsetX = 0;
-    mGlobal.WindowOffsetY = 0;
-
-    mGlobal.currentWS = 0;
-    mGlobal.ChosenWorkSpace = 0;
-    mGlobal.visualWSCount = 1;
-    mGlobal.visualWSList[0] = 0;
-    mGlobal.WindowsChanged = 0;
-    mGlobal.ForceRestart = 0;
-    mGlobal.MaxScrSnowDepth = 0;
-
-    mGlobal.winInfoListLength = 0;
-    mGlobal.winInfoList = NULL;
-
-    mGlobal.Wind = 0;
-    mGlobal.Direction = 0;
-    mGlobal.WindMax = 500.0;
-    mGlobal.NewWind = 100.0;
-
-    mGlobal.FsnowFirst = NULL;
-
-    mGlobal.SantaPlowRegion = 0;
-    mGlobal.SnowOnTrees = NULL;
-    mGlobal.OnTrees = 0;
-    mGlobal.RemoveFluff = 0;
-
-    mGlobal.moonX = 1000;
-    mGlobal.moonY = 80;
+    initPlasmaSnowGlobal();
 
     // Inits.
     XInitThreads();
-
     initFallenSnowSemaphores();
-    aurora_sem_init();
     birds_sem_init();
 
-    // Flags.
     InitFlags();
-
     for (int i = 0; i < argc; i++) {
         char *arg = argv[i];
 
@@ -238,7 +189,6 @@ int startApplication(int argc, char *argv[]) {
     int rc = HandleFlags(argc, argv);
     handle_language(0);
     mybindtestdomain();
-
     switch (rc) {
         case -1: // wrong flag
             clearColorPicker();
@@ -279,8 +229,6 @@ int startApplication(int argc, char *argv[]) {
     if (!isGtkVersionValid()) {
         printf("%splasmasnow: GTK Version is insufficient - FATAL.%s\n",
             COLOR_RED, COLOR_NORMAL);
-        displayMessageBox(100, 200, 300, 66, "plasmasnow",
-            "GTK Version is insufficient - FATAL.");
         return 1;
     }
 
@@ -315,8 +263,6 @@ int startApplication(int argc, char *argv[]) {
         mGlobal.display, NULL, 0);
     if (mGlobal.xdo == NULL) {
         printf("plasmasnow: XDO reports no displays - FATAL.\n");
-        displayMessageBox(100, 200, 284, 66, "plasmasnow",
-            "XDO reports no displays - FATAL.");
         XCloseDisplay(mGlobal.display);
         return true; // Error.
     }
@@ -390,7 +336,6 @@ int startApplication(int argc, char *argv[]) {
     birds_init();
     initStarsModule();
     initMeteorModule();
-    lazyInitAuroraModule();
     moon_init();
 
     startLoadMeasureBackgroundThread();
@@ -450,6 +395,55 @@ void stopApplication() {
         setenv("plasmasnow_RESTART", "yes", 1);
         execvp(Argv[0], Argv);
     }
+}
+
+/**
+ * Memset and init all mGlobal struct fields.
+ */
+void initPlasmaSnowGlobal() {
+    memset(&mGlobal, 0, sizeof(mGlobal));
+
+    mGlobal.noSplashScreen = false;
+    mGlobal.mPlasmaWindowTitle = "plasmasnow";
+
+    mGlobal.cpufactor = 1.0;
+    mGlobal.WindowScale = 1.0;
+
+    mGlobal.MaxFlakeHeight = 0;
+    mGlobal.MaxFlakeWidth = 0;
+
+    mGlobal.stormItemCount = 0;
+    mGlobal.FluffCount = 0;
+
+    mGlobal.SnowWin = 0;
+    mGlobal.WindowOffsetX = 0;
+    mGlobal.WindowOffsetY = 0;
+
+    mGlobal.currentWS = 0;
+    mGlobal.ChosenWorkSpace = 0;
+    mGlobal.visualWSCount = 1;
+    mGlobal.visualWSList[0] = 0;
+    mGlobal.WindowsChanged = 0;
+    mGlobal.ForceRestart = 0;
+    mGlobal.MaxScrSnowDepth = 0;
+
+    mGlobal.winInfoListLength = 0;
+    mGlobal.winInfoList = NULL;
+
+    mGlobal.Wind = 0;
+    mGlobal.Direction = 0;
+    mGlobal.WindMax = 500.0;
+    mGlobal.NewWind = 100.0;
+
+    mGlobal.FsnowFirst = NULL;
+
+    mGlobal.SantaPlowRegion = 0;
+    mGlobal.SnowOnTrees = NULL;
+    mGlobal.OnTrees = 0;
+    mGlobal.RemoveFluff = 0;
+
+    mGlobal.moonX = 1000;
+    mGlobal.moonY = 80;
 }
 
 /** ************************************************
@@ -776,7 +770,6 @@ int doAllUISettingsUpdates() {
     wind_ui();
     respondToTreesnowSettingsChanges();
     respondToMoonSettingsChanges();
-    aurora_ui();
     updateMainWindowUI();
 
     // updateAdvancedUserSettings.
@@ -1063,7 +1056,6 @@ void drawCairoWindowInternal(cairo_t* cc) {
         XFlush(mGlobal.display);
         eraseStarsFrame();
         moon_erase(0);
-        eraseAuroraFrame();
         eraseLightsFrame();
 
         removeAllStormItems();
@@ -1088,7 +1080,6 @@ void drawCairoWindowInternal(cairo_t* cc) {
         drawStarsFrame(cc);
         drawMeteorFrame(cc);
         moon_draw(cc);
-        aurora_draw(cc);
 
         drawLowerLightsFrame(cc);
         drawSceneryFrame(cc);

@@ -205,31 +205,9 @@ int HandleFlags(int argc, char *argv[]) {
 
             } else if (strcmp(arg, "-desktop") == 0) {
                 Flags.Desktop = 1;
-
-            } else if (strcmp(arg, "-auroraleft") == 0) {
-                Flags.AuroraLeft = 1;
-                Flags.AuroraMiddle = 0;
-                Flags.AuroraRight = 0;
-
-            } else if (strcmp(arg, "-auroramiddle") == 0) {
-                Flags.AuroraLeft = 0;
-                Flags.AuroraMiddle = 1;
-                Flags.AuroraRight = 0;
-
-            } else if (strcmp(arg, "-auroraright") == 0) {
-                Flags.AuroraLeft = 0;
-                Flags.AuroraMiddle = 0;
-                Flags.AuroraRight = 1;
             }
 
             handle_ia(-allworkspaces, AllWorkspaces);
-
-            handle_ia(-aurora, ShowAurora);
-            handle_ia(-auroraspeed, AuroraSpeed);
-            handle_ia(-aurorabrightness, AuroraBrightness);
-            handle_ia(-aurorawidth, AuroraWidth);
-            handle_ia(-auroraheight, AuroraHeight);
-            handle_ia(-aurorabase, AuroraBase);
 
             handle_ia(-blowofffactor, BlowOffFactor);
             handle_ia(-cpuload, CpuLoad);

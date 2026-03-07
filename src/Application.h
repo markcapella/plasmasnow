@@ -33,15 +33,15 @@ extern "C" {
     int startApplication(int argc, char *argv[]);
     void stopApplication();
 
+    void initPlasmaSnowGlobal();
+
     void HandleCpuFactor();
     void RestartDisplay();
     void appShutdownHook(int);
-
     int handleX11ErrorEvent(Display*, XErrorEvent*);
     void getX11Window(Window*);
     int drawCairoWindow(void*);
     void handleX11CairoDisplayChange();
-
     void drawCairoWindowInternal(cairo_t* cc);
     int drawTransparentWindow(gpointer);
     void addWindowDrawMethodToMainloop();
@@ -54,18 +54,14 @@ extern "C" {
     void SetWindowScale();
     int handlePendingX11Events();
     int onTimerEventDisplayChanged();
-
     void mybindtestdomain();
-
     char* getDesktopSession();
     void respondToWorkspaceSettingsChange();
     void setTransparentWindowAbove(GtkWindow* window);
     int updateWindowsList();
-
     int doAllUISettingsUpdates();
     int do_stopafter();
     int handleDisplayConfigurationChange();
-
     bool isDesktopVisible();
     long int getCurrentWorkspaceNumber();
     bool isThisAGnomeSession();

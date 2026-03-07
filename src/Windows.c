@@ -38,7 +38,6 @@
 #include "dsimple.h"
 #include "FallenSnow.h"
 #include "Flags.h"
-#include "MsgBox.h"
 #include "mygettext.h"
 #include "PlasmaSnow.h"
 #include "safe_malloc.h"
@@ -435,8 +434,6 @@ int updateWindowsList() {
         unlockFallenSnowBaseSemaphore();
         printf("%splasmasnow: Virtual workspace has been lost - FATAL.%s\n",
             COLOR_RED, COLOR_NORMAL);
-        displayMessageBox(100, 200, 355, 66, "plasmasnow",
-            "Virtual workspace has been lost - FATAL.");
         Flags.shutdownRequested = 1;
         return true;
     }
@@ -467,8 +464,6 @@ int updateWindowsList() {
         if (!winInfo && !mGlobal.hasTransparentWindow) {
             printf("%splasmasnow: SnowWindow has been lost - FATAL.%s\n",
                 COLOR_RED, COLOR_NORMAL);
-            displayMessageBox(100, 200, 310, 66, "plasmasnow",
-                "SnowWindow has been lost - FATAL.");
             Flags.shutdownRequested = 1;
         }
     }

@@ -35,10 +35,6 @@
 
 /*         code           type               name              modifier */
 #define ALL_TOGGLES                                                                 \
-    BUTTON(togglecode, plasmasnow_celestials, ShowAurora, 1) \
-    BUTTON(togglecode, plasmasnow_celestials, AuroraLeft, 0)                        \
-    BUTTON(togglecode, plasmasnow_celestials, AuroraMiddle, 1)                      \
-    BUTTON(togglecode, plasmasnow_celestials, AuroraRight, 0)                       \
     BUTTON(togglecode, plasmasnow_birds, FollowSanta, 1)                            \
     BUTTON(togglecode, plasmasnow_birds, ShowAttrPoint, 1)                          \
     BUTTON(togglecode, plasmasnow_birds, ShowBirds, 1)                              \
@@ -85,11 +81,6 @@
     BUTTON(scalecode, plasmasnow_settings, IgnoreTop, 1)                            \
     BUTTON(scalecode, plasmasnow_settings, IgnoreBottom, 1)                         \
     \
-    BUTTON(scalecode, plasmasnow_celestials, AuroraSpeed, 1)                        \
-    BUTTON(scalecode, plasmasnow_celestials, AuroraBrightness, 1)                   \
-    BUTTON(scalecode, plasmasnow_celestials, AuroraWidth, 1)                        \
-    BUTTON(scalecode, plasmasnow_celestials, AuroraHeight, 1)                       \
-    BUTTON(scalecode, plasmasnow_celestials, AuroraBase, 1)                         \
     BUTTON(scalecode, plasmasnow_celestials, HaloBright, 1)                         \
     BUTTON(scalecode, plasmasnow_celestials, MeteorFrequency, 1)                    \
     BUTTON(scalecode, plasmasnow_celestials, MoonSize, 1)                           \
