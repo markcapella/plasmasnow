@@ -47,7 +47,7 @@ plasmasnow_CPPFLAGS += -DSELFREP
 endif
 
 noinst_LIBRARIES = libxdo.a
-libxdo_a_SOURCES = xdo.c xdo_search.c xdo.h xdo_util.h xdo_version.h
+libxdo_a_SOURCES = xdo.c xdo.h xdo_util.h xdo_version.h
 
 plasmasnow_SOURCES = \
 		Application.c birds.c Blowoff.c clientwin.c \
@@ -55,7 +55,7 @@ plasmasnow_SOURCES = \
 		FallenSnow.c Flags.c hashtable.cpp kdtree.c \
 		Lights.cpp LoadMeasure.c MainWindow.c \
 		meteor.c moon.c Prefs.cpp safe_malloc.c \
-		Santa.c scenery.c selfrep.c SplashPage.cpp \
+		Santa.c scenery.c selfrep.c \
 		spline_interpol.c Stars.c Storm.cpp StormItem.cpp \
 		StormWindow.c treesnow.c ui.glade Utils.c wind.c \
 		Windows.c WindowVector.c WinInfo.c XPMHelper.c
@@ -116,7 +116,6 @@ plasmasnow-selfrep.$(OBJEXT): $(tarfile_inc)
 # usr/share
 appicondir=/usr/share/pixmaps
 appicon_DATA=Pixmaps/plasmasnow.png \
-	Pixmaps/plasmasnowsplash.xpm \
 	Pixmaps/plasmasnowcolorpicker.xpm
 
 CLEANFILES = plasmasnow.6 ui_xml.h StormItemShapeIncludes.h \

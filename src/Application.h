@@ -39,7 +39,6 @@ extern "C" {
     void RestartDisplay();
     void appShutdownHook(int);
     int handleX11ErrorEvent(Display*, XErrorEvent*);
-    void getX11Window(Window*);
     int drawCairoWindow(void*);
     void handleX11CairoDisplayChange();
     void drawCairoWindowInternal(cairo_t* cc);
@@ -50,6 +49,9 @@ extern "C" {
     void rectangle_draw(cairo_t*);
 
     int startStormWindow();
+    void initStormWindowTypes();
+    unsigned long getX11StackedWindowsList(Window**);
+    unsigned long getRootWindowProperty(Atom, Window**);
 
     void SetWindowScale();
     int handlePendingX11Events();

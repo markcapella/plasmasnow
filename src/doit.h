@@ -100,7 +100,6 @@
     DOIT_I(AllWorkspaces, 1, 1) \
     DOIT_I(mAppTheme, 1, 1) \
     DOIT_I(Outline, 0, 0) \
-    DOIT_I(ShowSplashScreen, 1, 1) \
     \
     DOIT_I(CpuLoad, 100, 100) \
     DOIT_I(Transparency, 0, 0) \

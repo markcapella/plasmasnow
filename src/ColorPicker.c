@@ -140,8 +140,8 @@ void startColorPicker(char* consumerTag,
     XMoveWindow(mGlobal.display, mColorPickerWindow,
         mColorPickerXPos, mColorPickerYPos);
 
-    // Show SplashImage in the window. Consume X11 events.
-    // Respond to Expose event for DRAW.
+    // Show the window. Consume X11 events. Respond to
+    // Expose event for DRAW.
     XSelectInput(mGlobal.display, mColorPickerWindow,
         ExposureMask);
 

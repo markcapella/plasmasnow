@@ -186,7 +186,6 @@ typedef struct _StarCoordinate {
  * Global helper objects.
  */
 extern struct _mGlobal {
-        bool noSplashScreen;
         char* Language;
 
         int IsCompiz;

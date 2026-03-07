@@ -40,7 +40,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <ctype.h>
 #include <locale.h>
-#include <regex.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>

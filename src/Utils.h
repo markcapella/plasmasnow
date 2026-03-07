@@ -74,7 +74,6 @@ extern "C" {
     ssize_t mywrite(int fd, const void *buf, size_t count);
     float gaussf(float x, float mu, float sigma);
     char *guess_language();
-    Window largest_window_with_name(xdo_t *myxdo, const char *name);
     void fill_xdo_search(xdo_search_t *search);
 
     // Obtain normally distributed number. The number will be
@@ -85,7 +84,8 @@ extern "C" {
     int is_little_endian();
     void logAppVersion();
 
-    void randomuniqarray(double *a, int n, double d, unsigned short *seed);
+    void randomuniqarray(double *a, int n, double d,
+        unsigned short *seed);
 
     void traceback();
 

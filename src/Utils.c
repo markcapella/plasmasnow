@@ -399,44 +399,6 @@ char *guess_language() {
     return NULL;
 }
 
-// find largest window with name
-Window largest_window_with_name(xdo_t *myxdo, const char *name) {
-    xdo_search_t search;
-
-    memset(&search, 0, sizeof(xdo_search_t));
-
-    search.searchmask = SEARCH_NAME;
-    search.winname = name;
-    search.require = SEARCH_ANY;
-    search.max_depth = 4;
-    search.limit = 0;
-
-    Window *windows = NULL;
-    unsigned int nwindows;
-    xdo_search_windows(myxdo, &search, &windows, &nwindows);
-
-    Window w = 0;
-    unsigned int maxsize = 0;
-    for (unsigned int i = 0; i < nwindows; i++) {
-        unsigned int width, height;
-        xdo_get_window_size(myxdo, windows[i], &width, &height);
-
-        unsigned int size = width * height;
-        if (size <= maxsize) {
-            continue;
-        }
-        maxsize = size;
-
-        w = windows[i];
-    }
-
-    if (windows) {
-        free(windows);
-    }
-
-    return w;
-}
-
 /***********************************************************
  ** See man backtrace.
  **/

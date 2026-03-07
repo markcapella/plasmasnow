@@ -42,7 +42,8 @@
  ** This method creates the main Storm Window.
  **/
 bool createStormWindow(Display* display, GtkWidget* stormWindow,
-    int xscreen, int sticky, int below, GdkWindow** gdk_window,
+    int xscreen, int sticky, int below,
+    GdkWindow** gdk_window,
     Window* x11_window, int* wantx, int* wanty) {
 
     // Guard the outputs.
@@ -62,38 +63,22 @@ bool createStormWindow(Display* display, GtkWidget* stormWindow,
         G_CALLBACK(setStormWindowAttributes), NULL);
 
     // Remove our things from inputStormWindow:
-    g_object_steal_data(G_OBJECT(stormWindow), "trans_sticky");
-    g_object_steal_data(G_OBJECT(stormWindow), "trans_below");
-    g_object_steal_data(G_OBJECT(stormWindow), "trans_nobelow");
-    g_object_steal_data(G_OBJECT(stormWindow), "trans_done");
+    GObject* STORM_WINDOW = G_OBJECT(stormWindow);
+    g_object_steal_data(STORM_WINDOW, "trans_sticky");
+    g_object_steal_data(STORM_WINDOW, "trans_nobelow");
+    g_object_steal_data(STORM_WINDOW, "trans_below");
+    g_object_steal_data(STORM_WINDOW, "trans_done");
 
-    // Reset our things.  :-/
-    static char somechar;
+    // Reset our things.
+    char somechar;
     if (sticky) {
-        g_object_set_data(G_OBJECT(stormWindow),
-            "trans_sticky", &somechar);
+        g_object_set_data(STORM_WINDOW, "trans_sticky", "true");
     }
-    switch (below) {
-        case 0:
-            g_object_set_data(G_OBJECT(stormWindow),
-                "trans_nobelow", &somechar);
-            break;
-        case 1:
-            g_object_set_data(G_OBJECT(stormWindow),
-                "trans_below", &somechar);
-            break;
+    if (below) {
+        g_object_set_data(STORM_WINDOW, "trans_nobelow", "true");
+    } else {
+        g_object_set_data(STORM_WINDOW, "trans_below", "true");
     }
-
-    /* To check if the display supports alpha channels, get the visual */
-    GdkScreen* screen = gtk_widget_get_screen(stormWindow);
-    if (!gdk_screen_is_composited(screen)) {
-        gtk_window_close(GTK_WINDOW(stormWindow));
-        return false;
-    }
-
-    // Ensure the widget (the window, actually) can take RGBA.
-    gtk_widget_set_visual(stormWindow,
-        gdk_screen_get_rgba_visual(screen));
 
     // set full screen if so desired:
     bool useXineramaWindow = false;

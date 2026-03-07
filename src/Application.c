@@ -25,7 +25,6 @@
 #include <malloc.h>
 #include <math.h>
 #include <pthread.h>
-#include <regex.h>
 #include <signal.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -68,7 +67,6 @@
 #include "Santa.h"
 #include "scenery.h"
 #include "selfrep.h"
-#include "SplashPage.h"
 #include "Storm.h"
 #include "Stars.h"
 #include "StormItem.h"
@@ -81,7 +79,6 @@
 #include "Utils.h"
 #include "vroot.h"
 #include "xdo.h"
-#include "xdo_search.h"
 
 
 /** ************************************************
@@ -114,6 +111,7 @@ int xfixes_event_base_ = -1;
 
 int mIsSticky = 0;
 
+Window mWantWindow = None;
 int mWantMoveToX = 0;
 int mWantMoveToY = 0;
 
@@ -291,10 +289,8 @@ int startApplication(int argc, char *argv[]) {
     }
 
     // Show aplash page & start Storming.
-    showSplashPage();
     updateWindowsList();
     startStormWindow();
-    hideSplashPage();
 
     // Init all Global Flags.
     #define DOIT_I(x, d, v) OldFlags.x = Flags.x;
@@ -360,15 +356,10 @@ int startApplication(int argc, char *argv[]) {
     HandleCpuFactor();
     respondToWorkspaceSettingsChange();
 
-    //***************************************************
-    // Bring it all up !
-    //***************************************************
-
     printf("%splasmasnow: gtk_main() Starts.%s\n",
         COLOR_BLUE, COLOR_NORMAL);
 
     gtk_main();
-
     return false;
 }
 
@@ -403,7 +394,6 @@ void stopApplication() {
 void initPlasmaSnowGlobal() {
     memset(&mGlobal, 0, sizeof(mGlobal));
 
-    mGlobal.noSplashScreen = false;
     mGlobal.mPlasmaWindowTitle = "plasmasnow";
 
     mGlobal.cpufactor = 1.0;
@@ -415,7 +405,7 @@ void initPlasmaSnowGlobal() {
     mGlobal.stormItemCount = 0;
     mGlobal.FluffCount = 0;
 
-    mGlobal.SnowWin = 0;
+    mGlobal.SnowWin = None;
     mGlobal.WindowOffsetX = 0;
     mGlobal.WindowOffsetY = 0;
 
@@ -444,34 +434,6 @@ void initPlasmaSnowGlobal() {
 
     mGlobal.moonX = 1000;
     mGlobal.moonY = 80;
-}
-
-/** ************************************************
- ** Get our X11 Window, ask the user to select one.
- **/
-void getX11Window(Window *resultWin) {
-    // Ask user ask to point to a window and click to select.
-    if (Flags.XWinInfoHandling) {
-        printf(_("plasmasnow: getX11Window() Point "
-            "to a window and click ...\n"));
-        fflush(stdout);
-
-        // Wait for user to click mouse.
-        int rc = xdo_select_window_with_click(
-            mGlobal.xdo, resultWin);
-        if (rc != XDO_ERROR) {
-            // Var "resultWin" has result.
-            return;
-        }
-
-        fprintf(stderr, "plasmasnow: getX11Window() "
-            "Window detection failed.\n");
-        exit(1);
-    }
-
-    // No window was available.
-    *resultWin = 0;
-    return;
 }
 
 /** ************************************************
@@ -509,87 +471,7 @@ int startStormWindow() {
     mGlobal.xxposures = false;
     mGlobal.XscreensaverMode = false;
 
-    // Special Startup - User wants to specify a Snow window.
-    Window xwin = Flags.WindowId;
-    if (!xwin) {
-        getX11Window(&xwin);
-    }
-
-    if (xwin) {
-        mX11CairoEnabled = true;
-        mGlobal.SnowWin = xwin;
-
-    // Special Startup - User wants to run in root window.
-    } else if (Flags.ForceRoot) {
-        mX11CairoEnabled = true;
-        mGlobal.SnowWin = mGlobal.Rootwindow;
-
-        // User wants a screensaver too.
-        if (getenv("XSCREENSAVER_WINDOW")) {
-            mGlobal.XscreensaverMode = true;
-            mGlobal.SnowWin = strtol(getenv("XSCREENSAVER_WINDOW"), NULL, 0);
-            mGlobal.Rootwindow = mGlobal.SnowWin;
-        }
-
-    // Normal Startup.
-    } else {
-        // Try to create a transparent clickthrough window in a
-        // MessageDialog, avoiding an Icon in the dock.
-        GtkWidget* stormWindowWidget = (GtkWidget*) g_object_new(
-            GTK_TYPE_MESSAGE_DIALOG, "use-header-bar", false,
-            "message-type", GTK_MESSAGE_OTHER, "buttons",
-            GTK_BUTTONS_NONE, NULL);
-
-        // Remove icon that MessageDialog creates & we don't need.
-        if (GTK_IS_BIN(stormWindowWidget)) {
-            GtkWidget* child = gtk_bin_get_child(GTK_BIN(
-                stormWindowWidget));
-            if (child) {
-                gtk_container_remove(GTK_CONTAINER(
-                    stormWindowWidget), child);
-            }
-        }
-
-        gtk_widget_set_can_focus(stormWindowWidget, false);
-        gtk_window_set_decorated(GTK_WINDOW(stormWindowWidget), FALSE);
-        gtk_window_set_type_hint(GTK_WINDOW(stormWindowWidget),
-            GDK_WINDOW_TYPE_HINT_POPUP_MENU);
-
-        // xwin might be our transparent window ...
-        if (createStormWindow(mGlobal.display, stormWindowWidget,
-            Flags.Screen, Flags.AllWorkspaces, true, NULL, &xwin,
-            &mWantMoveToX, &mWantMoveToY)) {
-
-            mTransparentWindow = stormWindowWidget;
-            mGlobal.SnowWin = xwin;
-            mGlobal.hasTransparentWindow = true;
-            mGlobal.hasDestopWindow = true;
-            mGlobal.isDoubleBuffered = true;
-
-            g_signal_connect(mTransparentWindow, "draw",
-                G_CALLBACK(handleTransparentWindowDrawEvents), NULL);
-        } else {
-
-            // xwin might be our rootwindow, pcmanfm or Desktop:
-            mGlobal.hasDestopWindow = true;
-            mX11CairoEnabled = true;
-
-            if (!strncmp(getDesktopSession(), "LXDE", 4) &&
-                (xwin = largest_window_with_name(mGlobal.xdo, "^pcmanfm$"))) {
-            } else if ((xwin = largest_window_with_name(mGlobal.xdo, "^Desktop$"))) {
-            } else {
-                xwin = mGlobal.Rootwindow;
-            }
-
-            mGlobal.SnowWin = xwin;
-            int winw, winh;
-
-            if (Flags.Screen >= 0 && mGlobal.hasDestopWindow) {
-                getXineramaScreenInfo(mGlobal.display, Flags.Screen,
-                    &mWantMoveToX, &mWantMoveToY, &winw, &winh);
-            }
-        }
-    }
+    initStormWindowTypes();
 
     // Start window Cairo specific.
     if (mX11CairoEnabled) {
@@ -617,20 +499,15 @@ int startStormWindow() {
         xdo_move_window(mGlobal.xdo, mGlobal.SnowWin,
             mWantMoveToX, mWantMoveToY);
     }
-    if (!_xdo_is_window_visible(mGlobal.xdo, mGlobal.SnowWin)) {
-        xdo_wait_for_window_map_state(mGlobal.xdo, mGlobal.SnowWin,
-            IsViewable);
-    }
-    initDisplayDimensions();
 
-    // Report log.
+    initDisplayDimensions();
+    fflush(stdout);
+
     mGlobal.SnowWinX = mWantMoveToX;
     mGlobal.SnowWinY = mWantMoveToY;
 
     mPrevSnowWinWidth = mGlobal.SnowWinWidth;
     mPrevSnowWinHeight = mGlobal.SnowWinHeight;
-
-    fflush(stdout);
 
     SetWindowScale();
     if (mGlobal.XscreensaverMode && !Flags.BlackBackground) {
@@ -638,6 +515,109 @@ int startStormWindow() {
     }
 
     return TRUE;
+}
+
+/**
+ * Init the storm window variously.
+ */
+void initStormWindowTypes() {
+    if (Flags.WindowId) {
+        mGlobal.SnowWin = Flags.WindowId;
+        mX11CairoEnabled = true;
+        return;
+    }
+
+    // Special Startup - User wants to run in root window.
+    if (Flags.ForceRoot) {
+        mGlobal.SnowWin = mGlobal.Rootwindow;
+        if (getenv("XSCREENSAVER_WINDOW")) {
+            mGlobal.SnowWin = strtol(getenv(
+                "XSCREENSAVER_WINDOW"), NULL, 0);
+            mGlobal.XscreensaverMode = true;
+            mGlobal.Rootwindow = mGlobal.SnowWin;
+        }
+        mX11CairoEnabled = true;
+        return;
+    }
+
+    // Create transparent clickthru window in MessageDialog,
+    // & remove icon decoration.
+    GtkWidget* stormWindow = (GtkWidget*) g_object_new(
+        GTK_TYPE_MESSAGE_DIALOG, "use-header-bar", false,
+        "message-type", GTK_MESSAGE_OTHER, "buttons",
+        GTK_BUTTONS_NONE, NULL);
+    if (GTK_IS_BIN(stormWindow)) {
+        GtkWidget* child = gtk_bin_get_child(GTK_BIN(
+            stormWindow));
+        if (child) {
+            gtk_container_remove(GTK_CONTAINER(
+                stormWindow), child);
+        }
+    }
+
+    // Set window decorations.
+    gtk_widget_set_can_focus(stormWindow, false);
+    gtk_window_set_decorated(GTK_WINDOW(stormWindow), FALSE);
+    gtk_window_set_type_hint(GTK_WINDOW(stormWindow),
+        GDK_WINDOW_TYPE_HINT_POPUP_MENU);
+
+    // Create in compositing windows.
+    GdkScreen* testCompositing =
+        gtk_widget_get_screen(stormWindow);
+    if (gdk_screen_is_composited(testCompositing)) {
+        printf("%s\nCreating Storm in composited window.%s\n",
+            COLOR_GREEN, COLOR_NORMAL);
+
+        gtk_widget_set_visual(stormWindow,
+            gdk_screen_get_rgba_visual(testCompositing));
+
+        createStormWindow(mGlobal.display, stormWindow,
+            Flags.Screen, Flags.AllWorkspaces, true, NULL,
+            &mWantWindow, &mWantMoveToX, &mWantMoveToY);
+
+        mTransparentWindow = stormWindow;
+        mGlobal.SnowWin = mWantWindow;
+        mGlobal.hasTransparentWindow = true;
+        mGlobal.hasDestopWindow = true;
+        mGlobal.isDoubleBuffered = true;
+
+        g_signal_connect(mTransparentWindow, "draw",
+            G_CALLBACK(handleTransparentWindowDrawEvents), NULL);
+        return;
+    }
+
+    // Create in non-compositing windows.
+    printf("%s\nCreating Storm in non-composited window.%s\n",
+        COLOR_YELLOW, COLOR_NORMAL);
+
+    int winw, winh;
+    if (Flags.Screen >= 0) {
+        getXineramaScreenInfo(mGlobal.display, Flags.Screen,
+            &mWantMoveToX, &mWantMoveToY, &winw, &winh);
+    }
+
+    //if (!strncmp(getDesktopSession(), "LXDE", 4) &&
+    //    (xwin = largest_window_with_name(mGlobal.xdo, "^pcmanfm$"))) {
+    //} else if ((xwin = largest_window_with_name(mGlobal.xdo, "^Desktop$"))) {
+    //} else {
+    //    xwin = mGlobal.Rootwindow;
+    //}
+
+    Window* stackedWins;
+    int numberOfStackedWins = getX11StackedWindowsList(
+        &stackedWins);
+    if (numberOfStackedWins > 0) {
+        printf("%s\nStorm Window using Desktop window.%s\n",
+            COLOR_YELLOW, COLOR_NORMAL);
+        mGlobal.SnowWin = stackedWins[0];
+    } else {
+        printf("%s\nStorm Window using Root window.%s\n",
+            COLOR_YELLOW, COLOR_NORMAL);
+        mGlobal.SnowWin = mGlobal.Rootwindow;
+    }
+
+    mGlobal.hasDestopWindow = true;
+    mX11CairoEnabled = true;
 }
 
 /** ************************************************
@@ -1119,6 +1099,38 @@ void SetWindowScale() {
     } else {
         mGlobal.WindowScale = y;
     }
+}
+
+/**
+ * Helper method gets the X11 stacked windows list.
+ * Window[0] is desktop.
+ */
+unsigned long
+getX11StackedWindowsList(Window** windows) {
+    return getRootWindowProperty(XInternAtom(mGlobal.display,
+        "_NET_CLIENT_LIST_STACKING", False), windows);
+}
+
+/**
+ * Helper method gets a requested root window property.
+ */
+unsigned long
+getRootWindowProperty(Atom property, Window** windows) {
+    Atom da;
+    int di;
+    unsigned long len;
+    unsigned long dl;
+    unsigned char* list;
+
+    if (XGetWindowProperty(mGlobal.display, DefaultRootWindow(
+        mGlobal.display), property, 0L, 1024, False, XA_WINDOW,
+        &da, &di, &len, &dl, &list) != Success) {
+        *windows = NULL;
+        return 0;
+    }
+
+    *windows = (Window*) list;
+    return len;
 }
 
 /** ************************************************

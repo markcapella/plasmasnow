@@ -21,7 +21,6 @@
 */
 #include <ctype.h>
 #include <pthread.h>
-#include <regex.h>
 #include <stdbool.h>
 #include <stdio.h>
 
@@ -47,7 +46,6 @@
 #include "Windows.h"
 #include "WinInfo.h"
 #include "xdo.h"
-#include "xdo_search.h"
 
 
 /** *********************************************************************
@@ -291,11 +289,6 @@ void initDisplayDimensions() {
  **/
 void updateDisplayDimensions() {
     lockFallenSnowBaseSemaphore();
-
-    if (!_xdo_is_window_visible(mGlobal.xdo, mGlobal.SnowWin)) {
-        xdo_wait_for_window_map_state(mGlobal.xdo, mGlobal.SnowWin,
-            IsViewable);
-    }
 
     Window root;
     int x, y;

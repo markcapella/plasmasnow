@@ -201,8 +201,6 @@ void updateMainWindowUI() {
     UIDO(Screen, handle_screen(););
     UIDO(mAppTheme, updateMainWindowTheme(););
     UIDO(Outline, clearGlobalSnowWindow(););
-
-    UIDO(ShowSplashScreen,);
 }
 
 void handle_screen() {

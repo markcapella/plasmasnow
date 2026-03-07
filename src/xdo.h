@@ -136,38 +136,32 @@ typedef struct xdo {
 
 /**
  * Search only window title. DEPRECATED - Use SEARCH_NAME
- * @see xdo_search_windows
  */
 #define SEARCH_TITLE (1UL << 0)
 
 /**
  * Search only window class.
- * @see xdo_search_windows
  */
 #define SEARCH_CLASS (1UL << 1)
 
 /**
  * Search only window name.
- * @see xdo_search_windows
  */
 #define SEARCH_NAME (1UL << 2)
 
 /**
  * Search only window pid.
- * @see xdo_search_windows
  */
 #define SEARCH_PID (1UL << 3)
 
 /**
  * Search only visible windows.
- * @see xdo_search_windows
  */
 #define SEARCH_ONLYVISIBLE (1UL << 4)
 
 /**
  * Search only a specific screen.
  * @see xdo_search.screen
- * @see xdo_search_windows
  */
 #define SEARCH_SCREEN (1UL << 5)
 
@@ -180,14 +174,11 @@ typedef struct xdo {
 /**
  * Search a specific desktop
  * @see xdo_search.screen
- * @see xdo_search_windows
  */
 #define SEARCH_DESKTOP (1UL << 7)
 
 /**
  * The window search query structure.
- *
- * @see xdo_search_windows
  */
 typedef struct xdo_search {
         const char *title;        /** pattern to test against a window title */
@@ -742,17 +733,6 @@ int xdo_set_desktop_for_window(const xdo_t *xdo, Window wid, long desktop);
  * @param deskto pointer to long where the desktop of the window is stored
  */
 int xdo_get_desktop_for_window(const xdo_t *xdo, Window wid, long *desktop);
-
-/**
- * Search for windows.
- *
- * @param search the search query.
- * @param windowlist_ret the list of matching windows to return
- * @param nwindows_ret the number of windows (length of windowlist_ret)
- * @see xdo_search_t
- */
-int xdo_search_windows(const xdo_t *xdo, const xdo_search_t *search,
-    Window **windowlist_ret, unsigned int *nwindows_ret);
 
 /**
  * Generic property fetch.

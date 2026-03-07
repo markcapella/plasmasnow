@@ -55,7 +55,6 @@
     BUTTON(togglecode, plasmasnow_settings, AllWorkspaces, 1) \
     BUTTON(togglecode, plasmasnow_settings, mAppTheme, 1) \
     BUTTON(togglecode, plasmasnow_settings, Outline, 1) \
-    BUTTON(togglecode, plasmasnow_settings, ShowSplashScreen, 1) \
     BUTTON(togglecode, plasmasnow_settings, BlackBackground, 1) \
     \
     BUTTON(togglecode, plasmasnow_celestials, MoonColor, 1)

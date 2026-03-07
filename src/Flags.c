@@ -177,10 +177,7 @@ int HandleFlags(int argc, char *argv[]) {
 #endif
             //  ------------------- end of handled in main --------------------
 
-            else if (strcmp(arg, "-nosplash") == 0) {
-                mGlobal.noSplashScreen = true;
-
-            } else if (strcmp(arg, "-nokeepsnow") == 0) {
+            else if (strcmp(arg, "-nokeepsnow") == 0) {
                 Flags.NoKeepSnow = 1;
                 Flags.NoKeepSnowOnWindows = 1;
                 Flags.NoKeepSnowOnBottom = 1;

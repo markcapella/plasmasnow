@@ -1,4 +1,4 @@
-#                                               -*- Autoconf -*-
+#                         -*- Autoconf -*-
 
 # Process this file with autoconf to produce a configure script.
 #
@@ -24,29 +24,34 @@
 #-# 
 
 AC_PREREQ([2.69])
-AC_INIT([plasmasnow], [2026.03.06], [markjamescapella@proton.me])
+AC_INIT([plasmasnow], [2026.03.07], [markjamescapella@proton.me])
 AC_CONFIG_SRCDIR([src/PlasmaSnow.h])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 # When creating a package (e.g. debian)
-# Get date from debian/changelog or something like that: (thanks to Bernhard M. Wiedemann)
-# First: check if SOURCE_DATE_EPOCH is already defined
-# if not: use the file 'bootdate' which should contain the output of 'date +%s'
+# Get date from debian/changelog or something like that:
+#    (thanks to Bernhard M. Wiedemann)
+
+# First: check if SOURCE_DATE_EPOCH is already defined. if not, use
+# the file 'bootdate' which should contain the output of 'date +%s'.
 
 s="$SOURCE_DATE_EPOCH"
 
 if test "x$s" = x ; then
    AC_MSG_WARN([SOURCE_DATE_EPOCH is not defined])
    if test -f "$srcdir/bootdate" ; then
-      AC_MSG_NOTICE([Try to read SOURCE_DATE_EPOCH from file '$srcdir/bootdate'])
+      AC_MSG_NOTICE(\
+         [Try to read SOURCE_DATE_EPOCH from file '$srcdir/bootdate'])
       s=`head -n1 "$srcdir/bootdate"`
-      xd=`date -u -d "@$s" 2>/dev/null || date -u -r "$s" 2>/dev/null || echo "Invalid date format"`
+      xd=`date -u -d "@$s" 2>/dev/null || date -u -r "$s" 2>/dev/null || \
+         echo "Invalid date format"`
       AC_MSG_NOTICE([Read SOURCE_DATE_EPOCH=$s, i.e: $xd ])
    fi
 else
-   xd=`date -u -d "@$s" 2>/dev/null || date -u -r "$s" 2>/dev/null || echo "Invalid date format"`
+   xd=`date -u -d "@$s" 2>/dev/null || date -u -r "$s" 2>/dev/null || \
+      echo "Invalid date format"`
    AC_MSG_NOTICE([Given SOURCE_DATE_EPOCH=$s, i.e: $xd ])
 fi
 
@@ -74,11 +79,14 @@ else
    AC_MSG_WARN([SOURCE_DATE_EPOCH set from current date])
 fi
 
-xd=`date -u -d "@$SOURCE_DATE_EPOCH" 2>/dev/null || date -u -r "$SOURCE_DATE_EPOCH" 2>/dev/null || echo "Invalid date format"`
+xd=`date -u -d "@$SOURCE_DATE_EPOCH" 2>/dev/null || \
+   date -u -r "$SOURCE_DATE_EPOCH" 2>/dev/null || echo "Invalid date format"`
 AC_MSG_NOTICE([Using SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH, i.e: $xd ])
 
 DATE_FMT="+%Y-%m-%d"
-DATE=`date -u -d "@$SOURCE_DATE_EPOCH" "$DATE_FMT" 2>/dev/null || date -u -r "$SOURCE_DATE_EPOCH" "$DATE_FMT" 2>/dev/null || date -u "$DATE_FMT"`
+DATE=`date -u -d "@$SOURCE_DATE_EPOCH" "$DATE_FMT" 2>/dev/null || \
+   date -u -r "$SOURCE_DATE_EPOCH" "$DATE_FMT" 2>/dev/null || \
+      date -u "$DATE_FMT"`
 AC_SUBST([DATE])
 
 # gettext
