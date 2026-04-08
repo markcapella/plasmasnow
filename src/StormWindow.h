@@ -27,13 +27,20 @@
 #include "PlasmaSnow.h"
 
 
-bool createStormWindow(Display* display,
-    GtkWidget* transparentGTKWindow, int xscreen,
-    int sticky, int below, GdkWindow** gdk_window,
-    Window* x11_window, int* wantx, int* wanty);
+GtkWidget* getGtkStormWindow();
+Window* getX11StormWindow();
 
-int setStormWindowAttributes(
-    GtkWidget *widget);
+int getWantMoveToX();
+int getWantMoveToY();
+bool isStormWindowCairoEnabled();
 
-void setTransparentWindowBelow(GtkWindow* window);
-void setTransparentWindowAbove(GtkWindow* window);
+bool canStartStormWindow();
+bool canCreateCompositedWindow();
+bool decorateStormWindow();
+
+int setStormWindowAttributes(GtkWidget* widget);
+void setStormWindowBelow();
+
+void connectStormWindowDraw();
+
+void setStormWindowStickyState(bool isSticky);

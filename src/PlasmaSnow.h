@@ -89,7 +89,6 @@
 #define time_sendevent 0.5          // time between sendEvent() calls
 #define time_sfallen 2.30           // time between smoothing of fallen snow
 #define time_show_range_etc 0.50    // time between showing range etc.
-#define TIME_BETWEEN_SCENERY_BLOWOFF_FRAME_UPDATES 0.50     // time between redrawings of snow on trees
 
 #define time_testing 2.10  // time between testing code
 #define time_umoon 0.04    // time between update position of moon
@@ -197,7 +196,7 @@ extern struct _mGlobal {
         bool hasDestopWindow;
         char* DesktopSession;
 
-        bool hasTransparentWindow;
+        bool hasStormWindow;
         char* mPlasmaWindowTitle;
 
         int WindowOffsetX;

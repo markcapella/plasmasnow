@@ -731,6 +731,7 @@ void dripRainFromFallen(FallenSnow* fsnow) {
         fsnow->x - ITEM_WIDTH : fsnow->x + fsnow->w;
     stormItem->yRealPosition = fsnow->y;
 
+    stormItem->massValue = drand48() + 1.0;
     stormItem->xVelocity = 0;
     const double MAX_WIND_SENSITIVITY = 0.4;
     stormItem->windSensitivity = drand48() *
@@ -1067,7 +1068,6 @@ void doWinInfoInitialAdds() {
 
         FallenSnow* fsnow = getFallenForWindow(
             addedWinInfo->window);
-
         if (!fsnow) {
             if (addedWinInfo->window != mGlobal.SnowWin &&
                 addedWinInfo->y > 0 && !addedWinInfo->dock &&
@@ -1079,14 +1079,17 @@ void doWinInfoInitialAdds() {
                 // To fix, we'll delay the pushFallenSnowItem() until
                 // the app actually provides (draws) any window data.
                 XClassHint classHints;
-                XGetClassHint(mGlobal.display, addedWinInfo->window,
-                    &classHints);
-                if (strcmp(classHints.res_class, "Google-chrome") == 0 ||
-                     strcmp(classHints.res_class, "Chromium") == 0) {
-                    // Bypass if transparent (matches background).
-                    if (windowIsTransparent(addedWinInfo->window)) {
-                        addedWinInfo++;
-                        continue;
+                if (XGetClassHint(mGlobal.display, addedWinInfo->window,
+                    &classHints) == Success) {
+                    if (strcmp(classHints.res_class, "Google-chrome") == 0 ||
+                         strcmp(classHints.res_class, "Chromium") == 0) {
+                        // Bypass if transparent (matches background).
+                        if (windowIsTransparent(addedWinInfo->window)) {
+                            XFree(classHints.res_class);
+                            XFree(classHints.res_name);
+                            addedWinInfo++;
+                            continue;
+                        }
                     }
                 }
 

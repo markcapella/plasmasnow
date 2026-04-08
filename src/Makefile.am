@@ -31,7 +31,7 @@ plasmasnow_CPPFLAGS = $(GTK_CFLAGS) -g3 \
 	$(X11_CFLAGS) $(GSL_CFLAGS) -DLOCALEDIR=\"$(LOCALEDIR)\" \
 	-DLANGUAGES='"$(LANGUAGES)"'
 plasmasnow_LDADD = libxdo.a $(GTK_LIBS) $(X11_LIBS) \
-	-lncurses $(GSL_LIBS) $(LIBINTL) 
+	$(GSL_LIBS) $(LIBINTL) 
 libxdo_a_CPPFLAGS = $(X11_CFLAGS)
 
 if USE_NLS

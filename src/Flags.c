@@ -37,69 +37,25 @@
 #include "Windows.h"
 
 
-FLAGS Flags;
-FLAGS OldFlags;
-FLAGS DefaultFlags;
-FLAGS VintageFlags;
-
-static void ReadFlags();
-static void SetDefaultFlags();
-static void findflag(FILE *f, const char *x, char **value);
-
-static long int S2Int(char *s) // string to integer
-{
-    return strtol(s, NULL, 0);
-}
-static long int S2PosInt(char *s) // string to positive integer
-{
-    int x = S2Int(s);
-    if (x < 0) {
-        return 0;
-    }
-    return x;
-}
-
-static char *FlagsFile = NULL;
-static int FlagsFileAvailable = 1;
-
-void SetDefaultFlags() {
-#define DOIT_I(x, d, v) Flags.x = DefaultFlags.x;
-#define DOIT_S(x, d, v)                                                        \
-    free(Flags.x);                                                             \
-    Flags.x = strdup(DefaultFlags.x);
-#define DOIT_L(x, d, v) DOIT_I(x, d, v)
-    DOITALL;
-#include "undefall.inc"
-}
-
+/**
+ *
+ */
 // return value:
 // -1: error found
 // 0: all is well
 // 1: did request, program can stop.
 #define checkax                                                                \
-    {                                                                          \
-        if (ax >= argc - 1) {                                                  \
-            fprintf(stderr, "** missing parameter for '%s', exiting.\n",       \
-                argv[ax]);                                                     \
-            return -1;                                                         \
-        }                                                                      \
-    }
-
-void InitFlags() {
-    // to make sure that strings in Flags are malloc'd
-#define DOIT_I(x, d, v)                                                        \
-    Flags.x = 0;                                                               \
-    DefaultFlags.x = d;                                                        \
-    VintageFlags.x = v;
-#define DOIT_L DOIT_I
-#define DOIT_S(x, d, v)                                                        \
-    Flags.x = strdup("");                                                      \
-    DefaultFlags.x = strdup(d);                                                \
-    VintageFlags.x = strdup(v);
-    DOITALL;
-#include "undefall.inc"
+{                                                                          \
+    if (ax >= argc - 1) {                                                  \
+        fprintf(stderr, "** missing parameter for '%s', exiting.\n",       \
+            argv[ax]);                                                     \
+        return -1;                                                         \
+    }                                                                      \
 }
 
+/**
+ *
+ */
 #define handlestring(x)                                                        \
     checkax;                                                                   \
     free(Flags.x);                                                             \
@@ -135,6 +91,167 @@ void InitFlags() {
     }                                                                          \
     while (0)
 
+/**
+ *
+ */
+FLAGS Flags;
+FLAGS OldFlags;
+FLAGS DefaultFlags;
+FLAGS VintageFlags;
+
+char* FlagsFile = NULL;
+int FlagsFileAvailable = 1;
+
+void ReadFlags();
+void SetDefaultFlags();
+void findflag(FILE* f, const char* x, char** value);
+
+/**
+ *
+ */
+// string to integer
+long int S2Int(char* s) {
+    return strtol(s, NULL, 0);
+}
+
+/**
+ *
+ */
+// string to positive integer
+long int S2PosInt(char* s) {
+    const int x = S2Int(s);
+    return (x < 0) ? 0 : x;
+}
+
+/**
+ *
+ */
+void SetDefaultFlags() {
+    #define DOIT_I(x, d, v) Flags.x = DefaultFlags.x;
+    #define DOIT_S(x, d, v)                                                        \
+        free(Flags.x);                                                             \
+        Flags.x = strdup(DefaultFlags.x);
+    #define DOIT_L(x, d, v) DOIT_I(x, d, v)
+        DOITALL;
+    #include "undefall.inc"
+}
+
+/**
+ *
+ */
+void InitFlags() {
+    // to make sure that strings in Flags are malloc'd
+    #define DOIT_I(x, d, v)                                                        \
+        Flags.x = 0;                                                               \
+        DefaultFlags.x = d;                                                        \
+        VintageFlags.x = v;
+    #define DOIT_L DOIT_I
+    #define DOIT_S(x, d, v)                                                        \
+        Flags.x = strdup("");                                                      \
+        DefaultFlags.x = strdup(d);                                                \
+        VintageFlags.x = strdup(v);
+        DOITALL;
+    #include "undefall.inc"
+}
+
+/**
+ *
+ */
+void setOldFlagsFromFlags() {
+    OldFlags.Changes = Flags.Changes;
+    OldFlags.Defaults = Flags.Defaults;
+    OldFlags.Desktop = Flags.Desktop;
+    OldFlags.shutdownRequested = Flags.shutdownRequested;
+    OldFlags.ForceRoot = Flags.ForceRoot;
+    OldFlags.FullScreen = Flags.FullScreen;
+    OldFlags.HideMenu = Flags.HideMenu;
+    OldFlags.NoConfig = Flags.NoConfig;
+    OldFlags.NoMenu = Flags.NoMenu;
+    OldFlags.Noisy = Flags.Noisy;
+    OldFlags.StopAfter = Flags.StopAfter;
+    OldFlags.useDoubleBuffers = Flags.useDoubleBuffers;
+    OldFlags.WindNow = Flags.WindNow;
+    OldFlags.XWinInfoHandling = Flags.XWinInfoHandling;
+    OldFlags.WindowId = Flags.WindowId;
+    OldFlags.DisplayName = strdup(Flags.DisplayName);
+    OldFlags.BlowOffFactor = Flags.BlowOffFactor;
+    OldFlags.BlowSnow = Flags.BlowSnow;
+    OldFlags.DesiredNumberOfTrees = Flags.DesiredNumberOfTrees;
+    OldFlags.FlakeCountMax = Flags.FlakeCountMax;
+    OldFlags.Halo = Flags.Halo;
+    OldFlags.HaloBright = Flags.HaloBright;
+    OldFlags.MaxOnTrees = Flags.MaxOnTrees;
+    OldFlags.MaxScrSnowDepth = Flags.MaxScrSnowDepth;
+    OldFlags.MaxWinSnowDepth = Flags.MaxWinSnowDepth;
+    OldFlags.MeteorFrequency = Flags.MeteorFrequency;
+    OldFlags.Moon = Flags.Moon;
+    OldFlags.MoonSpeed = Flags.MoonSpeed;
+    OldFlags.MoonSize = Flags.MoonSize;
+    OldFlags.MoonColor = Flags.MoonColor;
+    OldFlags.NoKeepSnowOnBottom = Flags.NoKeepSnowOnBottom;
+    OldFlags.NoKeepSnow = Flags.NoKeepSnow;
+    OldFlags.NoKeepSnowOnTrees = Flags.NoKeepSnowOnTrees;
+    OldFlags.NoKeepSnowOnWindows = Flags.NoKeepSnowOnWindows;
+    OldFlags.NoMeteors = Flags.NoMeteors;
+    OldFlags.NoSanta = Flags.NoSanta;
+    OldFlags.NoSnowFlakes = Flags.NoSnowFlakes;
+    OldFlags.NoTrees = Flags.NoTrees;
+    OldFlags.NoWind = Flags.NoWind;
+    OldFlags.NStars = Flags.NStars;
+    OldFlags.OffsetW = Flags.OffsetW;
+    OldFlags.OffsetX = Flags.OffsetX;
+    OldFlags.Overlap = Flags.Overlap;
+    OldFlags.Rudolf = Flags.Rudolf;
+    OldFlags.SantaSize = Flags.SantaSize;
+    OldFlags.SantaSpeedFactor = Flags.SantaSpeedFactor;
+    OldFlags.SantaScale = Flags.SantaScale;
+    OldFlags.SnowFlakesFactor = Flags.SnowFlakesFactor;
+    OldFlags.ShapeSizeFactor = Flags.ShapeSizeFactor;
+    OldFlags.mStormItemsSpeedFactor = Flags.mStormItemsSpeedFactor;
+    OldFlags.Stars = Flags.Stars;
+    OldFlags.TreeFill = Flags.TreeFill;
+    OldFlags.TreeScale = Flags.TreeScale;
+    OldFlags.VintageFlakes = Flags.VintageFlakes;
+    OldFlags.WhirlFactor = Flags.WhirlFactor;
+    OldFlags.WhirlTimer = Flags.WhirlTimer;
+    OldFlags.Screen = Flags.Screen;
+    OldFlags.AllWorkspaces = Flags.AllWorkspaces;
+    OldFlags.mAppTheme = Flags.mAppTheme;
+    OldFlags.Outline = Flags.Outline;
+    OldFlags.CpuLoad = Flags.CpuLoad;
+    OldFlags.Transparency = Flags.Transparency;
+    OldFlags.Scale = Flags.Scale;
+    OldFlags.OffsetS = Flags.OffsetS;
+    OldFlags.OffsetY = Flags.OffsetY;
+    OldFlags.IgnoreTop = Flags.IgnoreTop;
+    OldFlags.IgnoreBottom = Flags.IgnoreBottom;
+    OldFlags.StormItemColor1 = strdup(Flags.StormItemColor1);
+    OldFlags.StormItemColor2 = strdup(Flags.StormItemColor2);
+    OldFlags.BirdsColor = strdup(Flags.BirdsColor);
+    OldFlags.TreeColor = strdup(Flags.TreeColor);
+    OldFlags.TreeType = strdup(Flags.TreeType);
+    OldFlags.Anarchy = Flags.Anarchy;
+    OldFlags.AttrFactor = Flags.AttrFactor;
+    OldFlags.BirdsScale = Flags.BirdsScale;
+    OldFlags.AttrSpace = Flags.AttrSpace;
+    OldFlags.BirdsSpeed = Flags.BirdsSpeed;
+    OldFlags.DisWeight = Flags.DisWeight;
+    OldFlags.FollowWeight = Flags.FollowWeight;
+    OldFlags.FollowSanta = Flags.FollowSanta;
+    OldFlags.Nbirds = Flags.Nbirds;
+    OldFlags.Neighbours = Flags.Neighbours;
+    OldFlags.PrefDistance = Flags.PrefDistance;
+    OldFlags.ShowAttrPoint = Flags.ShowAttrPoint;
+    OldFlags.ShowBirds = Flags.ShowBirds;
+    OldFlags.ViewingDistance = Flags.ViewingDistance;
+    OldFlags.BackgroundFile = strdup(Flags.BackgroundFile);
+    OldFlags.BlackBackground = Flags.BlackBackground;
+    OldFlags.Language = strdup(Flags.Language);
+}
+
+/**
+ *
+ */
 int HandleFlags(int argc, char *argv[]) {
     SetDefaultFlags();
 
@@ -169,12 +286,13 @@ int HandleFlags(int argc, char *argv[]) {
                 return 1;
             }
 
-#ifdef SELFREP
+            #ifdef SELFREP
             else if (!strcmp(arg, "-selfrep")) {
                 selfrep();
                 return 1;
             }
-#endif
+            #endif
+
             //  ------------------- end of handled in main --------------------
 
             else if (strcmp(arg, "-nokeepsnow") == 0) {
@@ -191,14 +309,14 @@ int HandleFlags(int argc, char *argv[]) {
 
             } else if (strcmp(arg, "-vintage") == 0) {
 
-#define DOIT_I(x, d, v) Flags.x = VintageFlags.x;
-#define DOIT_L DOIT_I
-#define DOIT_S(x, d, v) \
-    free(Flags.x); \
-    Flags.x = strdup(VintageFlags.x);
+            #define DOIT_I(x, d, v) Flags.x = VintageFlags.x;
+            #define DOIT_L DOIT_I
+            #define DOIT_S(x, d, v) \
+                free(Flags.x); \
+                Flags.x = strdup(VintageFlags.x);
 
-                DOITALL
-#include "undefall.inc"
+                            DOITALL
+            #include "undefall.inc"
 
             } else if (strcmp(arg, "-desktop") == 0) {
                 Flags.Desktop = 1;
@@ -317,28 +435,37 @@ int HandleFlags(int argc, char *argv[]) {
             }
         }
     }
+
     if ((Flags.SantaSize < 0) || (Flags.SantaSize > MAXSANTA)) {
         printf("** Maximum Santa is %d\n", MAXSANTA);
         return -1;
     }
+
     if (!strcmp(Flags.TreeType, "all")) {
         free(Flags.TreeType);
         Flags.TreeType = (char *)malloc(1 + 2 + sizeof(DefaultFlags.TreeType));
         Flags.TreeType = strdup("0,");
         strcat(Flags.TreeType, DefaultFlags.TreeType);
     }
+
     if (Flags.ShapeSizeFactor > 40) {
         printf("snowsize brought back from %d to 40\n", Flags.ShapeSizeFactor);
         Flags.ShapeSizeFactor = 40;
     }
+
     return 0;
 }
+
 #undef checkax
 #undef handlestring
 #undef handle_iv
 #undef handle_is
 #undef handle_ia
 
+
+/**
+ *
+ */
 static void makeflagsfile() {
     if (FlagsFile != NULL || FlagsFileAvailable == 0) {
         return;
@@ -356,6 +483,9 @@ static void makeflagsfile() {
     strcat(FlagsFile, FLAGSFILE);
 }
 
+/**
+ *
+ */
 void findflag(FILE *f, const char *x, char **value) {
     char *line = NULL;
     char *flag = NULL;
@@ -409,6 +539,9 @@ void findflag(FILE *f, const char *x, char **value) {
     }
 }
 
+/**
+ *
+ */
 void ReadFlags() {
     FILE *f;
     long int intval;
@@ -449,6 +582,9 @@ void ReadFlags() {
     fclose(f);
 }
 
+/**
+ *
+ */
 void WriteFlags() {
     makeflagsfile();
     if (!FlagsFileAvailable) {

@@ -22,10 +22,6 @@
 #include "buttons.h"
 #include <pthread.h>
 
-#define NEWLINE
-// #undef NEWLINE
-#ifdef NEWLINE
-
 #include <assert.h>
 #include <math.h>
 #include <pthread.h>
@@ -65,17 +61,6 @@
 #include "version.h"
 #include "Windows.h"
 
-
-/***********************************************************
- * Module consts.
- */
-#ifndef DEBUG
-#define DEBUG
-#endif
-// Flip and rebuild :)
-#undef DEBUG
-
-#endif /* NEWLINE */
 
 #ifdef __cplusplus
 #define MODULE_EXPORT extern "C" G_MODULE_EXPORT
@@ -247,6 +232,9 @@ typedef struct {
         GtkWidget *button;
         gdouble value;
 } SantaButton;
+
+#define NEWLINE
+// #undef NEWLINE
 
 // NBUTTONS is number of Santas to choose from.
 #define NBUTTONS (2 * (MAXSANTA + 1))
@@ -1158,8 +1146,14 @@ void createMainWindow() {
     const char* PLASMASNOW_ICON =
         "/usr/share/pixmaps/plasmasnow.png";
     GError* error = NULL;
-    gtk_window_set_icon_from_file(GTK_WINDOW(mMainWindow),
-        PLASMASNOW_ICON, &error);
+    if (gtk_window_set_icon_from_file(GTK_WINDOW(mMainWindow),
+        PLASMASNOW_ICON, &error) == 0) {
+        printf("plasmasnow: createMainWindow() Icon not loaded "
+            "from file, error |%s|.\n", error->message);
+    } else {
+        printf("plasmasnow: createMainWindow() Icon loaded "
+            "from file.\n");
+    }
 
     if (getenv("plasmasnow_RESTART")) {
         gtk_window_set_position(GTK_WINDOW(mMainWindow),
@@ -1211,11 +1205,11 @@ void createMainWindow() {
         gtk_widget_set_sensitive(GTK_WIDGET(ScreenButton), FALSE);
         Flags.Screen = -1;
     }
-    if (Flags.Screen < -1) {
-        Flags.Screen = -1;
-    }
     if (Flags.Screen >= mXineramaScreenCount) {
         Flags.Screen = mXineramaScreenCount - 1;
+    }
+    if (Flags.Screen < -1) {
+        Flags.Screen = -1;
     }
 
     gtk_combo_box_text_remove_all(ScreenButton);

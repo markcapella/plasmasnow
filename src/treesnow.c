@@ -45,7 +45,7 @@
 /** *********************************************************************
  ** Module globals and consts.
  **/
-
+const float TIME_BETWEEN_SCENERY_THREADS = 0.50;
 
 /** *********************************************************************
  ** This method ...
@@ -53,7 +53,7 @@
 void treesnow_init() {
     mGlobal.gSnowOnTreesRegion = cairo_region_create();
     addMethodToMainloop(PRIORITY_DEFAULT,
-        TIME_BETWEEN_SCENERY_BLOWOFF_FRAME_UPDATES,
+        TIME_BETWEEN_SCENERY_THREADS,
         (GSourceFunc) execTreesnowBackgroundThread);
 }
 

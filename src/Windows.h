@@ -106,6 +106,7 @@ extern "C" {
     char* getTitleOfWindow();
     void setTitleOfWindow(Window);
 
+    bool isWindowOnBottomByNetWMState(Window window);
     long int isWindowVisibleOnWorkspace(Window window);
     bool isWindowHidden(Window window, int windowMapState);
     bool isWindowHiddenByNetWMState(Window window);

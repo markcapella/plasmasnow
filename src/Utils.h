@@ -41,7 +41,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
     FILE* HomeOpen(const char *file, const char *mode, char **path);
 
     void remove_from_mainloop(guint *tag);
@@ -60,9 +59,8 @@ extern "C" {
         float time, GSourceFunc method, gpointer arg);
 
     int randomIntegerUpTo(int m);
-    void clearDisplayArea(Display* display,
-        Window win, int x, int y, int w, int h,
-        int exposures);
+    void clearDisplayArea(Display* display, Window win,
+        int x, int y, int w, int h, int exposures);
     void my_cairo_paint_with_alpha(cairo_t* cc, double alpha);
 
     int ValidColor(const char *color);
@@ -73,7 +71,7 @@ extern "C" {
     int IsReadableFile(char *path);
     ssize_t mywrite(int fd, const void *buf, size_t count);
     float gaussf(float x, float mu, float sigma);
-    char *guess_language();
+    char* guess_language();
     void fill_xdo_search(xdo_search_t *search);
 
     // Obtain normally distributed number. The number will be

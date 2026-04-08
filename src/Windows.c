@@ -41,7 +41,6 @@
 #include "PlasmaSnow.h"
 #include "safe_malloc.h"
 #include "scenery.h"
-#include "StormWindow.h"
 #include "Utils.h"
 #include "Windows.h"
 #include "WinInfo.h"
@@ -71,7 +70,7 @@ char mTitleOfWindow[MAX_TITLE_STRING_LENGTH + 1];
  **/
 void addWindowsModuleToMainloop() {
     if (mGlobal.hasDestopWindow) {
-        mGlobal.currentWS = getCurrentWorkspaceNumber();
+        mGlobal.currentWS = getCurrentWorkspace();
         getCurrentWorkspaceData();
 
         addMethodToMainloop(PRIORITY_DEFAULT, time_wupdate,
@@ -157,24 +156,33 @@ void getCurrentWorkspaceData() {
     if (probeWindow) {
         XDestroyWindow(mGlobal.display, probeWindow);
     } else {
-        attr.background_pixel = WhitePixel(mGlobal.display, mGlobal.Screen);
-        attr.border_pixel = WhitePixel(mGlobal.display, mGlobal.Screen);
+        attr.background_pixel = WhitePixel(
+            mGlobal.display, mGlobal.Screen);
+        attr.border_pixel = WhitePixel(
+            mGlobal.display, mGlobal.Screen);
+
         attr.event_mask = ButtonPressMask;
         valuemask = CWBackPixel | CWBorderPixel | CWEventMask;
+
         class_hints.res_name = (char*) "plasmasnow";
         class_hints.res_class = (char*) "plasmasnow";
-        motif_hints = XInternAtom(mGlobal.display, "_MOTIF_WM_HINTS", False);
+
+        motif_hints = XInternAtom(mGlobal.display,
+            "_MOTIF_WM_HINTS", False);
         wmsize.flags = USPosition | USSize;
     }
 
-    probeWindow = XCreateWindow(mGlobal.display, mGlobal.Rootwindow, 1, 1, 1, 1,
-        10, DefaultDepth(mGlobal.display, mGlobal.Screen), InputOutput,
-        DefaultVisual(mGlobal.display, mGlobal.Screen), valuemask, &attr);
+    probeWindow = XCreateWindow(mGlobal.display,
+        mGlobal.Rootwindow, 1, 1, 1, 1, 10,
+        DefaultDepth(mGlobal.display, mGlobal.Screen),
+        InputOutput, DefaultVisual(mGlobal.display,
+        mGlobal.Screen), valuemask, &attr);
 
     XSetClassHint(mGlobal.display, probeWindow, &class_hints);
     XSetWMNormalHints(mGlobal.display, probeWindow, &wmsize);
-    XChangeProperty(mGlobal.display, probeWindow, motif_hints, motif_hints, 32,
-        PropModeReplace, (unsigned char *) &hints, 5);
+    XChangeProperty(mGlobal.display, probeWindow, motif_hints,
+        motif_hints, 32, PropModeReplace, (unsigned char*)
+        &hints, 5);
     xdo_map_window(mGlobal.xdo, probeWindow);
 
     // BSPWM has xinerama screens in different WS's.
@@ -422,7 +430,7 @@ int updateWindowsList() {
     mGlobal.WindowsChanged = 0;
 
     // Get current workspace number & sanity check.
-    const long WORKSPACE = getCurrentWorkspaceNumber();
+    const long WORKSPACE = getCurrentWorkspace();
     if (WORKSPACE < 0) {
         unlockFallenSnowBaseSemaphore();
         printf("%splasmasnow: Virtual workspace has been lost - FATAL.%s\n",
@@ -445,7 +453,7 @@ int updateWindowsList() {
     }
 
     // Update windows list.
-    getWinInfoForAllWindows();
+    populateWinInfoHelper();
     for (int i = 0; i < mGlobal.winInfoListLength; i++) {
         mGlobal.winInfoList[i].x += mGlobal.WindowOffsetX - mGlobal.SnowWinX;
         mGlobal.winInfoList[i].y += mGlobal.WindowOffsetY - mGlobal.SnowWinY;
@@ -454,7 +462,7 @@ int updateWindowsList() {
     // Sanity check Snow window every time.
     if (mGlobal.SnowWin != mGlobal.Rootwindow) {
         WinInfo* winInfo = getWinInfoForWindow(mGlobal.SnowWin);
-        if (!winInfo && !mGlobal.hasTransparentWindow) {
+        if (!winInfo && !mGlobal.hasStormWindow) {
             printf("%splasmasnow: SnowWindow has been lost - FATAL.%s\n",
                 COLOR_RED, COLOR_NORMAL);
             Flags.shutdownRequested = 1;
@@ -585,7 +593,7 @@ void onAppWindowChange(Window window) {
  **/
 void onWindowCreated(XEvent* event) {
     // Update our list to include the created one.
-    getWinInfoForAllWindows();
+    populateWinInfoHelper();
 
     // Is this a signature of a transient Plasma DRAG Window
     // being created? If not, early exit.
@@ -638,7 +646,7 @@ void onConfigureNotify(__attribute__((unused)) XEvent* event) {
  **/
 void onWindowMapped(XEvent* event) {
     // Update our list for visibility change.
-    getWinInfoForAllWindows();
+    populateWinInfoHelper();
 
     // Determine window drag state.
     if (!isWindowBeingDragged()) {
@@ -711,7 +719,7 @@ void onWindowBlurred(__attribute__((unused)) XEvent* event) {
  **/
 void onWindowUnmapped(__attribute__((unused)) XEvent* event) {
     // Update our list for visibility change.
-    getWinInfoForAllWindows();
+    populateWinInfoHelper();
 
     // Clear window drag state.
     if (isWindowBeingDragged()) {
@@ -724,7 +732,7 @@ void onWindowUnmapped(__attribute__((unused)) XEvent* event) {
  **/
 void onWindowDestroyed(__attribute__((unused)) XEvent* event) {
     // Update our list to reflect the destroyed one.
-    getWinInfoForAllWindows();
+    populateWinInfoHelper();
 
     // Clear window drag state.
     if (isWindowBeingDragged()) {
@@ -859,6 +867,40 @@ void setTitleOfWindow(Window window) {
         mTitleOfWindow[outP] = ' ';
     }
     mTitleOfWindow[outP] = '\0';
+}
+
+/**
+ * This method checks "_NET_WM_STATE" for window
+ * _NET_WM_STATE_BELOW attribute.
+ */
+bool isWindowOnBottomByNetWMState(Window window) {
+    bool result = false;
+
+    Atom type;
+    int format;
+    unsigned long nitems, unusedBytes;
+
+    unsigned char* properties = NULL;
+    XGetWindowProperty(mGlobal.display, window,
+        XInternAtom(mGlobal.display, "_NET_WM_STATE", False),
+        0, (~0L), False, AnyPropertyType, &type, &format,
+        &nitems, &unusedBytes, &properties);
+
+    if (format == 32) {
+        for (unsigned long i = 0; i < nitems; i++) {
+            char* nameString = XGetAtomName(mGlobal.display,
+                ((Atom *) (void *) properties) [i]);
+            if (strcmp(nameString, "_NET_WM_STATE_BELOW") == 0) {
+                result = true;
+                XFree(nameString);
+                break;
+            }
+            XFree(nameString);
+        }
+    }
+    XFree(properties);
+
+    return result;
 }
 
 /** *********************************************************************

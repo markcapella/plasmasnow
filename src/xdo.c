@@ -420,24 +420,6 @@ int xdo_set_window_override_redirect(
 /** *********************************************************************
  ** This method ...
  **/
-int xdo_set_window_class(
-    const xdo_t *xdo, Window wid, const char *name, const char *_class) {
-    int ret = 0;
-    XClassHint *hint = XAllocClassHint();
-    XGetClassHint(xdo->xdpy, wid, hint);
-    if (name != NULL) {
-        hint->res_name = (char *)name;
-    }
-
-    if (_class != NULL) {
-        hint->res_class = (char *)_class;
-    }
-
-    ret = XSetClassHint(xdo->xdpy, wid, hint);
-    XFree(hint);
-    return printMsgIfConditionTrue("XSetClassHint", ret == 0, xdo);
-}
-
 int xdo_set_window_urgency(const xdo_t *xdo, Window wid, int urgency) {
     int ret = 0;
     XWMHints *hint = XGetWMHints(xdo->xdpy, wid);

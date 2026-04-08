@@ -34,7 +34,7 @@
 
 #define LEAVE_IF_INACTIVE \
     if (!Flags.Moon || !isWorkspaceActive()) \
-    return TRUE
+    return true
 
 int do_umoon();
 void init_moon_surface();
@@ -88,7 +88,7 @@ int moon_draw(cairo_t *cr) {
 
     halo_draw(cr);
 
-    return TRUE;
+    return true;
 }
 
 int moon_erase(int force) {
@@ -189,11 +189,11 @@ int do_umoon() {
     static int ydirection = 1;
 
     if (Flags.shutdownRequested) {
-        return FALSE;
+        return false;
     }
     LEAVE_IF_INACTIVE;
     if (!Flags.Moon) {
-        return TRUE;
+        return true;
     }
 
     mGlobal.moonX += xdirection * time_umoon * Flags.MoonSpeed / 60.0;
@@ -215,7 +215,7 @@ int do_umoon() {
         ydirection = 1;
     }
 
-    return TRUE;
+    return true;
 }
 
 void init_halo_surface() {

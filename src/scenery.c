@@ -567,60 +567,37 @@ void clearAndRedrawScenery() {
 //  flop: if 1, reverse the data horizontally
 //  Extra: 0xff000000 is added to the pixmap data
 //
-int iXpmCreatePixmapFromData(Display *display, Drawable d, const char *data[],
-    Pixmap *p, Pixmap *s, XpmAttributes *attr, int flop) {
-    int rc, lines, ncolors, height, w;
-    char **idata;
+void iXpmCreatePixmapFromData(Display* display, Drawable d,
+    const char* data[], Pixmap* p, Pixmap* s,
+    XpmAttributes* attr, int flop) {
 
+    int height, ncolors, w;
     sscanf(data[0], "%*s %d %d %d", &height, &ncolors, &w);
-    lines = height + ncolors + 1;
-    idata = (char **)malloc(lines * sizeof(*idata));
+    int lines = height + ncolors + 1;
+
+    char** idata = (char**) malloc(
+        lines * sizeof(*idata));
 
     for (int i = 0; i < lines; i++) {
         idata[i] = strdup(data[i]);
     }
 
-    // flop the image data
     if (flop) {
         for (int i = 1 + ncolors; i < lines; i++) {
             strrevertScenery(idata[i], w);
         }
     }
 
-    XImage *ximage = NULL, *shapeimage = NULL;
-    rc = XpmCreateImageFromData(display, idata, &ximage, &shapeimage, attr);
-    // NOTE: shapeimage is only created if color None is defined ...
-    if (rc != 0) {
-        switch (rc) {
-        case 1:
-            printf("XpmColorError\n");
-            for (int i = 0; i < lines; i++) {
-                printf("\"%s\",\n", idata[i]);
-            }
-            break;
-        case -1:
-            printf("XpmOpenFailed\n");
-            break;
-        case -2:
-            printf("XpmFileInvalid\n");
-            break;
-        case -3:
-            printf("XpmNoMemory: maybe issue with width of data: w=%d\n", w);
-            break;
-        case -4:
-            printf("XpmColorFailed\n");
-            for (int i = 0; i < lines; i++) {
-                printf("\"%s\",\n", idata[i]);
-            }
-            break;
-        default:
-            printf("%d\n", rc);
-            break;
-        }
-        printf("exiting\n");
+    XImage* ximage = NULL;
+    XImage* shapeimage = NULL;
+    if (XpmCreateImageFromData(display, idata,
+        &ximage, &shapeimage, attr) != 0) {
+        fprintf(stderr, "plasmasnow: XPM Could not create "
+            "Scenery pixmaps, Fatal.");
         fflush(NULL);
         abort();
     }
+
     XAddPixel(ximage, 0xff000000);
     if (p && ximage) {
         xpmCreatePixmapFromImage(display, d, ximage, p);
@@ -628,17 +605,18 @@ int iXpmCreatePixmapFromData(Display *display, Drawable d, const char *data[],
     if (s && shapeimage) {
         xpmCreatePixmapFromImage(display, d, shapeimage, s);
     }
+
     if (ximage) {
         XDestroyImage(ximage);
     }
     if (shapeimage) {
         XDestroyImage(shapeimage);
     }
+
     for (int i = 0; i < lines; i++) {
         free(idata[i]);
     }
     free(idata);
-    return rc;
 }
 
 // reverse characters in string, characters taken in chunks of l

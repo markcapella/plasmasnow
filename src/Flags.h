@@ -60,21 +60,22 @@ typedef struct _flags {
         DOITALL
         int dummy;
 } FLAGS;
+
 #undef DOIT_I
 #undef DOIT_L
 #undef DOIT_S
-
-extern FLAGS Flags;
-extern FLAGS OldFlags;
-extern FLAGS DefaultFlags;
-extern FLAGS VintageFlags;
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+    extern FLAGS Flags;
+    extern FLAGS OldFlags;
+    extern FLAGS DefaultFlags;
+    extern FLAGS VintageFlags;
 
     void InitFlags();
+    void setOldFlagsFromFlags();
     int HandleFlags(int argc, char *argv[]);
     void WriteFlags();
 

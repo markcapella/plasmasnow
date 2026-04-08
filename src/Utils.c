@@ -28,11 +28,9 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include <X11/Intrinsic.h>
-
 #include <gtk/gtk.h>
-
 #include <gsl/gsl_sort.h>
+#include <X11/Intrinsic.h>
 
 #include "PlasmaSnow.h"
 
@@ -40,15 +38,15 @@
 #include "meteor.h"
 #include "mygettext.h"
 #include "safe_malloc.h"
-#include "Utils.h"
 #include "version.h"
 #include "Windows.h"
 #include "xdo.h"
 
+#include "Utils.h"
 
-/***********************************************************
- ** Helper methods to schedule threads.
- **/
+/**
+ * Helper methods to schedule threads.
+ */
 guint addMethodToMainloop(gint prio, float time,
     GSourceFunc method) {
 
@@ -56,6 +54,9 @@ guint addMethodToMainloop(gint prio, float time,
         (0.95 + 0.1 * drand48())), method, NULL, NULL);
 }
 
+/**
+ * This method ...
+ */
 guint addMethodWithArgToMainloop(gint prio, float time,
     GSourceFunc method, gpointer arg) {
 
@@ -63,9 +64,9 @@ guint addMethodWithArgToMainloop(gint prio, float time,
         (0.95 + 0.1 * drand48()), method, arg, NULL);
 }
 
-/***********************************************************
- ** Helper methods.
- **/
+/**
+ * Helper methods.
+ */
 int IsReadableFile(char *path) {
     if (!path || access(path, R_OK) != 0) {
         return 0;
@@ -76,6 +77,9 @@ int IsReadableFile(char *path) {
     return S_ISREG(path_stat.st_mode);
 }
 
+/**
+ * This method ...
+ */
 FILE* HomeOpen(const char *file, const char *mode, char **path) {
     char *h = getenv("HOME");
     if (h == NULL) {
@@ -93,6 +97,9 @@ FILE* HomeOpen(const char *file, const char *mode, char **path) {
     return f;
 }
 
+/**
+ * This method ...
+ */
 void clearGlobalSnowWindow() {
     // remove all our snow-related drawings
     XClearArea(mGlobal.display, mGlobal.SnowWin, 0, 0, 0, 0, True);
@@ -104,6 +111,9 @@ void clearGlobalSnowWindow() {
     XFlush(mGlobal.display);
 }
 
+/**
+ * This method ...
+ */
 ssize_t mywrite(int fd, const void *buf, size_t count) {
     const size_t m = 4096; // max per write
     size_t w = 0;          // # written chars
@@ -123,11 +133,11 @@ ssize_t mywrite(int fd, const void *buf, size_t count) {
     return 0;
 }
 
-/** *********************************************************************
- ** Module MAINLOOP methods.
- **/
-void clearDisplayArea(Display *dsp, Window win,
-    int x, int y, int w, int h, Bool exposures) {
+/**
+ * Module MAINLOOP methods.
+ */
+void clearDisplayArea(Display* display, Window win,
+    int x, int y, int w, int h, int exposures) {
     if (w == 0 || h == 0 ||
         w < 0 || h < 0 ||
         w > 20000 || h > 20000) {
@@ -135,13 +145,26 @@ void clearDisplayArea(Display *dsp, Window win,
         return;
     }
 
-    XClearArea(dsp, win, x, y, w, h, exposures);
+    XClearArea(display, win, x, y, w, h, exposures);
 }
 
-float sq3(float x, float y, float z) { return x * x + y * y + z * z; }
+/**
+ * This method ...
+ */
+float sq3(float x, float y, float z) {
+    return x * x + y * y + z * z;
+}
 
-float sq2(float x, float y) { return x * x + y * y; }
+/**
+ * This method ...
+ */
+float sq2(float x, float y) {
+    return x * x + y * y;
+}
 
+/**
+ * This method ...
+ */
 float fsignf(float x) {
     if (x > 0) {
         return 1.0f;
@@ -152,43 +175,45 @@ float fsignf(float x) {
     return 0.0f;
 }
 
-/***********************************************************
- ** This method ...
- **/
+/**
+ * This method ...
+ */
 int ValidColor(const char *colorName) {
     XColor scrncolor;
     XColor exactcolor;
     int scrn = DefaultScreen(mGlobal.display);
     return (
-        XAllocNamedColor(mGlobal.display, DefaultColormap(mGlobal.display, scrn),
+        XAllocNamedColor(mGlobal.display,
+            DefaultColormap(mGlobal.display, scrn),
             colorName, &scrncolor, &exactcolor));
 }
 
-/***********************************************************
- ** This method ...
- **/
+/**
+ * This method ...
+ */
 Pixel AllocNamedColor(const char *colorName, Pixel dfltPix) {
     XColor scrncolor;
     XColor exactcolor;
     int scrn = DefaultScreen(mGlobal.display);
-    if (XAllocNamedColor(mGlobal.display, DefaultColormap(mGlobal.display, scrn),
-            colorName, &scrncolor, &exactcolor)) {
+    if (XAllocNamedColor(mGlobal.display,
+        DefaultColormap(mGlobal.display, scrn),
+        colorName, &scrncolor, &exactcolor)) {
         return scrncolor.pixel;
     } else {
         return dfltPix;
     }
 }
 
-/***********************************************************
- ** This method ...
- **/
+/**
+ * This method ...
+ */
 Pixel IAllocNamedColor(const char *colorName, Pixel dfltPix) {
     return AllocNamedColor(colorName, dfltPix) | 0xff000000;
 }
 
-/***********************************************************
- ** This method ...
- **/
+/**
+ * This method ...
+ */
 int randomIntegerUpTo(int m) {
     if (m <= 0) {
         return 0;
@@ -196,13 +221,16 @@ int randomIntegerUpTo(int m) {
     return drand48() * m;
 }
 
-/***********************************************************
- ** This method ...
- **/
-// https://www.alanzucconi.com/2015/09/16/how-to-sample-from-a-gaussian-distribution/
+/**
+ * This method ...
+ */
+// https://www.alanzucconi.com/2015/09/16/
+// how-to-sample-from-a-gaussian-distribution/
 // Interesting but not used now in app
 
-double gaussian(double mean, double std, double min, double max) {
+double gaussian(double mean, double std, double min,
+    double max) {
+
     double x;
     do {
         double v1, v2, s;
@@ -213,12 +241,13 @@ double gaussian(double mean, double std, double min, double max) {
         } while (s >= 1.0 || s == 0);
         x = mean + v1 * sqrt((-2.0 * log(s)) / s) * std;
     } while (x < min || x > max);
+
     return x;
 }
 
-/***********************************************************
- ** This method ...
- **/
+/**
+ * This method ...
+ */
 void remove_from_mainloop(guint *tag) {
     if (*tag) {
         g_source_remove(*tag);
@@ -226,14 +255,17 @@ void remove_from_mainloop(guint *tag) {
     *tag = 0;
 }
 
-/***********************************************************
- ** This method ...
- **/
+/**
+ * This method ...
+ */
 int is_little_endian(void) {
     volatile int endiantest = 1;
     return (*(char *)&endiantest) == 1;
 }
 
+/**
+ * This method ...
+ */
 void my_cairo_paint_with_alpha(cairo_t *cr, double alpha) {
     if (alpha > 0.9) {
         cairo_paint(cr);
@@ -242,9 +274,9 @@ void my_cairo_paint_with_alpha(cairo_t *cr, double alpha) {
     }
 }
 
-/** *********************************************************************
- ** This method pretty-prints to log the app name, version, Author.
- **/
+/**
+ * This method pretty-prints to log the app name, version, Author.
+ */
 void logAppVersion() {
     const int numberOfStars = strlen(PACKAGE_STRING) + 4;
 
@@ -261,27 +293,27 @@ void logAppVersion() {
     printf("\n\n%s\n", VERSIONBY);
 }
 
-/** *********************************************************************
- ** This method ...
- **/
+/**
+ * This method ...
+ */
 void rgba2color(GdkRGBA *c, char **s) {
     *s = (char *)malloc(8);
     sprintf(*s, "#%02lx%02lx%02lx", lrint(c->red * 255), lrint(c->green * 255),
         lrint(c->blue * 255));
 }
 
-/***********************************************************
- ** These are helper methods for ItemColor.
- **/
+/**
+ * These are helper methods for ItemColor.
+ */
 GdkRGBA getRGBAFromString(char* colorString) {
     GdkRGBA result;
     gdk_rgba_parse(&result, colorString);
     return result;
 }
 
-/** *********************************************************************
- ** This method ...
- **/
+/**
+ * This method ...
+ */
 int appScalesHaveChanged(int* prevscale) {
     const int NEW_SCALE = (const int)
         (Flags.Scale * mGlobal.WindowScale);
@@ -293,6 +325,9 @@ int appScalesHaveChanged(int* prevscale) {
     return false;
 }
 
+/**
+ * This method ...
+ */
 // create sorted n random numbers in interval [0.0, 1.0) such that
 // adjacent numbers differ at least d.
 // If the distance between two numers is initially less than d,
@@ -368,17 +403,24 @@ void randomuniqarray(double *a, int n, double d, unsigned short *seed) {
     }
 }
 
+/**
+ * This method ...
+ */
 // inspired by Mr. Gauss, and adapted for app
 float gaussf(float x, float mu, float sigma) {
     float y = (x - mu) / sigma;
     float y2 = y * y;
     return expf(-y2);
 }
-// guess language. return string like "en", "nl" or NULL if no language can
-// be found
-char *guess_language() {
-    const char *tries[] = {"LANGUAGE", "LANG", "LC_ALL", "LC_MESSAGES",
-        "LC_NAME", "LC_TIME", NULL};
+
+/**
+ * This method guess language. return string like
+ * "en", "nl" or NULL if no language can be found.
+ */
+char* guess_language() {
+    const char *tries[] = {"LANGUAGE", "LANG", "LC_ALL",
+        "LC_MESSAGES", "LC_NAME", "LC_TIME", NULL};
+
     char *a, *b;
     int i = 0;
     while (tries[i]) {
@@ -399,9 +441,10 @@ char *guess_language() {
     return NULL;
 }
 
-/***********************************************************
- ** See man backtrace.
- **/
+/**
+ * This method ...
+ *    See man backtrace.
+ */
 void traceback() {
     #ifdef TRACEBACK_AVAILALBLE
         #define BT_BUF_SIZE 100

@@ -26,7 +26,7 @@
 #include <X11/Xlib.h>
 
 
-/***********************************************************
+/**
  * App WinInfo helper objects.
  */
 typedef struct _WinInfo {
@@ -37,22 +37,21 @@ typedef struct _WinInfo {
         int xa, ya;        // x,y coordinates absolute
         unsigned int w, h; // width, height
 
-        bool sticky; // is visible on all workspaces
-        bool dock;   // is a "dock" (panel)
-        bool hidden; // is hidden / iconized
+        bool sticky;       // is visible on all workspaces
+        bool dock;         // is a "dock" (panel)
+        bool hidden;       // is hidden / iconized
 } WinInfo;
 
 
-/***********************************************************
+/**
  * Module Method stubs.
  */
-WinInfo* getWinInfoForWindow(Window id);
+void populateWinInfoHelper();
 
-void getWinInfoForAllWindows();
-void getInitialWinInfoList(WinInfo** winInfolist,
-    int* listCount);
-void getFinalWinInfoList(WinInfo** winInfolist,
-    int* listCount);
+WinInfo* getWinInfoForWindow(Window window);
+
+void getInitialWinInfoList(WinInfo** list, int* size);
+void getFinalWinInfoList(WinInfo** list, int* size);
 
 // Debug.
 void logWinInfoStructColumns();

@@ -44,7 +44,7 @@ int drawSceneryFrame(cairo_t *cr);
 void respondToScenerySettingsChanges();
 void clearAndRedrawScenery();
 
-int iXpmCreatePixmapFromData(Display* display,
+void iXpmCreatePixmapFromData(Display* display,
     Drawable d, const char** data,
     Pixmap* p, Pixmap* s,
     XpmAttributes* attr, int flop);

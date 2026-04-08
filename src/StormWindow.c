@@ -30,179 +30,264 @@
 #include <gtk/gtk.h>
 
 #include "Application.h"
+#include "ColorCodes.h"
+#include "Flags.h"
 #include "StormWindow.h"
+#include "Utils.h"
 #include "Windows.h"
 
 
-/** *********************************************************************
- ** Module globals and consts.
- **/
+/**
+ * Module globals and consts.
+ */
+GtkWidget* mGtkStormWindow = NULL;
+GdkWindow* mGdkStormWindow;
+Window mX11StormWindow = None;
 
-/** *********************************************************************
- ** This method creates the main Storm Window.
- **/
-bool createStormWindow(Display* display, GtkWidget* stormWindow,
-    int xscreen, int sticky, int below,
-    GdkWindow** gdk_window,
-    Window* x11_window, int* wantx, int* wanty) {
+GtkWidget* getGtkStormWindow() {
+    return mGtkStormWindow;
+}
+Window* getX11StormWindow() {
+    return &mX11StormWindow;
+}
 
-    // Guard the outputs.
-    if (gdk_window) {
-        *gdk_window = NULL;
+int mX11StormWindowXPos = 0;
+int getWantMoveToX() {
+    return mX11StormWindowXPos;
+}
+
+int mX11StormWindowYPos = 0;
+int getWantMoveToY() {
+    return mX11StormWindowYPos;
+}
+
+guint mStormWindowGUID = 0;
+guint mCairoWindowGUID = 0;
+
+/**
+ * This method starts / creates the main storm window.
+ */
+bool canStartStormWindow() {
+    mGlobal.Rootwindow = DefaultRootWindow(
+        mGlobal.display);
+
+    mGlobal.hasDestopWindow = false;
+    mGlobal.hasStormWindow = false;
+
+    mGlobal.useDoubleBuffers = false;
+
+    mGlobal.xxposures = false;
+    mGlobal.XscreensaverMode = false;
+
+
+    mGlobal.isDoubleBuffered = false;
+
+    if (!canCreateCompositedWindow()) {
+        return false;
     }
-    if (x11_window) {
-        *x11_window = None;
+
+    mGlobal.WindowOffsetX = getWantMoveToX();
+    mGlobal.WindowOffsetY = getWantMoveToY();
+
+    mGlobal.isDoubleBuffered = mGlobal.hasStormWindow ||
+        mGlobal.useDoubleBuffers;
+
+    xdo_move_window(mGlobal.xdo, mGlobal.SnowWin,
+        getWantMoveToX(), getWantMoveToY());
+
+    initDisplayDimensions();
+
+    mGlobal.SnowWinX = getWantMoveToX();
+    mGlobal.SnowWinY = getWantMoveToY();
+
+    SetWindowScale();
+
+    if (mGlobal.XscreensaverMode && !Flags.BlackBackground) {
+        setWorkspaceBackground();
     }
+    return true;
+}
 
-    // Implement window.
-    gtk_widget_set_app_paintable(stormWindow, TRUE);
-    gtk_window_set_decorated(GTK_WINDOW(stormWindow), FALSE);
-    gtk_window_set_accept_focus(GTK_WINDOW(stormWindow), FALSE);
+/**
+ * Init the storm window variously.
+ */
+bool canCreateCompositedWindow() {
+    // Normal start, create new transparent StormWindow
+    // that passes events through also.
+    mGlobal.hasDestopWindow = true;
 
-    g_signal_connect(stormWindow, "draw",
-        G_CALLBACK(setStormWindowAttributes), NULL);
-
-    // Remove our things from inputStormWindow:
-    GObject* STORM_WINDOW = G_OBJECT(stormWindow);
-    g_object_steal_data(STORM_WINDOW, "trans_sticky");
-    g_object_steal_data(STORM_WINDOW, "trans_nobelow");
-    g_object_steal_data(STORM_WINDOW, "trans_below");
-    g_object_steal_data(STORM_WINDOW, "trans_done");
-
-    // Reset our things.
-    char somechar;
-    if (sticky) {
-        g_object_set_data(STORM_WINDOW, "trans_sticky", "true");
-    }
-    if (below) {
-        g_object_set_data(STORM_WINDOW, "trans_nobelow", "true");
-    } else {
-        g_object_set_data(STORM_WINDOW, "trans_below", "true");
-    }
-
-    // set full screen if so desired:
-    bool useXineramaWindow = false;
-    int winx, winy; // desired position of window
-    int winw, winh; // desired size of window
-
-    if (xscreen < 0) {
-        XWindowAttributes attr;
-        XGetWindowAttributes(display, DefaultRootWindow(display),
-            &attr);
-        gtk_widget_set_size_request(GTK_WIDGET(
-            stormWindow), attr.width, attr.height);
-        winx = 0;
-        winy = 0;
-        winw = attr.width;
-        winh = attr.height;
-    } else {
-        useXineramaWindow = getXineramaScreenInfo(display, xscreen,
-            &winx, &winy, &winw, &winh);
-        if (useXineramaWindow) {
-            gtk_widget_set_size_request(GTK_WIDGET(
-                stormWindow), winw, winh);
+    mGtkStormWindow = (GtkWidget*) g_object_new(
+        GTK_TYPE_MESSAGE_DIALOG, "use-header-bar", false,
+        "message-type", GTK_MESSAGE_OTHER, "buttons",
+        GTK_BUTTONS_NONE, NULL);
+    if (GTK_IS_BIN(mGtkStormWindow)) {
+        GtkWidget* child = gtk_bin_get_child(GTK_BIN(
+            mGtkStormWindow));
+        if (child) {
+            gtk_container_remove(GTK_CONTAINER(
+                mGtkStormWindow), child);
         }
     }
 
-    // Show.
-    gtk_widget_show_all(stormWindow);
-    GdkWindow* gdkwin = gtk_widget_get_window(
-        GTK_WIDGET(stormWindow));
+    // Set window decorations.
+    gtk_widget_set_can_focus(mGtkStormWindow, false);
+    gtk_window_set_decorated(GTK_WINDOW(mGtkStormWindow), false);
+    gtk_window_set_type_hint(GTK_WINDOW(mGtkStormWindow),
+        GDK_WINDOW_TYPE_HINT_POPUP_MENU);
+
+    // Create in compositing windows.
+    GdkScreen* compositingScreen =
+        gtk_widget_get_screen(mGtkStormWindow);
+    if (!gdk_screen_is_composited(compositingScreen)) {
+        return false;
+    }
+
+    gtk_widget_set_visual(mGtkStormWindow,
+        gdk_screen_get_rgba_visual(compositingScreen));
+    decorateStormWindow();
+
+    mGlobal.SnowWin = mX11StormWindow;
+    mGlobal.hasStormWindow = true;
+    mGlobal.isDoubleBuffered = true;
+
+    g_signal_connect(mGtkStormWindow, "draw",
+        G_CALLBACK(handleStormWindowDrawEvents), NULL);
+    return true;
+}
+
+/**
+ * This method creates the main Storm Window.
+ */
+bool decorateStormWindow() {
+    gtk_widget_set_app_paintable(mGtkStormWindow, true);
+    gtk_window_set_decorated(GTK_WINDOW(mGtkStormWindow), false);
+    gtk_window_set_accept_focus(GTK_WINDOW(mGtkStormWindow), false);
+
+    g_signal_connect(mGtkStormWindow, "draw",
+        G_CALLBACK(setStormWindowAttributes), NULL);
+
+    // Reset, then set the StormWindow attributres.
+    GObject* STORM_WINDOW = G_OBJECT(mGtkStormWindow);
+    g_object_steal_data(STORM_WINDOW, "trans_sticky");
+    g_object_steal_data(STORM_WINDOW, "trans_done");
+
+    if (Flags.AllWorkspaces) {
+        g_object_set_data(STORM_WINDOW, "trans_sticky", "true");
+    }
+
+    // Set full screen if so desired:
+    bool useXineramaWindow = false;
+    int xineramaWindowPosX = 0;
+    int xineramaWindowPosY = 0;
+    int xineramaWindowWidth = 0;
+    int xineramaWindowHeight = 0;
+
+    if (Flags.Screen < 0) {
+        XWindowAttributes attr;
+        XGetWindowAttributes(mGlobal.display,
+            DefaultRootWindow(mGlobal.display), &attr);
+        gtk_widget_set_size_request(GTK_WIDGET(mGtkStormWindow),
+            attr.width, attr.height);
+        xineramaWindowWidth = attr.width;
+        xineramaWindowHeight = attr.height;
+
+    } else {
+        useXineramaWindow = getXineramaScreenInfo(mGlobal.display,
+            Flags.Screen, &xineramaWindowPosX, &xineramaWindowPosY,
+            &xineramaWindowWidth, &xineramaWindowHeight);
+        if (useXineramaWindow) {
+            gtk_widget_set_size_request(GTK_WIDGET(mGtkStormWindow),
+                xineramaWindowWidth, xineramaWindowHeight);
+        }
+    }
+
+    // Show StormWindow, set helper handles.
+    gtk_widget_show_all(mGtkStormWindow);
+    mGdkStormWindow = gtk_widget_get_window(mGtkStormWindow);
+    mX11StormWindow = gdk_x11_window_get_xid(mGdkStormWindow);
 
     // Gnome needs this as dock or it snows on top of
     // things. KDE needs it as NOT a dock, or it snows
     // on top of things.
     if (isThisAGnomeSession()) {
-        gdk_window_set_type_hint(gdkwin,
-            GDK_WINDOW_TYPE_HINT_DOCK);
+        gdk_window_set_type_hint(mGdkStormWindow, GDK_WINDOW_TYPE_HINT_DOCK);
     }
 
-    // Set return values.
-    if (x11_window) {
-        *x11_window = gdk_x11_window_get_xid(gdkwin);
-    }
-    if (gdk_window) {
-        *gdk_window = gdkwin;
-    }
-    *wantx = winx;
-    *wanty = winy;
+    // Resize & new values for xineramaWindow.
+    mX11StormWindowXPos = xineramaWindowPosX;
+    mX11StormWindowYPos = xineramaWindowPosY;
 
-    // Resize & new values for winw / winh.
-    if (x11_window) {
-        XResizeWindow(display, *x11_window, winw, winh);
-        XFlush(display);
+    // Resize to.
+    if (mX11StormWindow) {
+        XResizeWindow(mGlobal.display, mX11StormWindow,
+            xineramaWindowWidth, xineramaWindowHeight);
+        XFlush(mGlobal.display);
     }
 
     // Seems sometimes to be necessary with nvidia.
-    usleep(200000);
+    //usleep(200000);
+    gtk_widget_hide(mGtkStormWindow);
+    gtk_widget_show_all(mGtkStormWindow);
 
-    gtk_widget_hide(stormWindow);
-    gtk_widget_show_all(stormWindow);
-
-    if (xscreen < 0) {
-        gtk_window_move(GTK_WINDOW(stormWindow), 0, 0);
+    if (Flags.Screen < 0) {
+        gtk_window_move(GTK_WINDOW(mGtkStormWindow), 0, 0);
     } else if (useXineramaWindow) {
-        gtk_window_move(GTK_WINDOW(stormWindow), winx, winy);
+        gtk_window_move(GTK_WINDOW(mGtkStormWindow),
+            mX11StormWindowXPos, mX11StormWindowYPos);
     }
 
-    setStormWindowAttributes(stormWindow);
-    g_object_steal_data(G_OBJECT(stormWindow), "trans_done");
-
+    setStormWindowAttributes(mGtkStormWindow);
+    g_object_steal_data(G_OBJECT(mGtkStormWindow), "trans_done");
     return true;
 }
 
-/** *********************************************************************
- **
- ** for some reason, in some environments the 'below' and 'stick'
- ** properties disappear. It works again, if we express our
- ** wishes after starting gtk_main and the best place is in the
- ** draw event.
- ** 
- ** We want to reset the settings at least once to be sure.
- ** Things like sticky and below should be stored in the
- ** widget beforehand.
- **
- ** TODO:
- ** Lotsa code fix during thread inititaliztion by MJC may
- ** have fixed this. Tinker and test.
- **/
-int setStormWindowAttributes(GtkWidget *widget) {
+/**
+ *
+ * For some reason, in some environments the 'below' and 'stick'
+ * properties disappear. It works again, if we express our
+ * wishes after starting gtk_main and the best place is in the
+ * draw event.
+ *
+ * We want to reset the settings at least once to be sure.
+ * Things like sticky and below should be stored in the
+ * widget beforehand.
+ *
+ * TODO:
+ * Lotsa code fix during thread inititaliztion by MJC may
+ * have fixed this. Tinker and test.
+ */
+int setStormWindowAttributes(GtkWidget* widget) {
     enum {
         rep = 1,
         nrep
     };
     static char something[nrep];
 
-    char *p = (char *) g_object_get_data(G_OBJECT(widget), "trans_done");
+    char* p = (char*) g_object_get_data(
+        G_OBJECT(widget), "trans_done");
     if (!p) {
         p = &something[0];
     }
-
     if (p - &something[0] >= rep) {
-        return FALSE;
+        return false;
     }
-
     p++;
+
     g_object_set_data(G_OBJECT(widget), "trans_done", p);
     GdkWindow *gdk_window1 = gtk_widget_get_window(widget);
 
     // does not work as expected.
     const int Usepassthru = 0;
     if (Usepassthru) {
-        gdk_window_set_pass_through(gdk_window1, TRUE);
+        gdk_window_set_pass_through(gdk_window1, true);
     } else {
         cairo_region_t *cairo_region1 = cairo_region_create();
         gdk_window_input_shape_combine_region(gdk_window1, cairo_region1, 0, 0);
         cairo_region_destroy(cairo_region1);
     }
 
-    if (!g_object_get_data(G_OBJECT(widget), "trans_nobelow")) {
-        if (g_object_get_data(G_OBJECT(widget), "trans_below")) {
-            setTransparentWindowBelow(GTK_WINDOW(widget));
-        } else {
-            setTransparentWindowAbove(GTK_WINDOW(widget));
-        }
-    }
+    // Keep us on bottom, or it snows over things.
+    setStormWindowBelow();
 
     // Set the Trans Window Sticky Flag.
     if (g_object_get_data(G_OBJECT(widget), "trans_sticky")) {
@@ -211,21 +296,54 @@ int setStormWindowAttributes(GtkWidget *widget) {
         gtk_window_unstick(GTK_WINDOW(widget));
     }
 
-    return FALSE;
+    return false;
 }
 
-/** *********************************************************************
- ** 
- **/
-void setTransparentWindowBelow(__attribute__((unused)) GtkWindow *window) {
-    gtk_window_set_keep_above(GTK_WINDOW(window), false);
-    gtk_window_set_keep_below(GTK_WINDOW(window), true);
+/**
+ * ...
+ */
+void setStormWindowBelow() {
+    if (isWindowOnBottomByNetWMState(mX11StormWindow)) {
+        return;
+    }
+    gtk_window_set_keep_above(GTK_WINDOW(mGtkStormWindow), false);
+    gtk_window_set_keep_below(GTK_WINDOW(mGtkStormWindow), true);
 }
 
-/** *********************************************************************
- ** 
- **/
-void setTransparentWindowAbove(__attribute__((unused)) GtkWindow *window) {
-    gtk_window_set_keep_below(GTK_WINDOW(window), false);
-    gtk_window_set_keep_above(GTK_WINDOW(window), true);
+/**
+ * This method...
+ */
+void connectStormWindowDraw() {
+    if (mGlobal.hasStormWindow) {
+        if (mStormWindowGUID) {
+            g_source_remove(mStormWindowGUID);
+        }
+        mStormWindowGUID = addMethodWithArgToMainloop(
+            PRIORITY_HIGH, time_draw_all,
+            drawStormWindow, getGtkStormWindow());
+        return;
+    }
+
+    if (mCairoWindowGUID) {
+        g_source_remove(mCairoWindowGUID);
+    }
+    mCairoWindowGUID = addMethodWithArgToMainloop(PRIORITY_HIGH,
+        time_draw_all, drawCairoWindow, getCairoWindow());
+}
+
+/**
+ * Set the Storm Window sticky state.
+ */
+void setStormWindowStickyState(bool isSticky) {
+    if (!mGlobal.hasStormWindow) {
+        return;
+    }
+
+    GtkWindow* STORM_WINDOW =
+        GTK_WINDOW(getGtkStormWindow());
+    if (isSticky) {
+        gtk_window_stick(STORM_WINDOW);
+    } else {
+        gtk_window_unstick(STORM_WINDOW);
+    }
 }

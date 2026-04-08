@@ -35,9 +35,11 @@
 #include "Windows.h"
 
 
-/** *********************************************************************
- ** Module globals and consts.
- **/
+/**
+ * Module globals and consts.
+ */
+const float TIME_BETWEEN_BLOWOFF_THREADS = 0.25;
+
 int mBlowOffLockCounter = 0;
 
 // Prefs values.
@@ -45,27 +47,27 @@ const char* SHOW_DRIP_PREFNAME = "ShowDrip";
 const bool SHOW_DRIP_DEFAULT = true;
 
 
-/** *********************************************************************
- ** This method initializes the Blowoff module.
- **/
+/**
+ * This method initializes the Blowoff module.
+ */
 void initBlowoffModule() {
     addMethodToMainloop(PRIORITY_DEFAULT,
-        TIME_BETWEEN_SCENERY_BLOWOFF_FRAME_UPDATES,
+        TIME_BETWEEN_BLOWOFF_THREADS,
         (GSourceFunc) updateBlowoffFrame);
 }
 
-/** *********************************************************************
- ** This method checks for & performs user changes of
- ** Blowoff module settings.
+/**
+ * This method checks for & performs user changes of
+ * Blowoff module settings.
  **/
 void respondToBlowoffSettingsChanges() {
     UIDO(BlowSnow, );
     UIDO(BlowOffFactor, );
 }
 
-/** *********************************************************************
- ** This method updates each fallensnow with wind.
- **/
+/**
+ * This method updates each fallensnow with wind.
+ */
 int updateBlowoffFrame() {
     if (Flags.shutdownRequested) {
         return false;
@@ -84,38 +86,37 @@ int updateBlowoffFrame() {
     }
 
     // Loop through all fallen.
-    FallenSnow *fsnow = mGlobal.FsnowFirst;
+    FallenSnow* fsnow = mGlobal.FsnowFirst;
     while (fsnow) {
         if (canSnowCollectOnFallen(fsnow) &&
             isFallenSnowVisible(fsnow)) {
 
             // Check for Santa Blowoff interaction.
             if (!Flags.NoSanta && mGlobal.SantaPlowRegion) {
-                const bool IS_IT_IN = XRectInRegion(mGlobal.SantaPlowRegion,
+                const bool IS_IT_IN = XRectInRegion(
+                    mGlobal.SantaPlowRegion,
                     fsnow->x, fsnow->y - fsnow->tallestColumnHeight,
                     fsnow->w, fsnow->tallestColumnHeight);
                 if (IS_IT_IN == RectangleIn ||
                     IS_IT_IN == RectanglePart) {
                     blowoffPlowedSnowFromFallen(fsnow);
-                    fsnow = fsnow->next;
-                    continue;
                 }
             }
 
             // Check for normal blowoff interaction.
-            if (Flags.BlowSnow && randomIntegerUpTo(6) == 0) {
-                blowoffSnowFromFallen(fsnow, fsnow->w / 4, fsnow->h / 4);
-                fsnow = fsnow->next;
-                continue;
+            const int BLOWOFF = 2; // 1 in 2;
+            if (Flags.BlowSnow && (randomIntegerUpTo(BLOWOFF) == 0)) {
+                blowoffSnowFromFallen(fsnow, fsnow->w / 4,
+                    fsnow->h / 4);
             }
 
-            // Check for normal blowoff interaction.
-            if (getShowDrip() && fsnow->winInfo.window &&
-                randomIntegerUpTo(40) == 0 &&
-                canFallenSnowDripRain(fsnow)) {
-                dripRainFromFallen(fsnow);
-                fsnow = fsnow->next;
-                continue;
+            // Check for normal dripoff interaction.
+            const int DRIP = 40; // 1 in 40;
+            if (getShowDrip() && (randomIntegerUpTo(DRIP) == 0)) {
+                if (fsnow->winInfo.window &&
+                    canFallenSnowDripRain(fsnow)) {
+                    dripRainFromFallen(fsnow);
+                }
             }
         }
 

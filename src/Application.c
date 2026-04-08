@@ -84,43 +84,25 @@
 /** ************************************************
  ** Module globals and consts.
  **/
-
-// Change to 1 for better analysis.
 const bool ARE_WE_DEBUGGING = false;
 
 struct _mGlobal mGlobal;
-char **Argv;
-int Argc;
-
-Bool mMainWindowNeedsReconfiguration = true;
-Bool mDoRestartDueToDisplayChange = 0;
-
-char* mSnowWindowTitlebarName = NULL;
-
-guint mTransparentWindowGUID = 0;
-guint mCairoWindowGUID = 0;
-
-GtkWidget *mTransparentWindow = NULL;
-
-bool mX11CairoEnabled = false;
 
 cairo_t* mCairoWindow = NULL;
-cairo_surface_t *mCairoSurface = NULL;
-
-int xfixes_event_base_ = -1;
+cairo_surface_t* mCairoSurface = NULL;
 
 int mIsSticky = 0;
-
-Window mWantWindow = None;
-int mWantMoveToX = 0;
-int mWantMoveToY = 0;
-
 int mPrevSnowWinWidth = 0;
 int mPrevSnowWinHeight = 0;
 
 int mX11MaxErrorCount = 500;
 int mX11ErrorCount = 0;
 int mX11LastErrorCode = 0;
+
+bool mMainWindowNeedsReconfiguration = true;
+
+bool mDoRestartDueToDisplayChange = 0;
+char** mRestartArgs;
 
 
 /** ************************************************
@@ -203,18 +185,18 @@ int startApplication(int argc, char *argv[]) {
 
     // Make a copy of all flags, before gtk_init() removes some.
     // We need this at app refresh. remove: -screen n -lang c.
-    Argv = (char **) malloc((argc + 1) * sizeof(char **));
-    Argc = 0;
+    mRestartArgs = (char**) malloc((argc + 1) * sizeof(char**));
+    int newCount = 0;
 
     for (int i = 0; i < argc; i++) {
         if ((strcmp("-screen", argv[i]) == 0) ||
             (strcmp("-lang", argv[i]) == 0)) {
-            i++; // found -screen or -lang
+            i++;
         } else {
-            Argv[Argc++] = strdup(argv[i]);
+            mRestartArgs[newCount++] = strdup(argv[i]);
         }
     }
-    Argv[Argc] = NULL;
+    mRestartArgs[newCount] = NULL;
 
     // Log info, version checks.
     logAppVersion();
@@ -225,8 +207,8 @@ int startApplication(int argc, char *argv[]) {
     printf("GTK required: %s\n\n", ui_gtk_required());
 
     if (!isGtkVersionValid()) {
-        printf("%splasmasnow: GTK Version is insufficient - FATAL.%s\n",
-            COLOR_RED, COLOR_NORMAL);
+        printf("%splasmasnow: GTK Version is insufficient "
+            "- FATAL.%s\n", COLOR_RED, COLOR_NORMAL);
         return 1;
     }
 
@@ -247,7 +229,7 @@ int startApplication(int argc, char *argv[]) {
     mGlobal.display = XOpenDisplay(Flags.DisplayName);
     if (mGlobal.display == NULL) {
         printf("%splasmasnow: X11 Does not seem to be "
-            "available (Are you Wayland?) FATAL.%s\n",
+            "available (Are you Wayland?) - FATAL.%s\n",
             COLOR_RED, COLOR_NORMAL);
         return true; // Error.
     }
@@ -269,11 +251,13 @@ int startApplication(int argc, char *argv[]) {
     // Default any colors a user may have set in .plasmasnowrc.
     int wasThereAnInvalidColor = false;
     if (!ValidColor(Flags.StormItemColor1)) {
-        Flags.StormItemColor1 = strdup(DefaultFlags.StormItemColor1);
+        Flags.StormItemColor1 = strdup(
+            DefaultFlags.StormItemColor1);
         wasThereAnInvalidColor = true;
     }
     if (!ValidColor(Flags.StormItemColor2)) {
-        Flags.StormItemColor2 = strdup(DefaultFlags.StormItemColor2);
+        Flags.StormItemColor2 = strdup(
+            DefaultFlags.StormItemColor2);
         wasThereAnInvalidColor = true;
     }
     if (!ValidColor(Flags.BirdsColor)) {
@@ -288,18 +272,17 @@ int startApplication(int argc, char *argv[]) {
         WriteFlags();
     }
 
-    // Show aplash page & start Storming.
-    updateWindowsList();
-    startStormWindow();
+    // Start Storming.
+    populateWinInfoHelper();
 
-    // Init all Global Flags.
-    #define DOIT_I(x, d, v) OldFlags.x = Flags.x;
-    #define DOIT_L(x, d, v) DOIT_I(x, d, v);
-    #define DOIT_S(x, d, v) OldFlags.x = strdup(Flags.x);
+    if (!canStartStormWindow()) {
+         printf("%splasmasnow: Could not find a Window Manager "
+            "with an active window compositor - FATAL.%s\n",
+            COLOR_RED, COLOR_NORMAL);
+        return true; // Error.
+    }
 
-        DOITALL;
-    #include "undefall.inc"
-
+    setOldFlagsFromFlags();
     OldFlags.FullScreen = !Flags.FullScreen;
 
     // Request all interesting X11 events.
@@ -354,6 +337,7 @@ int startApplication(int argc, char *argv[]) {
     }
 
     HandleCpuFactor();
+    connectStormWindowDraw();
     respondToWorkspaceSettingsChange();
 
     printf("%splasmasnow: gtk_main() Starts.%s\n",
@@ -384,7 +368,7 @@ void stopApplication() {
     if (mDoRestartDueToDisplayChange) {
         sleep(0);
         setenv("plasmasnow_RESTART", "yes", 1);
-        execvp(Argv[0], Argv);
+        execvp(mRestartArgs[0], mRestartArgs);
     }
 }
 
@@ -455,169 +439,11 @@ char* getDesktopSession() {
     return desktopsession;
 }
 
-/** ************************************************
- ** This method starts / creates the main storm window.
- **/
-int startStormWindow() {
-    mGlobal.Rootwindow = DefaultRootWindow(
-        mGlobal.display);
-
-    mGlobal.hasDestopWindow = false;
-    mGlobal.hasTransparentWindow = false;
-
-    mGlobal.useDoubleBuffers = false;
-    mGlobal.isDoubleBuffered = false;
-
-    mGlobal.xxposures = false;
-    mGlobal.XscreensaverMode = false;
-
-    initStormWindowTypes();
-
-    // Start window Cairo specific.
-    if (mX11CairoEnabled) {
-        handleX11CairoDisplayChange();
-        mCairoWindowGUID = addMethodWithArgToMainloop(
-            PRIORITY_HIGH, time_draw_all, drawCairoWindow, mCairoWindow);
-        mGlobal.WindowOffsetX = 0;
-        mGlobal.WindowOffsetY = 0;
-    } else {
-        mGlobal.WindowOffsetX = mWantMoveToX;
-        mGlobal.WindowOffsetY = mWantMoveToY;
-    }
-
-    mGlobal.isDoubleBuffered = mGlobal.hasTransparentWindow ||
-        mGlobal.useDoubleBuffers;
-
-    mSnowWindowTitlebarName = strdup("no name");
-    XTextProperty titleBarName;
-    if (XGetWMName(mGlobal.display, mGlobal.SnowWin, &titleBarName)) {
-        mSnowWindowTitlebarName = strdup((char *) titleBarName.value);
-    }
-    XFree(titleBarName.value);
-
-    if (!mX11CairoEnabled) {
-        xdo_move_window(mGlobal.xdo, mGlobal.SnowWin,
-            mWantMoveToX, mWantMoveToY);
-    }
-
-    initDisplayDimensions();
-    fflush(stdout);
-
-    mGlobal.SnowWinX = mWantMoveToX;
-    mGlobal.SnowWinY = mWantMoveToY;
-
-    mPrevSnowWinWidth = mGlobal.SnowWinWidth;
-    mPrevSnowWinHeight = mGlobal.SnowWinHeight;
-
-    SetWindowScale();
-    if (mGlobal.XscreensaverMode && !Flags.BlackBackground) {
-        setWorkspaceBackground();
-    }
-
-    return TRUE;
-}
-
 /**
- * Init the storm window variously.
+ * ...
  */
-void initStormWindowTypes() {
-    if (Flags.WindowId) {
-        mGlobal.SnowWin = Flags.WindowId;
-        mX11CairoEnabled = true;
-        return;
-    }
-
-    // Special Startup - User wants to run in root window.
-    if (Flags.ForceRoot) {
-        mGlobal.SnowWin = mGlobal.Rootwindow;
-        if (getenv("XSCREENSAVER_WINDOW")) {
-            mGlobal.SnowWin = strtol(getenv(
-                "XSCREENSAVER_WINDOW"), NULL, 0);
-            mGlobal.XscreensaverMode = true;
-            mGlobal.Rootwindow = mGlobal.SnowWin;
-        }
-        mX11CairoEnabled = true;
-        return;
-    }
-
-    // Create transparent clickthru window in MessageDialog,
-    // & remove icon decoration.
-    GtkWidget* stormWindow = (GtkWidget*) g_object_new(
-        GTK_TYPE_MESSAGE_DIALOG, "use-header-bar", false,
-        "message-type", GTK_MESSAGE_OTHER, "buttons",
-        GTK_BUTTONS_NONE, NULL);
-    if (GTK_IS_BIN(stormWindow)) {
-        GtkWidget* child = gtk_bin_get_child(GTK_BIN(
-            stormWindow));
-        if (child) {
-            gtk_container_remove(GTK_CONTAINER(
-                stormWindow), child);
-        }
-    }
-
-    // Set window decorations.
-    gtk_widget_set_can_focus(stormWindow, false);
-    gtk_window_set_decorated(GTK_WINDOW(stormWindow), FALSE);
-    gtk_window_set_type_hint(GTK_WINDOW(stormWindow),
-        GDK_WINDOW_TYPE_HINT_POPUP_MENU);
-
-    // Create in compositing windows.
-    GdkScreen* testCompositing =
-        gtk_widget_get_screen(stormWindow);
-    if (gdk_screen_is_composited(testCompositing)) {
-        printf("%s\nCreating Storm in composited window.%s\n",
-            COLOR_GREEN, COLOR_NORMAL);
-
-        gtk_widget_set_visual(stormWindow,
-            gdk_screen_get_rgba_visual(testCompositing));
-
-        createStormWindow(mGlobal.display, stormWindow,
-            Flags.Screen, Flags.AllWorkspaces, true, NULL,
-            &mWantWindow, &mWantMoveToX, &mWantMoveToY);
-
-        mTransparentWindow = stormWindow;
-        mGlobal.SnowWin = mWantWindow;
-        mGlobal.hasTransparentWindow = true;
-        mGlobal.hasDestopWindow = true;
-        mGlobal.isDoubleBuffered = true;
-
-        g_signal_connect(mTransparentWindow, "draw",
-            G_CALLBACK(handleTransparentWindowDrawEvents), NULL);
-        return;
-    }
-
-    // Create in non-compositing windows.
-    printf("%s\nCreating Storm in non-composited window.%s\n",
-        COLOR_YELLOW, COLOR_NORMAL);
-
-    int winw, winh;
-    if (Flags.Screen >= 0) {
-        getXineramaScreenInfo(mGlobal.display, Flags.Screen,
-            &mWantMoveToX, &mWantMoveToY, &winw, &winh);
-    }
-
-    //if (!strncmp(getDesktopSession(), "LXDE", 4) &&
-    //    (xwin = largest_window_with_name(mGlobal.xdo, "^pcmanfm$"))) {
-    //} else if ((xwin = largest_window_with_name(mGlobal.xdo, "^Desktop$"))) {
-    //} else {
-    //    xwin = mGlobal.Rootwindow;
-    //}
-
-    Window* stackedWins;
-    int numberOfStackedWins = getX11StackedWindowsList(
-        &stackedWins);
-    if (numberOfStackedWins > 0) {
-        printf("%s\nStorm Window using Desktop window.%s\n",
-            COLOR_YELLOW, COLOR_NORMAL);
-        mGlobal.SnowWin = stackedWins[0];
-    } else {
-        printf("%s\nStorm Window using Root window.%s\n",
-            COLOR_YELLOW, COLOR_NORMAL);
-        mGlobal.SnowWin = mGlobal.Rootwindow;
-    }
-
-    mGlobal.hasDestopWindow = true;
-    mX11CairoEnabled = true;
+cairo_t* getCairoWindow() {
+    return mCairoWindow;
 }
 
 /** ************************************************
@@ -684,25 +510,10 @@ void handleX11CairoDisplayChange() {
             mGlobal.SnowWinHeight = winh;
         }
 
-        cairo_rectangle(mCairoWindow, mGlobal.SnowWinX, mGlobal.SnowWinY,
+        cairo_rectangle(mCairoWindow,
+            mGlobal.SnowWinX, mGlobal.SnowWinY,
             mGlobal.SnowWinWidth, mGlobal.SnowWinHeight);
         cairo_clip(mCairoWindow);
-    }
-}
-
-/** ************************************************
- ** Set the Transparent Window Sticky Flag.
- **/
-void setTransparentWindowStickyState(int isSticky) {
-    if (!mGlobal.hasTransparentWindow) {
-        return;
-    }
-
-    mIsSticky = isSticky;
-    if (mIsSticky) {
-        gtk_window_stick(GTK_WINDOW(mTransparentWindow));
-    } else {
-        gtk_window_unstick(GTK_WINDOW(mTransparentWindow));
     }
 }
 
@@ -711,9 +522,9 @@ void setTransparentWindowStickyState(int isSticky) {
  **/
 void respondToWorkspaceSettingsChange() {
     if (Flags.AllWorkspaces) {
-        setTransparentWindowStickyState(1);
+        setStormWindowStickyState(true);
     } else {
-        setTransparentWindowStickyState(0);
+        setStormWindowStickyState(false);
 
         mGlobal.ChosenWorkSpace = (Flags.Screen >= 0) ?
             mGlobal.visualWSList[Flags.Screen] :
@@ -735,7 +546,7 @@ int doAllUISettingsUpdates() {
     }
 
     if (Flags.NoMenu) {
-        return TRUE;
+        return true;
     }
 
     respondToStormSettingsChanges();
@@ -771,7 +582,7 @@ int doAllUISettingsUpdates() {
         Flags.Changes = 0;
     }
 
-    return TRUE;
+    return true;
 }
 
 /** ************************************************
@@ -817,7 +628,7 @@ int onTimerEventDisplayChanged() {
  **/
 int handlePendingX11Events() {
     if (Flags.shutdownRequested) {
-        return FALSE;
+        return false;
     }
 
     XFlush(mGlobal.display);
@@ -916,7 +727,7 @@ int handlePendingX11Events() {
         }
     }
 
-    return TRUE;
+    return true;
 }
 
 /** ************************************************
@@ -993,12 +804,12 @@ int handleX11ErrorEvent(Display* dpy, XErrorEvent* event) {
 /** ************************************************
  ** This method id the draw callback.
  **/
-gboolean handleTransparentWindowDrawEvents(
+gboolean handleStormWindowDrawEvents(
     __attribute__((unused)) GtkWidget* widget, cairo_t* cc,
     __attribute__((unused)) gpointer user_data) {
 
     drawCairoWindowInternal(cc);
-    return FALSE;
+    return false;
 }
 
 /** ************************************************
@@ -1006,7 +817,7 @@ gboolean handleTransparentWindowDrawEvents(
  **/
 int drawCairoWindow(void* cc) {
     drawCairoWindowInternal((cairo_t*) cc);
-    return TRUE;
+    return true;
 }
 
 /** ************************************************
@@ -1049,10 +860,6 @@ void drawCairoWindowInternal(cairo_t* cc) {
 
     int tx = 0;
     int ty = 0;
-    if (mX11CairoEnabled) {
-        tx = mGlobal.SnowWinX;
-        ty = mGlobal.SnowWinY;
-    }
     cairo_translate(cc, tx, ty);
 
     // Do all module draws.
@@ -1138,15 +945,15 @@ getRootWindowProperty(Atom property, Window** windows) {
  **/
 int handleDisplayConfigurationChange() {
     if (Flags.shutdownRequested) {
-        return FALSE;
+        return false;
     }
 
     if (!mMainWindowNeedsReconfiguration) {
-        return TRUE;
+        return true;
     }
     mMainWindowNeedsReconfiguration = false;
 
-    if (!mGlobal.hasTransparentWindow) {
+    if (!mGlobal.hasStormWindow) {
         handleX11CairoDisplayChange();
     }
 
@@ -1160,20 +967,20 @@ int handleDisplayConfigurationChange() {
     }
 
     fflush(stdout);
-    return TRUE;
+    return true;
 }
 
 /** ************************************************
  ** This method ...
  **/
-int drawTransparentWindow(gpointer widget) {
+int drawStormWindow(gpointer widget) {
     if (Flags.shutdownRequested) {
-        return FALSE;
+        return false;
     }
 
-    // this will result in a call off handleTransparentWindowDrawEvents():
+    // this will result in a call off handleStormWindowDrawEvents():
     gtk_widget_queue_draw(GTK_WIDGET(widget));
-    return TRUE;
+    return true;
 }
 
 /** ************************************************
@@ -1188,29 +995,6 @@ void HandleCpuFactor() {
 
     addMethodToMainloop(PRIORITY_HIGH, time_init_snow,
         (GSourceFunc) stallCreatingStormItems);
-
-    addWindowDrawMethodToMainloop();
-}
-
-/** ************************************************
- ** This method...
- **/
-void addWindowDrawMethodToMainloop() {
-    if (mGlobal.hasTransparentWindow) {
-        if (mTransparentWindowGUID) {
-            g_source_remove(mTransparentWindowGUID);
-        }
-        mTransparentWindowGUID = addMethodWithArgToMainloop(PRIORITY_HIGH,
-            time_draw_all, drawTransparentWindow, mTransparentWindow);
-        return;
-    }
-
-    if (mCairoWindowGUID) {
-        g_source_remove(mCairoWindowGUID);
-    }
-
-    mCairoWindowGUID = addMethodWithArgToMainloop(PRIORITY_HIGH,
-        time_draw_all, drawCairoWindow, mCairoWindow);
 }
 
 /** ************************************************
@@ -1238,7 +1022,7 @@ int do_stopafter() {
     Flags.shutdownRequested = 1;
     printf(_("Halting because of flag %s\n"), "-stopafter");
 
-    return FALSE;
+    return false;
 }
 
 /** ************************************************
@@ -1368,7 +1152,7 @@ bool isDesktopVisible() {
  ** This method returns the number of the current workspace,
  ** where the OS allows multiple / virtual workspaces.
  **/
-long int getCurrentWorkspaceNumber() {
+long int getCurrentWorkspace() {
     Atom type;
     int format;
     unsigned long nitems, unusedBytes;
@@ -1436,5 +1220,3 @@ bool isThisAGnomeSession() {
     return (strstr(desktop, "gnome") ||
             strstr(desktop, "ubuntu"));
 }
-
-

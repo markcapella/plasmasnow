@@ -39,17 +39,16 @@ extern "C" {
     void RestartDisplay();
     void appShutdownHook(int);
     int handleX11ErrorEvent(Display*, XErrorEvent*);
+    cairo_t* getCairoWindow();
     int drawCairoWindow(void*);
     void handleX11CairoDisplayChange();
     void drawCairoWindowInternal(cairo_t* cc);
-    int drawTransparentWindow(gpointer);
-    void addWindowDrawMethodToMainloop();
-    gboolean handleTransparentWindowDrawEvents(
+    int drawStormWindow(gpointer);
+
+    gboolean handleStormWindowDrawEvents(
         GtkWidget*, cairo_t*, gpointer);
     void rectangle_draw(cairo_t*);
 
-    int startStormWindow();
-    void initStormWindowTypes();
     unsigned long getX11StackedWindowsList(Window**);
     unsigned long getRootWindowProperty(Atom, Window**);
 
@@ -59,13 +58,12 @@ extern "C" {
     void mybindtestdomain();
     char* getDesktopSession();
     void respondToWorkspaceSettingsChange();
-    void setTransparentWindowAbove(GtkWindow* window);
     int updateWindowsList();
     int doAllUISettingsUpdates();
     int do_stopafter();
     int handleDisplayConfigurationChange();
     bool isDesktopVisible();
-    long int getCurrentWorkspaceNumber();
+    long int getCurrentWorkspace();
     bool isThisAGnomeSession();
 
 #ifdef __cplusplus

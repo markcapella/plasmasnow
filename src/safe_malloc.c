@@ -38,41 +38,48 @@ static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 #define MUTEXUNLOCK
 #endif
 
-void *safe_malloc(size_t size) {
+void* safe_malloc(size_t size) {
     MUTEXLOCK;
-    void *p = malloc(size);
+    void* p = malloc(size);
     if (p == NULL) {
-        fprintf(stderr, "Fatal: failed to allocate %zu bytes.\n", size);
+        fprintf(stderr, "plasmasnow: Failure to allocate "
+            "%zu bytes, Fatal.\n", size);
         abort();
     }
     MUTEXUNLOCK;
     return p;
 }
-void *safe_realloc(void *ptr, size_t size) {
+
+void* safe_realloc(void *ptr, size_t size) {
     MUTEXLOCK;
-    void *p = realloc(ptr, size);
+    void* p = realloc(ptr, size);
     if (p == NULL) {
-        fprintf(stderr, "Fatal: failed to reallocate %zu bytes.\n", size);
+        fprintf(stderr, "plasmasnow: Failure to reallocate "
+            "%zu bytes, Fatal.\n", size);
         abort();
     }
     MUTEXUNLOCK;
     return p;
 }
+
 void safe_free(void *ptr) {
     MUTEXLOCK;
     free(ptr);
     MUTEXUNLOCK;
 }
+
 void safe_gsl_spline_free(gsl_spline *spline) {
     MUTEXLOCK;
     gsl_spline_free(spline);
     MUTEXUNLOCK;
 }
+
 void safe_gsl_interp_accel_free(gsl_interp_accel *acc) {
     MUTEXLOCK;
     gsl_interp_accel_free(acc);
     MUTEXUNLOCK;
 }
+
 int safe_XFree(void *data) {
     MUTEXLOCK;
     return XFree(data);

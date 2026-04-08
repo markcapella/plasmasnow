@@ -54,9 +54,24 @@
 #include "vroot.h"
 
 
-/** *********************************************************************
- ** This method scans all WinInfos for a requested ID.
- **/
+/**
+ * This method populates the global WinInfo list.
+ */
+void populateWinInfoHelper() {
+    if (mGlobal.winInfoList) {
+        free(mGlobal.winInfoList);
+        mGlobal.winInfoListLength = 0;
+    }
+
+    getInitialWinInfoList(&mGlobal.winInfoList,
+        &mGlobal.winInfoListLength);
+    getFinalWinInfoList(&mGlobal.winInfoList,
+        &mGlobal.winInfoListLength);
+}
+
+/**
+ * This method scans all WinInfos for a requested ID.
+ */
 WinInfo* getWinInfoForWindow(Window window) {
     WinInfo* winInfoItem = mGlobal.winInfoList;
     for (int i = 0; i < mGlobal.winInfoListLength; i++) {
@@ -69,26 +84,11 @@ WinInfo* getWinInfoForWindow(Window window) {
     return NULL;
 }
 
-/** *********************************************************************
- ** This method populates the global WinInfo list.
- **/
-void getWinInfoForAllWindows() {
-    if (mGlobal.winInfoList) {
-        free(mGlobal.winInfoList);
-        mGlobal.winInfoListLength = 0;
-    }
-
-    getInitialWinInfoList(&mGlobal.winInfoList,
-        &mGlobal.winInfoListLength);
-    getFinalWinInfoList(&mGlobal.winInfoList,
-        &mGlobal.winInfoListLength);
-}
-
-/** *********************************************************************
- ** This method gets our initial winInfoList list from 1 of 3 places.
- **/
-void getInitialWinInfoList(WinInfo** winInfoList,
-    int* numberOfWindows) {
+/**
+ * This method gets our initial winInfoList list
+ * from 1 of 3 places.
+ */
+void getInitialWinInfoList(WinInfo** wiList, int* wiSize) {
 
     // #1 Look for list in NET_CLIENT.
     Atom type;
@@ -103,10 +103,10 @@ void getInitialWinInfoList(WinInfo** winInfoList,
         &format, &nchildren, &unusedBytes, (unsigned char **) &children);
 
     if (type == XA_WINDOW && nchildren > 0) {
-        (*winInfoList) = (WinInfo*) malloc(nchildren* sizeof(WinInfo));
-        (*numberOfWindows) = nchildren;
+        (*wiList) = (WinInfo*) malloc(nchildren* sizeof(WinInfo));
+        (*wiSize) = nchildren;
 
-        WinInfo* addWinInfo = *winInfoList;
+        WinInfo* addWinInfo = *wiList;
         Window* addWindow = children;
         for (long unsigned int i = 0; i <= nchildren; i++) {
             addWinInfo->window = *addWindow;
@@ -127,10 +127,10 @@ void getInitialWinInfoList(WinInfo** winInfoList,
         &format, &nchildren, &unusedBytes, (unsigned char **) &children);
 
     if (type == XA_WINDOW && nchildren > 0) {
-        (*winInfoList) = (WinInfo*) malloc(nchildren* sizeof(WinInfo));
-        (*numberOfWindows) = nchildren;
+        (*wiList) = (WinInfo*) malloc(nchildren* sizeof(WinInfo));
+        (*wiSize) = nchildren;
 
-        WinInfo* addWinInfo = *winInfoList;
+        WinInfo* addWinInfo = *wiList;
         Window* addWindow = children;
         for (long unsigned int i = 0; i <= nchildren; i++) {
             addWinInfo->window = *addWindow;
@@ -152,11 +152,11 @@ void getInitialWinInfoList(WinInfo** winInfoList,
         &unused, &unused, &children, &queryChildrenCount);
 
     if (queryChildrenCount > 0) {
-        (*winInfoList) = (WinInfo*)
+        (*wiList) = (WinInfo*)
             malloc(queryChildrenCount* sizeof(WinInfo));
-        (*numberOfWindows) = queryChildrenCount;
+        (*wiSize) = queryChildrenCount;
 
-        WinInfo* addWinInfo = *winInfoList;
+        WinInfo* addWinInfo = *wiList;
         Window* addWindow = children;
         for (long unsigned int i = 0; i <= nchildren; i++) {
             addWinInfo->window = *addWindow;
@@ -167,14 +167,13 @@ void getInitialWinInfoList(WinInfo** winInfoList,
     XFree(children);
 }
 
-/** *********************************************************************
- ** This method completes population of our winInfoList.
- **/
-void getFinalWinInfoList(WinInfo** winInfoList,
-    int* numberOfWindows) {
+/**
+ * This method completes population of our winInfoList.
+ */
+void getFinalWinInfoList(WinInfo** wiList, int* wiSize) {
 
-    WinInfo *winInfoItem = (*winInfoList);
-    for (int i = 0; i < *numberOfWindows; i++) {
+    WinInfo *winInfoItem = (*wiList);
+    for (int i = 0; i < *wiSize; i++) {
         // Set WinInfo "workspace", "sticky", and "dock" attributes.
         winInfoItem->ws = isWindowVisibleOnWorkspace(winInfoItem->window);
         winInfoItem->sticky = isWindowSticky(winInfoItem->window,
@@ -236,6 +235,7 @@ void getFinalWinInfoList(WinInfo** winInfoList,
         if (nitems == 4 && format == 32 && type) {
             long* frameExtent;
             frameExtent = (long *) (void *) properties;
+
             switch (wintype) {
                 case NET:
                     winInfoItem->x -= frameExtent[0];
@@ -263,9 +263,9 @@ void getFinalWinInfoList(WinInfo** winInfoList,
     return;
 }
 
-/** *********************************************************************
- ** This method prints column headings for WinInfo structs.
- **/
+/**
+ * This method prints column headings for WinInfo structs.
+ */
 void logWinInfoStructColumns() {
     printf("%s---window---  Titlebar Name"
         "                             WS   "
@@ -273,9 +273,9 @@ void logWinInfoStructColumns() {
         COLOR_GREEN, COLOR_NORMAL);
 }
 
-/** *********************************************************************
- ** This method prints all WinInfo structs.
- **/
+/**
+ * This method prints all WinInfo structs.
+ */
 void logAllWinInfoStructs() {
     logWinInfoStructColumns();
 
