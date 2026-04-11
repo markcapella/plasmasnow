@@ -109,24 +109,25 @@ char** mRestartArgs;
  ** Application linker entry.
  **/
 int main(int argc, char *argv[]) {
-    startApplication(argc, argv);
+    if (!canStartApplication(argc, argv)) {
+        return false;
+    }
 
     stopApplication();
+    return false;
 }
 
 /** ************************************************
  ** Main application start.
  **/
-int startApplication(int argc, char *argv[]) {
+int canStartApplication(int argc, char *argv[]) {
     signal(SIGINT, appShutdownHook);
     signal(SIGTERM, appShutdownHook);
     signal(SIGHUP, appShutdownHook);
     signal(SIGKILL, appShutdownHook);
 
     // Seed random.
-    srand48((int) (fmod(getWallClockReal() *
-        1.0e6, 1.0e8)));
-
+    srand48((int) (fmod(getWallClockReal() * 1.0e6, 1.0e8)));
     initPlasmaSnowGlobal();
 
     // Inits.
@@ -140,27 +141,27 @@ int startApplication(int argc, char *argv[]) {
 
         if (!strcmp(arg, "-h") || !strcmp(arg, "-help")) {
             docs_usage(0);
-            return 0;
+            return false; // Done.
         }
 
         if (!strcmp(arg, "-H") || !strcmp(arg, "-manpage")) {
             docs_usage(1);
-            return 0;
+            return false; // Done.
         }
 
         if (!strcmp(arg, "-v") || !strcmp(arg, "-version")) {
             logAppVersion();
-            return 0;
+            return false; // Done.
 
         } else if (!strcmp(arg, "-changelog")) {
             displayPlasmaSnowDocumentation();
-            return 0;
+            return false; // Done.
 
         }
         #ifdef SELFREP
         else if (!strcmp(arg, "-selfrep")) {
             selfrep();
-            return 0;
+            return false; // Done.
 
         }
         #endif
@@ -169,14 +170,15 @@ int startApplication(int argc, char *argv[]) {
     int rc = HandleFlags(argc, argv);
     handle_language(0);
     mybindtestdomain();
+
     switch (rc) {
         case -1: // wrong flag
             clearColorPicker();
-            return 1;
+            return true; // Error.
             break;
 
         case 1: // manpage or help
-            return 0;
+            return false;
             break;
 
         default:
@@ -186,8 +188,8 @@ int startApplication(int argc, char *argv[]) {
     // Make a copy of all flags, before gtk_init() removes some.
     // We need this at app refresh. remove: -screen n -lang c.
     mRestartArgs = (char**) malloc((argc + 1) * sizeof(char**));
-    int newCount = 0;
 
+    int newCount = 0;
     for (int i = 0; i < argc; i++) {
         if ((strcmp("-screen", argv[i]) == 0) ||
             (strcmp("-lang", argv[i]) == 0)) {
@@ -196,25 +198,25 @@ int startApplication(int argc, char *argv[]) {
             mRestartArgs[newCount++] = strdup(argv[i]);
         }
     }
+
     mRestartArgs[newCount] = NULL;
 
     // Log info, version checks.
     logAppVersion();
 
-    printf("Available languages are:\n%s.\n\n",
-        LANGUAGES);
+    printf("Available languages are:\n%s.\n\n", LANGUAGES);
     printf("GTK version : %s\n", ui_gtk_version());
     printf("GTK required: %s\n\n", ui_gtk_required());
 
     if (!isGtkVersionValid()) {
         printf("%splasmasnow: GTK Version is insufficient "
             "- FATAL.%s\n", COLOR_RED, COLOR_NORMAL);
-        return 1;
+        return true; // Error!
     }
 
-    printf("%splasmasnow: Desktop %s detected.%s\n\n",
-        COLOR_BLUE, getDesktopSession() ? getDesktopSession() :
-        "was not", COLOR_NORMAL);
+    printf("%splasmasnow: Desktop %s detected.%s\n\n", 
+        COLOR_BLUE, getDesktopSession() ?
+            getDesktopSession() : "was not", COLOR_NORMAL);
 
     // Init GTK & x11 backend, ensure valid version.
     setenv("GDK_BACKEND", "x11", 1);
@@ -224,6 +226,34 @@ int startApplication(int argc, char *argv[]) {
     // changes from this run.
     if (!Flags.NoConfig) {
         WriteFlags();
+    }
+
+    // Check for session error.
+    const char* SESSION_TYPE = getenv("XDG_SESSION_TYPE");
+    if (strcmp(SESSION_TYPE, "x11") != 0) {
+        printf("%splasmasnow: No X11 Session type "
+            "is detected, FATAL.%s\n",
+            COLOR_RED, COLOR_NORMAL);
+
+        printf("%splasmasnow: Environment var "
+            "$XDG_SESSION_TYPE: |%s|.%s\n",
+            COLOR_YELLOW, SESSION_TYPE, COLOR_NORMAL);
+        return true; // Error.
+    }
+
+    // Check for display error.
+    const char* WAYLAND_DISPLAY = getenv("WAYLAND_DISPLAY");
+    if (WAYLAND_DISPLAY && strlen(WAYLAND_DISPLAY) > 0) {
+        const char* TEMP = WAYLAND_DISPLAY ?
+            WAYLAND_DISPLAY : "";
+        printf("%splasmasnow: Wayland Display Manager "
+            "is detected, FATAL.%s\n",
+            COLOR_RED, COLOR_NORMAL);
+
+        printf("%splasmasnow: Environment var "
+            "$WAYLAND_DISPLAY: |%s|.%s\n",
+            COLOR_YELLOW, SESSION_TYPE, COLOR_NORMAL);
+        return true; // Error.
     }
 
     mGlobal.display = XOpenDisplay(Flags.DisplayName);
@@ -276,9 +306,10 @@ int startApplication(int argc, char *argv[]) {
     populateWinInfoHelper();
 
     if (!canStartStormWindow()) {
-         printf("%splasmasnow: Could not find a Window Manager "
-            "with an active window compositor - FATAL.%s\n",
-            COLOR_RED, COLOR_NORMAL);
+        printf("%splasmasnow: Could not find a Window Manager "
+           "with an active window compositor - FATAL.%s\n",
+           COLOR_RED, COLOR_NORMAL);
+        XCloseDisplay(mGlobal.display);
         return true; // Error.
     }
 
@@ -340,22 +371,15 @@ int startApplication(int argc, char *argv[]) {
     connectStormWindowDraw();
     respondToWorkspaceSettingsChange();
 
-    printf("%splasmasnow: gtk_main() Starts.%s\n",
+    printf("%s\nplasmasnow: Starts.%s\n",
         COLOR_BLUE, COLOR_NORMAL);
 
     gtk_main();
-    return false;
-}
 
-/** ************************************************
- ** Main application stop.
- **/
-void stopApplication() {
-    printf("%splasmasnow: gtk_main() Finishes.%s\n",
+    printf("%s\nplasmasnow: Finishes.%s\n",
         COLOR_BLUE, COLOR_NORMAL);
-    printf("%s\nThanks for using plasmasnow, you rock !%s\n",
-        COLOR_GREEN, COLOR_NORMAL);
 
+    // Uninit & done.
     removeFallenSnowFromAllWindows();
     clearColorPicker();
     uninitLightsModule();
@@ -363,6 +387,16 @@ void stopApplication() {
     XClearWindow(mGlobal.display, mGlobal.SnowWin);
     XFlush(mGlobal.display);
     XCloseDisplay(mGlobal.display);
+
+    return true;
+}
+
+/** ************************************************
+ ** Main application stop.
+ **/
+void stopApplication() {
+    printf("%s\nThanks for using plasmasnow, you rock !%s\n",
+        COLOR_GREEN, COLOR_NORMAL);
 
     // If Restarting due to display change.
     if (mDoRestartDueToDisplayChange) {
@@ -1025,22 +1059,19 @@ int do_stopafter() {
     return false;
 }
 
-/** ************************************************
- ** This method ...
- **/
+/**
+ * One would assume that gettext() uses the environment
+ * variable LOCPATH to find locales, but no, it does not.
+ * So, we scan LOCPATH for paths, use them and see if gettext
+ * gets a translation for a text that is known to exist in
+ * the ui and should be translated to something different.
+ */
 void mybindtestdomain() {
     mGlobal.Language = guess_language();
 
 #ifdef HAVE_GETTEXT
-    // One would assume that gettext() uses the environment variable LOCPATH
-    // to find locales, but no, it does not.
-    // So, we scan LOCPATH for paths, use them and see if gettext gets a
-    // translation for a text that is known to exist in the ui and should be
-    // translated to something different.
-
     char* startlocale;
     (void) startlocale;
-
     char* resultLocale = setlocale(LC_ALL, "");
     startlocale = strdup(resultLocale ? resultLocale : NULL);
 
@@ -1049,77 +1080,32 @@ void mybindtestdomain() {
 
     char* locpath = getenv("LOCPATH");
     if (locpath) {
-        char *initial_textdomain = strdup(bindtextdomain(TEXTDOMAIN, NULL));
+        char *initial_textdomain = strdup(
+            bindtextdomain(TEXTDOMAIN, NULL));
         char *mylocpath = strdup(locpath);
-        int translation_found = False;
+        bool translation_found = false;
 
         char *q = mylocpath;
-        while (1) {
+        while (true) {
             char *p = strsep(&q, ":");
             if (!p) {
                 break;
             }
-            bindtextdomain(TEXTDOMAIN, p);
 
+            bindtextdomain(TEXTDOMAIN, p);
             if (strcmp(_(TESTSTRING), TESTSTRING)) {
-                translation_found = True;
+                translation_found = true;
                 break;
             }
         }
+
         if (!translation_found) {
             bindtextdomain(TEXTDOMAIN, initial_textdomain);
         }
-
         free(mylocpath);
         free(initial_textdomain);
     }
-
-    // Ugly debug.
-    if (0) {
-        if (strcmp(Flags.Language, "sys")) {
-            char lc[100];
-            if (!strcmp(Flags.Language, "en")) {
-                strcpy(lc, "en_US.UTF-8");
-            } else {
-                strcpy(lc, Flags.Language);
-                strcat(lc, "_");
-
-                int i;
-                int l = strlen(lc);
-                for (i = 0; i < (int)strlen(Flags.Language); i++) {
-                    lc[l + i] = toupper(lc[i]);
-                }
-                lc[l + i] = 0;
-
-                strcat(lc, ".UTF-8");
-            }
-
-            // in order for this to work, no gettext call must have been
-            // made yet:
-
-            // setenv("LC_ALL",lc,1);
-            // setenv("LANG",lc,1);
-            setenv("LANGUAGE", Flags.Language, 1);
-
-        } else {
-            unsetenv("LANGUAGE");
-            unsetenv("LC_ALL");
-            if (0) {
-                char *l = getenv("LANG");
-                if (l && !getenv("LANGUAGE")) {
-                    char *lang = strdup(l);
-                    char *p = strchr(lang, '_');
-                    if (p) {
-                        *p = 0; // TODO: wrong
-                        setenv("LANGUAGE", lang, 1);
-                    }
-                    free(lang);
-                }
-            }
-        }
-    }
 #endif
-
 }
 
 /** ************************************************

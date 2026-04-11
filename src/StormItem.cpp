@@ -41,8 +41,6 @@
  **/
 const double MAX_WIND_SENSITIVITY = 0.4;
 
-bool mStormItemBackgroundThreadIsActive = false;
-
 const float mWindSpeedMaxArray[] =
     { 100.0, 300.0, 600.0 };
 
@@ -145,10 +143,7 @@ void addStormItem(StormItem* stormItem) {
  ** This method updates a stormItem object.
  **/
 int updateStormItemOnThread(StormItem* stormItem) {
-    mStormItemBackgroundThreadIsActive = true;
-
     if (!isWorkspaceActive() || Flags.NoSnowFlakes) {
-        mStormItemBackgroundThreadIsActive = false;
         return true;
     }
 
@@ -157,7 +152,6 @@ int updateStormItemOnThread(StormItem* stormItem) {
         if (stormItem->fluff || stormItem->isFrozen) {
             eraseStormItem(stormItem);
             removeStormItem(stormItem);
-            mStormItemBackgroundThreadIsActive = false;
             return false;
         }
     }
@@ -166,7 +160,6 @@ int updateStormItemOnThread(StormItem* stormItem) {
     if (getStallingNewStormItems()) {
         eraseStormItem(stormItem);
         removeStormItem(stormItem);
-        mStormItemBackgroundThreadIsActive = false;
         return false;
     }
 
@@ -175,7 +168,6 @@ int updateStormItemOnThread(StormItem* stormItem) {
         stormItem->flufftimer > stormItem->flufftime) {
         eraseStormItem(stormItem);
         removeStormItem(stormItem);
-        mStormItemBackgroundThreadIsActive = false;
         return false;
     }
 
@@ -197,7 +189,6 @@ int updateStormItemOnThread(StormItem* stormItem) {
             stormItem->yRealPosition = newFlakeYPos;
         }
         stormItem->flufftimer += stormItemUpdateTime;
-        mStormItemBackgroundThreadIsActive = false;
         return true;
     }
 
@@ -211,7 +202,6 @@ int updateStormItemOnThread(StormItem* stormItem) {
         if ((!stormItem->survivesScreenEdges && drand48() > 0.3) ||
             (drand48() > 0.9)) {
             setStormItemFluffState(stormItem, 0.51);
-            mStormItemBackgroundThreadIsActive = false;
             return true;
         }
     }
@@ -251,7 +241,6 @@ int updateStormItemOnThread(StormItem* stormItem) {
 
     // If stormItem is frozen, we're done.
     if (stormItem->isFrozen) {
-        mStormItemBackgroundThreadIsActive = false;
         return true;
     }
 
@@ -273,7 +262,6 @@ int updateStormItemOnThread(StormItem* stormItem) {
         if (newFlakeXPos < 0 ||
             newFlakeXPos >= mGlobal.SnowWinWidth) {
             removeStormItem(stormItem);
-            mStormItemBackgroundThreadIsActive = false;
             return false;
         }
     }
@@ -281,7 +269,6 @@ int updateStormItemOnThread(StormItem* stormItem) {
     // Remove stormItem if it falls below bottom of screen.
     if (newFlakeYPos >= mGlobal.SnowWinHeight) {
         removeStormItem(stormItem);
-        mStormItemBackgroundThreadIsActive = false;
         return false;
     }
 
@@ -296,7 +283,6 @@ int updateStormItemOnThread(StormItem* stormItem) {
                 NEW_STORMITEM_INT_Y_POS)) {
             removeStormItem(stormItem);
             unlockFallenSnowBaseSemaphore();
-            mStormItemBackgroundThreadIsActive = false;
             return false;
         }
         unlockFallenSnowBaseSemaphore();
@@ -319,7 +305,6 @@ int updateStormItemOnThread(StormItem* stormItem) {
             in == CAIRO_REGION_OVERLAP_IN) {
             setStormItemFluffState(stormItem, 0.4);
             stormItem->isFrozen = 1;
-            mStormItemBackgroundThreadIsActive = false;
             return true;
         }
 
@@ -402,7 +387,6 @@ int updateStormItemOnThread(StormItem* stormItem) {
                     getStormItemSurfaceHeight(1) * 0.3f;
                 addStormItem(newflake);
 
-                mStormItemBackgroundThreadIsActive = false;
                 return true;
             }
         }
@@ -410,8 +394,6 @@ int updateStormItemOnThread(StormItem* stormItem) {
 
     stormItem->xRealPosition = newFlakeXPos;
     stormItem->yRealPosition = newFlakeYPos;
-
-    mStormItemBackgroundThreadIsActive = false;
     return true;
 }
 

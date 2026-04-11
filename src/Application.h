@@ -30,7 +30,7 @@
 extern "C" {
 #endif
 
-    int startApplication(int argc, char *argv[]);
+    int canStartApplication(int argc, char *argv[]);
     void stopApplication();
 
     void initPlasmaSnowGlobal();

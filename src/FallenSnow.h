@@ -116,7 +116,8 @@ extern "C" {
     void doAllFallenSnowWinInfoUpdates();
     void doWinInfoWSHides();
     void doWinInfoInitialAdds();
-    bool windowIsTransparent(Window chromeWindow);
+    bool windowIsEmptyChrome(Window window);
+    bool windowIsEmpty(Window chromeWindow);
     void doWinInfoRemoves();
     void doWinInfoProgrammaticRemoves();
 

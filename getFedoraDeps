@@ -1,0 +1,8 @@
+#!/bin/sh
+
+sudo dnf install git gcc gcc-c++ make glib2-devel \
+    gdk-pixbuf2 gdk-pixbuf2-modules gdk-pixbuf2-modules-extra gdk-pixbuf2-devel \
+    gtk3-devel gettext automake libX11-devel libXft-devel \
+    libXpm-devel libXt-devel libXext-devel xorg-x11-proto-devel \
+    libXinerama-devel libXtst-devel libxkbcommon-devel \
+    gsl-devel unity-gtk3-module
