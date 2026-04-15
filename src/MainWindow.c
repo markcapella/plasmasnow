@@ -1143,18 +1143,6 @@ void createMainWindow() {
     gtk_window_set_title(GTK_WINDOW(mMainWindow),
         mGlobal.mPlasmaWindowTitle);
 
-    const char* PLASMASNOW_ICON =
-        "/usr/share/pixmaps/plasmasnow.png";
-    GError* error = NULL;
-    if (gtk_window_set_icon_from_file(GTK_WINDOW(mMainWindow),
-        PLASMASNOW_ICON, &error) == 0) {
-        printf("plasmasnow: createMainWindow() Icon not loaded "
-            "from file, error |%s|.\n", error->message);
-    } else {
-        printf("plasmasnow: createMainWindow() Icon loaded "
-            "from file.\n");
-    }
-
     if (getenv("plasmasnow_RESTART")) {
         gtk_window_set_position(GTK_WINDOW(mMainWindow),
             GTK_WIN_POS_CENTER_ALWAYS);

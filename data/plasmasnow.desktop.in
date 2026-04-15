@@ -1,12 +1,13 @@
 [Desktop Entry]
 Name=plasmasnow
 Comment=Wintery Drifting Scenes
-Type=Application
-StartupNotify=true
-Terminal=false
 
 Exec=plasmasnow
-Icon=plasmasnow.png
+Type=Application
+
+Icon=plasmasnow
+StartupNotify=true
+Terminal=false
 
 Categories=Game;
 Keywords=Storm; Snow;
