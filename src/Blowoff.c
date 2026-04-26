@@ -38,7 +38,7 @@
 /**
  * Module globals and consts.
  */
-const float TIME_BETWEEN_BLOWOFF_THREADS = 0.25;
+const float TIME_BETWEEN_BLOWOFF_THREADS = 0.12;
 
 int mBlowOffLockCounter = 0;
 
@@ -132,7 +132,7 @@ int updateBlowoffFrame() {
  ** for each Blowoff event.
  **/
 int getNumberOfFlakesToBlowoff() {
-    return Flags.BlowOffFactor * 0.04 * drand48();
+    return Flags.BlowOffFactor * drand48();
 }
 
 /** *********************************************************************

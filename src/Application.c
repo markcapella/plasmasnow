@@ -333,21 +333,20 @@ int canStartApplication(int argc, char *argv[]) {
     Flags.shutdownRequested = 0;
     addWindowsModuleToMainloop();
     initStormModule();
+    moon_init();
+    Santa_init();
+    birds_init();
+    initSceneryModule();
+    treesnow_init();
+    initMeteorModule();
+    wind_init();
+    initStarsModule();
+    initBlowoffModule();
+    InitSnowOnTrees();
 
     // Init other modules.
     initFallenSnowModule();
-    initBlowoffModule();
-    wind_init();
-    Santa_init();
     initLightsModule();
-    InitSnowOnTrees();
-    treesnow_init();
-    initSceneryModule();
-    birds_init();
-    initStarsModule();
-    initMeteorModule();
-    moon_init();
-
     startLoadMeasureBackgroundThread();
 
     addMethodToMainloop(PRIORITY_DEFAULT, time_displaychanged,
@@ -568,12 +567,9 @@ void respondToWorkspaceSettingsChange() {
     ui_set_sticky(Flags.AllWorkspaces);
 }
 
-/** ************************************************
- * here we are handling the buttons in ui
- * Ok, this is a long list, and could be implemented more efficient.
- * But, doAllUISettingsUpdates is called not too frequently, so....
- * Note: if changes != 0, the settings will be written to .plasmasnowrc
- **/
+/**
+ * Here we are handling the buttons in ui.
+ */
 int doAllUISettingsUpdates() {
     if (Flags.shutdownRequested) {
         gtk_main_quit();
@@ -583,18 +579,20 @@ int doAllUISettingsUpdates() {
         return true;
     }
 
-    respondToStormSettingsChanges();
-    respondToBlowoffSettingsChanges();
-    respondToFallenSnowSettingsChanges();
-    respondToScenerySettingsChanges();
-    respondToStarsSettingsChanges();
-    respondToMeteorSettingsChanges();
-
     Santa_ui();
+    respondToScenerySettingsChanges();
     birds_ui();
+    respondToStormSettingsChanges();
+
+    respondToMeteorSettingsChanges();
     wind_ui();
+    respondToStarsSettingsChanges();
+    respondToFallenSnowSettingsChanges();
+
+    respondToBlowoffSettingsChanges();
     respondToTreesnowSettingsChanges();
     respondToMoonSettingsChanges();
+
     updateMainWindowUI();
 
     // updateAdvancedUserSettings.
@@ -903,17 +901,15 @@ void drawCairoWindowInternal(cairo_t* cc) {
         moon_draw(cc);
 
         drawLowerLightsFrame(cc);
-        drawSceneryFrame(cc);
-        treesnow_draw(cc);
-        drawAllStormItems(cc);
-
-        // If Flags.FollowSanta, Santa drawn in Birds.
-        if (!Flags.ShowBirds || !Flags.FollowSanta) {
-            Santa_draw(cc);
-        }
-        birds_draw(cc);
-
-        drawFallenSnowFrame(cc);
+            drawSceneryFrame(cc);
+            treesnow_draw(cc);
+            drawFallenSnowFrame(cc);
+            drawAllStormItems(cc);
+            if (!Flags.ShowBirds || !Flags.FollowSanta) {
+                // If Flags.FollowSanta, Santa drawn in Birds.
+                Santa_draw(cc);
+            }
+            birds_draw(cc);
         drawUpperLightsFrame(cc);
     }
 

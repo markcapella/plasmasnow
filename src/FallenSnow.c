@@ -115,7 +115,7 @@ int updateFallenSnowMaxColumnHeightThread() {
  * threads: locking by caller
  */
 void setColumnMaxHeightListForFallen(FallenSnow* fallen) {
-    #define N 6
+    #define N 30
 
     double splinex[N];
     double spliney[N];
@@ -332,7 +332,7 @@ void removePlowedSnowFromFallen(FallenSnow* fsnow) {
 
     // Santa facing right.
     if (mGlobal.SantaDirection == 0) {
-        const int SNOW_TO_PLOW = 8;
+        const int SNOW_TO_PLOW = 12;
         const int SANTA_FRONT = mGlobal.SantaX - fsnow->x +
             mGlobal.SantaWidth;
         const int SANTA_REAR = SANTA_FRONT - mGlobal.SantaWidth / 4;
@@ -348,7 +348,7 @@ void removePlowedSnowFromFallen(FallenSnow* fsnow) {
     }
 
     // Santa facing left.
-    const int SNOW_TO_PLOW = 8;
+    const int SNOW_TO_PLOW = 12;
     const int SANTA_FRONT = mGlobal.SantaX - fsnow->x -
         SNOW_TO_PLOW;
     const int SANTA_REAR = SANTA_FRONT + mGlobal.SantaWidth / 4;
@@ -386,7 +386,7 @@ void renderFallenSnow(FallenSnow* fsnow) {
 
     const short int* FALLEN_SNOW_HEIGHT = fsnow->columnHeightList;
 
-    const int NUMBER_OF_POINTS_FOR_AVERAGE = 10;
+    const int NUMBER_OF_POINTS_FOR_AVERAGE = 15;
     const int NUMBER_OF_AVERAGE_POINTS = MINIMUM_SPLINE_WIDTH +
         (FALLEN_WIDTH - 2) / NUMBER_OF_POINTS_FOR_AVERAGE;
 
@@ -685,20 +685,17 @@ void blowoffSnowFromFallen(FallenSnow* fsnow, int w, int h) {
             continue;
         }
 
-        if (!Flags.NoWind && mGlobal.Wind != 0 && drand48() > 0.5) {
-            const int NUMBER_FLAKES = getNumberOfFlakesToBlowoff();
-
-            for (int j = 0; j < NUMBER_FLAKES; j++) {
+        if (!Flags.NoWind && mGlobal.Wind != 0 && randomIntegerUpTo(8) == 0) {
+            for (int j = 0; j < getNumberOfFlakesToBlowoff(); j++) {
                 StormItem* stormItem = createStormItem(-1,
-                    fsnow->snowColor);
-                stormItem->survivesScreenEdges =
-                    (fsnow->winInfo.window == 0);
+                    fsnow->snowColor ? 0 : 1);
+                stormItem->survivesScreenEdges = false;
                 stormItem->xRealPosition = fsnow->x + i;
                 stormItem->yRealPosition = fsnow->y -
-                    fsnow->columnHeightList[i] - drand48() * 4;
-                stormItem->xVelocity = 0.25 *
+                    fsnow->columnHeightList[i] + drand48() * 4;
+                stormItem->xVelocity = 0.35 *
                     fsignf(mGlobal.NewWind) * mGlobal.WindMax;
-                stormItem->yVelocity = -10;
+                stormItem->yVelocity = -15 - randomIntegerUpTo(15);
                 addStormItem(stormItem);
             }
 
