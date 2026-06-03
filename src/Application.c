@@ -230,7 +230,7 @@ int canStartApplication(int argc, char *argv[]) {
 
     // Check for session error.
     const char* SESSION_TYPE = getenv("XDG_SESSION_TYPE");
-    if (strcmp(SESSION_TYPE, "x11") != 0) {
+    if (SESSION_TYPE && strcmp(SESSION_TYPE, "x11") != 0) {
         printf("%splasmasnow: No X11 Session type "
             "is detected, FATAL.%s\n",
             COLOR_RED, COLOR_NORMAL);
